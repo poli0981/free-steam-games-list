@@ -26,20 +26,11 @@ for game in games:
     genre_key = game.get("genre", "Uncategorized")
     genres[genre_key].append(game)
 
-with open('../games/gallery.md', 'w', encoding='utf-8') as f:
-    f.write("# Game Gallery\n\n")
-    f.write("| No. | Game | Header Image |\n")
-    f.write("|-----|------|-------------|\n")
-    for i, game in enumerate(games, 1):
-        row = f"| {i} | {fancy_name(['name'])} | ![ {game['name']} ]({game['header_image']}&width=460) |\n"  # Resize Steam link
-        f.write(row)
-
 os.makedirs("../games", exist_ok=True)
 
 # New Header
-header = "| No. | Game Name | Genre | Developer | Release Date | Short Description | Steam Link | Reviews (Updated) | Current Players | Anti-Cheat | Notes | Safe |\n"
-header += "|-----|-----------|-------|-----------|--------------|-------------------|------------|-------------------|-----------------|------------|-------|------|\n"
-
+header = "| No. | Thumbnail | Game Name | Genre | Developer | Release Date | Short Desc | Steam Link | Reviews | Players | Anti-Cheat | Notes | Safe |\n"
+header += "|-----|-----------|-----------|-------|-----------|--------------|------------|------------|---------|---------|------------|-------|------|\n"
 updated_time = datetime.now().strftime("%Y-%m-%d %H:%M")
 
 # All-games.md
@@ -53,18 +44,6 @@ with open("../games/all-games.md", "w", encoding="utf-8") as f:
         row = (f"| {i} |{fancy_name(game['name'])}| {game.get('genre', 'N/A')} | {game.get('developer', 'N/A')} |"
                f" {game.get('release_date', 'N/A')} | {short_desc(game.get('desc', 'N/A'))} | [Link]({game['link']}) | {game.get('reviews', 'N/A')} | {game.get('current_players', 'N/A')} | {game.get('anti_cheat', '-')} | {game.get('notes', '-')} | {game.get('safe', '?')} |\n")
         f.write(row)
-
-# Trong script, sau all-games.md
-with open('../games/gallery.md', 'w', encoding='utf-8') as f:
-    f.write("# Game Gallery (Header Images)\n\n")
-    f.write("Click ảnh để mở Steam page bro\n\n")
-    for game in games:
-        img = game.get('header_image', '')
-        if img and img != 'N/A':
-            f.write(f"### [{game['name']}]({game['link']})\n")
-            f.write(f"![{game['name']}]({img} \"{game['name']}\")\n\n")  # Auto resize GitHub sẽ handle
-        else:
-            f.write(f"### {game['name']} - No image :(\n\n")
 
 # Genre files
 for genre, game_list in genres.items():
@@ -83,8 +62,7 @@ for genre, game_list in genres.items():
         f.write(f"{len(game_list)} games – Updated: {updated_time}\n\n")
         f.write(header)
         for i, game in enumerate(game_list, 1):
-            row = (f"| {i} | {fancy_name(game['name'])} | {game.get('genre', 'N/A')} | {game.get('developer', 'N/A')} |"
-                   f" {game.get('release_date', 'N/A')} | {short_desc(game.get('desc', 'N/A'))} | [Link]({game['link']}) | {game.get('reviews', 'N/A')} | {game.get('current_players', 'N/A')} | {game.get('anti_cheat', '-')} | {game.get('notes', '-')} | {game.get('safe', '?')} |\n")
+            row = f"| {i} | ![{game['name']}]({game.get('header_image', '')}) | {fancy_name(game['name'])} | {game.get('genre', 'N/A')} | {game.get('developer', 'N/A')} | {game.get('release_date', 'N/A')} | {short_desc(game.get('desc', 'N/A'))} | [Link]({game['link']}) | {game.get('reviews', 'N/A')} | {game.get('current_players', 'N/A')} | {game.get('anti_cheat', '-')} | {game.get('notes', '-')} | {game.get('safe', '?')} |\n"
             f.write(row)
 
 print("Done.Successfully\n")
