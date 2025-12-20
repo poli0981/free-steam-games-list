@@ -2,9 +2,10 @@ import json
 import os
 from collections import defaultdict
 from datetime import datetime
-
-from scripts.steam_fetcher import update_all
-from scripts.utils import short_desc, fancy_name
+import sys
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+from steam_fetcher import update_all
+from utils import short_desc, fancy_name
 
 # Read data.json (folder scripts/)
 with open('data.json', 'r', encoding='utf-8') as f:

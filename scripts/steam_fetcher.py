@@ -19,7 +19,6 @@ SKIP_GENRES = [
     'Massively Multiplayer', 'Competitive'
 ]
 
-
 def extract_appid(link):
     if '/app/' not in link:
         return None
