@@ -1,0 +1,82 @@
+[
+  {
+    "genre"        : "FPS" ,
+    "link"         : "https://store.steampowered.com/app/730/CounterStrike_2/" ,
+    "safe"         : "y" ,
+    "name"         : "Counter-Strike 2" ,
+    "desc"         : "For over two decades, Counter-Strike has offered an elite competitive experience, one shaped by millions of players from across the globe. And now the next chapter in the CS story is about to begin. This is Counter-Strike 2." ,
+    "developer"    : "Valve" ,
+    "release_date" : "21 Aug, 2012" ,
+    "anti_cheat"   : "VAC" ,
+    "reviews"      : "86% (Very Positive)" ,
+    "notes"        : "Not play - No review."
+  } ,
+  {
+    "genre"        : "Platformer" ,
+    "link"         : "https://store.steampowered.com/app/3659080/Unbound/" ,
+    "desc"         : "Help Mox break out from his unjust inprisonment. Navigate through a hazardous, futuristic city and outrun your pursuer to reach an off-world colony in this 2D precision-platformer!" ,
+    "safe"         : "?" ,
+    "name"         : "Unbound" ,
+    "developer"    : "Primal Crowd" ,
+    "release_date" : "19 Dec, 2025" ,
+    "anti_cheat"   : "-" ,
+    "reviews"      : "100% (9 user reviews)" ,
+    "notes"        : "Not play - No review."
+  } ,
+  {
+    "genre" : "Rhythm" ,
+    "link"  : "https://store.steampowered.com/app/4219930/Encore!/" ,
+    "desc"  : "A rhythm game and visual novel hybrid where you curate a band at an interdimensional music school to win battles." ,
+    "safe"  : "?"
+  } ,
+  {
+    "genre" : "Battle Royale" ,
+    "link"  : "https://store.steampowered.com/app/3728650/Super-B/" ,
+    "desc"  : "Free-to-play multiplayer with toy characters in a brick-built world, featuring 12+ fast-paced game modes." ,
+    "safe"  : "?"
+  } ,
+  {
+    "genre" : "Puzzle" ,
+    "link"  : "https://store.steampowered.com/app/4195500/Escape_Game_Camper_2/" ,
+    "safe"  : "?"
+  } ,
+  {
+    "link" : "https://store.steampowered.com/app/1589400/The_Dead_Roam_Free__Episode_1/" ,
+    "safe" : "?"
+  } ,
+  {
+    "genre" : "Horror" ,
+    "link"  : "https://store.steampowered.com/app/3686730/" ,
+    "safe"  : "?"
+  } ,
+  {
+    "genre"      : "Action RPG, Gacha" ,
+    "link"       : "https://store.steampowered.com/app/3513350/Wuthering_Waves/" ,
+    "safe"       : "y" ,
+    "anti_cheat" : "ACE" ,
+    "note"       : "Beautiful anime open-world game, but feels hollow after you’ve explored it all"
+  } ,
+  {
+    "genre" : "Horror" ,
+    "link"  : "https://store.steampowered.com/app/3767300/Isolated_Hours/" ,
+    "safe"  : "y" ,
+    "note"  : "A short horror-game, fretty fun :)"
+  } ,
+  {
+    "genre" : "Stimulation" ,
+    "link"  : "https://store.steampowered.com/app/4143610/REAL_MOON/" ,
+    "safe"  : "y" ,
+    "note"  : "Walking & taking photo on the moon simulator :)"
+  } ,
+  {
+    "genre" : "MMORPG" ,
+    "link"  : "https://store.steampowered.com/app/3564740/Where_Winds_Meet/" ,
+    "safe"  : "y" ,
+    "note"  : "Need more time playing to review."
+  } ,
+  {
+    "genre" : "Visual Novel" ,
+    "link"  : "https://store.steampowered.com/app/4065050/bygone_snow/" ,
+    "safe"  : "?"
+  }
+]
