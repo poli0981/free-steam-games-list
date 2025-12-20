@@ -1,7 +1,7 @@
 # Action RPG, Gacha Games
 
-1 games – Updated: 2025-12-20 14:51
+1 games – Updated: 2025-12-20 14:55
 
 | No. | Thumbnail | Game Name | Genre | Developer | Release Date | Short Desc | Steam Link | Reviews | Players | Anti-Cheat | Notes | Safe |
 |-----|-----------|-----------|-------|-----------|--------------|------------|------------|---------|---------|------------|-------|------|
-| 1 | ![Wuthering Waves](https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3513350/f203fd0d93b74cd157d88d5d8316a581083007bf/header.jpg?t=1765766914) | Wuthering Waves | Action RPG, Gacha | KURO GAMES | Apr 28, 2025 | Wuthering Waves is a story-rich open-world action RPG with a high degree of freedom. | [Link](https://store.steampowered.com/app/3513350/Wuthering_Waves/) | 91% (Very Positive) | 12,894 | EAC | Beautiful anime open-world game, but feels hollow after you’ve explored it all | y |
+| 1 | ![Wuthering Waves](https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3513350/f203fd0d93b74cd157d88d5d8316a581083007bf/header.jpg?t=1765766914) | Wuthering Waves | Action RPG, Gacha | KURO GAMES | Apr 28, 2025 | Wuthering Waves is a story-rich open-world action RPG with a high degree of freedom. | [Link](https://store.steampowered.com/app/3513350/Wuthering_Waves/) | 91% (Very Positive) | 12,828 | EAC | Beautiful anime open-world game, but feels hollow after you’ve explored it all | y |
