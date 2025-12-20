@@ -3,7 +3,7 @@ name: Daily Steam F2P Update
 on:
   schedule:
     - cron: '0 0 * * *'  # Run every day at 0:00 UTC
-  workflow_dispatch:     # Run manual from từ GitHub UI
+  workflow_dispatch:     # Run manual from GitHub UI
 
 jobs:
   update-tables:
@@ -29,18 +29,17 @@ jobs:
           cd scripts
           python generate_tables.py
           
-      - name: Debug ls (xem file có tạo chưa – tạm để test, sau xóa)
+      - name: Debug ls (check file/folder created)
         run: |
           ls -la
           ls -la games/ || echo "games folder empty bro :("
           ls -la scripts/
 
-      - name: Commit & Push nếu có thay đổi (tables hoặc data.json fresh)
+      - name: Commit & Push if changed (tables/ data.json fresh)
         run: |
           git config --global user.name "poli0981"
           git config --global user.email "127664709+poli0981@users.noreply.github.com"
           git add games/*.md scripts/data.json
-          git diff --staged --quiet && echo "No changes – skip commit" || (git commit -m "Auto update tables & stats [$
-          (date +'%Y-%m-%d')]" && git push)
+          git diff --staged --quiet && echo "No changes – skip commit" || (git commit -m "Auto update tables & stats [$(date +'%Y-%m-%d')]" && git push)
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}

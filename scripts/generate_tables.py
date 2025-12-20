@@ -5,12 +5,6 @@ from datetime import datetime
 
 import requests
 
-api_key = os.getenv('STEAM_API_KEY')
-use_key = bool(api_key)
-if use_key:
-    print("Found STEAM_API_KEY – fetching current players is OK")
-else:
-    print("No STEAM_API_KEY found – skipping current players (file still run automatically)")
 
 # Extract appid
 def extract_appid(link):
@@ -19,7 +13,16 @@ def extract_appid(link):
     parts = link.split("/app/")[1]
     return parts.split("/")[0]
 
-# skip genres
+
+# API key từ env (Action friendly)
+api_key = os.getenv("STEAM_API_KEY")
+use_key = bool(api_key)
+if use_key:
+    print("Found STEAM_API_KEY – fetching players ngon")
+else:
+    print("No key – skip players")
+
+# Skip genres rác
 SKIP_GENRES = [
     "Free to Play",
     "Indie",
@@ -36,31 +39,33 @@ SKIP_GENRES = [
     "Competitive",
 ]
 
-# Read data.json
-with open("data.json", "r", encoding="utf-8") as f:
+# Đọc data.json (đồng folder scripts/)
+with open('data.json', 'r', encoding='utf-8') as f:
     games = json.load(f)
 
-# Fetch + update info of the game
+# Fetch + update selective
 for idx, game in enumerate(games):
     appid = extract_appid(game["link"])
     if not appid:
-        print(f"[{idx + 1}] Invalid link with {game.get('name', 'Unknown')}")
+        print(f"[{idx + 1}] Invalid link cho {game.get('name', 'Unknown')}")
         continue
 
-    # Fetch appdetails (public - update name/desc/genre/developer/release/anti-cheat/free check)
     details_url = f"https://store.steampowered.com/api/appdetails?appids={appid}"
     try:
         resp = requests.get(details_url, timeout=10)
         details = resp.json().get(appid, {})
         if details.get("success"):
             data = details["data"]
-            # Always fresh basics
+            # Name luôn fresh (hiếm khi sai)
             game["name"] = data.get("name", game.get("name", "Unknown"))
-            game["desc"] = (
-                data.get("short_description", "No description").strip() or "N/A"
-            )
 
-            # Genre: keep manual input, else auto primary (skip genres)
+            # Desc: chỉ fetch nếu missing hoặc N/A
+            if not game.get("desc") or game["desc"] in ["N/A", "No description", ""]:
+                game["desc"] = (
+                    data.get("short_description", "No description").strip() or "N/A"
+                )
+
+            # Genre: giữ manual nếu có
             if not game.get("genre") or game["genre"] in ["N/A", "", None]:
                 genres_list = [g["description"] for g in data.get("genres", [])]
                 filtered = [g for g in genres_list if g not in SKIP_GENRES]
@@ -71,27 +76,29 @@ for idx, game in enumerate(games):
                 )
                 game["genre"] = primary
 
-            # New: Developer + Release Date + Anti-Cheat
+            # Developer + Release Date luôn fresh
             game["developer"] = ", ".join(data.get("developers", ["N/A"]))
             game["release_date"] = data.get("release_date", {}).get("date", "N/A")
-            anti_cheat = "-"
-            for cat in data.get("categories", []):
-                if cat.get("description") == "Valve Anti-Cheat enabled":
-                    anti_cheat = "VAC"
-                    break
-            game["anti_cheat"] = anti_cheat  # Can manual check cho EAC/etc.
 
-            # Check no longer free
+            # Anti-Cheat: chỉ set VAC nếu chưa có thủ công
+            if not game.get("anti_cheat") or game["anti_cheat"] == "-":
+                anti_cheat = "-"
+                for cat in data.get("categories", []):
+                    if cat.get("description") == "Valve Anti-Cheat enabled":
+                        anti_cheat = "VAC"
+                        break
+                game["anti_cheat"] = anti_cheat
+
+            # Check no longer free → append note nếu cần
             is_free = data.get("is_free", False)
             price_overview = data.get("price_overview", {})
             if price_overview:
                 is_free = is_free or price_overview.get("initial", 1) == 0
-            if not is_free:
-                game["notes"] = (
-                    game.get("notes", "") + " (No longer free! Check price bro)"
-                )
+            if not is_free and "notes" in game:
+                if "(No longer free" not in game["notes"]:
+                    game["notes"] += " (No longer free! Check price bro)"
 
-            print(f"[{idx + 1}] Updated full info of {game['name']}")
+            print(f"[{idx + 1}] Updated selective cho {game['name']}")
     except Exception as e:
         print(f"Error details {game.get('name', 'Unknown')}: {e}")
 
@@ -128,7 +135,7 @@ for idx, game in enumerate(games):
 
     # Auto default fields
     if not game.get("notes", "").strip():
-        game["notes"] = "Not play - No review."
+        game["notes"] = "No play - Not review."
     if not game.get("safe"):
         game["safe"] = "?"
 
@@ -136,7 +143,7 @@ for idx, game in enumerate(games):
 with open("data.json", "w", encoding="utf-8") as f:
     json.dump(games, f, indent=4, ensure_ascii=False)
 
-os.makedirs('../games', exist_ok=True)
+os.makedirs("../games", exist_ok=True)
 
 # Sort + group
 games.sort(key=lambda x: x["name"].lower())
@@ -144,6 +151,54 @@ genres = defaultdict(list)
 for game in games:
     genre_key = game.get("genre", "Uncategorized")
     genres[genre_key].append(game)
+
+def fancy_truncate(name, max_len=40):  # 40 cho table đẹp
+    if len(name) <= max_len:
+        return name
+    words = name.split()
+    acronym = ''.join(w[0].upper() for w in words if w)
+    if len(acronym) <= max_len - 5:
+        return f"{acronym} ({name[:20]}...)"
+    return name[:max_len-3] + '...'
+
+def short_desc(full):
+    if not full or full == 'N/A':
+        return 'N/A'
+    sentence = full.split('.')[0]
+    return (sentence[:100] + '...') if len(sentence) > 100 else sentence
+
+with open('../games/gallery.md', 'w', encoding='utf-8') as f:
+    f.write("# Game Gallery\n\n")
+    f.write("| No. | Game | Header Image |\n")
+    f.write("|-----|------|-------------|\n")
+    for i, game in enumerate(games, 1):
+        row = f"| {i} | {fancy_truncate(game['name'])} | ![ {game['name']} ]({game['header_image']}&width=460) |\n"  # Resize Steam link
+        f.write(row)
+
+online_games = [g for g in games if any(kw in g.get('genre', '') + str(g.get('categories', '')) for kw in ['Multiplayer', 'PvP', 'Co-op', 'MMO', 'Online'])]
+online_games.sort(key=lambda x: int(x.get('current_players', '0').replace(',', '') or 0), reverse=True)
+with open('../games/top-online.md', 'w', encoding='utf-8') as f:
+    f.write("# Top Online/Multiplayer Games\n\n")
+    f.write(f"{len(online_games)} games – Updated: {datetime.now().strftime('%Y-%m-%d %H:%M')} | Status dựa players (có key mới "
+            f"accurate)\n\n")
+    header_top = "| No. | Game | Players | Status | Link |\n|-----|------|---------|--------|------|\n"
+    f.write(header_top)
+    for i, game in enumerate(online_games[:50], 1):  # Top 50 thôi
+        players = int(game.get('current_players', '0').replace(',', '') or 0)
+        if players > 100000:
+            status = "Sống dai vl 🔥"
+        elif players > 6000:
+            status = "Sống tốt, chơi đông"
+        elif players > 1000:
+            status = "Còn thở, nhưng yếu"
+        elif players > 100:
+            status = "Dấu hiệu dead?"
+        elif players > 10:
+            status = "Sắp die :(("
+        else:
+            status = "Die forever rip"
+        row = f"| {i} | {fancy_truncate(game['name'])} | {game.get('current_players', 'N/A')} | {status} | [Link]({game['link']}) |\n"
+        f.write(row)
 
 os.makedirs("../games", exist_ok=True)
 
@@ -161,8 +216,21 @@ with open("../games/all-games.md", "w", encoding="utf-8") as f:
     )
     f.write(header)
     for i, game in enumerate(games, 1):
-        row = f"| {i} | {game['name']} | {game.get('genre', 'N/A')} | {game.get('developer', 'N/A')} | {game.get('release_date', 'N/A')} | {game.get('desc', 'N/A')} | [Link]({game['link']}) | {game.get('reviews', 'N/A')} | {game.get('current_players', 'N/A')} | {game.get('anti_cheat', '-')} | {game.get('notes', '-')} | {game.get('safe', '?')} |\n"
+        row = (f"| {i} |{fancy_truncate(game['name'])}| {game.get('genre', 'N/A')} | {game.get('developer', 'N/A')} |"
+               f" {game.get('release_date', 'N/A')} | {short_desc(game.get('desc', 'N/A'))} | [Link]({game['link']}) | {game.get('reviews', 'N/A')} | {game.get('current_players', 'N/A')} | {game.get('anti_cheat', '-')} | {game.get('notes', '-')} | {game.get('safe', '?')} |\n")
         f.write(row)
+
+# Trong script, sau all-games.md
+with open('../games/gallery.md', 'w', encoding='utf-8') as f:
+    f.write("# Game Gallery (Header Images)\n\n")
+    f.write("Click ảnh để mở Steam page bro\n\n")
+    for game in games:
+        img = game.get('header_image', '')
+        if img and img != 'N/A':
+            f.write(f"### [{game['name']}]({game['link']})\n")
+            f.write(f"![{game['name']}]({img} \"{game['name']}\")\n\n")  # Auto resize GitHub sẽ handle
+        else:
+            f.write(f"### {game['name']} - No image :(\n\n")
 
 # Genre files
 for genre, game_list in genres.items():
@@ -175,12 +243,15 @@ for genre, game_list in genres.items():
         .replace("(", "")
         .replace(")", "")
     )
+
     with open(f"../games/{safe_name}.md", "w", encoding="utf-8") as f:
         f.write(f"# {genre} Games\n\n")
         f.write(f"{len(game_list)} games – Updated: {updated_time}\n\n")
         f.write(header)
         for i, game in enumerate(game_list, 1):
-            row = f"| {i} | {game['name']} | {game.get('genre', 'N/A')} | {game.get('developer', 'N/A')} | {game.get('release_date', 'N/A')} | {game.get('desc', 'N/A')} | [Link]({game['link']}) | {game.get('reviews', 'N/A')} | {game.get('current_players', 'N/A')} | {game.get('anti_cheat', '-')} | {game.get('notes', '-')} | {game.get('safe', '?')} |\n"
+            row = (f"| {i} | {fancy_truncate(game['name'])} | {game.get('genre', 'N/A')} | {game.get('developer', 'N/A')} |"
+                   f" {game.get('release_date', 'N/A')} | {short_desc(game.get('desc', 'N/A'))} | [Link]({game['link']}) | {game.get('reviews', 'N/A')} | {game.get('current_players', 'N/A')} | {game.get('anti_cheat', '-')} | {game.get('notes', '-')} | {game.get('safe', '?')} |\n")
             f.write(row)
 
 print("Done.Successfully\n")
+
