@@ -136,6 +136,8 @@ for idx, game in enumerate(games):
 with open("data.json", "w", encoding="utf-8") as f:
     json.dump(games, f, indent=4, ensure_ascii=False)
 
+os.makedirs('../games', exist_ok=True)
+
 # Sort + group
 games.sort(key=lambda x: x["name"].lower())
 genres = defaultdict(list)
