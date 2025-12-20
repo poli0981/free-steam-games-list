@@ -1,6 +1,6 @@
 # All Free-to-Play Games
 
-Total: 13 games – Updated: 2025-12-20 18:55 (full fresh API + noob notes :)) )
+Total: 13 games – Updated: 2025-12-20 18:57 (full fresh API + noob notes :)) )
 
 | No. | Thumbnail | Game Name | Genre | Developer | Release Date | Short Desc | Steam Link | Reviews | Players | Anti-Cheat | Notes | Safe |
 |-----|-----------|-----------|-------|-----------|--------------|------------|------------|---------|---------|------------|-------|------|
