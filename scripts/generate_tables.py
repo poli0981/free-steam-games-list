@@ -41,8 +41,7 @@ with open("../games/all-games.md", "w", encoding="utf-8") as f:
     )
     f.write(header)
     for i, game in enumerate(games, 1):
-        row = (f"| {i} |{fancy_name(game['name'])}| {game.get('genre', 'N/A')} | {game.get('developer', 'N/A')} |"
-               f" {game.get('release_date', 'N/A')} | {short_desc(game.get('desc', 'N/A'))} | [Link]({game['link']}) | {game.get('reviews', 'N/A')} | {game.get('current_players', 'N/A')} | {game.get('anti_cheat', '-')} | {game.get('notes', '-')} | {game.get('safe', '?')} |\n")
+        row = f"| {i} | ![{game['name']}]({game.get('header_image', '')}) | {fancy_name(game['name'])} | {game.get('genre', 'N/A')} | {game.get('developer', 'N/A')} | {game.get('release_date', 'N/A')} | {short_desc(game.get('desc', 'N/A'))} | [Link]({game['link']}) | {game.get('reviews', 'N/A')} | {game.get('current_players', 'N/A')} | {game.get('anti_cheat', '-')} | {game.get('notes', '-')} | {game.get('safe', '?')} |\n"
         f.write(row)
 
 # Genre files
