@@ -5,14 +5,18 @@ import time
 import random
 from tqdm import tqdm
 from datetime import datetime
-from steam_fetcher import extract_appid
-
 # API key từ env (Action friendly)
 api_key = os.getenv('STEAM_API_KEY')
 use_key = bool(api_key)
 if not use_key:
     print("No STEAM_API_KEY found – skip fresh players, dùng data cũ (vẫn chạy nhưng không fresh)")
     exit()  # Hoặc continue với data cũ nếu muốn
+
+def extract_appid(link):
+    if '/app/' not in link:
+        return None
+    parts = link.split('/app/')[1]
+    return parts.split('/')[0]
 
 # Load data.json
 with open('data.json', 'r', encoding='utf-8') as f:
@@ -43,6 +47,7 @@ for idx, game in enumerate(tqdm(online_games, desc="Fetching fresh players", uni
         game['current_players'] = 'Error'
         print(f"Error players cho {game['name']}: {e}")
 
+    # Bonus: fetch genre fresh để confirm online vibe (nếu cần)
     details_url = f"https://store.steampowered.com/api/appdetails?appids={appid}"
     try:
         resp = requests.get(details_url, timeout=10)
