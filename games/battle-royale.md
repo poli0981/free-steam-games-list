@@ -1,6 +1,6 @@
 # Battle Royale Games
 
-1 games – Updated: 2025-12-20 14:55
+1 games – Updated: 2025-12-20 15:06
 
 | No. | Thumbnail | Game Name | Genre | Developer | Release Date | Short Desc | Steam Link | Reviews | Players | Anti-Cheat | Notes | Safe |
 |-----|-----------|-----------|-------|-----------|--------------|------------|------------|---------|---------|------------|-------|------|
