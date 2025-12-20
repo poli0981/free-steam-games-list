@@ -1,6 +1,6 @@
 # Visual Novel Games
 
-2 games – Updated: 2025-12-20 08:23
+2 games – Updated: 2025-12-20 14:25
 
 | No. | Game Name | Genre | Developer | Release Date | Short Description | Steam Link | Reviews (Updated) | Current Players | Anti-Cheat | Notes | Safe |
 |-----|-----------|-------|-----------|--------------|-------------------|------------|-------------------|-----------------|------------|-------|------|
