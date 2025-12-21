@@ -60,7 +60,7 @@ os.makedirs('../games', exist_ok=True)
 content = []
 content.append("# All Free-to-Play Games\n\n")
 content.append(f"Total: {len(games)} games")
-content.append(f"– Generated: {updated_time} (from data.json – noob curated :)) )\n\n")
+content.append(f" – Generated: {updated_time} (from data.json – noob curated :)) )\n\n")
 content.append(header)
 
 for i, game in enumerate(games, 1):
@@ -86,7 +86,8 @@ for i, game in enumerate(games, 1):
     ]
     content.append("| " + " | ".join(row_parts) + " |\n")
 
-with open('games/all-games.md', 'w', encoding='utf-8') as f:
+# FIX
+with open('../games/all-games.md', 'w', encoding='utf-8') as f:
     f.write(''.join(content))
 
 # Genre files
@@ -117,8 +118,10 @@ for genre, game_list in genres.items():
             game.get('notes', "No review"),
             game.get('safe', '?')
         ]
+        
+        content.append("| " + " | ".join(row_parts) + " |\n")
 
-    with open(f'games/{safe_name}.md', 'w', encoding='utf-8') as f:
+    with open(f'../games/{safe_name}.md', 'w', encoding='utf-8') as f:
         f.write(''.join(content))
 
 print("Tables generated bro! No fetch, pure JSON read – safe & fast 🔥")
