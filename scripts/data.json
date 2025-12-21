@@ -1525,5 +1525,41 @@
         "reviews": "96% (Overwhelmingly Positive)",
         "current_players": "26",
         "notes": "Not play -> Nor eview."
-    }
+    },
+  {
+     "genre": "Hack & Slash",
+     "link": "https://store.steampowered.com/app/3908260/Beat_of_Rebellion/",
+     "safe": "?",
+    "type_game": "offline"
+  },
+  {
+    "genre": "Horror",
+    "link": "https://store.steampowered.com/app/4169300/Operation_Outbreak/",
+    "safe": "?",
+    "type_game": "offline"
+  },
+  {
+    "genre": "Building",
+    "link": "https://store.steampowered.com/app/3427760/Modularity/",
+    "safe": "?",
+    "type_game": "offline"
+  },
+  {
+    "genre": "Puzzle",
+    "link": "https://store.steampowered.com/app/4159900/Stories_Adrift_Wake__Prologue/",
+    "safe": "?",
+    "type_game": "offline"
+  },
+  {
+    "genre" : "Action RPG",
+    "link": "https://store.steampowered.com/app/2845940/Path_of_the_Tank/",
+    "safe": "?",
+    "type_game": "offline"
+  },
+  {
+    "genre": "Platformer",
+    "link": "https://store.steampowered.com/app/1810630/Lokko/",
+    "safe": "?",
+    "type_name": "offline"
+  }
 ]
