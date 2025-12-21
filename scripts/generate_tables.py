@@ -43,9 +43,28 @@ with open("games/all-games.md", "w", encoding="utf-8") as f:
     )
     f.write(header)
     for i, game in enumerate(games, 1):
-        row = f"| {i} | ![{game['name']}]({game.get('header_image', '')}) | {fancy_name(game['name'])} | {game.get('genre', 'N/A')} | {game.get('developer', 'N/A')} | {game.get('release_date', 'N/A')} | {short_desc(game.get('desc', 'N/A'))} | [Link]({game['link']}) | {game.get('reviews', 'N/A')} | {game.get('current_players', 'N/A')} | {game.get('anti_cheat', '-')} | {game.get('notes', '-')} | {game.get('safe', '?')} |\n"
-        f.write(row)
+        name = game.get('name', f"Game {extract_appid(game['link']) or 'NoID'} – Check link bro")
+        header_img = game.get('header_image', 'https://via.placeholder.com/460x215?text=No+Image')
+        genre = game.get('genre', 'N/A')
+        developer = game.get('developer', 'N/A')
+        release_date = game.get('release_date', 'N/A')
+        desc = short_desc(game.get('desc', 'N/A'))
+        link = game['link']
+        reviews = game.get('reviews', 'N/A')
+        players = game.get('current_players', 'N/A')
+        anti_cheat = game.get('anti_cheat', '-')
+        notes = game.get('notes', "No review")
+        safe = game.get('safe', '?')
 
+        # Fancy name safe
+        fancy = fancy_name(name)
+
+        # Thumbnail safe (alt text use name fallback)
+        thumbnail = f"![{name}]({header_img})"
+
+        row = f"| {i} | {thumbnail} | {fancy} | {genre} | {developer} | {release_date} | {desc} | [Link]({link}) | {reviews} | {players} | {anti_cheat} | {notes} | {safe} |\n"
+        f.write(row)
+        
 # Genre files
 for genre, game_list in genres.items():
     game_list.sort(key=review_scores, reverse=True)
@@ -54,8 +73,27 @@ for genre, game_list in genres.items():
         f.write(f"# {genre} Games\n\n")
         f.write(f"{len(game_list)} games – Updated: {updated_time}\n\n")
         f.write(header)
-        for i, game in enumerate(game_list, 1):
-            row = f"| {i} | ![{game['name']}]({game.get('header_image', '')}) | {fancy_name(game['name'])} | {game.get('genre', 'N/A')} | {game.get('developer', 'N/A')} | {game.get('release_date', 'N/A')} | {short_desc(game.get('desc', 'N/A'))} | [Link]({game['link']}) | {game.get('reviews', 'N/A')} | {game.get('current_players', 'N/A')} | {game.get('anti_cheat', '-')} | {game.get('notes', '-')} | {game.get('safe', '?')} |\n"
-            f.write(row)
+    for i, game in enumerate(games_list, 1):
+        name = game.get('name', f"Game {extract_appid(game['link']) or 'NoID'} – Check link bro")
+        header_img = game.get('header_image', 'https://via.placeholder.com/460x215?text=No+Image')
+        genre = game.get('genre', 'N/A')
+        developer = game.get('developer', 'N/A')
+        release_date = game.get('release_date', 'N/A')
+        desc = short_desc(game.get('desc', 'N/A'))
+        link = game['link']
+        reviews = game.get('reviews', 'N/A')
+        players = game.get('current_players', 'N/A')
+        anti_cheat = game.get('anti_cheat', '-')
+        notes = game.get('notes', "No review")
+        safe = game.get('safe', '?')
+
+        # Fancy name safe
+        fancy = fancy_name(name)
+
+        # Thumbnail safe (alt text use name fallback)
+        thumbnail = f"![{name}]({header_img})"
+
+        row = f"| {i} | {thumbnail} | {fancy} | {genre} | {developer} | {release_date} | {desc} | [Link]({link}) | {reviews} | {players} | {anti_cheat} | {notes} | {safe} |\n"
+        f.write(row)
 
 print("Done.")
