@@ -1,9 +1,10 @@
 name: Daily Steam F2P Generate Tables
 
 on:
-  schedule:
-    - cron: '25 0 * * *'
   workflow_dispatch:
+  push:
+    paths:
+      - 'scripts/data.json'
 
 jobs:
   generate:
@@ -30,5 +31,10 @@ jobs:
           git config --global user.name "poli0981"
           git config --global user.email "127664709+poli0981@users.noreply.github.com"
           git add games/*.md
-          git commit -m "Auto generate tables from data.json [$(date +'%Y-%m-%d %H:%M')]"
-          git push origin HEAD:main || echo "Push failed bro – check token"
+          git status
+          if git diff --cached --quiet; then
+            echo "No changes detected – skip commit bro"
+          else
+            git commit -m "Auto regenerate tables (last generated timestamp) [$(date +'%Y-%m-%d %H:%M')]"
+            git push
+          fi
