@@ -88,8 +88,7 @@ def update_game(game):
             else:
                 game['reviews'] = "No reviews"
     except Exception as e:
-        print(f"Error reviews {game.get('name', 'Unknown')}: {e}")
-
+        print(f"Error fetch {game.get('name', f'Game ID {appid}')}: {e}")
     # Players if key entered
     if use_key:
         players_url = f"https://api.steampowered.com/ISteamUserStats/GetNumberOfCurrentPlayers/v1/?key={api_key}&appid={appid}"
