@@ -31,7 +31,6 @@ with open('scripts/data.json', 'r', encoding='utf-8') as f:
 
 print(f"Loaded {len(games)} games from data.json – generating tables only (no fetch) 🔥")
 
-# Sort by reviews descending (best first, fallback 0)
 def review_score(game):
     reviews = game.get('reviews', 'N/A')
     if 'N/A' in reviews or 'No reviews' in reviews:
@@ -99,19 +98,25 @@ for genre, game_list in genres.items():
     content.append(f"{len(game_list)} games – Generated: {updated_time}\n\n")
     content.append(header)
     for i, game in enumerate(game_list, 1):
-        str(i),
-        thumbnail,
-        fancy,
-        game.get('genre', 'N/A'),
-        game.get('developer', 'N/A'),
-        game.get('release_date', 'N/A'),
-        short_desc(game.get('desc', 'N/A')),
-        f"[Link]({game.get('link', '#')})",
-        game.get('reviews', 'N/A'),
-        game.get('current_players', 'N/A'),
-        game.get('anti_cheat', '-'),
-        game.get('notes', "No review"),
-        game.get('safe', '?')
+        name = game.get('name', f"Game {extract_appid(game.get('link', ''))} – Check link bro")
+        header_img = game.get('header_image', 'https://via.placeholder.com/460x215?text=No+Image')
+        thumbnail = f"![{name}]({header_img})"
+        fancy = fancy_name(name)
+        row_parts = [
+            str(i),
+            thumbnail,
+            fancy,
+            game.get('genre', 'N/A'),
+            game.get('developer', 'N/A'),
+            game.get('release_date', 'N/A'),
+            short_desc(game.get('desc', 'N/A')),
+            f"[Link]({game.get('link', '#')})",
+            game.get('reviews', 'N/A'),
+            game.get('current_players', 'N/A'),
+            game.get('anti_cheat', '-'),
+            game.get('notes', "No review"),
+            game.get('safe', '?')
+        ]
 
     with open(f'../games/{safe_name}.md', 'w', encoding='utf-8') as f:
         f.write(''.join(content))
