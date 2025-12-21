@@ -21,7 +21,9 @@ jobs:
           python-version: '3.12'
 
       - name: Run generate_tables.py (pure generate)
-        run: python scripts/generate_tables.py
+        run: |
+          cd scripts
+          python gererate_tables.py
 
       - name: Debug ls
         run: |
