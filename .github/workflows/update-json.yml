@@ -1,0 +1,45 @@
+name: Daily Steam F2P Update
+
+on:
+  schedule:
+    - cron: '0 0 * * *'  # Run every day at 0:00 UTC
+  workflow_dispatch:     # Run manual from GitHub UI
+
+jobs:
+  update-tables:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GH_TOKEN }}
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run:
+          pip install requests
+
+      - name: Run generate script
+        env:
+          STEAM_API_KEY: ${{ secrets.STEAM_API_KEY }}
+        run: |
+          cd scripts
+          python update_data.py
+          
+      - name: Debug ls (check file/folder created)
+        run: |
+          ls -la
+          ls -la scripts/
+
+      - name: Commit & Push if changed (tables/ data.json fresh)
+        run: |
+          git config --global user.name "poli0981"
+          git config --global user.email "127664709+poli0981@users.noreply.github.com"
+          git add games/*.md scripts/data.json
+          git diff --staged --quiet && echo "No changes – skip commit" || (git commit -m "JSON updated [$(date +'%Y-%m-%d')]" && git push)
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
