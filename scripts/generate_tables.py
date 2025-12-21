@@ -9,7 +9,7 @@ from utils import short_desc, fancy_name
 from steam_fetcher import extract_appid
 
 # Read data.json (folder scripts/)
-with open('scripts/data.json', 'r', encoding='utf-8') as f:
+with open('data.json', 'r', encoding='utf-8') as f:
     games = json.load(f)
 
 os.makedirs("games", exist_ok=True)
