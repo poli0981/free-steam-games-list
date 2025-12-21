@@ -23,7 +23,7 @@ jobs:
       - name: Run generate_tables.py (pure generate)
         run: |
           cd scripts
-          python gererate_tables.py
+          python generate_tables.py
 
       - name: Debug ls
         run: |
