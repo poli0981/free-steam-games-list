@@ -49,7 +49,7 @@ with open("games/all-games.md", 'w', encoding='utf-8') as f:
 for genre, game_list in genres.items():
     game_list.sort(key=lambda x: x['name'].lower())
     safe_name = genre.lower().replace(' ', '-').replace('/', '-').replace(',', '').replace('(', '').replace(')', '')
-    with open(f'../games/{safe_name}.md', 'w', encoding='utf-8') as f:
+    with open(f'games/{safe_name}.md', 'w', encoding='utf-8') as f:
         f.write(f"# {genre} Games\n\n")
         f.write(f"{len(game_list)} games – Updated: {updated_time}\n\n")
         f.write(header)
