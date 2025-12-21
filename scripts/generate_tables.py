@@ -26,7 +26,7 @@ def extract_appid(link):  # Fallback name nếu missing
     return parts.split('/')[0]
 
 # Load data.json
-with open('scripts/data.json', 'r', encoding='utf-8') as f:
+with open('data.json', 'r', encoding='utf-8') as f:
     games = json.load(f)
 
 print(f"Loaded {len(games)} games from data.json – generating tables only (no fetch) 🔥")
