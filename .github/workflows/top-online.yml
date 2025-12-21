@@ -19,8 +19,9 @@ jobs:
           python-version: '3.12'
 
       - name: Install dependencies
-        run:
+        run: |
           pip install requests
+          pip install tqdm
 
       - name: Run generate script
         env:
