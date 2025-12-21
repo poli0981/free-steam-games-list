@@ -3,7 +3,6 @@ import random
 import time
 
 import requests
-from tqdm import tqdm  # Pretty progress bar run local, Action to print
 
 # API key từ env
 api_key = os.getenv('STEAM_API_KEY')
@@ -119,13 +118,26 @@ def update_game(game):
 
 
 def update_all(games):
-    print(f"Starting update {len(games)} games... (with random delay 1-3s to avoid Steam ban :)) )")
-    for idx, game in enumerate(tqdm(games, desc="Fetching Steam data", unit="game")):
+    is_github_action = os.getenv('GITHUB_ACTIONS') == 'true'  # Detect Action env
+    delay_min = 0.2 if is_github_action else 1.0
+    delay_max = 0.8 if is_github_action else 3.0
+    print(f"Starting update {len(games)} games... ", end='')
+    if is_github_action:
+        print(f"(GitHub Action mode: fast delay {delay_min}-{delay_max}s to avoid timeout 🔥)")
+    else:
+        print("(Local mode: slower delay for safety)")
+
+    for idx, game in enumerate(games):
+        print(f"[{idx + 1}/{len(games)}] Fetching {game.get('name', 'Unknown')}...", end=' ')
         update_game(game)
-        # Random delay between requests (100+ game)
-        if idx < len(games) - 1:  # No delay for last request
-            delay = random.uniform(1, 8)
+        print(f"Done! Players: {game.get('current_players', 'N/A')} | Reviews: {game.get('reviews', 'N/A')}")
+
+        if idx < len(games) - 1:
+            delay = random.uniform(delay_min, delay_max)
+            print(f"Sleeping {delay:.2f}s to be nice to Steam...")
             time.sleep(delay)
+
+    print("All done bro! Stats fresh vl 🔥")
 
 
 # Export generate_tables to import
