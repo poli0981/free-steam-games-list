@@ -9,8 +9,8 @@ from datetime import datetime
 api_key = os.getenv('STEAM_API_KEY')
 use_key = bool(api_key)
 if not use_key:
-    print("No STEAM_API_KEY found – skip fresh players, dùng data cũ (vẫn chạy nhưng không fresh)")
-    exit()  # Hoặc continue với data cũ nếu muốn
+    print("No STEAM_API_KEY found – skip fresh players, use old data instead.")
+    exit()  # Or continue with old data
 
 def extract_appid(link):
     if '/app/' not in link:
@@ -31,7 +31,7 @@ if not online_games:
 
 print(f"Found {len(online_games)} game online – fetching fresh players với key...")
 
-# Fetch fresh players cho từng game online
+# Fetch fresh players game online
 for idx, game in enumerate(tqdm(online_games, desc="Fetching fresh players", unit="game")):
     appid = extract_appid(game['link'])
     if not appid:
@@ -47,19 +47,6 @@ for idx, game in enumerate(tqdm(online_games, desc="Fetching fresh players", uni
         game['current_players'] = 'Error'
         print(f"Error players cho {game['name']}: {e}")
 
-    # Bonus: fetch genre fresh để confirm online vibe (nếu cần)
-    details_url = f"https://store.steampowered.com/api/appdetails?appids={appid}"
-    try:
-        resp = requests.get(details_url, timeout=10)
-        details = resp.json().get(appid, {})
-        if details.get('success'):
-            data = details['data']
-            genres_list = [g['description'] for g in data.get('genres', [])]
-            if not any(kw.lower() in ' '.join(genres_list).lower() for kw in ['multiplayer', 'pvp', 'co-op', 'online', 'mmo']):
-                game['notes'] = game.get('notes', '') + ' (Genre nghi offline? Check lại type_game)'
-    except Exception as e:
-        print(f"Error genre check cho {game['name']}: {e}")
-
     # Random delay
     if idx < len(online_games) - 1:
         delay = random.uniform(1, 3)
@@ -74,11 +61,11 @@ online_games.sort(key=player_count, reverse=True)
 
 # Player status vibe noob
 def player_status(count):
-    if count > 100000: return "Sống dai vl, đông như hội 🔥"
-    if count > 6000: return "Sống tốt, đông vui"
-    if count > 1000: return "Còn thở, chơi được"
-    if count > 100: return "Sắp dead? Ít người vl"
-    if count > 10: return "Die soon, ghost town"
+    if count > 100000: return "Aged-game 🔥"
+    if count > 6000: return "Good"
+    if count > 1000: return "Decrease? Increase?"
+    if count > 100: return "Signal dead?"
+    if count > 10: return "Die soon, ghost town, server will close?"
     return "Dead forever RIP 💀"
 
 # Generate top-online.md
@@ -88,8 +75,8 @@ with open('../games/top-online.md', 'w', encoding='utf-8') as f:
     f.write(f"Total online games: {len(online_games)} – Updated: {updated_time} (realtime từ Steam key :)) )\n\n")
     f.write("| Rank | Game | Players | Status | Genre | Notes | Link |\n")
     f.write("|------|------|---------|--------|-------|-------|------|\n")
-    for rank, g in enumerate(online_games[:50], 1):  # Top 50 thôi bro
+    for rank, g in enumerate(online_games[:50], 1):  # Top 50 games
         status = player_status(player_count(g))
         f.write(f"| {rank} | {g['name']} | {g.get('current_players', 'N/A')} | {status} | {g.get('genre', 'N/A')} | {g.get('notes', '-')} | [Link]({g['link']}) |\n")
 
-print("Done bro! Top online generated tại games/top-online.md 🔥 Add 'type_game': 'online' vào data.json cho game multi để lên bảng nha :))")
+print("Done bro! Top online generated tại games/top-online.md")
