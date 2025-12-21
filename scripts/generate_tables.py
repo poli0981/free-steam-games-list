@@ -3,6 +3,7 @@ import os
 import sys
 from collections import defaultdict
 from datetime import datetime
+
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 from utils import short_desc, fancy_name
 from steam_fetcher import extract_appid
