@@ -6,7 +6,7 @@ on:
   workflow_dispatch:     # Run manual from GitHub UI
 
 jobs:
-  update-tables:
+  test-update:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
@@ -19,28 +19,29 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: Install dependencies
-        run:
-          pip install requests
+      - name: Install requests
+        run: pip install requests
 
-      - name: Run generate script
+      - name: Debug before run (ls scripts/)
+        run: ls -la scripts/
+
+      - name: Run generate_tables.py (main script)
         env:
           STEAM_API_KEY: ${{ secrets.STEAM_API_KEY }}
-        run: |
-          cd scripts
-          python generate_tables.py
-          
-      - name: Debug ls (check file/folder created)
-        run: |
-          ls -la
-          ls -la games/ || echo "games folder empty bro :("
-          ls -la scripts/
+        run: python scripts/generate_tables.py
 
-      - name: Commit & Push if changed (tables/ data.json fresh)
+      - name: Debug after run (check games/ + data.json fresh)
+        run: |
+          echo "=== games/ folder ==="
+          ls -la games/ || echo "games/ empty bro :("
+          echo "=== scripts/data.json head ==="
+          head -20 scripts/data.json
+
+      - name: Commit & Push (tables/data fresh)
         run: |
           git config --global user.name "poli0981"
           git config --global user.email "127664709+poli0981@users.noreply.github.com"
           git add games/*.md scripts/data.json
-          git diff --staged --quiet && echo "No changes – skip commit" || (git commit -m "Auto update tables & stats [$(date +'%Y-%m-%d')]" && git push)
+          git diff --quiet && echo "No changes – skip commit bro" || (git commit -m "Test auto update tables & stats [$(date +'%Y-%m-%d %H:%M')]" && git push)
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
