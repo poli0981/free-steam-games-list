@@ -3,6 +3,7 @@ import random
 import time
 
 import requests
+from tqdm import tqdm  # Pretty progress bar run local, Action to print
 
 # API key từ env
 api_key = os.getenv('STEAM_API_KEY')
@@ -18,7 +19,6 @@ SKIP_GENRES = [
     'Massively Multiplayer', 'Competitive'
 ]
 
-
 def extract_appid(link):
     if '/app/' not in link:
         return None
@@ -26,12 +26,6 @@ def extract_appid(link):
     return parts.split('/')[0]
 
 
-appid = extract_appid(game['link'])
-    if not appid:
-        print(f"Invalid link cho {game.get('name', 'Unknown')}")
-        return game
-
-    # Fetch details (public)
 def update_game(game):
     appid = extract_appid(game['link'])
     if not appid:
@@ -45,16 +39,17 @@ def update_game(game):
         details = resp.json().get(appid, {})
         if details.get('success'):
             data = details['data']
-            # Name fresh
+            # Name always fresh
             game['name'] = data.get('name', game.get('name', 'Unknown'))
-            
-            # Desc: chỉ fetch nếu missing
+
+            # Desc: fetch if missing
             if not game.get('desc') or game['desc'] in ['N/A', 'No description', '']:
                 game['desc'] = data.get('short_description', 'No description').strip() or 'N/A'
-            
+
             # Header image (thumbnail table)
             game['header_image'] = data.get('header_image', 'https://via.placeholder.com/460x215?text=No+Image')
 
+            # Genre: keep manual if exist
             if not game.get('genre') or game['genre'] in ['N/A', '', None]:
                 genres_list = [g['description'] for g in data.get('genres', [])]
                 filtered = [g for g in genres_list if g not in SKIP_GENRES]
@@ -64,7 +59,7 @@ def update_game(game):
             # Developer + Release Date fresh
             game['developer'] = ', '.join(data.get('developers', ['N/A']))
             game['release_date'] = data.get('release_date', {}).get('date', 'N/A')
-            
+
             # Anti-Cheat
             if not game.get('anti_cheat') or game['anti_cheat'] == '-':
                 anti_cheat = "-"
@@ -74,7 +69,7 @@ def update_game(game):
                         break
                 game['anti_cheat'] = anti_cheat
 
-            # Free check → append note nếu cần
+            # Free check → append note if needed
             is_free = data.get('is_free', False)
             price_overview = data.get('price_overview', {})
             if price_overview:
@@ -103,7 +98,7 @@ def update_game(game):
     except Exception as e:
         print(f"Error reviews {game.get('name', 'Unknown')}: {e}")
 
-    # Players key
+    # Players if key entered
     if use_key:
         players_url = f"https://api.steampowered.com/ISteamUserStats/GetNumberOfCurrentPlayers/v1/?key={api_key}&appid={appid}"
         try:
@@ -114,13 +109,14 @@ def update_game(game):
             game['current_players'] = 'Error'
             print(f"Error players {game.get('name', 'Unknown')}: {e}")
 
-    # Notes + Safe default missing
+    # Notes + Safe default nếu missing
     if not game.get('notes', '').strip():
-        game['notes'] = "No review"
+        game['notes'] = "Not play -> Nor eview."
     if not game.get('safe'):
         game['safe'] = "?"
 
     return game
+
 
 def update_all(games):
     is_github_action = os.getenv('GITHUB_ACTIONS') == 'true'
@@ -145,9 +141,6 @@ def update_all(games):
             batch_delay = random.uniform(10, 30)
             print(f"Batch done! Chilling {batch_delay:.1f}s before next batch...")
             time.sleep(batch_delay)
-
-    print("All batches complete!")
-
 
 # Export generate_tables to import
 __all__ = ['update_all']
