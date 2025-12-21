@@ -26,6 +26,12 @@ def extract_appid(link):
     return parts.split('/')[0]
 
 
+appid = extract_appid(game['link'])
+    if not appid:
+        print(f"Invalid link cho {game.get('name', 'Unknown')}")
+        return game
+
+    # Fetch details (public)
 def update_game(game):
     appid = extract_appid(game['link'])
     if not appid:
@@ -37,41 +43,48 @@ def update_game(game):
     try:
         resp = requests.get(details_url, timeout=10)
         details = resp.json().get(appid, {})
-        data = details['data']
-        game['name'] = data.get('name', f"Game ID {appid}")
-        game['developer'] = ', '.join(data.get('developers', ['N/A']))
-        game['release_date'] = data.get('release_date', {}).get('date', 'N/A')
-        game['header_image'] = data.get('header_image', 'https://via.placeholder.com/460x215?text=No+Image')
+        if details.get('success'):
+            data = details['data']
+            # Name fresh
+            game['name'] = data.get('name', game.get('name', 'Unknown'))
+            
+            # Desc: chỉ fetch nếu missing
+            if not game.get('desc') or game['desc'] in ['N/A', 'No description', '']:
+                game['desc'] = data.get('short_description', 'No description').strip() or 'N/A'
+            
+            # Header image (thumbnail table)
+            game['header_image'] = data.get('header_image', 'https://via.placeholder.com/460x215?text=No+Image')
 
-        if not game.get('desc') or game['desc'] in ['N/A', 'No description', '']:
-            game['desc'] = data.get('short_description', 'No description').strip() or 'N/A'
+            if not game.get('genre') or game['genre'] in ['N/A', '', None]:
+                genres_list = [g['description'] for g in data.get('genres', [])]
+                filtered = [g for g in genres_list if g not in SKIP_GENRES]
+                primary = filtered[0] if filtered else (genres_list[0] if genres_list else 'Uncategorized')
+                game['genre'] = primary
 
-        if not game.get('genre') or game['genre'] in ['N/A', '', None]:
-            genres_list = [g['description'] for g in data.get('genres', [])]
-            filtered = [g for g in genres_list if g not in SKIP_GENRES]
-            primary = filtered[0] if filtered else (genres_list[0] if genres_list else 'Uncategorized')
-            game['genre'] = primary
+            # Developer + Release Date fresh
+            game['developer'] = ', '.join(data.get('developers', ['N/A']))
+            game['release_date'] = data.get('release_date', {}).get('date', 'N/A')
+            
+            # Anti-Cheat
+            if not game.get('anti_cheat') or game['anti_cheat'] == '-':
+                anti_cheat = "-"
+                for cat in data.get('categories', []):
+                    if cat.get('description') == "Valve Anti-Cheat enabled":
+                        anti_cheat = "VAC"
+                        break
+                game['anti_cheat'] = anti_cheat
 
-        # Anti-Cheat
-        if not game.get('anti_cheat') or game['anti_cheat'] == '-':
-            anti_cheat = "-"
-            for cat in data.get('categories', []):
-                if cat.get('description') == "Valve Anti-Cheat enabled":
-                    anti_cheat = "VAC"
-                    break
-            game['anti_cheat'] = anti_cheat
-
-        # Free check → append note if needed
-        is_free = data.get('is_free', False)
-        price_overview = data.get('price_overview', {})
-        if price_overview:
-            is_free = is_free or price_overview.get('initial', 1) == 0
-        if not is_free:
-            if '(No longer free' not in game.get('notes', ''):
-                game['notes'] = game.get('notes', '') + ' (No longer free! Check price bro)'
+            # Free check → append note nếu cần
+            is_free = data.get('is_free', False)
+            price_overview = data.get('price_overview', {})
+            if price_overview:
+                is_free = is_free or price_overview.get('initial', 1) == 0
+            if not is_free:
+                if '(No longer free' not in game.get('notes', ''):
+                    game['notes'] = game.get('notes', '') + ' (No longer free! Check price bro)'
 
     except Exception as e:
-        print(f"Error fetch {game.get('name', f'Game ID {appid}')}: {e}")
+        print(f"Error details {game.get('name', 'Unknown')}: {e}")
 
     # Reviews fresh
     reviews_url = f"https://store.steampowered.com/appreviews/{appid}?json=1&language=all&purchase_type=all"
@@ -88,8 +101,9 @@ def update_game(game):
             else:
                 game['reviews'] = "No reviews"
     except Exception as e:
-        print(f"Error fetch {game.get('name', f'Game ID {appid}')}: {e}")
-    # Players if key entered
+        print(f"Error reviews {game.get('name', 'Unknown')}: {e}")
+
+    # Players key
     if use_key:
         players_url = f"https://api.steampowered.com/ISteamUserStats/GetNumberOfCurrentPlayers/v1/?key={api_key}&appid={appid}"
         try:
@@ -100,13 +114,13 @@ def update_game(game):
             game['current_players'] = 'Error'
             print(f"Error players {game.get('name', 'Unknown')}: {e}")
 
-    # Notes + Safe default if missing
+    # Notes + Safe default missing
     if not game.get('notes', '').strip():
-        game['notes'] = "No review."
+        game['notes'] = "No review"
     if not game.get('safe'):
         game['safe'] = "?"
-    return game
 
+    return game
 
 def update_all(games):
     is_github_action = os.getenv('GITHUB_ACTIONS') == 'true'
