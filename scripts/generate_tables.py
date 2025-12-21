@@ -67,7 +67,7 @@ for i, game in enumerate(games, 1):
     row = f"| {i} | {thumbnail} | {fancy} | {genre} | {developer} | {release_date} | {desc} | [Link]({link}) | {reviews} | {players} | {anti_cheat} | {notes} | {safe} |\n"
     content.append(row)
 
-with open('/games/all-games.md', 'w', encoding='utf-8') as f:
+with open('games/all-games.md', 'w', encoding='utf-8') as f:
     f.write(''.join(content))
         
 # Genre files
@@ -101,5 +101,5 @@ for genre, game_list in genres.items():
         row = f"| {i} | {thumbnail} | {fancy} | {genre} | {developer} | {release_date} | {desc} | [Link]({link}) | {reviews} | {players} | {anti_cheat} | {notes} | {safe} |\n"
         content_genre.append(row)
 
-    with open(f'/games/{safe_name}.md', 'w', encoding='utf-8') as f:
+    with open(f'games/{safe_name}.md', 'w', encoding='utf-8') as f:
         f.write(''.join(content_genre))
