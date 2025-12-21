@@ -60,7 +60,8 @@ os.makedirs('../games', exist_ok=True)
 # All-games.md – build content list safe
 content = []
 content.append("# All Free-to-Play Games\n\n")
-content.append(f"Total: {len(games)} games – Generated: {updated_time} (from data.json – noob curated :)) )\n\n")
+content.append(f"Total: {len(games)} games")
+content.append(f"– Generated: {updated_time} (from data.json – noob curated :)) )\n\n")
 content.append(header)
 
 for i, game in enumerate(games, 1):
