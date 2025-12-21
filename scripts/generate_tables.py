@@ -9,23 +9,23 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 from steam_fetcher import update_all
 from utils import short_desc, fancy_name
 
+update = update_all(games)
+
 # Read data.json (folder scripts/)
 with open('data.json', 'r', encoding='utf-8') as f:
     games = json.load(f)
-
-update = update_all(games)
-
+    
 # Save data.json fresh
-with open('data.json', 'w', encoding='utf-8') as f:
+with open("data.json", "w", encoding="utf-8") as f:
     json.dump(games, f, indent=4, ensure_ascii=False)
 
 os.makedirs("games", exist_ok=True)
 
+games.sort(key=lambda x: x["name"].lower())
 
-games.sort(key=lambda x: x.get('name', 'Unknown Game').lower())
 genres = defaultdict(list)
 for game in games:
-    genre_key = game.get('genre', 'Uncategorized')
+    genre_key = game.get("genre", "Uncategorized")
     genres[genre_key].append(game)
 
 
@@ -35,7 +35,7 @@ header += "|-----|-----------|-----------|-------|-----------|--------------|---
 updated_time = datetime.now().strftime("%Y-%m-%d %H:%M")
 
 # All-games.md
-with open("games/all-games.md", 'w', encoding='utf-8') as f:
+with open("games/all-games.md", "w", encoding="utf-8") as f:
     f.write("# All Free-to-Play Games\n\n")
     f.write(
         f"Total: {len(games)} games – Updated: {updated_time} (full fresh API + noob notes :)) )\n\n"
@@ -49,7 +49,7 @@ with open("games/all-games.md", 'w', encoding='utf-8') as f:
 for genre, game_list in genres.items():
     game_list.sort(key=lambda x: x['name'].lower())
     safe_name = genre.lower().replace(' ', '-').replace('/', '-').replace(',', '').replace('(', '').replace(')', '')
-    with open(f'games/{safe_name}.md', 'w', encoding='utf-8') as f:
+    with open(f'../games/{safe_name}.md', 'w', encoding='utf-8') as f:
         f.write(f"# {genre} Games\n\n")
         f.write(f"{len(game_list)} games – Updated: {updated_time}\n\n")
         f.write(header)
