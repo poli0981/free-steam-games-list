@@ -436,12 +436,6 @@
   } ,
   {
     "genre"     : "Visual Novel" ,
-    "link:"     : "https://store.steampowered.com/app/3292090/Man_in_a_suit_in_a_building_in_a_city/" ,
-    "safe"      : "?" ,
-    "type_game" : "offline"
-  } ,
-  {
-    "genre"     : "Visual Novel" ,
     "link"      : "https://store.steampowered.com/app/531200/Beneath_The_Cherry_Trees/" ,
     "safe"      : "?" ,
     "type_game" : "offline"
