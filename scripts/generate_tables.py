@@ -40,9 +40,7 @@ updated_time = datetime.now().strftime("%Y-%m-%d %H:%M")
 # All-games.md
 with open("games/all-games.md", "w", encoding="utf-8") as f:
     f.write("# All Free-to-Play Games\n\n")
-    f.write(
-        f"Total: {len(games)} games – Updated: {updated_time} (full fresh API + noob notes :)) )\n\n"
-    )
+    f.write(f"Total: {len(games)} games – Updated: {updated_time} (full fresh API + noob notes :)) )\n\n")
     f.write(header)
     for i, game in enumerate(games, 1):
         name = game.get('name', f"Game {extract_appid(game['link']) or 'NoID'} – Check link bro")
@@ -58,10 +56,8 @@ with open("games/all-games.md", "w", encoding="utf-8") as f:
         notes = game.get('notes', "No review")
         safe = game.get('safe', '?')
 
-        # Fancy name safe
         fancy = fancy_name(name)
 
-        # Thumbnail safe (alt text use name fallback)
         thumbnail = f"![{name}]({header_img})"
 
         row = f"| {i} | {thumbnail} | {fancy} | {genre} | {developer} | {release_date} | {desc} | [Link]({link}) | {reviews} | {players} | {anti_cheat} | {notes} | {safe} |\n"
@@ -89,13 +85,9 @@ for genre, game_list in genres.items():
         notes = game.get('notes', "No review")
         safe = game.get('safe', '?')
 
-        # Fancy name safe
         fancy = fancy_name(name)
 
-        # Thumbnail safe (alt text use name fallback)
         thumbnail = f"![{name}]({header_img})"
 
         row = f"| {i} | {thumbnail} | {fancy} | {genre} | {developer} | {release_date} | {desc} | [Link]({link}) | {reviews} | {players} | {anti_cheat} | {notes} | {safe} |\n"
         f.write(row)
-
-print("Done.")
