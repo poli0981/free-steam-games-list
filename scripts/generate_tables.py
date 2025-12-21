@@ -86,7 +86,7 @@ for i, game in enumerate(games, 1):
     ]
     content.append("| " + " | ".join(row_parts) + " |\n")
 
-with open('../games/all-games.md', 'w', encoding='utf-8') as f:
+with open('games/all-games.md', 'w', encoding='utf-8') as f:
     f.write(''.join(content))
 
 # Genre files
@@ -118,7 +118,7 @@ for genre, game_list in genres.items():
             game.get('safe', '?')
         ]
 
-    with open(f'../games/{safe_name}.md', 'w', encoding='utf-8') as f:
+    with open(f'games/{safe_name}.md', 'w', encoding='utf-8') as f:
         f.write(''.join(content))
 
 print("Tables generated bro! No fetch, pure JSON read – safe & fast 🔥")
