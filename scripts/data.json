@@ -9,7 +9,7 @@
         "anti_cheat": "VAC",
         "reviews": "86% (Very Positive)",
         "notes": "Not play - No review.",
-        "current_players": "1,508,143",
+        "current_players": "1,522,597",
         "header_image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/730/header.jpg?t=1749053861",
         "type_game": "online",
         "desc": "For over two decades, Counter-Strike has offered an elite competitive experience, one shaped by millions of players from across the globe. And now the next chapter in the CS story is about to begin. This is Counter-Strike 2."
@@ -115,7 +115,7 @@
         "developer": "KURO GAMES",
         "release_date": "Apr 28, 2025",
         "reviews": "91% (Very Positive)",
-        "current_players": "12,674",
+        "current_players": "12,709",
         "header_image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3513350/f203fd0d93b74cd157d88d5d8316a581083007bf/header.jpg?t=1765766914",
         "type_game": "online"
     },
@@ -130,7 +130,7 @@
         "release_date": "Dec 15, 2025",
         "anti_cheat": "-",
         "reviews": "88% (Positive)",
-        "current_players": "6",
+        "current_players": "4",
         "header_image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3767300/e676a3538d9ff6c33ac736450677decaa6e5ced6/header.jpg?t=1765850478",
         "type_game": "offline"
     },
@@ -145,7 +145,7 @@
         "release_date": "Dec 15, 2025",
         "anti_cheat": "-",
         "reviews": "72% (Mostly Positive)",
-        "current_players": "12",
+        "current_players": "15",
         "notes": "No play - Not review.",
         "header_image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4143610/380705e9ca12d3a6abfcacf8812247a0ff64cc85/header.jpg?t=1765855479",
         "type_game": "offline"
@@ -158,10 +158,10 @@
         "name": "Where Winds Meet",
         "desc": "Where Winds Meet is an epic Wuxia open-world action-adventure RPG set in ancient China at the tenth century. Players will assume the role of a young sword master as they embark on a journey to uncover the mysteries of their own identity. Let the wind carry your legend on an epic journey to the East!",
         "developer": "Everstone Studio",
-        "release_date": "14 Nov, 2025",
+        "release_date": "Nov 14, 2025",
         "anti_cheat": "-",
         "reviews": "89% (Very Positive)",
-        "current_players": "106,570",
+        "current_players": "107,449",
         "notes": "No play - Not review.",
         "header_image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3564740/6d94b048393d5358690a04a7db99f2c9739c703c/header.jpg?t=1765434865",
         "type_game": "online"
@@ -208,7 +208,7 @@
         "release_date": "Dec 20, 2025",
         "anti_cheat": "-",
         "reviews": "100% (2 user reviews)",
-        "current_players": "7",
+        "current_players": "6",
         "notes": "Not play -> Nor eview."
     },
     {
@@ -238,7 +238,7 @@
         "release_date": "Dec 19, 2025",
         "anti_cheat": "-",
         "reviews": "83% (6 user reviews)",
-        "current_players": "734",
+        "current_players": "760",
         "notes": "Not play -> Nor eview."
     },
     {
@@ -343,7 +343,7 @@
         "release_date": "Dec 19, 2025",
         "anti_cheat": "-",
         "reviews": "94% (Positive)",
-        "current_players": "3",
+        "current_players": "2",
         "notes": "Not play -> Nor eview."
     },
     {
@@ -358,7 +358,7 @@
         "release_date": "Jun 20, 2019",
         "anti_cheat": "-",
         "reviews": "82% (Very Positive)",
-        "current_players": "1,078",
+        "current_players": "1,087",
         "notes": "Not play -> Nor eview."
     },
     {
@@ -373,7 +373,7 @@
         "release_date": "Jul 9, 2013",
         "anti_cheat": "VAC",
         "reviews": "81% (Very Positive)",
-        "current_players": "809,424",
+        "current_players": "814,195",
         "notes": "Not play -> Nor eview."
     },
     {
@@ -403,7 +403,7 @@
         "release_date": "Jul 19, 2010",
         "anti_cheat": "-",
         "reviews": "95% (Very Positive)",
-        "current_players": "10",
+        "current_players": "11",
         "notes": "Not play -> Nor eview."
     },
     {
@@ -418,7 +418,7 @@
         "release_date": "Oct 10, 2007",
         "anti_cheat": "VAC",
         "reviews": "91% (Very Positive)",
-        "current_players": "58,156",
+        "current_players": "58,114",
         "notes": "Not play -> Nor eview."
     },
     {
@@ -493,7 +493,7 @@
         "release_date": "Oct 24, 2025",
         "anti_cheat": "-",
         "reviews": "99% (Very Positive)",
-        "current_players": "3",
+        "current_players": "4",
         "notes": "Not play -> Nor eview."
     },
     {
@@ -673,7 +673,7 @@
         "release_date": "Aug 15, 2025",
         "anti_cheat": "-",
         "reviews": "83% (Very Positive)",
-        "current_players": "0",
+        "current_players": "Error",
         "notes": "Not play -> Nor eview."
     },
     {
@@ -763,7 +763,7 @@
         "release_date": "Jul 29, 2025",
         "anti_cheat": "-",
         "reviews": "83% (Very Positive)",
-        "current_players": "0",
+        "current_players": "1",
         "notes": "Not play -> Nor eview."
     },
     {
@@ -868,7 +868,7 @@
         "release_date": "Oct 21, 2021",
         "anti_cheat": "-",
         "reviews": "73% (Mostly Positive)",
-        "current_players": "129",
+        "current_players": "140",
         "notes": "Not play -> Nor eview."
     },
     {
@@ -1034,7 +1034,7 @@
         "release_date": "Jun 6, 2025",
         "anti_cheat": "-",
         "reviews": "66% (Mixed)",
-        "current_players": "2",
+        "current_players": "3",
         "notes": "Not play -> Nor eview."
     },
     {
@@ -1139,7 +1139,7 @@
         "release_date": "Mar 18, 2025",
         "anti_cheat": "-",
         "reviews": "56% (Mixed)",
-        "current_players": "17",
+        "current_players": "19",
         "notes": "Not play -> Nor eview."
     },
     {
@@ -1154,7 +1154,7 @@
         "release_date": "Feb 18, 2025",
         "anti_cheat": "-",
         "reviews": "68% (Mixed)",
-        "current_players": "2",
+        "current_players": "1",
         "notes": "Not play -> Nor eview."
     },
     {
@@ -1169,7 +1169,7 @@
         "release_date": "Mar 24, 2023",
         "anti_cheat": "-",
         "reviews": "81% (Very Positive)",
-        "current_players": "49",
+        "current_players": "50",
         "notes": "Not play -> Nor eview."
     },
     {
@@ -1184,7 +1184,7 @@
         "release_date": "Oct 12, 2021",
         "anti_cheat": "-",
         "reviews": "86% (Very Positive)",
-        "current_players": "963",
+        "current_players": "976",
         "notes": "Not play -> Nor eview."
     },
     {
@@ -1229,7 +1229,7 @@
         "release_date": "Mar 31, 2023",
         "anti_cheat": "-",
         "reviews": "81% (Very Positive)",
-        "current_players": "15",
+        "current_players": "16",
         "notes": "Not play -> Nor eview."
     },
     {
@@ -1244,7 +1244,7 @@
         "release_date": "Nov 15, 2017",
         "anti_cheat": "-",
         "reviews": "77% (Mostly Positive)",
-        "current_players": "37,091",
+        "current_players": "37,180",
         "notes": "Not play -> Nor eview."
     },
     {
@@ -1256,10 +1256,10 @@
         "desc": "Awaken as an unstoppable warrior and battle alongside your friends in this story-driven free-to-play online action game",
         "header_image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/230410/64cb9deaae9055003fd76ba0f6df6b6fba38e808/header.jpg?t=1765508208",
         "developer": "Digital Extremes",
-        "release_date": "25 Mar, 2013",
+        "release_date": "Mar 25, 2013",
         "anti_cheat": "-",
         "reviews": "88% (Very Positive)",
-        "current_players": "120,982",
+        "current_players": "121,987",
         "notes": "Not play -> Nor eview."
     },
     {
@@ -1272,9 +1272,9 @@
         "desc": "War Thunder is the most comprehensive free-to-play, cross-platform, MMO military game dedicated to aviation, armoured vehicles, and naval craft, from the early 20th century to the most advanced modern combat units. Join now and take part in major battles on land, in the air, and at sea.",
         "header_image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/236390/cab234fd4c0ae2f049e34e7bcb2393679b02bf91/header.jpg?t=1766080526",
         "developer": "Gaijin Entertainment",
-        "release_date": "15 Aug, 2013",
+        "release_date": "Aug 15, 2013",
         "reviews": "73% (Mostly Positive)",
-        "current_players": "115,703",
+        "current_players": "116,998",
         "notes": "Not play -> Nor eview."
     },
     {
@@ -1289,7 +1289,7 @@
         "developer": "Respawn",
         "release_date": "Nov 4, 2020",
         "reviews": "67% (Mixed)",
-        "current_players": "166,440",
+        "current_players": "170,291",
         "notes": "Not play -> Nor eview."
     },
     {
@@ -1302,9 +1302,9 @@
         "desc": "Marvel Rivals is a Super Hero Team-Based PVP Shooter! Assemble an all-star Marvel squad, devise countless strategies by combining powers to form unique Team-Up skills and fight in destructible, ever-changing battlefields across the continually evolving Marvel universe!",
         "header_image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2767030/25684627f97a89843845f1bc1c511fc02be724da/header_alt_assets_2.jpg?t=1765778992",
         "developer": "NetEase Games",
-        "release_date": "Dec 5, 2024",
+        "release_date": "5 Dec, 2024",
         "reviews": "77% (Mostly Positive)",
-        "current_players": "50,685",
+        "current_players": "51,187",
         "notes": "Not play -> Nor eview."
     },
     {
@@ -1320,7 +1320,7 @@
         "release_date": "Apr 9, 2024",
         "anti_cheat": "-",
         "reviews": "71% (Mostly Positive)",
-        "current_players": "444"
+        "current_players": "454"
     },
     {
         "genre": "Battle Royale",
@@ -1334,7 +1334,7 @@
         "release_date": "Sep 28, 2023",
         "anti_cheat": "-",
         "reviews": "68% (Mixed)",
-        "current_players": "5,816",
+        "current_players": "5,827",
         "notes": "Not play -> Nor eview."
     },
     {
@@ -1349,7 +1349,7 @@
         "release_date": "Jul 14, 2020",
         "anti_cheat": "-",
         "reviews": "63% (Mixed)",
-        "current_players": "139",
+        "current_players": "136",
         "notes": "Not play -> Nor eview."
     },
     {
@@ -1364,7 +1364,7 @@
         "release_date": "Oct 18, 2016",
         "anti_cheat": "-",
         "reviews": "89% (Very Positive)",
-        "current_players": "879",
+        "current_players": "876",
         "notes": "Not play -> Nor eview."
     },
     {
@@ -1395,7 +1395,7 @@
         "release_date": "Oct 6, 2017",
         "anti_cheat": "-",
         "reviews": "96% (Overwhelmingly Positive)",
-        "current_players": "608"
+        "current_players": "603"
     },
     {
         "genre": "Visual Novel",
@@ -1508,7 +1508,7 @@
         "release_date": "Jan 23, 2022",
         "anti_cheat": "-",
         "reviews": "95% (Overwhelmingly Positive)",
-        "current_players": "3",
+        "current_players": "1",
         "notes": "Not play -> Nor eview."
     },
     {
@@ -1553,7 +1553,7 @@
         "release_date": "Dec 20, 2025",
         "anti_cheat": "-",
         "reviews": "100% (Positive)",
-        "current_players": "2",
+        "current_players": "1",
         "notes": "Not play -> Nor eview."
     },
     {
