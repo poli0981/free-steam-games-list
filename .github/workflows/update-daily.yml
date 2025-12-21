@@ -2,7 +2,7 @@ name: Daily Steam F2P Update
 
 on:
   schedule:
-    - cron: '0 0 * * *'  # Run every day at 0:00 UTC
+    - cron: '25 0 * * *'
   workflow_dispatch:     # Run manual from GitHub UI
 
 jobs:
@@ -26,8 +26,6 @@ jobs:
         run: ls -la scripts/
 
       - name: Run generate_tables.py (main script)
-        env:
-          STEAM_API_KEY: ${{ secrets.STEAM_API_KEY }}
         run: python scripts/generate_tables.py
 
       - name: Debug after run (check games/ + data.json fresh)
@@ -42,6 +40,6 @@ jobs:
           git config --global user.name "poli0981"
           git config --global user.email "127664709+poli0981@users.noreply.github.com"
           git add games/*.md scripts/data.json
-          git diff --quiet && echo "No changes – skip commit bro" || (git commit -m "Test auto update tables & stats [$(date +'%Y-%m-%d %H:%M')]" && git push)
+          git diff --quiet && echo "No changes – skip commit bro" || (git commit -m "Auto update tables & stats [$(date +'%Y-%m-%d %H:%M')]" && git push)
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
