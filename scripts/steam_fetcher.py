@@ -3,8 +3,6 @@ import random
 import time
 
 import requests
-from tqdm import tqdm  # Pretty progress bar run local, Action to print
-
 # API key từ env
 api_key = os.getenv('STEAM_API_KEY')
 use_key = bool(api_key)
