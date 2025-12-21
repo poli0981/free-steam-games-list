@@ -13,11 +13,11 @@ from utils import short_desc, fancy_name
 with open('data.json', 'r', encoding='utf-8') as f:
     games = json.load(f)
 
+update = update_all(games)
+
 # Save data.json fresh
 with open("data.json", "w", encoding="utf-8") as f:
     json.dump(games, f, indent=4, ensure_ascii=False)
-
-update = update_all(games)
 
 os.makedirs("../games", exist_ok=True)
 
