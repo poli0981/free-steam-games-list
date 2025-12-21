@@ -101,17 +101,16 @@ for genre, game_list in genres.items():
         str(i),
         thumbnail,
         fancy,
-        game_list.get('genre', 'N/A'),
-        game_list.get('developer', 'N/A'),
-        game_list.get('release_date', 'N/A'),
+        game.get('genre', 'N/A'),
+        game.get('developer', 'N/A'),
+        game.get('release_date', 'N/A'),
         short_desc(game.get('desc', 'N/A')),
         f"[Link]({game.get('link', '#')})",
-        game_list.get('reviews', 'N/A'),
-        game_list.get('current_players', 'N/A'),
-        game_list.get('anti_cheat', '-'),
-        game_list.get('notes', "No review"),
-        game_list.get('safe', '?')
-        content.append("| " + " | ".join(row_parts) + " |\n")
+        game.get('reviews', 'N/A'),
+        game.get('current_players', 'N/A'),
+        game.get('anti_cheat', '-'),
+        game.get('notes', "No review"),
+        game.get('safe', '?')
 
     with open(f'../games/{safe_name}.md', 'w', encoding='utf-8') as f:
         f.write(''.join(content))
