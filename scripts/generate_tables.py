@@ -12,7 +12,7 @@ with open('scripts/data.json', 'r', encoding='utf-8') as f:
 
 os.makedirs("games", exist_ok=True)
 
-games.sort(key=lambda x: x[games.get("name")].lower())
+games.sort(key=lambda x: x[games("name")].lower())
 
 genres = defaultdict(list)
 for game in games:
