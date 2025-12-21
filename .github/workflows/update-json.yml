@@ -1,10 +1,10 @@
 name: Daily Steam F2P Update
 
 on:
-  schedule:
-    - cron: '0 0 * * *'  # Run every day at 0:00 UTC
-  workflow_dispatch:     # Run manual from GitHub UI
-
+  workflow_dispatch:
+  push:
+    paths:
+      - 'scripts/data.json'
 jobs:
   update-tables:
     runs-on: ubuntu-latest
