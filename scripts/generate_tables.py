@@ -7,7 +7,7 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 from utils import short_desc, fancy_name
 
 # Read data.json (folder scripts/)
-with open('data.json', 'r', encoding='utf-8') as f:
+with open('scripts/data.json', 'r', encoding='utf-8') as f:
     games = json.load(f)
 
 os.makedirs("games", exist_ok=True)
