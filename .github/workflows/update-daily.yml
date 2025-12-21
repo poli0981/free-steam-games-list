@@ -22,6 +22,9 @@ jobs:
       - name: Debug before run (ls scripts/)
         run: ls -la scripts/
 
+      - name: Install requests
+        run: pip install requests 
+
       - name: Run generate_tables.py (main script)
         run: python scripts/generate_tables.py
 
