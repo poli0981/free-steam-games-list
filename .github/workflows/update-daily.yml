@@ -23,18 +23,15 @@ jobs:
       - name: Run generate_tables.py (pure generate)
         run: python scripts/generate_tables.py
 
-      - name: Debug ls games/
-        run: ls -la games/ || echo "No games folder yet"
+      - name: Debug ls
+        run: |
+          ls -la
+          ls -la games/ || echo "games folder empty bro :("
+          ls -la scripts/
 
       - name: Commit & Push changes (force if needed)
         run: |
           git config --global user.name "poli0981"
           git config --global user.email "127664709+poli0981@users.noreply.github.com"
-          git add games/*.md scripts/data.json          
-          git status
-          if git diff --cached --quiet; then
-            echo "No changes detected – skip commit bro"
-          else
-            git commit -m "Auto regenerate tables (last generated timestamp) [$(date +'%Y-%m-%d %H:%M')]"
-            git push
-          fi
+          git add games/*.md scripts/data.json
+          git diff --quiet && echo "No changes – skip commit" || (git commit -m "Auto update tables & stats [$(date +'%Y-%m-%d')]" && git push)
