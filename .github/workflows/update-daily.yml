@@ -1,45 +1,37 @@
-name: Daily Steam F2P Update
+name: Daily Steam F2P Generate Tables
 
 on:
   schedule:
     - cron: '25 0 * * *'
-  workflow_dispatch:     # Run manual from GitHub UI
+  workflow_dispatch:
 
 jobs:
-  test-update:
+  generate:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repo
+      - name: Checkout repo (with push permission)
         uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GH_TOKEN }}  # PAT repo scope + workflow, add secret GH_TOKEN
 
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
 
-      - name: Install requests
-        run: pip install requests tqdm  # Thêm tqdm nếu dùng pretty local
-
-      - name: Debug before run (ls scripts/)
-        run: ls -la scripts/
-
-      - name: Run generate_tables.py (main script)
-        env:
-          STEAM_API_KEY: ${{ secrets.STEAM_API_KEY }}
+      - name: Run generate_tables.py (pure generate)
         run: python scripts/generate_tables.py
 
-      - name: Debug after run (check games/ + data.json fresh)
-        run: |
-          echo "=== games/ folder ==="
-          ls -la games/ || echo "games/ empty bro :("
-          echo "=== scripts/data.json head ==="
-          head -20 scripts/data.json
+      - name: Debug ls games/
+        run: ls -la games/ || echo "No games folder yet"
 
-      - name: Commit & Push (tables/data fresh)
+      - name: Commit & Push changes (force if needed)
         run: |
           git config --global user.name "poli0981"
           git config --global user.email "127664709+poli0981@users.noreply.github.com"
-          git add games/*.md scripts/data.json
-          git diff --quiet && echo "No changes – skip commit bro" || (git commit -m "Auto update tables & stats [$(date +'%Y-%m-%d %H:%M')]" && git push)
+          git add games/*.md
+          git status
+          git commit -m "Auto generate tables from data.json [$(date +'%Y-%m-%d %H:%M')]" || echo "No changes to commit"
+          git push origin HEAD:main || echo "Push failed bro – check token"
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
