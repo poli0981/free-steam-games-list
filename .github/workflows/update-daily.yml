@@ -19,9 +19,6 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: Install requests
-        run: pip install requests
-
       - name: Debug before run (ls scripts/)
         run: ls -la scripts/
 
