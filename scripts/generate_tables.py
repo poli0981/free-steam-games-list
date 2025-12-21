@@ -19,9 +19,14 @@ update = update_all(games)
 with open("data.json", "w", encoding="utf-8") as f:
     json.dump(games, f, indent=4, ensure_ascii=False)
 
+for game in games:
+    if not game.get('name') or game['name'] in ['Unknown', '', None]:
+        appid = extract_appid(game['link'])
+        game['name'] = f"Game ID {appid or 'Unknown'}" if appid else "Unknown Game (check link bro)"
+
 os.makedirs("games", exist_ok=True)
 
-games.sort(key=lambda x: x["name"].lower())
+games.sort(key=lambda x: x.get('name', 'ZZZ Unknown').lower())
 
 genres = defaultdict(list)
 for game in games:
