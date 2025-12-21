@@ -1,6 +1,6 @@
 # All Free-to-Play Games
 
-Total: 108 games – Generated: 2025-12-21 14:27 (from data.json – noob curated :)) )
+Total: 108 games – Generated: 2025-12-21 14:41 (from data.json – noob curated :)) )
 
 | No. | Thumbnail | Game Name | Genre | Developer | Release Date | Short Desc | Steam Link | Reviews | Players | Anti-Cheat | Notes | Safe |
 |-----|-----------|-----------|-------|-----------|--------------|------------|------------|---------|---------|------------|-------|------|

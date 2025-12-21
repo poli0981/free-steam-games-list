@@ -1,6 +1,6 @@
 # Visual Novel Games
 
-20 games – Generated: 2025-12-21 14:27
+20 games – Generated: 2025-12-21 14:41
 
 | No. | Thumbnail | Game Name | Genre | Developer | Release Date | Short Desc | Steam Link | Reviews | Players | Anti-Cheat | Notes | Safe |
 |-----|-----------|-----------|-------|-----------|--------------|------------|------------|---------|---------|------------|-------|------|
