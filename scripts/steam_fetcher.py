@@ -124,7 +124,7 @@ def update_all(games):
         update_game(game)
         # Random delay between requests (100+ game)
         if idx < len(games) - 1:  # No delay for last request
-            delay = random.uniform(1, 3)
+            delay = random.uniform(1, 8)
             time.sleep(delay)
 
 
