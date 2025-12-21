@@ -33,5 +33,3 @@ jobs:
           git status
           git commit -m "Auto generate tables from data.json [$(date +'%Y-%m-%d %H:%M')]" || echo "No changes to commit"
           git push origin HEAD:main || echo "Push failed bro – check token"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
