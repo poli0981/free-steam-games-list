@@ -77,6 +77,6 @@ with open('../games/top-online.md', 'w', encoding='utf-8') as f:
     f.write("|------|------|---------|--------|-------|-------|------|\n")
     for rank, g in enumerate(online_games[:50], 1):  # Top 50 games
         status = player_status(player_count(g))
-        f.write(f"| {rank} | {g['name']} | {g.get('current_players', 'N/A')} | {status} | {g.get('genre', 'N/A')} | {g.get('notes', '-')} | [Link]({g['link']}) |\n")
+        f.write(f"| {rank} | {g.get('name', 'N/A')} | {g.get('current_players', 'N/A')} | {status} | {g.get('genre', 'N/A')} | {g.get('notes', '-')} | [Link]({g['link']}) |\n")
 
 print("Done bro! Top online generated tại games/top-online.md")
