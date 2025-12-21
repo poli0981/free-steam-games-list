@@ -11,21 +11,21 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
-        with:
-          token: ${{ secrets.GH_TOKEN }}
 
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
 
+      - name: Install requests
+        run: pip install requests tqdm  # Thêm tqdm nếu dùng pretty local
+
       - name: Debug before run (ls scripts/)
         run: ls -la scripts/
 
-      - name: Install requests
-        run: pip install requests 
-
       - name: Run generate_tables.py (main script)
+        env:
+          STEAM_API_KEY: ${{ secrets.STEAM_API_KEY }}
         run: python scripts/generate_tables.py
 
       - name: Debug after run (check games/ + data.json fresh)
