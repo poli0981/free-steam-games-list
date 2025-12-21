@@ -16,16 +16,16 @@ with open('data.json', 'r', encoding='utf-8') as f:
 update = update_all(games)
 
 # Save data.json fresh
-with open("data.json", "w", encoding="utf-8") as f:
+with open('data.json', 'w', encoding='utf-8') as f:
     json.dump(games, f, indent=4, ensure_ascii=False)
 
-os.makedirs("../games", exist_ok=True)
+os.makedirs("games", exist_ok=True)
 
 
-games.sort(key=lambda x: x["name"].lower())
+games.sort(key=lambda x: x['name'].lower())
 genres = defaultdict(list)
 for game in games:
-    genre_key = game.get("genre", "Uncategorized")
+    genre_key = game.get('genre', 'Uncategorized')
     genres[genre_key].append(game)
 
 
@@ -35,7 +35,7 @@ header += "|-----|-----------|-----------|-------|-----------|--------------|---
 updated_time = datetime.now().strftime("%Y-%m-%d %H:%M")
 
 # All-games.md
-with open("../games/all-games.md", "w", encoding="utf-8") as f:
+with open("games/all-games.md", 'w', encoding='utf-8') as f:
     f.write("# All Free-to-Play Games\n\n")
     f.write(
         f"Total: {len(games)} games – Updated: {updated_time} (full fresh API + noob notes :)) )\n\n"
