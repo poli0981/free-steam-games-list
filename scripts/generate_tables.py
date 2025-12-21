@@ -17,9 +17,10 @@ with open('data.json', 'r', encoding='utf-8') as f:
 with open("data.json", "w", encoding="utf-8") as f:
     json.dump(games, f, indent=4, ensure_ascii=False)
 
+update = update_all(games)
+
 os.makedirs("../games", exist_ok=True)
 
-update = update_all(games)
 
 games.sort(key=lambda x: x["name"].lower())
 genres = defaultdict(list)
