@@ -75,7 +75,7 @@ for genre, game_list in genres.items():
         f.write(f"# {genre} Games\n\n")
         f.write(f"{len(game_list)} games – Updated: {updated_time}\n\n")
         f.write(header)
-    for i, game in enumerate(games_list, 1):
+    for i, game in enumerate(game_list, 1):
         name = game.get('name', f"Game {extract_appid(game['link']) or 'NoID'} – Check link bro")
         header_img = game.get('header_image', 'https://via.placeholder.com/460x215?text=No+Image')
         genre = game.get('genre', 'N/A')
