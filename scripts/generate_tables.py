@@ -19,14 +19,9 @@ update = update_all(games)
 with open("data.json", "w", encoding="utf-8") as f:
     json.dump(games, f, indent=4, ensure_ascii=False)
 
-for game in games:
-    if not game.get('name') or game['name'] in ['Unknown', '', None]:
-        appid = extract_appid(game['link'])
-        game['name'] = f"Game ID {appid or 'Unknown'}" if appid else "Unknown Game (check link bro)"
+os.makedirs("/games", exist_ok=True)
 
-os.makedirs("games", exist_ok=True)
-
-games.sort(key=lambda x: x.get('name', 'ZZZ Unknown').lower())
+games.sort(key=lambda x: x["name"].lower())
 
 genres = defaultdict(list)
 for game in games:
@@ -40,7 +35,7 @@ header += "|-----|-----------|-----------|-------|-----------|--------------|---
 updated_time = datetime.now().strftime("%Y-%m-%d %H:%M")
 
 # All-games.md
-with open("games/all-games.md", "w", encoding="utf-8") as f:
+with open("/games/all-games.md", "w", encoding="utf-8") as f:
     f.write("# All Free-to-Play Games\n\n")
     f.write(
         f"Total: {len(games)} games – Updated: {updated_time} (full fresh API + noob notes :)) )\n\n"
@@ -54,7 +49,7 @@ with open("games/all-games.md", "w", encoding="utf-8") as f:
 for genre, game_list in genres.items():
     game_list.sort(key=lambda x: x['name'].lower())
     safe_name = genre.lower().replace(' ', '-').replace('/', '-').replace(',', '').replace('(', '').replace(')', '')
-    with open(f'../games/{safe_name}.md', 'w', encoding='utf-8') as f:
+    with open(f'/games/{safe_name}.md', 'w', encoding='utf-8') as f:
         f.write(f"# {genre} Games\n\n")
         f.write(f"{len(game_list)} games – Updated: {updated_time}\n\n")
         f.write(header)
