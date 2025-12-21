@@ -29,7 +29,7 @@ def extract_appid(link):
 def update_game(game):
     appid = extract_appid(game['link'])
     if not appid:
-        game['name']=game.get('name', 'Invalid Link Game')
+        print(f"Invalid link cho {game.get('name', 'Unknown')}")
         return game
 
     # Fetch details (public)
@@ -38,7 +38,8 @@ def update_game(game):
         resp = requests.get(details_url, timeout=10)
         details = resp.json().get(appid, {})
         data = details['data']
-        game['name'] = data.get('name', game.get('name', f"Game ID {appid} - No Name"))
+        game['name'] = data.get('name', f"Game ID {appid}")
+        game['developer'] = ', '.join(data.get('developers', ['N/A']))
         game['release_date'] = data.get('release_date', {}).get('date', 'N/A')
         game['header_image'] = data.get('header_image', 'https://via.placeholder.com/460x215?text=No+Image')
 
