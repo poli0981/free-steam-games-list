@@ -7,7 +7,7 @@ on:
 
 jobs:
   update-tables:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
