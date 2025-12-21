@@ -1,105 +1,119 @@
 import json
 import os
-import sys
 from collections import defaultdict
 from datetime import datetime
 
-sys.path.append(os.path.dirname(os.path.abspath(__file__)))
-from utils import short_desc, fancy_name
-from steam_fetcher import extract_appid
+# Utils inline (short_desc + fancy_name – no module external)
+def short_desc(full_desc):
+    if not full_desc or full_desc == 'N/A':
+        return 'N/A'
+    sentence = full_desc.split('.')[0].strip()
+    return sentence + '.' if sentence else full_desc[:100] + '...'
 
-# Read data.json (folder scripts/)
-with open('scripts/data.json', 'r', encoding='utf-8') as f:
+def fancy_name(name, max_len=50):
+    if len(name) <= max_len:
+        return name
+    words = name.split()
+    if len(words) > 5:
+        abbr = ''.join(w[0].upper() for w in words if w)
+        return f"{name[:30]}... ({abbr})"
+    return name[:47] + '...'
+
+def extract_appid(link):  # Fallback name nếu missing
+    if '/app/' not in link:
+        return 'NoID'
+    parts = link.split('/app/')[1]
+    return parts.split('/')[0]
+
+# Load data.json
+with open('data.json', 'r', encoding='utf-8') as f:
     games = json.load(f)
 
-os.makedirs("games", exist_ok=True)
+print(f"Loaded {len(games)} games from data.json – generating tables only (no fetch) 🔥")
 
-def review_scores(game):
-    reviews = game.get('reviews', "N/A")
-    if 'N/A' in reviews or "No reviews" in reviews:
+# Sort by reviews descending (best first, fallback 0)
+def review_score(game):
+    reviews = game.get('reviews', 'N/A')
+    if 'N/A' in reviews or 'No reviews' in reviews:
         return 0
     try:
-        percent = int(reviews.split('%')[0])
-        return percent
-    except ValueError:
+        return int(reviews.split('%')[0])
+    except:
         return 0
 
-games.sort(key=review_scores, reverse=True) # Highest
+games.sort(key=review_score, reverse=True)
 
+# Group by genre
 genres = defaultdict(list)
 for game in games:
-    genre_key = game.get("genre", "Uncategorized")
+    genre_key = game.get('genre', 'Uncategorized')
     genres[genre_key].append(game)
 
-
-# New Header
+# Header table
 header = "| No. | Thumbnail | Game Name | Genre | Developer | Release Date | Short Desc | Steam Link | Reviews | Players | Anti-Cheat | Notes | Safe |\n"
 header += "|-----|-----------|-----------|-------|-----------|--------------|------------|------------|---------|---------|------------|-------|------|\n"
-updated_time = datetime.now().strftime("%Y-%m-%d %H:%M")
 
-# All-games.md
+updated_time = datetime.now().strftime('%Y-%m-%d %H:%M')
+
+os.makedirs('../games', exist_ok=True)
+
+# All-games.md – build content list safe
 content = []
 content.append("# All Free-to-Play Games\n\n")
-content.append(f"Total: {len(games)} games – Updated: {updated_time} (fresh noob stats :)) )\n\n")
+content.append(f"Total: {len(games)} games – Generated: {updated_time} (from data.json – noob curated :)) )\n\n")
 content.append(header)
 
 for i, game in enumerate(games, 1):
-    # fallback safe
-    name = game.get('name', f"Game {extract_appid(game['link']) or 'NoID'} – Check link bro")
+    name = game.get('name', f"Game {extract_appid(game.get('link', ''))} – Check link bro")
     header_img = game.get('header_image', 'https://via.placeholder.com/460x215?text=No+Image')
-    genre = game.get('genre', 'N/A')
-    developer = game.get('developer', 'N/A')
-    release_date = game.get('release_date', 'N/A')
-    desc = short_desc(game.get('desc', 'N/A'))
-    link = game['link']
-    reviews = game.get('reviews', 'N/A')
-    players = game.get('current_players', 'N/A')
-    anti_cheat = game.get('anti_cheat', '-')
-    notes = game.get('notes', "No review")
-    safe = game.get('safe', '?')
-
-        # Fancy name safe
+    thumbnail = f"![{name}]({header_img})"
     fancy = fancy_name(name)
 
-        # Thumbnail safe (alt text dùng name fallback)
-    thumbnail = f"![{name}]({header_img})"
+    row_parts = [
+        str(i),
+        thumbnail,
+        fancy,
+        game.get('genre', 'N/A'),
+        game.get('developer', 'N/A'),
+        game.get('release_date', 'N/A'),
+        short_desc(game.get('desc', 'N/A')),
+        f"[Link]({game.get('link', '#')})",
+        game.get('reviews', 'N/A'),
+        game.get('current_players', 'N/A'),
+        game.get('anti_cheat', '-'),
+        game.get('notes', "No review"),
+        game.get('safe', '?')
+    ]
+    content.append("| " + " | ".join(row_parts) + " |\n")
 
-    row = f"| {i} | {thumbnail} | {fancy} | {genre} | {developer} | {release_date} | {desc} | [Link]({link}) | {reviews} | {players} | {anti_cheat} | {notes} | {safe} |\n"
-    content.append(row)
-
-with open('games/all-games.md', 'w', encoding='utf-8') as f:
+with open('../games/all-games.md', 'w', encoding='utf-8') as f:
     f.write(''.join(content))
-        
+
 # Genre files
 for genre, game_list in genres.items():
-    game_list.sort(key=review_scores, reverse=True)
-    safe_name = genre.lower().replace(' ', '-').replace('/', '-').replace(',', '').replace('(', '').replace(')', '')
-    content_genre = []
-    content_genre.append(f"# {genre} Games\n\n")
-    content_genre.append(f"{len(game_list)} games – Updated: {updated_time}\n\n")
-    content_genre.append(header)
+    game_list.sort(key=review_score, reverse=True)
+    safe_name = genre.lower().replace(' ', '-').replace('/', '-').replace(',', '')
+    content = []
+    content.append(f"# {genre} Games\n\n")
+    content.append(f"{len(game_list)} games – Generated: {updated_time}\n\n")
+    content.append(header)
     for i, game in enumerate(game_list, 1):
-        name = game.get('name', f"Game {extract_appid(game['link']) or 'NoID'} – Check link bro")
-        header_img = game.get('header_image', 'https://via.placeholder.com/460x215?text=No+Image')
-        genre = game.get('genre', 'N/A')
-        developer = game.get('developer', 'N/A')
-        release_date = game.get('release_date', 'N/A')
-        desc = short_desc(game.get('desc', 'N/A'))
-        link = game['link']
-        reviews = game.get('reviews', 'N/A')
-        players = game.get('current_players', 'N/A')
-        anti_cheat = game.get('anti_cheat', '-')
-        notes = game.get('notes', "No review")
-        safe = game.get('safe', '?')
+        str(i),
+        thumbnail,
+        fancy,
+        game_list.get('genre', 'N/A'),
+        game_list.get('developer', 'N/A'),
+        game_list.get('release_date', 'N/A'),
+        short_desc(game.get('desc', 'N/A')),
+        f"[Link]({game.get('link', '#')})",
+        game_list.get('reviews', 'N/A'),
+        game_list.get('current_players', 'N/A'),
+        game_list.get('anti_cheat', '-'),
+        game_list.get('notes', "No review"),
+        game_list.get('safe', '?')
+        content.append("| " + " | ".join(row_parts) + " |\n")
 
-        # Fancy name safe
-        fancy = fancy_name(name)
+    with open(f'../games/{safe_name}.md', 'w', encoding='utf-8') as f:
+        f.write(''.join(content))
 
-        # Thumbnail safe (alt text dùng name fallback)
-        thumbnail = f"![{name}]({header_img})"
-
-        row = f"| {i} | {thumbnail} | {fancy} | {genre} | {developer} | {release_date} | {desc} | [Link]({link}) | {reviews} | {players} | {anti_cheat} | {notes} | {safe} |\n"
-        content_genre.append(row)
-
-    with open(f'games/{safe_name}.md', 'w', encoding='utf-8') as f:
-        f.write(''.join(content_genre))
+print("Tables generated bro! No fetch, pure JSON read – safe & fast 🔥")
