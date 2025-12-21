@@ -9,7 +9,7 @@
         "anti_cheat": "VAC",
         "reviews": "86% (Very Positive)",
         "notes": "Not play - No review.",
-        "current_players": "1,058,452",
+        "current_players": "1,508,143",
         "header_image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/730/header.jpg?t=1749053861",
         "type_game": "online",
         "desc": "For over two decades, Counter-Strike has offered an elite competitive experience, one shaped by millions of players from across the globe. And now the next chapter in the CS story is about to begin. This is Counter-Strike 2."
@@ -54,7 +54,7 @@
         "release_date": "Dec 18, 2025",
         "anti_cheat": "-",
         "reviews": "100% (5 user reviews)",
-        "current_players": "3",
+        "current_players": "6",
         "notes": "Not play - No review.",
         "header_image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3728650/84b3bd337bde9cd8f6d2a899755f020516f1f0d3/header.jpg?t=1766046693",
         "type_game": "online"
@@ -115,7 +115,7 @@
         "developer": "KURO GAMES",
         "release_date": "Apr 28, 2025",
         "reviews": "91% (Very Positive)",
-        "current_players": "10,300",
+        "current_players": "12,674",
         "header_image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3513350/f203fd0d93b74cd157d88d5d8316a581083007bf/header.jpg?t=1765766914",
         "type_game": "online"
     },
@@ -130,7 +130,7 @@
         "release_date": "Dec 15, 2025",
         "anti_cheat": "-",
         "reviews": "88% (Positive)",
-        "current_players": "5",
+        "current_players": "6",
         "header_image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3767300/e676a3538d9ff6c33ac736450677decaa6e5ced6/header.jpg?t=1765850478",
         "type_game": "offline"
     },
@@ -144,8 +144,8 @@
         "developer": "historia Inc.",
         "release_date": "Dec 15, 2025",
         "anti_cheat": "-",
-        "reviews": "73% (Mostly Positive)",
-        "current_players": "19",
+        "reviews": "72% (Mostly Positive)",
+        "current_players": "12",
         "notes": "No play - Not review.",
         "header_image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4143610/380705e9ca12d3a6abfcacf8812247a0ff64cc85/header.jpg?t=1765855479",
         "type_game": "offline"
@@ -158,10 +158,10 @@
         "name": "Where Winds Meet",
         "desc": "Where Winds Meet is an epic Wuxia open-world action-adventure RPG set in ancient China at the tenth century. Players will assume the role of a young sword master as they embark on a journey to uncover the mysteries of their own identity. Let the wind carry your legend on an epic journey to the East!",
         "developer": "Everstone Studio",
-        "release_date": "Nov 14, 2025",
+        "release_date": "14 Nov, 2025",
         "anti_cheat": "-",
         "reviews": "89% (Very Positive)",
-        "current_players": "85,718",
+        "current_players": "106,570",
         "notes": "No play - Not review.",
         "header_image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3564740/6d94b048393d5358690a04a7db99f2c9739c703c/header.jpg?t=1765434865",
         "type_game": "online"
@@ -176,7 +176,7 @@
         "release_date": "Dec 6, 2025",
         "anti_cheat": "-",
         "reviews": "100% (Positive)",
-        "current_players": "1",
+        "current_players": "0",
         "notes": "Not play - No review.",
         "header_image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4065050/4a9ec257361c68e16b5d720e64edba89a8ac24d8/header.jpg?t=1765008132",
         "type_game": "offline"
@@ -207,8 +207,8 @@
         "developer": "GameCode",
         "release_date": "Dec 20, 2025",
         "anti_cheat": "-",
-        "reviews": "100% (1 user reviews)",
-        "current_players": "9",
+        "reviews": "100% (2 user reviews)",
+        "current_players": "7",
         "notes": "Not play -> Nor eview."
     },
     {
@@ -223,7 +223,7 @@
         "release_date": "Dec 19, 2025",
         "anti_cheat": "-",
         "reviews": "100% (8 user reviews)",
-        "current_players": "1",
+        "current_players": "0",
         "notes": "Not play -> Nor eview."
     },
     {
@@ -238,7 +238,7 @@
         "release_date": "Dec 19, 2025",
         "anti_cheat": "-",
         "reviews": "83% (6 user reviews)",
-        "current_players": "793",
+        "current_players": "734",
         "notes": "Not play -> Nor eview."
     },
     {
@@ -253,7 +253,7 @@
         "release_date": "Dec 19, 2025",
         "anti_cheat": "-",
         "reviews": "100% (2 user reviews)",
-        "current_players": "0",
+        "current_players": "1",
         "notes": "Not play -> Nor eview."
     },
     {
@@ -343,7 +343,7 @@
         "release_date": "Dec 19, 2025",
         "anti_cheat": "-",
         "reviews": "94% (Positive)",
-        "current_players": "0",
+        "current_players": "3",
         "notes": "Not play -> Nor eview."
     },
     {
@@ -358,7 +358,7 @@
         "release_date": "Jun 20, 2019",
         "anti_cheat": "-",
         "reviews": "82% (Very Positive)",
-        "current_players": "842",
+        "current_players": "1,078",
         "notes": "Not play -> Nor eview."
     },
     {
@@ -373,7 +373,7 @@
         "release_date": "Jul 9, 2013",
         "anti_cheat": "VAC",
         "reviews": "81% (Very Positive)",
-        "current_players": "614,069",
+        "current_players": "809,424",
         "notes": "Not play -> Nor eview."
     },
     {
@@ -388,7 +388,7 @@
         "release_date": "Nov 28, 2018",
         "anti_cheat": "-",
         "reviews": "47% (Mixed)",
-        "current_players": "38",
+        "current_players": "50",
         "notes": "Not play -> Nor eview."
     },
     {
@@ -403,7 +403,7 @@
         "release_date": "Jul 19, 2010",
         "anti_cheat": "-",
         "reviews": "95% (Very Positive)",
-        "current_players": "13",
+        "current_players": "10",
         "notes": "Not play -> Nor eview."
     },
     {
@@ -418,7 +418,7 @@
         "release_date": "Oct 10, 2007",
         "anti_cheat": "VAC",
         "reviews": "91% (Very Positive)",
-        "current_players": "51,001",
+        "current_players": "58,156",
         "notes": "Not play -> Nor eview."
     },
     {
@@ -463,7 +463,7 @@
         "release_date": "Oct 24, 2025",
         "anti_cheat": "-",
         "reviews": "89% (Very Positive)",
-        "current_players": "5",
+        "current_players": "4",
         "notes": "Not play -> Nor eview."
     },
     {
@@ -493,7 +493,7 @@
         "release_date": "Oct 24, 2025",
         "anti_cheat": "-",
         "reviews": "99% (Very Positive)",
-        "current_players": "1",
+        "current_players": "3",
         "notes": "Not play -> Nor eview."
     },
     {
@@ -524,7 +524,7 @@
         "release_date": "Jan 28, 2025",
         "anti_cheat": "-",
         "reviews": "84% (Very Positive)",
-        "current_players": "0"
+        "current_players": "1"
     },
     {
         "genre": "Visual Novel",
@@ -538,7 +538,7 @@
         "release_date": "Sep 30, 2025",
         "anti_cheat": "-",
         "reviews": "100% (Positive)",
-        "current_players": "0",
+        "current_players": "1",
         "notes": "Not play -> Nor eview."
     },
     {
@@ -718,7 +718,7 @@
         "release_date": "Aug 2, 2025",
         "anti_cheat": "-",
         "reviews": "91% (Very Positive)",
-        "current_players": "2",
+        "current_players": "1",
         "notes": "Not play -> Nor eview."
     },
     {
@@ -733,7 +733,7 @@
         "release_date": "Aug 13, 2025",
         "anti_cheat": "-",
         "reviews": "96% (Very Positive)",
-        "current_players": "2",
+        "current_players": "0",
         "notes": "Not play -> Nor eview."
     },
     {
@@ -808,7 +808,7 @@
         "release_date": "Jul 31, 2025",
         "anti_cheat": "-",
         "reviews": "100% (Positive)",
-        "current_players": "1",
+        "current_players": "0",
         "notes": "Not play -> Nor eview."
     },
     {
@@ -868,7 +868,7 @@
         "release_date": "Oct 21, 2021",
         "anti_cheat": "-",
         "reviews": "73% (Mostly Positive)",
-        "current_players": "104",
+        "current_players": "129",
         "notes": "Not play -> Nor eview."
     },
     {
@@ -944,7 +944,7 @@
         "release_date": "Jun 5, 2025",
         "anti_cheat": "-",
         "reviews": "96% (Very Positive)",
-        "current_players": "0",
+        "current_players": "3",
         "notes": "Not play -> Nor eview."
     },
     {
@@ -989,7 +989,7 @@
         "release_date": "Jun 17, 2025",
         "anti_cheat": "-",
         "reviews": "82% (Positive)",
-        "current_players": "0",
+        "current_players": "1",
         "notes": "Not play -> Nor eview."
     },
     {
@@ -1034,7 +1034,7 @@
         "release_date": "Jun 6, 2025",
         "anti_cheat": "-",
         "reviews": "66% (Mixed)",
-        "current_players": "4",
+        "current_players": "2",
         "notes": "Not play -> Nor eview."
     },
     {
@@ -1110,7 +1110,7 @@
         "release_date": "Feb 10, 2025",
         "anti_cheat": "-",
         "reviews": "90% (Very Positive)",
-        "current_players": "1"
+        "current_players": "2"
     },
     {
         "genre": "Horror",
@@ -1139,7 +1139,7 @@
         "release_date": "Mar 18, 2025",
         "anti_cheat": "-",
         "reviews": "56% (Mixed)",
-        "current_players": "11",
+        "current_players": "17",
         "notes": "Not play -> Nor eview."
     },
     {
@@ -1154,7 +1154,7 @@
         "release_date": "Feb 18, 2025",
         "anti_cheat": "-",
         "reviews": "68% (Mixed)",
-        "current_players": "1",
+        "current_players": "2",
         "notes": "Not play -> Nor eview."
     },
     {
@@ -1169,7 +1169,7 @@
         "release_date": "Mar 24, 2023",
         "anti_cheat": "-",
         "reviews": "81% (Very Positive)",
-        "current_players": "46",
+        "current_players": "49",
         "notes": "Not play -> Nor eview."
     },
     {
@@ -1181,10 +1181,10 @@
         "desc": "You must stay alive in this horror/puzzle adventure. Try to survive the vengeful toys waiting for you in the abandoned toy factory. Use your GrabPack to hack electrical circuits or nab anything from afar. Explore the mysterious facility... and don't get caught.",
         "header_image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1721470/header.jpg?t=1755873139",
         "developer": "Mob Entertainment",
-        "release_date": "12 Oct, 2021",
+        "release_date": "Oct 12, 2021",
         "anti_cheat": "-",
         "reviews": "86% (Very Positive)",
-        "current_players": "762",
+        "current_players": "963",
         "notes": "Not play -> Nor eview."
     },
     {
@@ -1215,7 +1215,7 @@
         "release_date": "Nov 27, 2024",
         "anti_cheat": "-",
         "reviews": "97% (Overwhelmingly Positive)",
-        "current_players": "3"
+        "current_players": "5"
     },
     {
         "genre": "Bullet Hell",
@@ -1229,7 +1229,7 @@
         "release_date": "Mar 31, 2023",
         "anti_cheat": "-",
         "reviews": "81% (Very Positive)",
-        "current_players": "11",
+        "current_players": "15",
         "notes": "Not play -> Nor eview."
     },
     {
@@ -1241,10 +1241,10 @@
         "desc": "Immerse yourself in thrilling naval battles and assemble an armada of over 600 ships from the first half of the 20th century — from stealthy destroyers to gigantic battleships. Change the look of your ship, choose upgrades to suit your play style, and go into battle with other players!",
         "header_image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/552990/ac7b926dde8748e62e4f156bc9cdbb47c0ac83e8/header.jpg?t=1765897495",
         "developer": "Wargaming Group Limited",
-        "release_date": "15 Nov, 2017",
+        "release_date": "Nov 15, 2017",
         "anti_cheat": "-",
         "reviews": "77% (Mostly Positive)",
-        "current_players": "31,380",
+        "current_players": "37,091",
         "notes": "Not play -> Nor eview."
     },
     {
@@ -1256,10 +1256,10 @@
         "desc": "Awaken as an unstoppable warrior and battle alongside your friends in this story-driven free-to-play online action game",
         "header_image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/230410/64cb9deaae9055003fd76ba0f6df6b6fba38e808/header.jpg?t=1765508208",
         "developer": "Digital Extremes",
-        "release_date": "Mar 25, 2013",
+        "release_date": "25 Mar, 2013",
         "anti_cheat": "-",
         "reviews": "88% (Very Positive)",
-        "current_players": "99,706",
+        "current_players": "120,982",
         "notes": "Not play -> Nor eview."
     },
     {
@@ -1272,9 +1272,9 @@
         "desc": "War Thunder is the most comprehensive free-to-play, cross-platform, MMO military game dedicated to aviation, armoured vehicles, and naval craft, from the early 20th century to the most advanced modern combat units. Join now and take part in major battles on land, in the air, and at sea.",
         "header_image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/236390/cab234fd4c0ae2f049e34e7bcb2393679b02bf91/header.jpg?t=1766080526",
         "developer": "Gaijin Entertainment",
-        "release_date": "Aug 15, 2013",
+        "release_date": "15 Aug, 2013",
         "reviews": "73% (Mostly Positive)",
-        "current_players": "72,601",
+        "current_players": "115,703",
         "notes": "Not play -> Nor eview."
     },
     {
@@ -1289,7 +1289,7 @@
         "developer": "Respawn",
         "release_date": "Nov 4, 2020",
         "reviews": "67% (Mixed)",
-        "current_players": "111,034",
+        "current_players": "166,440",
         "notes": "Not play -> Nor eview."
     },
     {
@@ -1304,7 +1304,7 @@
         "developer": "NetEase Games",
         "release_date": "Dec 5, 2024",
         "reviews": "77% (Mostly Positive)",
-        "current_players": "53,346",
+        "current_players": "50,685",
         "notes": "Not play -> Nor eview."
     },
     {
@@ -1320,7 +1320,7 @@
         "release_date": "Apr 9, 2024",
         "anti_cheat": "-",
         "reviews": "71% (Mostly Positive)",
-        "current_players": "419"
+        "current_players": "444"
     },
     {
         "genre": "Battle Royale",
@@ -1334,7 +1334,7 @@
         "release_date": "Sep 28, 2023",
         "anti_cheat": "-",
         "reviews": "68% (Mixed)",
-        "current_players": "4,546",
+        "current_players": "5,816",
         "notes": "Not play -> Nor eview."
     },
     {
@@ -1349,7 +1349,7 @@
         "release_date": "Jul 14, 2020",
         "anti_cheat": "-",
         "reviews": "63% (Mixed)",
-        "current_players": "140",
+        "current_players": "139",
         "notes": "Not play -> Nor eview."
     },
     {
@@ -1364,7 +1364,7 @@
         "release_date": "Oct 18, 2016",
         "anti_cheat": "-",
         "reviews": "89% (Very Positive)",
-        "current_players": "853",
+        "current_players": "879",
         "notes": "Not play -> Nor eview."
     },
     {
@@ -1380,7 +1380,7 @@
         "anti_cheat": "-",
         "notes": " (No longer free! Check price bro)",
         "reviews": "74% (Mostly Positive)",
-        "current_players": "36"
+        "current_players": "34"
     },
     {
         "genre": "Visual Novel",
@@ -1395,7 +1395,7 @@
         "release_date": "Oct 6, 2017",
         "anti_cheat": "-",
         "reviews": "96% (Overwhelmingly Positive)",
-        "current_players": "466"
+        "current_players": "608"
     },
     {
         "genre": "Visual Novel",
@@ -1425,7 +1425,7 @@
         "release_date": "Jan 30, 2023",
         "anti_cheat": "-",
         "reviews": "78% (Mostly Positive)",
-        "current_players": "2"
+        "current_players": "6"
     },
     {
         "genre": "Point-and-Click",
@@ -1440,7 +1440,7 @@
         "release_date": "Apr 23, 2024",
         "anti_cheat": "-",
         "reviews": "82% (Very Positive)",
-        "current_players": "36,610"
+        "current_players": "38,423"
     },
     {
         "genre": "Adventure",
@@ -1479,7 +1479,7 @@
         "type_game": "online",
         "notes": "Beautiful Girl, Gacha outfit",
         "reviews": "83% (Very Positive)",
-        "current_players": "1,958"
+        "current_players": "2,408"
     },
     {
         "genre": "Fighting",
@@ -1493,7 +1493,7 @@
         "release_date": "Mar 30, 2015",
         "anti_cheat": "-",
         "reviews": "69% (Mixed)",
-        "current_players": "68",
+        "current_players": "55",
         "notes": "Not play -> Nor eview."
     },
     {
@@ -1508,7 +1508,7 @@
         "release_date": "Jan 23, 2022",
         "anti_cheat": "-",
         "reviews": "95% (Overwhelmingly Positive)",
-        "current_players": "0",
+        "current_players": "3",
         "notes": "Not play -> Nor eview."
     },
     {
@@ -1523,43 +1523,97 @@
         "release_date": "Apr 24, 2015",
         "anti_cheat": "-",
         "reviews": "96% (Overwhelmingly Positive)",
-        "current_players": "26",
+        "current_players": "23",
         "notes": "Not play -> Nor eview."
     },
-  {
-     "genre": "Hack & Slash",
-     "link": "https://store.steampowered.com/app/3908260/Beat_of_Rebellion/",
-     "safe": "?",
-    "type_game": "offline"
-  },
-  {
-    "genre": "Horror",
-    "link": "https://store.steampowered.com/app/4169300/Operation_Outbreak/",
-    "safe": "?",
-    "type_game": "offline"
-  },
-  {
-    "genre": "Building",
-    "link": "https://store.steampowered.com/app/3427760/Modularity/",
-    "safe": "?",
-    "type_game": "offline"
-  },
-  {
-    "genre": "Puzzle",
-    "link": "https://store.steampowered.com/app/4159900/Stories_Adrift_Wake__Prologue/",
-    "safe": "?",
-    "type_game": "offline"
-  },
-  {
-    "genre" : "Action RPG",
-    "link": "https://store.steampowered.com/app/2845940/Path_of_the_Tank/",
-    "safe": "?",
-    "type_game": "offline"
-  },
-  {
-    "genre": "Platformer",
-    "link": "https://store.steampowered.com/app/1810630/Lokko/",
-    "safe": "?",
-    "type_name": "offline"
-  }
+    {
+        "genre": "Hack & Slash",
+        "link": "https://store.steampowered.com/app/3908260/Beat_of_Rebellion/",
+        "safe": "?",
+        "type_game": "offline",
+        "name": "Beat of Rebellion",
+        "desc": "Be the voice out of the choir! Beat of Rebellion is an isometric rhythm-based Hack &amp; Slash. Follow the Beat, create your own Melodies and unleash devastating combos to fight against a totalitarian regime in a cyberpunk city.",
+        "header_image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3908260/28b5fee91ef5c50662746b67f627d7ccdb059409/header.jpg?t=1766248592",
+        "developer": "CyberRaccoons",
+        "release_date": "Dec 20, 2025",
+        "anti_cheat": "-",
+        "reviews": "100% (1 user reviews)",
+        "current_players": "0",
+        "notes": "Not play -> Nor eview."
+    },
+    {
+        "genre": "Horror",
+        "link": "https://store.steampowered.com/app/4169300/Operation_Outbreak/",
+        "safe": "?",
+        "type_game": "offline",
+        "name": "Operation: Outbreak",
+        "desc": "Your squad's vehicle exploded during a patrol, and you're the only survivor. The enemy is unusual this time. A virus has turned the city into a warzone of the undead. Get to the exfil in time or die trying. A free-to-play short and intense FPS zombie survival horror game.",
+        "header_image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4169300/a2cf775d809f6682c3fcb227267acbd913ba2b0b/header.jpg?t=1766224769",
+        "developer": "DREADMITH Games",
+        "release_date": "Dec 20, 2025",
+        "anti_cheat": "-",
+        "reviews": "100% (Positive)",
+        "current_players": "2",
+        "notes": "Not play -> Nor eview."
+    },
+    {
+        "genre": "Building",
+        "link": "https://store.steampowered.com/app/3427760/Modularity/",
+        "safe": "?",
+        "type_game": "offline",
+        "name": "Modularity",
+        "desc": "Modularity is a resource management builder game where the player stitches together flesh and metal in creative ways to construct bigger and greater amalgamations.",
+        "header_image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3427760/header.jpg?t=1766187546",
+        "developer": "William Skou Heidemann - Tech Lead, Tim Meincke Bramming - Programmer, Jakob Ehlers - Programmer, Christina Desypri - Lead Game Designer, Lykke Legendre Dahl - UX Designer, Nicholas Demetroulakos - Producer",
+        "release_date": "Dec 19, 2025",
+        "anti_cheat": "-",
+        "reviews": "100% (5 user reviews)",
+        "current_players": "1",
+        "notes": "Not play -> Nor eview."
+    },
+    {
+        "genre": "Puzzle",
+        "link": "https://store.steampowered.com/app/4159900/Stories_Adrift_Wake__Prologue/",
+        "safe": "?",
+        "type_game": "offline",
+        "name": "Stories Adrift: Wake - Prologue",
+        "desc": "As the new owner of a book boat, you are entrusted with returning a single page of a book and embarks on a journey through a world both mysterious and familiar. By solving intricate puzzles and piecing together scattered clues, you uncover the truth of the world - and of yourself.",
+        "header_image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4159900/53857f68038f921ee59440eec5867a6731d17aad/header.jpg?t=1766224803",
+        "developer": "HIATUS Productions",
+        "release_date": "Dec 20, 2025",
+        "anti_cheat": "-",
+        "reviews": "50% (2 user reviews)",
+        "current_players": "0",
+        "notes": "Not play -> Nor eview."
+    },
+    {
+        "genre": "Action RPG",
+        "link": "https://store.steampowered.com/app/2845940/Path_of_the_Tank/",
+        "safe": "?",
+        "type_game": "offline",
+        "name": "Path of the Tank",
+        "desc": "Can you challenge oblivion itself?",
+        "header_image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2845940/8ecfa2fed0479408164785e80ccd45faef4d44fe/header.jpg?t=1766168949",
+        "developer": "Niceas de Atenas",
+        "release_date": "Dec 19, 2025",
+        "anti_cheat": "-",
+        "reviews": "67% (3 user reviews)",
+        "current_players": "0",
+        "notes": "Not play -> Nor eview."
+    },
+    {
+        "genre": "Platformer",
+        "link": "https://store.steampowered.com/app/1810630/Lokko/",
+        "safe": "?",
+        "type_name": "offline",
+        "name": "Lokko",
+        "desc": "Lokko is a bouncy, action-packed 3D platformer where YOU create the adventure! In Lokko, players race to deliver hot pizzas around the globe while battling the sinister Goobol fast-food corporation.",
+        "header_image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1810630/header.jpg?t=1766065241",
+        "developer": "Appy Monkeys Software Pvt. Ltd.",
+        "release_date": "Dec 18, 2025",
+        "anti_cheat": "-",
+        "reviews": "100% (1 user reviews)",
+        "current_players": "0",
+        "notes": "Not play -> Nor eview."
+    }
 ]
