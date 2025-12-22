@@ -43,7 +43,7 @@ jobs:
           git status
           git add games/top-online.md
           git diff --staged --quiet && echo "No changes – skip commit" || (git commit -m "Auto update tables online 
-          top & stats [$(date +'%Y-%m-%d')]" && git push)
+          top & stats [$(date +'%Y-%m-%d')]" && git pull --rebase && git push)
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
 

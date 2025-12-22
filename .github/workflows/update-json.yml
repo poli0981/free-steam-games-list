@@ -40,6 +40,7 @@ jobs:
           git config --global user.name "poli0981"
           git config --global user.email "127664709+poli0981@users.noreply.github.com"
           git add games/*.md scripts/data.json
-          git diff --staged --quiet && echo "No changes – skip commit" || (git commit -m "JSON updated [$(date +'%Y-%m-%d')]" && git push)
+          git diff --staged --quiet && echo "No changes – skip commit" || (git commit -m "JSON updated [$(date 
+          +'%Y-%m-%d')]" && git pull --rebase && git push)
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
