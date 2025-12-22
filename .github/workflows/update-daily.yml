@@ -1,13 +1,15 @@
 name: Daily Steam F2P Generate Tables
 
 on:
+  workflow_run:
+    workflows:
+      ['Auto update JSON']
+    types: [completed]
   workflow_dispatch:
-  push:
-    paths:
-      - 'scripts/data.json'
 
 jobs:
   generate:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo (with push permission)
@@ -36,6 +38,7 @@ jobs:
           git config --global user.name "poli0981"
           git config --global user.email "127664709+poli0981@users.noreply.github.com"
           git add games/*.md scripts/data.json
+          git status
           if git diff --cached --quiet; then
             echo "No diff detected"
             git commit --allow-empty -m "Auto regenerate tables (timestamp update) [$(date +'%Y-%m-%d %H:%M')]" || echo "Empty commit skip"

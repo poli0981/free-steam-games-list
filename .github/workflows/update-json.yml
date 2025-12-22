@@ -1,4 +1,4 @@
-name: Daily Steam F2P Update
+name: Auto update JSON
 
 on:
   workflow_dispatch:

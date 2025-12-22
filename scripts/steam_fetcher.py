@@ -109,7 +109,7 @@ def update_game(game):
 
     # Notes + Safe default nếu missing
     if not game.get('notes', '').strip():
-        game['notes'] = "Not play -> Nor eview."
+        game['notes'] = "Not play - No review."
     if not game.get('safe'):
         game['safe'] = "?"
 
