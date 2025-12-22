@@ -5,11 +5,11 @@
         "safe": "y",
         "name": "Counter-Strike 2",
         "developer": "Valve",
-        "release_date": "21 Aug, 2012",
+        "release_date": "Aug 21, 2012",
         "anti_cheat": "VAC",
         "reviews": "86% (Very Positive)",
         "notes": "Not play - No review.",
-        "current_players": "0",
+        "current_players": "1,054,539",
         "desc": "For over two decades, Counter-Strike has offered an elite competitive experience, one shaped by millions of players from across the globe. And now the next chapter in the CS story is about to begin. This is Counter-Strike 2.",
         "header_image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/730/header.jpg?t=1749053861",
         "type_game": "online"
@@ -54,7 +54,7 @@
         "release_date": "Dec 18, 2025",
         "anti_cheat": "-",
         "reviews": "88% (8 user reviews)",
-        "current_players": "2",
+        "current_players": "1",
         "notes": "Not play - No review.",
         "header_image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3728650/84b3bd337bde9cd8f6d2a899755f020516f1f0d3/header.jpg?t=1766046693",
         "type_game": "online"
@@ -115,7 +115,7 @@
         "developer": "KURO GAMES",
         "release_date": "Apr 28, 2025",
         "reviews": "91% (Very Positive)",
-        "current_players": "0",
+        "current_players": "10,751",
         "header_image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3513350/f203fd0d93b74cd157d88d5d8316a581083007bf/header.jpg?t=1765766914",
         "type_game": "online"
     },
@@ -130,7 +130,7 @@
         "release_date": "Dec 15, 2025",
         "anti_cheat": "-",
         "reviews": "84% (Positive)",
-        "current_players": "0",
+        "current_players": "2",
         "header_image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3767300/e676a3538d9ff6c33ac736450677decaa6e5ced6/header.jpg?t=1765850478",
         "type_game": "offline"
     },
@@ -145,7 +145,7 @@
         "release_date": "Dec 15, 2025",
         "anti_cheat": "-",
         "reviews": "71% (Mostly Positive)",
-        "current_players": "0",
+        "current_players": "13",
         "notes": "No play - Not review.",
         "header_image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4143610/380705e9ca12d3a6abfcacf8812247a0ff64cc85/header.jpg?t=1765855479",
         "type_game": "offline"
@@ -158,10 +158,10 @@
         "name": "Where Winds Meet",
         "desc": "Where Winds Meet is an epic Wuxia open-world action-adventure RPG set in ancient China at the tenth century. Players will assume the role of a young sword master as they embark on a journey to uncover the mysteries of their own identity. Let the wind carry your legend on an epic journey to the East!",
         "developer": "Everstone Studio",
-        "release_date": "14 Nov, 2025",
+        "release_date": "Nov 14, 2025",
         "anti_cheat": "-",
         "reviews": "89% (Very Positive)",
-        "current_players": "0",
+        "current_players": "86,572",
         "notes": "No play - Not review.",
         "header_image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3564740/6d94b048393d5358690a04a7db99f2c9739c703c/header.jpg?t=1765434865",
         "type_game": "online"
@@ -208,7 +208,7 @@
         "release_date": "Dec 20, 2025",
         "anti_cheat": "-",
         "reviews": "67% (3 user reviews)",
-        "current_players": "0",
+        "current_players": "6",
         "notes": "Not play - No review."
     },
     {
@@ -223,7 +223,7 @@
         "release_date": "Dec 19, 2025",
         "anti_cheat": "-",
         "reviews": "91% (Positive)",
-        "current_players": "0",
+        "current_players": "1",
         "notes": "Not play - No review."
     },
     {
@@ -238,7 +238,7 @@
         "release_date": "Dec 19, 2025",
         "anti_cheat": "-",
         "reviews": "89% (9 user reviews)",
-        "current_players": "0",
+        "current_players": "530",
         "notes": "Not play - No review."
     },
     {
@@ -253,7 +253,7 @@
         "release_date": "Dec 19, 2025",
         "anti_cheat": "-",
         "reviews": "100% (2 user reviews)",
-        "current_players": "0",
+        "current_players": "1",
         "notes": "Not play - No review."
     },
     {
@@ -358,7 +358,7 @@
         "release_date": "Jun 20, 2019",
         "anti_cheat": "-",
         "reviews": "82% (Very Positive)",
-        "current_players": "891",
+        "current_players": "943",
         "notes": "Not play - No review."
     },
     {
@@ -370,10 +370,10 @@
         "desc": "Every day, millions of players worldwide enter battle as one of over a hundred Dota heroes. And no matter if it's their 10th hour of play or 1,000th, there's always something new to discover. With regular updates that ensure a constant evolution of gameplay, features, and heroes, Dota 2 has taken on a life of its own.",
         "header_image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/570/header.jpg?t=1766010373",
         "developer": "Valve",
-        "release_date": "Jul 9, 2013",
+        "release_date": "9 Jul, 2013",
         "anti_cheat": "VAC",
         "reviews": "81% (Very Positive)",
-        "current_players": "577,093",
+        "current_players": "561,615",
         "notes": "Not play - No review."
     },
     {
@@ -388,7 +388,7 @@
         "release_date": "Nov 28, 2018",
         "anti_cheat": "-",
         "reviews": "47% (Mixed)",
-        "current_players": "34",
+        "current_players": "21",
         "notes": "Not play - No review."
     },
     {
@@ -418,7 +418,7 @@
         "release_date": "10 Oct, 2007",
         "anti_cheat": "VAC",
         "reviews": "91% (Very Positive)",
-        "current_players": "49,498",
+        "current_players": "49,119",
         "notes": "Not play - No review."
     },
     {
@@ -434,7 +434,7 @@
         "release_date": "Oct 31, 2025",
         "anti_cheat": "-",
         "reviews": "98% (Very Positive)",
-        "current_players": "1"
+        "current_players": "0"
     },
     {
         "genre": "Horror",
@@ -568,7 +568,7 @@
         "release_date": "Sep 25, 2025",
         "anti_cheat": "-",
         "reviews": "91% (Very Positive)",
-        "current_players": "6",
+        "current_players": "5",
         "notes": "Not play - No review."
     },
     {
@@ -868,7 +868,7 @@
         "release_date": "Oct 21, 2021",
         "anti_cheat": "-",
         "reviews": "73% (Mostly Positive)",
-        "current_players": "102",
+        "current_players": "88",
         "notes": "Not play - No review."
     },
     {
@@ -929,7 +929,7 @@
         "release_date": "Jul 11, 2025",
         "anti_cheat": "-",
         "reviews": "67% (Mixed)",
-        "current_players": "1",
+        "current_players": "0",
         "notes": "Not play -> No review."
     },
     {
@@ -989,7 +989,7 @@
         "release_date": "Jun 17, 2025",
         "anti_cheat": "-",
         "reviews": "82% (Positive)",
-        "current_players": "0",
+        "current_players": "1",
         "notes": "Not play - No review."
     },
     {
@@ -1139,7 +1139,7 @@
         "release_date": "Mar 18, 2025",
         "anti_cheat": "-",
         "reviews": "56% (Mixed)",
-        "current_players": "17",
+        "current_players": "16",
         "notes": "Not play - No review."
     },
     {
@@ -1154,7 +1154,7 @@
         "release_date": "Feb 18, 2025",
         "anti_cheat": "-",
         "reviews": "68% (Mixed)",
-        "current_players": "1",
+        "current_players": "2",
         "notes": "Not play - No review."
     },
     {
@@ -1169,7 +1169,7 @@
         "release_date": "Mar 24, 2023",
         "anti_cheat": "-",
         "reviews": "81% (Very Positive)",
-        "current_players": "45",
+        "current_players": "46",
         "notes": "Not play - No review."
     },
     {
@@ -1184,7 +1184,7 @@
         "release_date": "Oct 12, 2021",
         "anti_cheat": "-",
         "reviews": "86% (Very Positive)",
-        "current_players": "761",
+        "current_players": "741",
         "notes": "Not play - No review."
     },
     {
@@ -1226,7 +1226,7 @@
         "desc": "Something is wrong in the Kaguraverse. An anomaly is creating tears in space-time and causing parallel worlds to converge! It falls upon Kagura-chan, the vessel of the Goddess's will, to get to the bottom of this crisis and return order to the various universes.",
         "header_image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2348120/header.jpg?t=1749282347",
         "developer": "Big Bang Studio, Swaps4 Productions",
-        "release_date": "Mar 31, 2023",
+        "release_date": "31 Mar, 2023",
         "anti_cheat": "-",
         "reviews": "81% (Very Positive)",
         "current_players": "12",
@@ -1244,7 +1244,7 @@
         "release_date": "Nov 15, 2017",
         "anti_cheat": "-",
         "reviews": "77% (Mostly Positive)",
-        "current_players": "34,974",
+        "current_players": "0",
         "notes": "Not play - No review."
     },
     {
@@ -1259,7 +1259,7 @@
         "release_date": "Mar 25, 2013",
         "anti_cheat": "-",
         "reviews": "88% (Very Positive)",
-        "current_players": "100,308",
+        "current_players": "98,394",
         "notes": "Not play - No review."
     },
     {
@@ -1274,7 +1274,7 @@
         "developer": "Gaijin Entertainment",
         "release_date": "Aug 15, 2013",
         "reviews": "73% (Mostly Positive)",
-        "current_players": "82,262",
+        "current_players": "79,775",
         "notes": "Not play - No review."
     },
     {
@@ -1289,7 +1289,7 @@
         "developer": "Respawn",
         "release_date": "Nov 4, 2020",
         "reviews": "67% (Mixed)",
-        "current_players": "105,375",
+        "current_players": "0",
         "notes": "Not play - No review."
     },
     {
@@ -1304,7 +1304,7 @@
         "developer": "NetEase Games",
         "release_date": "Dec 5, 2024",
         "reviews": "77% (Mostly Positive)",
-        "current_players": "39,670",
+        "current_players": "39,209",
         "notes": "Not play - No review."
     },
     {
@@ -1320,7 +1320,7 @@
         "release_date": "Apr 9, 2024",
         "anti_cheat": "-",
         "reviews": "71% (Mostly Positive)",
-        "current_players": "361"
+        "current_players": "367"
     },
     {
         "genre": "Battle Royale",
@@ -1334,7 +1334,7 @@
         "release_date": "Sep 28, 2023",
         "anti_cheat": "-",
         "reviews": "68% (Mixed)",
-        "current_players": "4,468",
+        "current_players": "4,357",
         "notes": "Not play - No review."
     },
     {
@@ -1349,7 +1349,7 @@
         "release_date": "Jul 14, 2020",
         "anti_cheat": "-",
         "reviews": "63% (Mixed)",
-        "current_players": "138",
+        "current_players": "139",
         "notes": "Not play - No review."
     },
     {
@@ -1364,7 +1364,7 @@
         "release_date": "Oct 18, 2016",
         "anti_cheat": "-",
         "reviews": "89% (Very Positive)",
-        "current_players": "875",
+        "current_players": "899",
         "notes": "Not play - No review."
     },
     {
@@ -1380,7 +1380,7 @@
         "anti_cheat": "-",
         "notes": " (No longer free! Check price bro)",
         "reviews": "74% (Mostly Positive)",
-        "current_players": "27"
+        "current_players": "26"
     },
     {
         "genre": "Visual Novel",
@@ -1395,7 +1395,7 @@
         "release_date": "Oct 6, 2017",
         "anti_cheat": "-",
         "reviews": "96% (Overwhelmingly Positive)",
-        "current_players": "502"
+        "current_players": "0"
     },
     {
         "genre": "Visual Novel",
@@ -1440,7 +1440,7 @@
         "release_date": "Apr 23, 2024",
         "anti_cheat": "-",
         "reviews": "82% (Very Positive)",
-        "current_players": "35,563"
+        "current_players": "35,399"
     },
     {
         "genre": "Adventure",
@@ -1469,7 +1469,7 @@
         "release_date": "Aug 19, 2020",
         "anti_cheat": "-",
         "reviews": "95% (Very Positive)",
-        "current_players": "2",
+        "current_players": "1",
         "notes": "Not play - No review."
     },
     {
@@ -1491,7 +1491,7 @@
         "desc": "The free version of the final word in fighting entertainment - DEAD OR ALIVE 5 Last Round!",
         "header_image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/311730/header.jpg?t=1729051743",
         "developer": "Team NINJA, KOEI TECMO GAMES CO., LTD.",
-        "release_date": "30 Mar, 2015",
+        "release_date": "Mar 30, 2015",
         "anti_cheat": "-",
         "reviews": "69% (Mixed)",
         "current_players": "55",
@@ -1629,7 +1629,7 @@
         "release_date": "Dec 15, 2025",
         "anti_cheat": "-",
         "reviews": "96% (Very Positive)",
-        "current_players": "3",
+        "current_players": "5",
         "notes": "Not play - No review."
     },
     {
@@ -1659,7 +1659,7 @@
         "release_date": "17 Oct, 2017",
         "anti_cheat": "-",
         "reviews": "81% (Very Positive)",
-        "current_players": "6,710",
+        "current_players": "6,432",
         "notes": "Not play - No review."
     },
     {
@@ -1689,7 +1689,7 @@
         "release_date": "Mar 5, 2025",
         "anti_cheat": "-",
         "reviews": "98% (Overwhelmingly Positive)",
-        "current_players": "177,007",
+        "current_players": "175,798",
         "notes": "Not play - No review."
     },
     {
@@ -1719,7 +1719,7 @@
         "release_date": "Apr 2, 2024",
         "anti_cheat": "-",
         "reviews": "67% (Mixed)",
-        "current_players": "1,396",
+        "current_players": "1,355",
         "notes": "Not play - No review."
     },
     {
@@ -1734,7 +1734,7 @@
         "release_date": "Jan 31, 2012",
         "anti_cheat": "-",
         "reviews": "79% (Mostly Positive)",
-        "current_players": "637",
+        "current_players": "632",
         "notes": "Not play - No review."
     },
     {
@@ -1749,7 +1749,7 @@
         "release_date": "Nov 3, 2021",
         "anti_cheat": "-",
         "reviews": "90% (Very Positive)",
-        "current_players": "3,725",
+        "current_players": "3,681",
         "notes": "Not play - No review."
     },
     {
@@ -1764,7 +1764,7 @@
         "release_date": "Feb 24, 2016",
         "anti_cheat": "-",
         "reviews": "92% (Very Positive)",
-        "current_players": "1,525",
+        "current_players": "1,483",
         "notes": "Not play - No review."
     },
     {
@@ -1779,7 +1779,7 @@
         "release_date": "Feb 2, 2023",
         "anti_cheat": "-",
         "reviews": "78% (Mostly Positive)",
-        "current_players": "1,108",
+        "current_players": "1,121",
         "notes": "Not play - No review."
     },
     {
@@ -1794,7 +1794,7 @@
         "release_date": "Feb 19, 2020",
         "anti_cheat": "-",
         "reviews": "80% (Mostly Positive)",
-        "current_players": "1,516",
+        "current_players": "1,508",
         "notes": "Not play - No review."
     },
     {
