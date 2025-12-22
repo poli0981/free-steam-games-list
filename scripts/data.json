@@ -5,11 +5,11 @@
         "safe": "y",
         "name": "Counter-Strike 2",
         "developer": "Valve",
-        "release_date": "Aug 21, 2012",
+        "release_date": "21 Aug, 2012",
         "anti_cheat": "VAC",
         "reviews": "86% (Very Positive)",
         "notes": "Not play - No review.",
-        "current_players": "1,522,597",
+        "current_players": "681,045",
         "header_image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/730/header.jpg?t=1749053861",
         "type_game": "online",
         "desc": "For over two decades, Counter-Strike has offered an elite competitive experience, one shaped by millions of players from across the globe. And now the next chapter in the CS story is about to begin. This is Counter-Strike 2."
@@ -23,9 +23,9 @@
         "developer": "Primal Crowd",
         "release_date": "Dec 19, 2025",
         "anti_cheat": "-",
-        "reviews": "87% (Positive)",
+        "reviews": "81% (Positive)",
         "notes": "Not play - No review.",
-        "current_players": "1",
+        "current_players": "0",
         "header_image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3659080/83980241cde882382e0e6d8f66c8b44a926a324e/header.jpg?t=1766134821",
         "type_game": "offline"
     },
@@ -53,8 +53,8 @@
         "developer": "Nimblebites",
         "release_date": "Dec 18, 2025",
         "anti_cheat": "-",
-        "reviews": "100% (5 user reviews)",
-        "current_players": "6",
+        "reviews": "83% (6 user reviews)",
+        "current_players": "1",
         "notes": "Not play - No review.",
         "header_image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3728650/84b3bd337bde9cd8f6d2a899755f020516f1f0d3/header.jpg?t=1766046693",
         "type_game": "online"
@@ -68,7 +68,7 @@
         "developer": "NEAT ESCAPE",
         "release_date": "Dec 19, 2025",
         "anti_cheat": "-",
-        "reviews": "100% (4 user reviews)",
+        "reviews": "100% (7 user reviews)",
         "current_players": "0",
         "notes": "Not play - No review.",
         "header_image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4195500/03f091bb70181c5b86c5a87d236be2dcf11c5383/header.jpg?t=1766193329",
@@ -99,7 +99,7 @@
         "release_date": "Dec 19, 2025",
         "anti_cheat": "-",
         "reviews": "86% (7 user reviews)",
-        "current_players": "1",
+        "current_players": "0",
         "notes": "Not play - No review.",
         "header_image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3686730/43f0963848025cd38af90f2190617ca445745d1a/header.jpg?t=1766143065",
         "type_game": "offline"
@@ -115,7 +115,7 @@
         "developer": "KURO GAMES",
         "release_date": "Apr 28, 2025",
         "reviews": "91% (Very Positive)",
-        "current_players": "12,709",
+        "current_players": "7,640",
         "header_image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3513350/f203fd0d93b74cd157d88d5d8316a581083007bf/header.jpg?t=1765766914",
         "type_game": "online"
     },
@@ -129,8 +129,8 @@
         "developer": "Byking RooKIES",
         "release_date": "Dec 15, 2025",
         "anti_cheat": "-",
-        "reviews": "88% (Positive)",
-        "current_players": "4",
+        "reviews": "83% (Positive)",
+        "current_players": "2",
         "header_image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3767300/e676a3538d9ff6c33ac736450677decaa6e5ced6/header.jpg?t=1765850478",
         "type_game": "offline"
     },
@@ -145,7 +145,7 @@
         "release_date": "Dec 15, 2025",
         "anti_cheat": "-",
         "reviews": "72% (Mostly Positive)",
-        "current_players": "15",
+        "current_players": "3",
         "notes": "No play - Not review.",
         "header_image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4143610/380705e9ca12d3a6abfcacf8812247a0ff64cc85/header.jpg?t=1765855479",
         "type_game": "offline"
@@ -158,10 +158,10 @@
         "name": "Where Winds Meet",
         "desc": "Where Winds Meet is an epic Wuxia open-world action-adventure RPG set in ancient China at the tenth century. Players will assume the role of a young sword master as they embark on a journey to uncover the mysteries of their own identity. Let the wind carry your legend on an epic journey to the East!",
         "developer": "Everstone Studio",
-        "release_date": "Nov 14, 2025",
+        "release_date": "14 Nov, 2025",
         "anti_cheat": "-",
         "reviews": "89% (Very Positive)",
-        "current_players": "107,449",
+        "current_players": "74,188",
         "notes": "No play - Not review.",
         "header_image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3564740/6d94b048393d5358690a04a7db99f2c9739c703c/header.jpg?t=1765434865",
         "type_game": "online"
@@ -207,8 +207,8 @@
         "developer": "GameCode",
         "release_date": "Dec 20, 2025",
         "anti_cheat": "-",
-        "reviews": "100% (2 user reviews)",
-        "current_players": "6",
+        "reviews": "67% (3 user reviews)",
+        "current_players": "2",
         "notes": "Not play -> Nor eview."
     },
     {
@@ -222,8 +222,8 @@
         "developer": "Mnemonic Monkey Studio",
         "release_date": "Dec 19, 2025",
         "anti_cheat": "-",
-        "reviews": "100% (8 user reviews)",
-        "current_players": "0",
+        "reviews": "100% (9 user reviews)",
+        "current_players": "2",
         "notes": "Not play -> Nor eview."
     },
     {
@@ -237,8 +237,8 @@
         "developer": "Upside Down 9",
         "release_date": "Dec 19, 2025",
         "anti_cheat": "-",
-        "reviews": "83% (6 user reviews)",
-        "current_players": "760",
+        "reviews": "89% (9 user reviews)",
+        "current_players": "159",
         "notes": "Not play -> Nor eview."
     },
     {
@@ -253,7 +253,7 @@
         "release_date": "Dec 19, 2025",
         "anti_cheat": "-",
         "reviews": "100% (2 user reviews)",
-        "current_players": "1",
+        "current_players": "0",
         "notes": "Not play -> Nor eview."
     },
     {
@@ -267,7 +267,7 @@
         "developer": "Winking Corvid",
         "release_date": "Dec 9, 2025",
         "anti_cheat": "-",
-        "reviews": "100% (9 user reviews)",
+        "reviews": "100% (Positive)",
         "current_players": "0",
         "notes": "Not play -> Nor eview."
     },
@@ -342,8 +342,8 @@
         "developer": "PoligonTechnologies",
         "release_date": "Dec 19, 2025",
         "anti_cheat": "-",
-        "reviews": "94% (Positive)",
-        "current_players": "2",
+        "reviews": "89% (Positive)",
+        "current_players": "3",
         "notes": "Not play -> Nor eview."
     },
     {
@@ -358,7 +358,7 @@
         "release_date": "Jun 20, 2019",
         "anti_cheat": "-",
         "reviews": "82% (Very Positive)",
-        "current_players": "1,087",
+        "current_players": "635",
         "notes": "Not play -> Nor eview."
     },
     {
@@ -373,7 +373,7 @@
         "release_date": "Jul 9, 2013",
         "anti_cheat": "VAC",
         "reviews": "81% (Very Positive)",
-        "current_players": "814,195",
+        "current_players": "412,269",
         "notes": "Not play -> Nor eview."
     },
     {
@@ -388,7 +388,7 @@
         "release_date": "Nov 28, 2018",
         "anti_cheat": "-",
         "reviews": "47% (Mixed)",
-        "current_players": "50",
+        "current_players": "24",
         "notes": "Not play -> Nor eview."
     },
     {
@@ -418,7 +418,7 @@
         "release_date": "Oct 10, 2007",
         "anti_cheat": "VAC",
         "reviews": "91% (Very Positive)",
-        "current_players": "58,114",
+        "current_players": "55,928",
         "notes": "Not play -> Nor eview."
     },
     {
@@ -463,7 +463,7 @@
         "release_date": "Oct 24, 2025",
         "anti_cheat": "-",
         "reviews": "89% (Very Positive)",
-        "current_players": "4",
+        "current_players": "6",
         "notes": "Not play -> Nor eview."
     },
     {
@@ -493,7 +493,7 @@
         "release_date": "Oct 24, 2025",
         "anti_cheat": "-",
         "reviews": "99% (Very Positive)",
-        "current_players": "4",
+        "current_players": "1",
         "notes": "Not play -> Nor eview."
     },
     {
@@ -524,7 +524,7 @@
         "release_date": "Jan 28, 2025",
         "anti_cheat": "-",
         "reviews": "84% (Very Positive)",
-        "current_players": "1"
+        "current_players": "0"
     },
     {
         "genre": "Visual Novel",
@@ -538,7 +538,7 @@
         "release_date": "Sep 30, 2025",
         "anti_cheat": "-",
         "reviews": "100% (Positive)",
-        "current_players": "1",
+        "current_players": "0",
         "notes": "Not play -> Nor eview."
     },
     {
@@ -568,7 +568,7 @@
         "release_date": "Sep 25, 2025",
         "anti_cheat": "-",
         "reviews": "91% (Very Positive)",
-        "current_players": "2",
+        "current_players": "3",
         "notes": "Not play -> Nor eview."
     },
     {
@@ -643,7 +643,7 @@
         "release_date": "Aug 31, 2025",
         "anti_cheat": "-",
         "reviews": "97% (Very Positive)",
-        "current_players": "0",
+        "current_players": "1",
         "notes": "Not play -> Nor eview."
     },
     {
@@ -673,7 +673,7 @@
         "release_date": "Aug 15, 2025",
         "anti_cheat": "-",
         "reviews": "83% (Very Positive)",
-        "current_players": "Error",
+        "current_players": "0",
         "notes": "Not play -> Nor eview."
     },
     {
@@ -718,7 +718,7 @@
         "release_date": "Aug 2, 2025",
         "anti_cheat": "-",
         "reviews": "91% (Very Positive)",
-        "current_players": "1",
+        "current_players": "0",
         "notes": "Not play -> Nor eview."
     },
     {
@@ -730,7 +730,7 @@
         "desc": "eat, sleep, work, repeat.",
         "header_image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3912310/644445f03769dd1a669e70d48dcdeedb7a7d011f/header.jpg?t=1755082502",
         "developer": "ln404",
-        "release_date": "Aug 13, 2025",
+        "release_date": "13 Aug, 2025",
         "anti_cheat": "-",
         "reviews": "96% (Very Positive)",
         "current_players": "0",
@@ -763,7 +763,7 @@
         "release_date": "Jul 29, 2025",
         "anti_cheat": "-",
         "reviews": "83% (Very Positive)",
-        "current_players": "1",
+        "current_players": "0",
         "notes": "Not play -> Nor eview."
     },
     {
@@ -777,7 +777,7 @@
         "developer": "Bingxiao Luo",
         "release_date": "Apr 29, 2025",
         "anti_cheat": "-",
-        "reviews": "91% (Positive)",
+        "reviews": "92% (Positive)",
         "current_players": "0",
         "notes": "Not play -> Nor eview."
     },
@@ -808,7 +808,7 @@
         "release_date": "Jul 31, 2025",
         "anti_cheat": "-",
         "reviews": "100% (Positive)",
-        "current_players": "0",
+        "current_players": "1",
         "notes": "Not play -> Nor eview."
     },
     {
@@ -865,10 +865,10 @@
         "desc": "Honkai Impact 3rd - Ultimate anime action made real! HD cel-shading, infinite combos, explosive feedback... Experience next-gen real-time action! An original tale told across media, immersive stage events, star-studded voice cast... Become part of the legend!",
         "header_image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1671200/header.jpg?t=1761192528",
         "developer": "COGNOSPHERE PTE. LTD.",
-        "release_date": "Oct 21, 2021",
+        "release_date": "21 Oct, 2021",
         "anti_cheat": "-",
         "reviews": "73% (Mostly Positive)",
-        "current_players": "140",
+        "current_players": "95",
         "notes": "Not play -> Nor eview."
     },
     {
@@ -944,7 +944,7 @@
         "release_date": "Jun 5, 2025",
         "anti_cheat": "-",
         "reviews": "96% (Very Positive)",
-        "current_players": "3",
+        "current_players": "0",
         "notes": "Not play -> Nor eview."
     },
     {
@@ -989,7 +989,7 @@
         "release_date": "Jun 17, 2025",
         "anti_cheat": "-",
         "reviews": "82% (Positive)",
-        "current_players": "1",
+        "current_players": "0",
         "notes": "Not play -> Nor eview."
     },
     {
@@ -1003,7 +1003,7 @@
         "developer": "Pablo Mata Gámez, Alejandro Roca Vande Sype, Rūta Katkeviča, Huyen Dieu Nguyen, Semih Teke, Valentijn Van Severen, Jaime Fenoy Aguilera, Maxine Desmet",
         "release_date": "Jun 19, 2025",
         "anti_cheat": "-",
-        "reviews": "85% (Positive)",
+        "reviews": "86% (Positive)",
         "current_players": "0",
         "notes": "Not play -> Nor eview."
     },
@@ -1034,7 +1034,7 @@
         "release_date": "Jun 6, 2025",
         "anti_cheat": "-",
         "reviews": "66% (Mixed)",
-        "current_players": "3",
+        "current_players": "2",
         "notes": "Not play -> Nor eview."
     },
     {
@@ -1061,7 +1061,7 @@
         "desc": "Your end is my beginning. A short psychological visual novel with exploration and puzzle elements... it already lays shattered.",
         "header_image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3689140/9f6b9447898c6eef2c2f9d49fa3f6a2453ecd945/header.jpg?t=1746697542",
         "developer": "Static Remains",
-        "release_date": "May 8, 2025",
+        "release_date": "8 May, 2025",
         "anti_cheat": "-",
         "reviews": "98% (Very Positive)",
         "current_players": "0",
@@ -1110,7 +1110,7 @@
         "release_date": "Feb 10, 2025",
         "anti_cheat": "-",
         "reviews": "90% (Very Positive)",
-        "current_players": "2"
+        "current_players": "0"
     },
     {
         "genre": "Horror",
@@ -1124,7 +1124,7 @@
         "release_date": "May 1, 2025",
         "anti_cheat": "-",
         "reviews": "50% (Mixed)",
-        "current_players": "1",
+        "current_players": "0",
         "notes": "Not play -> Nor eview."
     },
     {
@@ -1139,7 +1139,7 @@
         "release_date": "Mar 18, 2025",
         "anti_cheat": "-",
         "reviews": "56% (Mixed)",
-        "current_players": "19",
+        "current_players": "9",
         "notes": "Not play -> Nor eview."
     },
     {
@@ -1169,7 +1169,7 @@
         "release_date": "Mar 24, 2023",
         "anti_cheat": "-",
         "reviews": "81% (Very Positive)",
-        "current_players": "50",
+        "current_players": "34",
         "notes": "Not play -> Nor eview."
     },
     {
@@ -1184,7 +1184,7 @@
         "release_date": "Oct 12, 2021",
         "anti_cheat": "-",
         "reviews": "86% (Very Positive)",
-        "current_players": "976",
+        "current_players": "732",
         "notes": "Not play -> Nor eview."
     },
     {
@@ -1198,7 +1198,7 @@
         "developer": "ENerd_Official",
         "release_date": "Jan 31, 2025",
         "anti_cheat": "-",
-        "reviews": "82% (Positive)",
+        "reviews": "83% (Positive)",
         "current_players": "0",
         "notes": "Not play -> Nor eview."
     },
@@ -1215,7 +1215,7 @@
         "release_date": "Nov 27, 2024",
         "anti_cheat": "-",
         "reviews": "97% (Overwhelmingly Positive)",
-        "current_players": "5"
+        "current_players": "4"
     },
     {
         "genre": "Bullet Hell",
@@ -1229,7 +1229,7 @@
         "release_date": "Mar 31, 2023",
         "anti_cheat": "-",
         "reviews": "81% (Very Positive)",
-        "current_players": "16",
+        "current_players": "7",
         "notes": "Not play -> Nor eview."
     },
     {
@@ -1244,7 +1244,7 @@
         "release_date": "Nov 15, 2017",
         "anti_cheat": "-",
         "reviews": "77% (Mostly Positive)",
-        "current_players": "37,180",
+        "current_players": "29,749",
         "notes": "Not play -> Nor eview."
     },
     {
@@ -1259,7 +1259,7 @@
         "release_date": "Mar 25, 2013",
         "anti_cheat": "-",
         "reviews": "88% (Very Positive)",
-        "current_players": "121,987",
+        "current_players": "97,425",
         "notes": "Not play -> Nor eview."
     },
     {
@@ -1274,7 +1274,7 @@
         "developer": "Gaijin Entertainment",
         "release_date": "Aug 15, 2013",
         "reviews": "73% (Mostly Positive)",
-        "current_players": "116,998",
+        "current_players": "47,876",
         "notes": "Not play -> Nor eview."
     },
     {
@@ -1287,9 +1287,9 @@
         "desc": "Apex Legends is the award-winning, free-to-play Hero Shooter from Respawn Entertainment. Master an ever-growing roster of legendary characters with powerful abilities, and experience strategic squad play and innovative gameplay in the next evolution of Hero Shooter and Battle Royale.",
         "header_image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1172470/6ae90b012e725a93622c3694d9d866b886cfd0f8/header.jpg?t=1762457261",
         "developer": "Respawn",
-        "release_date": "Nov 4, 2020",
+        "release_date": "4 Nov, 2020",
         "reviews": "67% (Mixed)",
-        "current_players": "170,291",
+        "current_players": "48,437",
         "notes": "Not play -> Nor eview."
     },
     {
@@ -1302,9 +1302,9 @@
         "desc": "Marvel Rivals is a Super Hero Team-Based PVP Shooter! Assemble an all-star Marvel squad, devise countless strategies by combining powers to form unique Team-Up skills and fight in destructible, ever-changing battlefields across the continually evolving Marvel universe!",
         "header_image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2767030/25684627f97a89843845f1bc1c511fc02be724da/header_alt_assets_2.jpg?t=1765778992",
         "developer": "NetEase Games",
-        "release_date": "5 Dec, 2024",
+        "release_date": "Dec 5, 2024",
         "reviews": "77% (Mostly Positive)",
-        "current_players": "51,187",
+        "current_players": "106,290",
         "notes": "Not play -> Nor eview."
     },
     {
@@ -1320,7 +1320,7 @@
         "release_date": "Apr 9, 2024",
         "anti_cheat": "-",
         "reviews": "71% (Mostly Positive)",
-        "current_players": "454"
+        "current_players": "529"
     },
     {
         "genre": "Battle Royale",
@@ -1334,7 +1334,7 @@
         "release_date": "Sep 28, 2023",
         "anti_cheat": "-",
         "reviews": "68% (Mixed)",
-        "current_players": "5,827",
+        "current_players": "5,203",
         "notes": "Not play -> Nor eview."
     },
     {
@@ -1349,7 +1349,7 @@
         "release_date": "Jul 14, 2020",
         "anti_cheat": "-",
         "reviews": "63% (Mixed)",
-        "current_players": "136",
+        "current_players": "146",
         "notes": "Not play -> Nor eview."
     },
     {
@@ -1364,7 +1364,7 @@
         "release_date": "Oct 18, 2016",
         "anti_cheat": "-",
         "reviews": "89% (Very Positive)",
-        "current_players": "876",
+        "current_players": "1,163",
         "notes": "Not play -> Nor eview."
     },
     {
@@ -1376,11 +1376,11 @@
         "desc": "For 3-8 players and an audience of thousands! Your phones or tablets are your controllers! The game of terrible drawings and hilariously wrong answers.",
         "header_image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/442070/header.jpg?t=1728584390",
         "developer": "Jackbox Games, Inc.",
-        "release_date": "Jun 20, 2016",
+        "release_date": "20 Jun, 2016",
         "anti_cheat": "-",
         "notes": " (No longer free! Check price bro)",
         "reviews": "74% (Mostly Positive)",
-        "current_players": "34"
+        "current_players": "101"
     },
     {
         "genre": "Visual Novel",
@@ -1395,7 +1395,7 @@
         "release_date": "Oct 6, 2017",
         "anti_cheat": "-",
         "reviews": "96% (Overwhelmingly Positive)",
-        "current_players": "603"
+        "current_players": "601"
     },
     {
         "genre": "Visual Novel",
@@ -1425,7 +1425,7 @@
         "release_date": "Jan 30, 2023",
         "anti_cheat": "-",
         "reviews": "78% (Mostly Positive)",
-        "current_players": "6"
+        "current_players": "2"
     },
     {
         "genre": "Clicker",
@@ -1440,7 +1440,7 @@
         "release_date": "Apr 23, 2024",
         "anti_cheat": "-",
         "reviews": "82% (Very Positive)",
-        "current_players": "38,423"
+        "current_players": "42,474"
     },
     {
         "genre": "Adventure",
@@ -1469,7 +1469,7 @@
         "release_date": "Aug 19, 2020",
         "anti_cheat": "-",
         "reviews": "95% (Very Positive)",
-        "current_players": "0",
+        "current_players": "1",
         "notes": "Not play -> Nor eview."
     },
     {
@@ -1479,7 +1479,7 @@
         "type_game": "online",
         "notes": "Beautiful Girl, Gacha outfit",
         "reviews": "83% (Very Positive)",
-        "current_players": "2,408"
+        "current_players": "1,616"
     },
     {
         "genre": "Fighting",
@@ -1493,7 +1493,7 @@
         "release_date": "Mar 30, 2015",
         "anti_cheat": "-",
         "reviews": "69% (Mixed)",
-        "current_players": "55",
+        "current_players": "59",
         "notes": "Not play -> Nor eview."
     },
     {
@@ -1523,7 +1523,7 @@
         "release_date": "Apr 24, 2015",
         "anti_cheat": "-",
         "reviews": "96% (Overwhelmingly Positive)",
-        "current_players": "23",
+        "current_players": "21",
         "notes": "Not play -> Nor eview."
     },
     {
@@ -1537,7 +1537,7 @@
         "developer": "CyberRaccoons",
         "release_date": "Dec 20, 2025",
         "anti_cheat": "-",
-        "reviews": "100% (1 user reviews)",
+        "reviews": "100% (2 user reviews)",
         "current_players": "0",
         "notes": "Not play -> Nor eview."
     },
@@ -1552,8 +1552,8 @@
         "developer": "DREADMITH Games",
         "release_date": "Dec 20, 2025",
         "anti_cheat": "-",
-        "reviews": "100% (Positive)",
-        "current_players": "1",
+        "reviews": "90% (Positive)",
+        "current_players": "16",
         "notes": "Not play -> Nor eview."
     },
     {
@@ -1568,7 +1568,7 @@
         "release_date": "Dec 19, 2025",
         "anti_cheat": "-",
         "reviews": "100% (5 user reviews)",
-        "current_players": "1",
+        "current_players": "0",
         "notes": "Not play -> Nor eview."
     },
     {
@@ -1582,7 +1582,7 @@
         "developer": "HIATUS Productions",
         "release_date": "Dec 20, 2025",
         "anti_cheat": "-",
-        "reviews": "50% (2 user reviews)",
+        "reviews": "33% (3 user reviews)",
         "current_players": "0",
         "notes": "Not play -> Nor eview."
     },
@@ -1597,7 +1597,7 @@
         "developer": "Niceas de Atenas",
         "release_date": "Dec 19, 2025",
         "anti_cheat": "-",
-        "reviews": "67% (3 user reviews)",
+        "reviews": "60% (5 user reviews)",
         "current_players": "0",
         "notes": "Not play -> Nor eview."
     },
@@ -1616,76 +1616,184 @@
         "current_players": "0",
         "notes": "Not play -> Nor eview."
     },
-  {
-      "genre": "Puzzle",
-      "link": "https://store.steampowered.com/app/4143670/12_Memory_Lane/",
-      "safe": "?",
-      "type_game": "offline"
-  },
-  {
-    "genre": "Stimulation",
-    "link": "https://store.steampowered.com/app/588430/Fallout_Shelter/",
-    "safe": "?",
-    "type_game": "online"
-  },
-  {
-    "genre": "Fighting",
-    "link": "https://store.steampowered.com/app/291550/Brawlhalla/",
-    "safe": "?",
-    "type_game": "online"
-  },
-  {
-    "genre": "MMORPG",
-    "link": "https://store.steampowered.com/app/761890/Albion_Online/",
-    "safe": "?",
-    "type_game": "online"
-  },
-  {
-    "genre": "Clicker",
-    "link": "https://store.steampowered.com/app/3419430/Bongo_Cat/",
-    "safe": "?",
-    "type_game": "offline"
-  },
-  {
-    "genre": "Stimulation",
-    "link": "https://store.steampowered.com/app/2709570/Supermarket_Together/",
-    "safe": "?",
-    "type_game": "online"
-  },
-  {
-    "genre": "FPS",
-    "link": "https://store.steampowered.com/app/2524890/Pixel_Gun_3D_PC_Edition/",
-    "safe": "?",
-    "type_game": "online"
-  },
-  {
-    "genre": "MMORPG",
-    "link": "https://store.steampowered.com/app/9900/Star_Trek_Online/",
-    "safe": "?",
-    "type_game": "online"
-  },
-  {
-    "genre": "Clicker",
-    "link": "https://store.steampowered.com/app/977400/Cell_to_Singularity__Evolution_Never_Ends/",
-    "safe": "?",
-    "type_game": "offline"
-  },
-  {
-    "genre": "MMORPG",
-    "link": "https://store.steampowered.com/app/438040/Shakes_and_Fidget/",
-    "safe": "?",
-    "type_game" : "online"
-  },
-  {
-    "genre": "Racing",
-    "link": "https://store.steampowered.com/app/2225070/Trackmania/",
-    "safe": "?",
-    "type_game": "online"
-  },
-  {
-    "genre": "Board Game",
-    "link": "https://store.steampowered.com/app/1128810/RISK_Global_Domination/",
-    "safe": "?",
-    "type_game": "online"
-  }
+    {
+        "genre": "Puzzle",
+        "link": "https://store.steampowered.com/app/4143670/12_Memory_Lane/",
+        "safe": "?",
+        "type_game": "offline",
+        "name": "12, Memory Lane",
+        "desc": "Explore the shifting manor of the enigmatic Henri Villemaine and uncover the truth behind his family’s sudden disappearance. Bend reality to recreate the scenes from his diary and expose long-buried secrets. What if your role in this case went beyond that of a simple investigator?",
+        "header_image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4143670/aa67194919e69b02094ebef33f8d64d685fb53d9/header.jpg?t=1765821621",
+        "developer": "Forget-Me-Not Studio",
+        "release_date": "Dec 15, 2025",
+        "anti_cheat": "-",
+        "reviews": "96% (Very Positive)",
+        "current_players": "10",
+        "notes": "Not play - No review."
+    },
+    {
+        "genre": "Stimulation",
+        "link": "https://store.steampowered.com/app/588430/Fallout_Shelter/",
+        "safe": "?",
+        "type_game": "online",
+        "name": "Fallout Shelter",
+        "desc": "Fallout Shelter puts you in control of a state-of-the-art underground Vault from Vault-Tec. Build the perfect Vault, keep your Dwellers happy, and protect them from the dangers of the Wasteland.",
+        "header_image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/588430/e5fc3db882e0222253437f4936ec8b31df9e3a08/header_alt_assets_53.jpg?t=1765992600",
+        "developer": "Bethesda Game Studios",
+        "release_date": "Mar 29, 2017",
+        "anti_cheat": "-",
+        "reviews": "88% (Very Positive)",
+        "current_players": "2,913",
+        "notes": "Not play - No review."
+    },
+    {
+        "genre": "Fighting",
+        "link": "https://store.steampowered.com/app/291550/Brawlhalla/",
+        "safe": "?",
+        "type_game": "online",
+        "name": "Brawlhalla",
+        "desc": "An epic platform fighter for up to 8 players online or local. Try casual free-for-alls, ranked matches, or invite friends to a private room. And it's free! Play cross-platform with millions of players on PlayStation, Xbox, Nintendo Switch, iOS, Android &amp; Steam! Frequent updates. Over sixty Legends.",
+        "header_image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/291550/b984bbab869bd52d305b43b8358ab1581bc136c1/header_alt_assets_4.jpg?t=1764872854",
+        "developer": "Blue Mammoth Games",
+        "release_date": "Oct 17, 2017",
+        "anti_cheat": "-",
+        "reviews": "81% (Very Positive)",
+        "current_players": "12,130",
+        "notes": "Not play - No review."
+    },
+    {
+        "genre": "MMORPG",
+        "link": "https://store.steampowered.com/app/761890/Albion_Online/",
+        "safe": "?",
+        "type_game": "online",
+        "name": "Albion Online",
+        "desc": "Albion Online is a fantasy sandbox MMORPG featuring a player-driven economy, classless combat system, and intense PvP battles. Explore a vast open world full of danger and opportunity. Grow your wealth, forge alliances, and leave your mark on the world of Albion.",
+        "header_image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/761890/adf1b267da99e8222d471fe1d67b49b492ac178e/header.jpg?t=1763983205",
+        "developer": "Sandbox Interactive GmbH",
+        "release_date": "May 16, 2018",
+        "anti_cheat": "-",
+        "reviews": "79% (Mostly Positive)",
+        "current_players": "6,028",
+        "notes": "Not play - No review."
+    },
+    {
+        "genre": "Clicker",
+        "link": "https://store.steampowered.com/app/3419430/Bongo_Cat/",
+        "safe": "?",
+        "type_game": "offline",
+        "name": "Bongo Cat",
+        "desc": "Bongo cat needs your help. Bongo cat needz more hatz!!! Every time you press a key, Bongo cat will punch your taskbar. Type, click, play, work to collect more points. Which hats will you find?",
+        "header_image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3419430/2e6c93c020fe13d09d8120bb9164ed7cb58f00c5/header.jpg?t=1759317272",
+        "developer": "Marcel Zurawka, Julius Krüger",
+        "release_date": "Mar 5, 2025",
+        "anti_cheat": "-",
+        "reviews": "98% (Overwhelmingly Positive)",
+        "current_players": "115,165",
+        "notes": "Not play - No review."
+    },
+    {
+        "genre": "Stimulation",
+        "link": "https://store.steampowered.com/app/2709570/Supermarket_Together/",
+        "safe": "?",
+        "type_game": "online",
+        "name": "Supermarket Together",
+        "desc": "The multiplayer supermarket has arrived to your neighbourhood for free! Stock your shop space, unlock perks and franchises, hire employees or chase those pesky shoplifters. The more players, the more action!",
+        "header_image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2709570/header.jpg?t=1757788249",
+        "developer": "DeadDevsTellNoLies",
+        "release_date": "Aug 9, 2024",
+        "anti_cheat": "-",
+        "reviews": "95% (Very Positive)",
+        "current_players": "3,527",
+        "notes": "Not play - No review."
+    },
+    {
+        "genre": "FPS",
+        "link": "https://store.steampowered.com/app/2524890/Pixel_Gun_3D_PC_Edition/",
+        "safe": "?",
+        "type_game": "online",
+        "name": "Pixel Gun 3D: PC Edition",
+        "desc": "The legendary mobile multiplayer FPS Pixel Gun 3D comes to PC! Experience an enhanced world of colorful, blocky action. Featuring dozens of game modes and maps, 1500+ guns plus cross-platform multiplayer and progression.",
+        "header_image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2524890/4a6cbf8a1f8ba94ba899fd63844f83103990b1a8/header.jpg?t=1766078528",
+        "developer": "Cubic Games Studio",
+        "release_date": "Apr 2, 2024",
+        "anti_cheat": "-",
+        "reviews": "67% (Mixed)",
+        "current_players": "997",
+        "notes": "Not play - No review."
+    },
+    {
+        "genre": "MMORPG",
+        "link": "https://store.steampowered.com/app/9900/Star_Trek_Online/",
+        "safe": "?",
+        "type_game": "online",
+        "name": "Star Trek Online",
+        "desc": "In Star Trek Online, the Star Trek universe appears for the first time on a truly massive scale. Players take the captain's chair as they command their own starship and crew. Explore strange new worlds, seek out new life and new civilizations, and boldly go where no one has gone before.",
+        "header_image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/9900/a338af1e4abe04e1a1aa1559fab3cc11154b4d55/header.jpg?t=1758644120",
+        "developer": "Cryptic Studios",
+        "release_date": "31 Jan, 2012",
+        "anti_cheat": "-",
+        "reviews": "79% (Mostly Positive)",
+        "current_players": "915",
+        "notes": "Not play - No review."
+    },
+    {
+        "genre": "Clicker",
+        "link": "https://store.steampowered.com/app/977400/Cell_to_Singularity__Evolution_Never_Ends/",
+        "safe": "?",
+        "type_game": "offline",
+        "name": "Cell to Singularity - Evolution Never Ends",
+        "desc": "The epic story of evolution, technology, humanity, and dinosaurs is yours to tap.",
+        "header_image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/977400/065676bd0a69a99e3d65939e8b0fe9f91a0f5fcb/header.jpg?t=1763477672",
+        "developer": "Computer Lunch",
+        "release_date": "Nov 3, 2021",
+        "anti_cheat": "-",
+        "reviews": "90% (Very Positive)",
+        "current_players": "2,967",
+        "notes": "Not play - No review."
+    },
+    {
+        "genre": "MMORPG",
+        "link": "https://store.steampowered.com/app/438040/Shakes_and_Fidget/",
+        "safe": "?",
+        "type_game": "online",
+        "name": "Shakes and Fidget",
+        "desc": "Shakes &amp; Fidget is a hilarious fantasy role-playing satire and at the same time, an award-winning RPG! Sounds crazy? With over 50 million enthusiastic players, it ranks among the most celebrated online role-playing games worldwide!",
+        "header_image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/438040/e689d0af4179bf18f949a55a0c844bcdc5c984b3/header_alt_assets_1.jpg?t=1765820942",
+        "developer": "Playa Games GmbH",
+        "release_date": "Feb 24, 2016",
+        "anti_cheat": "-",
+        "reviews": "92% (Very Positive)",
+        "current_players": "550",
+        "notes": "Not play - No review."
+    },
+    {
+        "genre": "Racing",
+        "link": "https://store.steampowered.com/app/2225070/Trackmania/",
+        "safe": "?",
+        "type_game": "online",
+        "name": "Trackmania",
+        "desc": "Welcome to the Club! Grab the wheel and play Trackmania® for FREE now.",
+        "header_image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2225070/header.jpg?t=1765569171",
+        "developer": "Nadeo",
+        "release_date": "Feb 2, 2023",
+        "anti_cheat": "-",
+        "reviews": "78% (Mostly Positive)",
+        "current_players": "1,195",
+        "notes": "Not play - No review."
+    },
+    {
+        "genre": "Board Game",
+        "link": "https://store.steampowered.com/app/1128810/RISK_Global_Domination/",
+        "safe": "?",
+        "type_game": "online",
+        "name": "RISK: Global Domination",
+        "desc": "Take over the world in RISK: Global Domination, the iconic strategy board game with 100+ original and classic maps and millions of players",
+        "header_image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1128810/header.jpg?t=1761095871",
+        "developer": "SMG Studio",
+        "release_date": "Feb 19, 2020",
+        "anti_cheat": "-",
+        "reviews": "80% (Mostly Positive)",
+        "current_players": "2,078",
+        "notes": "Not play - No review."
+    }
 ]
