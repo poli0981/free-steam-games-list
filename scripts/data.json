@@ -1428,7 +1428,7 @@
         "current_players": "6"
     },
     {
-        "genre": "Point-and-Click",
+        "genre": "Clicker",
         "link": "https://store.steampowered.com/app/2923300/Banana/",
         "safe": "?",
         "type_game": "offline",
@@ -1605,7 +1605,7 @@
         "genre": "Platformer",
         "link": "https://store.steampowered.com/app/1810630/Lokko/",
         "safe": "?",
-        "type_name": "offline",
+        "type_game": "offline",
         "name": "Lokko",
         "desc": "Lokko is a bouncy, action-packed 3D platformer where YOU create the adventure! In Lokko, players race to deliver hot pizzas around the globe while battling the sinister Goobol fast-food corporation.",
         "header_image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1810630/header.jpg?t=1766065241",
@@ -1615,5 +1615,77 @@
         "reviews": "100% (1 user reviews)",
         "current_players": "0",
         "notes": "Not play -> Nor eview."
-    }
+    },
+  {
+      "genre": "Puzzle",
+      "link": "https://store.steampowered.com/app/4143670/12_Memory_Lane/",
+      "safe": "?",
+      "type_game": "offline"
+  },
+  {
+    "genre": "Stimulation",
+    "link": "https://store.steampowered.com/app/588430/Fallout_Shelter/",
+    "safe": "?",
+    "type_game": "online"
+  },
+  {
+    "genre": "Fighting",
+    "link": "https://store.steampowered.com/app/291550/Brawlhalla/",
+    "safe": "?",
+    "type_game": "online"
+  },
+  {
+    "genre": "MMORPG",
+    "link": "https://store.steampowered.com/app/761890/Albion_Online/",
+    "safe": "?",
+    "type_game": "online"
+  },
+  {
+    "genre": "Clicker",
+    "link": "https://store.steampowered.com/app/3419430/Bongo_Cat/",
+    "safe": "?",
+    "type_game": "offline"
+  },
+  {
+    "genre": "Stimulation",
+    "link": "https://store.steampowered.com/app/2709570/Supermarket_Together/",
+    "safe": "?",
+    "type_game": "online"
+  },
+  {
+    "genre": "FPS",
+    "link": "https://store.steampowered.com/app/2524890/Pixel_Gun_3D_PC_Edition/",
+    "safe": "?",
+    "type_game": "online"
+  },
+  {
+    "genre": "MMORPG",
+    "link": "https://store.steampowered.com/app/9900/Star_Trek_Online/",
+    "safe": "?",
+    "type_game": "online"
+  },
+  {
+    "genre": "Clicker",
+    "link": "https://store.steampowered.com/app/977400/Cell_to_Singularity__Evolution_Never_Ends/",
+    "safe": "?",
+    "type_game": "offline"
+  },
+  {
+    "genre": "MMORPG",
+    "link": "https://store.steampowered.com/app/438040/Shakes_and_Fidget/",
+    "safe": "?",
+    "type_game" : "online"
+  },
+  {
+    "genre": "Racing",
+    "link": "https://store.steampowered.com/app/2225070/Trackmania/",
+    "safe": "?",
+    "type_game": "online"
+  },
+  {
+    "genre": "Board Game",
+    "link": "https://store.steampowered.com/app/1128810/RISK_Global_Domination/",
+    "safe": "?",
+    "type_game": "online"
+  }
 ]
