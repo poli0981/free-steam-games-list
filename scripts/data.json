@@ -5,11 +5,11 @@
         "safe": "y",
         "name": "Counter-Strike 2",
         "developer": "Valve",
-        "release_date": "21 Aug, 2012",
+        "release_date": "Aug 21, 2012",
         "anti_cheat": "VAC",
         "reviews": "86% (Very Positive)",
         "notes": "Not play - No review.",
-        "current_players": "1,009,100",
+        "current_players": "1,023,989",
         "desc": "For over two decades, Counter-Strike has offered an elite competitive experience, one shaped by millions of players from across the globe. And now the next chapter in the CS story is about to begin. This is Counter-Strike 2.",
         "header_image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/730/header.jpg?t=1749053861",
         "type_game": "online"
@@ -145,7 +145,7 @@
         "release_date": "Dec 15, 2025",
         "anti_cheat": "-",
         "reviews": "71% (Mostly Positive)",
-        "current_players": "12",
+        "current_players": "13",
         "notes": "No play - Not review.",
         "header_image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4143610/380705e9ca12d3a6abfcacf8812247a0ff64cc85/header.jpg?t=1765855479",
         "type_game": "offline"
@@ -161,7 +161,7 @@
         "release_date": "14 Nov, 2025",
         "anti_cheat": "-",
         "reviews": "89% (Very Positive)",
-        "current_players": "84,220",
+        "current_players": "83,168",
         "notes": "No play - Not review.",
         "header_image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3564740/6d94b048393d5358690a04a7db99f2c9739c703c/header.jpg?t=1765434865",
         "type_game": "online"
@@ -358,7 +358,7 @@
         "release_date": "Jun 20, 2019",
         "anti_cheat": "-",
         "reviews": "82% (Very Positive)",
-        "current_players": "869",
+        "current_players": "872",
         "notes": "Not play - No review."
     },
     {
@@ -370,10 +370,10 @@
         "desc": "Every day, millions of players worldwide enter battle as one of over a hundred Dota heroes. And no matter if it's their 10th hour of play or 1,000th, there's always something new to discover. With regular updates that ensure a constant evolution of gameplay, features, and heroes, Dota 2 has taken on a life of its own.",
         "header_image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/570/header.jpg?t=1766010373",
         "developer": "Valve",
-        "release_date": "9 Jul, 2013",
+        "release_date": "Jul 9, 2013",
         "anti_cheat": "VAC",
         "reviews": "81% (Very Positive)",
-        "current_players": "545,273",
+        "current_players": "551,047",
         "notes": "Not play - No review."
     },
     {
@@ -418,7 +418,7 @@
         "release_date": "Oct 10, 2007",
         "anti_cheat": "VAC",
         "reviews": "91% (Very Positive)",
-        "current_players": "62,162",
+        "current_players": "62,016",
         "notes": "Not play - No review."
     },
     {
@@ -463,7 +463,7 @@
         "release_date": "Oct 24, 2025",
         "anti_cheat": "-",
         "reviews": "89% (Very Positive)",
-        "current_players": "5",
+        "current_players": "6",
         "notes": "Not play - No review."
     },
     {
@@ -1437,7 +1437,7 @@
         "desc": "Banana is a clicker Game, in which you click a Banana! In Banana you click the Banana to gain even more Bananas! Every 3 hours, you get dropped a banana. Each banana is also made by the community in discord. Come hang out with us and let's grow into something awesome !",
         "header_image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2923300/6d550eab6dcbc01a824763edbafa9e439e625d5e/header.jpg?t=1748551280",
         "developer": "Sky, AestheticSpartan, O'Brian",
-        "release_date": "23 Apr, 2024",
+        "release_date": "Apr 23, 2024",
         "anti_cheat": "-",
         "reviews": "82% (Very Positive)",
         "current_players": "36,540"
@@ -1524,7 +1524,7 @@
         "release_date": "Apr 24, 2015",
         "anti_cheat": "-",
         "reviews": "96% (Overwhelmingly Positive)",
-        "current_players": "25",
+        "current_players": "24",
         "notes": "Not play - No review."
     },
     {
@@ -1644,7 +1644,7 @@
         "release_date": "29 Mar, 2017",
         "anti_cheat": "-",
         "reviews": "88% (Very Positive)",
-        "current_players": "3,271",
+        "current_players": "3,262",
         "notes": "Not play - No review."
     },
     {
@@ -1659,7 +1659,7 @@
         "release_date": "Oct 17, 2017",
         "anti_cheat": "-",
         "reviews": "81% (Very Positive)",
-        "current_players": "6,230",
+        "current_players": "6,352",
         "notes": "Not play - No review."
     },
     {
@@ -1674,7 +1674,7 @@
         "release_date": "May 16, 2018",
         "anti_cheat": "-",
         "reviews": "79% (Mostly Positive)",
-        "current_players": "6,085",
+        "current_players": "6,174",
         "notes": "Not play - No review."
     },
     {
@@ -1734,7 +1734,7 @@
         "release_date": "Jan 31, 2012",
         "anti_cheat": "-",
         "reviews": "79% (Mostly Positive)",
-        "current_players": "653",
+        "current_players": "651",
         "notes": "Not play - No review."
     },
     {
@@ -1764,7 +1764,7 @@
         "release_date": "Feb 24, 2016",
         "anti_cheat": "-",
         "reviews": "92% (Very Positive)",
-        "current_players": "1,447",
+        "current_players": "1,472",
         "notes": "Not play - No review."
     },
     {
@@ -1779,7 +1779,7 @@
         "release_date": "Feb 2, 2023",
         "anti_cheat": "-",
         "reviews": "78% (Mostly Positive)",
-        "current_players": "1,096",
+        "current_players": "1,114",
         "notes": "Not play - No review."
     },
     {
@@ -1794,7 +1794,7 @@
         "release_date": "Feb 19, 2020",
         "anti_cheat": "-",
         "reviews": "80% (Mostly Positive)",
-        "current_players": "1,528",
+        "current_players": "1,495",
         "notes": "Not play - No review."
     },
     {
