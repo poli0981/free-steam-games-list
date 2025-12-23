@@ -1,6 +1,6 @@
 # Exploration Games
 
-3 games – Generated: 2025-12-22 12:12
+3 games – Generated: 2025-12-23 00:19
 
 | No. | Thumbnail | Game Name | Genre | Developer | Release Date | Short Desc | Steam Link | Reviews | Players | Anti-Cheat | Notes | Safe |
 |-----|-----------|-----------|-------|-----------|--------------|------------|------------|---------|---------|------------|-------|------|
