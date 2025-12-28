@@ -2179,5 +2179,284 @@
     "link"      : "https://store.steampowered.com/app/3476950/Campoca/" ,
     "safe"      : "?" ,
     "type_game" : "offline"
+  } ,
+  {
+    "genre"     : "Top-down Shooter" ,
+    "link"      : "https://store.steampowered.com/app/2239930/Never_Immortal/" ,
+    "safe"      : "?" ,
+    "type_game" : "online"
+  } ,
+  {
+    "genre"     : "Racing" ,
+    "link"      : "https://store.steampowered.com/app/4107970/Once_Upon_a_Shell/" ,
+    "safe"      : "?" ,
+    "type_game" : "offline"
+  } ,
+  {
+    "genre"     : "Card Game" ,
+    "link"      : "https://store.steampowered.com/app/4233260/Cybersoul/" ,
+    "safe"      : "?" ,
+    "type_game" : "offline"
+  } ,
+  {
+    "genre"     : "Adventure" ,
+    "link"      : "https://store.steampowered.com/app/3956320/Inotia_4/" ,
+    "safe"      : "?" ,
+    "type_game" : "offline"
+  } ,
+  {
+    "genre"     : "Horror" ,
+    "link"      : "https://store.steampowered.com/app/4111210/Temple_of_the_Green_Moon_Prologue/" ,
+    "safe"      : "?" ,
+    "type_game" : "offline"
+  } ,
+  {
+    "genre"     : "Battle Royale" ,
+    "link"      : "https://store.steampowered.com/app/2381730/Airship/" ,
+    "safe"      : "?" ,
+    "type_game" : "online"
+  } ,
+  {
+    "genre"     : "Strategy" ,
+    "link"      : "https://store.steampowered.com/app/2181940/CivIdle/" ,
+    "safe"      : "?" ,
+    "type_game" : "offline"
+  } ,
+  {
+    "genre"     : "Arena Shooter" ,
+    "link"      : "https://store.steampowered.com/app/2841320/Foobar_Zero/" ,
+    "safe"      : "?" ,
+    "type_game" : "onilne"
+  } ,
+  {
+    "genre"     : "Platformer" ,
+    "link"      : "https://store.steampowered.com/app/3644250/Testimony_of_Shew_Depths_of_Sheol/" ,
+    "safe"      : "?" ,
+    "type_game" : "offline"
+  } ,
+  {
+    "genre"     : "Dungeon Crawler" ,
+    "link"      : "https://store.steampowered.com/app/4142630/Bane_of_Darkness/" ,
+    "safe"      : "?" ,
+    "type_game" : "offline"
+  } ,
+  {
+    "genre"     : "Software" ,
+    "link"      : "https://store.steampowered.com/app/4141770/Molili_AI_Friends_Your_AI_Desk_Pal/" ,
+    "safe"      : "?" ,
+    "type_game" : "offline"
+  } ,
+  {
+    "genre"     : "Action RPG" ,
+    "link"      : "https://store.steampowered.com/app/4152890/Ordy_The_Rise_of_Clara/" ,
+    "safe"      : "?" ,
+    "type_game" : "offline" ,
+    "name"      : "Ordy: The Rise of Clara"
+  } ,
+  {
+    "genre"     : "Visual Novel" ,
+    "link"      : "https://store.steampowered.com/app/3665470/Monster_Ops_13/" ,
+    "safe"      : "?" ,
+    "type_game" : "offline" ,
+    "name"      : "Monster Ops 13" ,
+    "notes"     : "NSFW"
+  } ,
+  {
+    "genre"     : "Visual Novel" ,
+    "link"      : "https://store.steampowered.com/app/4129000/Yuletide_Regicide/" ,
+    "safe"      : "?" ,
+    "type_game" : "offline"
+  } ,
+  {
+    "genre"     : "Puzzle" ,
+    "link"      : "https://store.steampowered.com/app/2174300/Piczle_World_of_Puzzles/" ,
+    "safe"      : "?" ,
+    "type_game" : "offline"
+  } ,
+  {
+    "genre"     : "Puzzle" ,
+    "link"      : "https://store.steampowered.com/app/4159140/MindEscape/" ,
+    "safe"      : "?" ,
+    "type_game" : "offline"
+  } ,
+  {
+    "genre"     : "Cozy" ,
+    "link"      : "https://store.steampowered.com/app/3836710/Blind_Box/" ,
+    "safe"      : "?" ,
+    "type_game" : "offline"
+  } ,
+  {
+    "genre"     : "Shooter" ,
+    "link"      : "https://store.steampowered.com/app/4138560/devasion_05/" ,
+    "safe"      : "?" ,
+    "type_game" : "offline"
+  } ,
+  {
+    "genre"     : "Strategy" ,
+    "link"      : "https://store.steampowered.com/app/4144940/Green_Wave/" ,
+    "safe"      : "?" ,
+    "type_game" : "offline"
+  } ,
+  {
+    "genre"     : "Visual Novel" ,
+    "link"      : "https://store.steampowered.com/app/3476730/Killer_Chat__Original_Edition/" ,
+    "safe"      : "?" ,
+    "type_game" : "offline"
+  } ,
+  {
+    "genre"     : "Visual Novel" ,
+    "link"      : "https://store.steampowered.com/app/3814970/My_Sexy_Neighbour_2__Prologue/" ,
+    "safe"      : "?" ,
+    "type_game" : "offline"
+  } ,
+  {
+    "genre"     : "Action RPG" ,
+    "link"      : "https://store.steampowered.com/app/3949890/Oyster_Sooource_2120bb/" ,
+    "safe"      : "?" ,
+    "type_game" : "offline"
+  } ,
+  {
+    "genre"     : "Party Game" ,
+    "link"      : "https://store.steampowered.com/app/4178160/Janky_Golf_with_Stream/" ,
+    "safe"      : "?" ,
+    "type_game" : "online"
+  } ,
+  {
+    "genre"     : "Party-Based RPG" ,
+    "link"      : "https://store.steampowered.com/app/1803580/Bard_Idle/" ,
+    "safe"      : "?" ,
+    "type_game" : "offline"
+  } ,
+  {
+    "genre"     : "Card Game" ,
+    "link"      : "https://store.steampowered.com/app/4117080/United_We_Forge/" ,
+    "safe"      : "?" ,
+    "type_game" : "online" ,
+    "name"      : "United We Forge"
+  } ,
+  {
+    "genre"     : "Card Game" ,
+    "link"      : "https://store.steampowered.com/app/4022010/Tichupro_by_Spectrum/" ,
+    "safe"      : "?" ,
+    "type_game" : "online" ,
+    "name"      : "Tichupro by Spectrum"
+  } ,
+  {
+    "genre"     : "Battle Royale" ,
+    "link"      : "https://store.steampowered.com/app/3984630/WhoIs/" ,
+    "safe"      : "?" ,
+    "type_game" : "online"
+  } ,
+  {
+    "genre"     : "Battle Royale" ,
+    "link"      : "https://store.steampowered.com/app/2661160/Goober_Dash/" ,
+    "safe"      : "?" ,
+    "type_game" : "online" ,
+    "name"      : "Goober Dash"
+  } ,
+  {
+    "genre"     : "Gambling" ,
+    "link"      : "https://store.steampowered.com/app/3608300/Jackpotde/" ,
+    "safe"      : "?" ,
+    "type_game" : "online" ,
+    "name"      : "Jackpot.de"
+  } ,
+  {
+    "genre"     : "Stimulation" ,
+    "link"      : "https://store.steampowered.com/app/3555430/Money_Simulator_Brokeville/" ,
+    "safe"      : "?" ,
+    "type_game" : "offline" ,
+    "name"      : "Money Simulator: Brokeville"
+  } ,
+  {
+    "genre"     : "MMORPG" ,
+    "link"      : "https://store.steampowered.com/app/716350/Reign_of_Guilds/" ,
+    "safe"      : "?" ,
+    "type_game" : "online" ,
+    "name"      : "Reign of Guilds"
+  } ,
+  {
+    "genre"     : "Top-down Shooter" ,
+    "link"      : "https://store.steampowered.com/app/4062110/Dilemma_Dungeon/" ,
+    "safe"      : "?" ,
+    "type_game" : "online" ,
+    "name"      : "Dilemma Dungeon"
+  } ,
+  {
+    "genre"     : "Card Game" ,
+    "link"      : "https://store.steampowered.com/app/4082300/Million_Card_Game/" ,
+    "safe"      : "?" ,
+    "type_game" : "online" ,
+    "name"      : "Million Card Game"
+  } ,
+  {
+    "genre"     : "Puzzle" ,
+    "link"      : "https://store.steampowered.com/app/4153560/The_Shadow_of_Shadows/" ,
+    "safe"      : "?" ,
+    "type_game" : "offline" ,
+    "name"      : "The Shadow of Shadows"
+  } ,
+  {
+    "genre"     : "MMORPG" ,
+    "link"      : "https://store.steampowered.com/app/4007740/Top_Heroes/" ,
+    "safe"      : "?" ,
+    "type_game" : "online" ,
+    "name"      : "Top Heroes"
+  } ,
+  {
+    "genre"     : "Action RPG" ,
+    "link"      : "https://store.steampowered.com/app/2987080/Battle_of_Goldfish_Scooping/" ,
+    "safe"      : "?" ,
+    "type_game" : "online" ,
+    "name"      : "Battle of Goldfish Scooping"
+  } ,
+  {
+    "genre"     : "Party Game" ,
+    "link"      : "https://store.steampowered.com/app/1413250/Republic_of_Jungle/" ,
+    "safe"      : "?" ,
+    "type_game" : "online" ,
+    "name"      : "Republic of Jungle"
+  } ,
+  {
+    "genre"     : "Clicker" ,
+    "link"      : "https://store.steampowered.com/app/3806060/Stress_Relief/" ,
+    "safe"      : "?" ,
+    "type_game" : "offline" ,
+    "name"      : "Stress Relief"
+  } ,
+  {
+    "genre"     : "Puzzle" ,
+    "link"      : "https://store.steampowered.com/app/3733440/Tiny_Crate/" ,
+    "safe"      : "?" ,
+    "type_game" : "offline" ,
+    "name"      : "Tiny Crate"
+  } ,
+  {
+    "genre"     : "Top-down Survival" ,
+    "link"      : "https://store.steampowered.com/app/3951230/Myrkwood_Offshoot/" ,
+    "safe"      : "?" ,
+    "type_game" : "offline" ,
+    "name"      : "Myrkwood Offshoot"
+  } ,
+  {
+    "genre"     : "MMORPG" ,
+    "link"      : "https://store.steampowered.com/app/4032230/Slime_Saga/" ,
+    "safe"      : "?" ,
+    "type_game" : "online" ,
+    "name"      : "Slime Saga"
+  } ,
+  {
+    "genre"     : "Sports" ,
+    "link"      : "https://store.steampowered.com/app/4144120/Rink_Rascals/" ,
+    "safe"      : "?" ,
+    "type_game" : "online" ,
+    "name"      : "Rink Rascals"
+  } ,
+  {
+    "genre"     : "Arcade" ,
+    "link"      : "https://store.steampowered.com/app/3632680/HeXpunk/" ,
+    "safe"      : "?" ,
+    "type_game" : "online" ,
+    "name"      : "HeXpunk"
   }
 ]
