@@ -170,3 +170,7 @@ artifacts/
 [Nn]ote.md
 temp_data/
 debug_info/
+countdata.py
+checkduplicates.py
+
+# End of .gitignore file
