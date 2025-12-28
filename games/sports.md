@@ -1,7 +1,8 @@
 # Sports Games
 
-1 games – Generated: 2025-12-28 00:22
+2 games – Generated: 2025-12-28 12:41
 
 | No. | Thumbnail | Game Name | Genre | Developer | Release Date | Short Desc | Steam Link | Reviews | Players | Anti-Cheat | Notes | Safe |
 |-----|-----------|-----------|-------|-----------|--------------|------------|------------|---------|---------|------------|-------|------|
-| 1 | ![3on3 FreeStyle: Rebound](https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1292630/e77bb25c3c484db3e0db8b68896e48c367ccbdb0/header.jpg?t=1766716639) | 3on3 FreeStyle: Rebound | Sports | Joycity | Jul 14, 2020 | 3on3 FreeStyle: Rebound allows players to work with their teammates to pull off rim-shaking slam dunks, awe-inspiring alley-oops, flashy no-look passes, and clutch outside shots which breaks the heart of the opposing team in competitive games filled with the joy and energy of street basketball. | [Link](https://store.steampowered.com/app/1292630/3on3_FreeStyle_Rebound/) | 63% (Mixed) | 182 | - | Not play - No review. | ? |
+| 1 | ![Rink Rascals](https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4144120/1470f23806108a0c71a0dc73986c3994fbcb4208/header.jpg?t=1763757022) | Rink Rascals | Sports | Cardinal Creek Studio | Nov 21, 2025 | Dash, steal, and score with up to 6 players on an outdoor hockey rink. | [Link](https://store.steampowered.com/app/4144120/Rink_Rascals/) | 73% (Mostly Positive) | 0 | - | Not play - No review. | ? |
+| 2 | ![3on3 FreeStyle: Rebound](https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1292630/e77bb25c3c484db3e0db8b68896e48c367ccbdb0/header.jpg?t=1765354289) | 3on3 FreeStyle: Rebound | Sports | Joycity | Jul 14, 2020 | 3on3 FreeStyle: Rebound allows players to work with their teammates to pull off rim-shaking slam dunks, awe-inspiring alley-oops, flashy no-look passes, and clutch outside shots which breaks the heart of the opposing team in competitive games filled with the joy and energy of street basketball. | [Link](https://store.steampowered.com/app/1292630/3on3_FreeStyle_Rebound/) | 63% (Mixed) | 144 | - | Not play - No review. | ? |

@@ -1,7 +1,8 @@
 # Cozy Games
 
-1 games – Generated: 2025-12-28 00:22
+2 games – Generated: 2025-12-28 12:41
 
 | No. | Thumbnail | Game Name | Genre | Developer | Release Date | Short Desc | Steam Link | Reviews | Players | Anti-Cheat | Notes | Safe |
 |-----|-----------|-----------|-------|-----------|--------------|------------|------------|---------|---------|------------|-------|------|
 | 1 | ![Campoca](https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3476950/343547855baaefc94a93af9c4636b6d0146a4aa5/header.jpg?t=1766583037) | Campoca | Cozy | Emma Fagerström, Elsa Ekberg, David Söderström | Dec 24, 2025 | Enter Campoca, where feel-good activities and delightful interactions are yours to enjoy completely for free! Collect joyful memories and turn your campsite into a charming, heartwarming retreat!. | [Link](https://store.steampowered.com/app/3476950/Campoca/) | 100% (2 user reviews) | 0 | - | Not play - No review. | ? |
+| 2 | ![Blind Box](https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3836710/90ee584825baa8e1e76457738a717fd4055706e0/header.jpg?t=1764371140) | Blind Box | Cozy | JustChillyy | Nov 28, 2025 | Collect blind boxes and unbox them to get cute figurines! Display them in your home and passively earn fame to unlock new decorations! Show off your collection to your friends and unwind!. | [Link](https://store.steampowered.com/app/3836710/Blind_Box/) | 43% (Mixed) | 40 | - | Not play - No review. | ? |
