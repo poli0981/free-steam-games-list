@@ -3,6 +3,7 @@ import random
 import time
 
 import requests
+
 # API key từ env
 api_key = os.getenv('STEAM_API_KEY')
 use_key = bool(api_key)
@@ -16,6 +17,7 @@ SKIP_GENRES = [
     'Co-op', 'Online Co-Op', 'PvP', 'Cross-Platform Multiplayer', 'In-App Purchases',
     'Massively Multiplayer', 'Competitive'
 ]
+
 
 def extract_appid(link):
     if '/app/' not in link:
@@ -116,18 +118,34 @@ def update_game(game):
     return game
 
 
+def is_full_info(game):
+    required = ['reviews', 'current_players', 'developer', 'release_date', 'header_image']
+    for key in required:
+        val = game.get(key, 'N/A')
+        if val in ['N/A', 'Error', 'No reviews', None, '']:
+            return False
+    return True
+
+
 def update_all(games):
+    print(f"Checking {len(games)} games – skipping full info ones 🔥")
+    to_fetch = [g for g in games if not is_full_info(g)]
+    print(f"Only fetching {len(to_fetch)} new/missing games (skip {len(games) - len(to_fetch)})")
+
+    if not to_fetch:
+        return
+
     is_github_action = os.getenv('GITHUB_ACTIONS') == 'true'
     delay_min, delay_max = (0.2, 0.8) if is_github_action else (1.0, 3.0)
     batch_size = 100  # batch 100 game/run
-    print(f"Updating {len(games)} games in batches of {batch_size}...")
+    print(f"Updating {len(to_fetch)} games in batches of {batch_size}...")
 
-    for batch_start in range(0, len(games), batch_size):
-        batch = games[batch_start:batch_start + batch_size]
+    for batch_start in range(0, len(to_fetch), batch_size):
+        batch = to_fetch[batch_start:batch_start + batch_size]
         print(f"Processing batch {batch_start // batch_size + 1} ({len(batch)} games)...")
         for idx, game in enumerate(batch):
             name = game.get('name', 'Unknown')
-            print(f"[{batch_start + idx + 1}/{len(games)}] Fetching {name}...", end=' ')
+            print(f"[{batch_start + idx + 1}/{len(to_fetch)}] Fetching {name}...", end=' ')
             update_game(game)
             print(f"Done! Players: {game.get('current_players', 'N/A')}")
 
@@ -135,10 +153,7 @@ def update_all(games):
                 time.sleep(random.uniform(delay_min, delay_max))
 
         # Delay middle batch
-        if batch_start + batch_size < len(games):
+        if batch_start + batch_size < len(to_fetch):
             batch_delay = random.uniform(10, 30)
             print(f"Batch done! Chilling {batch_delay:.1f}s before next batch...")
             time.sleep(batch_delay)
-
-# Export generate_tables to import
-__all__ = ['update_all']
