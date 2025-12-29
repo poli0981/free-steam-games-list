@@ -1,0 +1,64 @@
+name: ➕ Add New Games
+description: Suggest new free-to-play games (max 15)
+title: "[Add Games] "
+labels: [ "add-game" ]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for adding games! I'll check links (though lazy, no guarantee :)))
+
+  - type: dropdown
+    id: count
+    attributes:
+      label: How many games? (max 15)
+      options:
+        - "1"
+        - "2"
+        - "3"
+        - "4"
+        - "5"
+        - "6"
+        - "7"
+        - "8"
+        - "9"
+        - "10"
+        - "11"
+        - "12"
+        - "13"
+        - "14"
+        - "15"
+    validations:
+      required: true
+
+  - type: textarea
+    id: links
+    attributes:
+      label: Steam links (required – one per line pls)
+      description: Write 2 links on one line? Your loss bro :))
+      placeholder: |
+        https://store.steampowered.com/app/123456/Game_Name/
+        https://store.steampowered.com/app/789012/Another_Game/
+    validations:
+      required: true
+
+  - type: textarea
+    id: reason
+    attributes:
+      label: Why add these? (optional)
+      description: e.g., "Game hay", "Free forever", "Noob friendly Easy mode"
+
+  - type: textarea
+    id: notes
+    attributes:
+      label: Notes for table? (optional)
+      description: e.g., "Toxic community", "Grind heavy but fair", "Safe y"
+
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Final check
+      description: Spam/off-topic links ignored by default. Good luck :))
+      options:
+        - label: I agree – these are real F2P Steam games
+          required: true

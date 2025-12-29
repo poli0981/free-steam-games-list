@@ -1,0 +1,37 @@
+name: 📢 Feedback / Rant
+description: General feedback, complaints, or suggestions not fitting other templates
+title: "[Feedback] "
+labels: [ "feedback" ]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Spill it bro – good, bad, ugly. This noob dev reads (sometimes :)))
+
+  - type: textarea
+    id: feedback
+    attributes:
+      label: Your feedback
+      description: Docs too strict? Contributing guidelines wrong? Copyright issue? Repo like shit? Something else?
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: common
+    attributes:
+      label: Common issues? (optional, check all)
+      options:
+        - label: Docs too harsh/complicated
+        - label: Contributing rules wrong
+        - label: Possible copyright/problematic game
+        - label: Repo sucks / needs total overhaul
+        - label: Other (described above)
+
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Final check
+      description: Off-topic/spam/rude stuff ignored by default. Good luck :))
+      options:
+        - label: I agree – this is real feedback
+          required: true

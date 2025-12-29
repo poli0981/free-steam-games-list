@@ -1,0 +1,65 @@
+name: 🐛 Bug Report
+description: Report a bug or error (wrong name, broken thumbnail, etc.)
+title: "[Bug] "
+labels: [ "bug" ]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting! This broke unemployed dev will check when caffeine kicks in :))
+
+  - type: checkboxes
+    id: bug-type
+    attributes:
+      label: What kind of bug?
+      description: Check all that apply (multiple OK)
+      options:
+        - label: Wrong game name
+        - label: Broken/dead link
+        - label: Thumbnail not showing
+        - label: Missing column in table
+        - label: Wrong game count/total
+        - label: Reviews/players not updating
+        - label: Table layout broken (mobile?)
+        - label: Other (describe below)
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Describe the bug
+      description: What happened? Which game(s)? How many games affected?
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce (optional)
+      description: How can I see the bug?
+
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Screenshots/Links (optional)
+      description: Paste links or describe
+
+  - type: checkboxes
+    id: priority
+    attributes:
+      label: Priority level to fix (choose one only)
+      options:
+        - label: Not urgent (nice to have)
+        - label: Could be useful
+        - label: Very needed
+        - label: Urgent af
+      validations:
+        required: true
+
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Final check
+      description: I understand off-topic/spam will be ignored by default. Good luck :))
+      options:
+        - label: I agree – this is a real bug report
+          required: true

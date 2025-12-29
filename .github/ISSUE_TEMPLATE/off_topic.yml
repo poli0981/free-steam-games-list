@@ -1,0 +1,26 @@
+name: ❓ Off-Topic / Other
+description: Anything not bug/feature/add-game
+title: "[Other] "
+labels: ["off-topic"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        For random stuff, questions, chit-chat. But if off-topic/spam/violate policy – ignored by default :))
+
+  - type: textarea
+    id: description
+    attributes:
+      label: What is it?
+      description: Go ahead bro
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Final check
+      description: I understand this might be ignored. Good luck :))
+      options:
+        - label: I agree
+          required: true

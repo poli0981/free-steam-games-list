@@ -1,0 +1,53 @@
+name: ➖ Delete Games
+description: Request to remove games from the list (max 10)
+title: "[Delete Games] "
+labels: [ "delete-game" ]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for cleaning up! I'll check (lazy but will do :)))
+
+  - type: dropdown
+    id: count
+    attributes:
+      label: How many games to delete? (max 10)
+      options:
+        - "1"
+        - "2"
+        - "3"
+        - "4"
+        - "5"
+        - "6"
+        - "7"
+        - "8"
+        - "9"
+        - "10"
+    validations:
+      required: true
+
+  - type: textarea
+    id: games
+    attributes:
+      label: Games to delete (required – name + Steam link, one per line pls)
+      description: e.g., Game Name - https://store.steampowered.com/app/123456/
+      placeholder: |
+        Bad Game - https://store.steampowered.com/app/123456/
+        Virus Game - https://store.steampowered.com/app/789012/
+    validations:
+      required: true
+
+  - type: textarea
+    id: reason
+    attributes:
+      label: Why delete? (optional but helpful)
+      description: e.g., "Has virus/malware", "No longer free (paid now)", "Demo only", "Dead game", "Just don't like it", "Other reason"
+
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Final check
+      description: Spam/off-topic requests ignored by default. Good luck bro :))
+      options:
+        - label: I agree – these games should be removed
+          required: true
