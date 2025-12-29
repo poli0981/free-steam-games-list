@@ -1,33 +1,38 @@
 # CONTRIBUTING GUIDELINES
 
-Thanks for wanting to help! This repo lives because of caffeine, boredom, and occasional contributions. Let's keep it simple and noob-friendly.
+# Contributing to Awesome Free-to-Play Games on Steam
 
-### How to Contribute
-1. **Fork the repo** → Make changes → Open a Pull Request.
-2. **What to add/remove?**
-   - New free-to-play games on Steam.
-   - Fixes: Broken links, wrong tags, updated reviews, etc.
-   - Improvements: Better descriptions, new columns (if useful).
+Yo, thanks for stopping by! This repo is a hobby project by a broke, unemployed Vietnamese dev (20-something, introvert
+max level, dropped out uni year 3, mooching off family, Steam library 400+ games 80% under $10 sale addiction).
+Powered ~70% by Grok (my AI buddy from xAI) – the only non-judgmental friend keeping this alive while I play Easy mode
+only :))
 
-### PR Requirements (Keep it straight to the point – I'm lazy):
-- **Game name?** Exact as on Steam.
-- **Steam link?** Direct app page (e.g., https://store.steampowered.com/app/123456/Game_Name/).
-- **Short description:** 1-2 sentences, genre, why it's worth (or not).
-- **Other info:** Rating, notes (multiplayer? toxic? grindy?).
-- **NO BULLSHIT:** Fake links, malware, scams, paid games disguised as free → PR rejected + potential block. I have to check manually, don't make me regret opening contributions.
+Want to help? Awesome! No strict rules – life's hard enough. Just keep it chill and on-topic.
 
-### Template for Adding a Game (copy-paste in PR description):
+### How to Contribute (So Easy Bro :)))
 
-```text
-Game: [Name]
-Link: [Steam URL]
-Genre: [e.g., FPS, MOBA]
-Description: [Short vibe]
-Notes: [e.g., Toxic community, Co-op fun, I've played it on Easy]
-```
+1. **Preferred way: Open an Issue**  
+   Go to [Issues tab](https://github.com/poli0981/free-steam-games-list/issues/new/choose) – pick a template:
+    - ➕ Add New Games (max 15)
+    - ➖ Delete Games (max 10)
+    - 🐛 Bug Report
+    - 💡 Feature Request / Improvement
+    - 📢 Feedback / Rant
+    - ❓ Off-Topic
 
-textI'll review when I can (no schedule, see DISCLAIMER.md). If approved, you'll get credit in ACKNOWLEDGEMENTS maybe.
+   Fill the form – checkboxes, dropdowns, short descriptions. I'll check (lazy but will do) and update data.json/tables
+   auto.
 
-Questions? Open an Issue.
+2. **Big changes? PR welcome**  
+   Fork → edit `scripts/data.json` (add/delete games, notes/safe/genre) or code/scripts.  
+   Push → open PR. I'll review when caffeine hits (or Grok reminds me).
 
-Thanks for making this list less dead than my social life! 🔥
+3. **Tips for smooth contrib**
+    - Games must be real Free-to-Play on Steam (no demos, paid now, virus pls).
+    - Notes/safe optional but helpful (e.g., "Toxic max", "Grind phê Easy mode", "Safe y").
+    - Spam/off-topic? Ignored by default – good luck :))
+
+Thanks for making this noob repo better! Star if you find a hidden gem, or buy me a coffee
+via [FUNDING.yml](.github/FUNDING.yml) to fuel instant noodles + more sale games ✨
+
+Questions? Open an issue – that's contributing too :))
