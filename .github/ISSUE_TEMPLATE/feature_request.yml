@@ -1,0 +1,68 @@
+name: 💡 Feature Request / Improvement
+description: Suggest new feature or improve existing one
+title: "[Feature] "
+labels: [ "enhancement" ]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for the idea! This noob dev appreciates it (Grok buddy will help code :)))
+
+  - type: checkboxes
+    id: type
+    attributes:
+      label: Type (choose one only)
+      options:
+        - label: New feature
+        - label: Improvement to existing code/feature
+      validations:
+        required: true
+
+  - type: input
+    id: title
+    attributes:
+      label: Feature/Improvement name
+      description: Short title (e.g., "Add peak players column")
+    validations:
+      required: true
+
+  - type: textarea
+    id: reason
+    attributes:
+      label: Why? Reason
+      description: How does it help? (e.g., "Current tables load slow with 200+ games")
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: priority
+    attributes:
+      label: Priority level (choose one only)
+      options:
+        - label: Not urgent (nice to have)
+        - label: Could be useful
+        - label: Very needed
+        - label: Urgent af
+      validations:
+        required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: How it works? (optional)
+      description: More details or example
+
+  - type: textarea
+    id: code
+    attributes:
+      label: Code snippet/mockup (optional – no malware pls, I'll check though lazy :D)
+      render: python
+
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Final check
+      description: Off-topic/spam ignored by default. Good luck bro :))
+      options:
+        - label: I agree – this is on-topic
+          required: true
