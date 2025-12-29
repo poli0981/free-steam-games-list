@@ -15,8 +15,8 @@ body:
       options:
         - label: New feature
         - label: Improvement to existing code/feature
-      validations:
-        required: true
+    validations:
+      required: true
 
   - type: input
     id: title
@@ -43,8 +43,8 @@ body:
         - label: Could be useful
         - label: Very needed
         - label: Urgent af
-      validations:
-        required: true
+    validations:
+      required: true
 
   - type: textarea
     id: description
