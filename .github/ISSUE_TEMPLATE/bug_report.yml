@@ -52,8 +52,8 @@ body:
         - label: Could be useful
         - label: Very needed
         - label: Urgent af
-      validations:
-        required: true
+    validations:
+      required: true
 
   - type: checkboxes
     id: terms
