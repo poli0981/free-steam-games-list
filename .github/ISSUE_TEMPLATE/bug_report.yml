@@ -27,7 +27,7 @@ body:
     id: description
     attributes:
       label: Describe the bug
-      description: What happened? Which game(s)? How many games affected?
+      description: What happened? Which game(s)? How many game(s) affected?
     validations:
       required: true
 
