@@ -1,6 +1,6 @@
 # Dungeon Crawler Games
 
-1 games – Generated: 2025-12-29 00:18
+1 games – Generated: 2025-12-30 00:16
 
 | No. | Thumbnail | Game Name | Genre | Developer | Release Date | Short Desc | Steam Link | Reviews | Players | Anti-Cheat | Notes | Safe |
 |-----|-----------|-----------|-------|-----------|--------------|------------|------------|---------|---------|------------|-------|------|
