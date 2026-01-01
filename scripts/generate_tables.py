@@ -60,7 +60,7 @@ header += "|-----|-----------|-----------|-------|-----------|--------------|---
 
 updated_time = datetime.now().strftime('%Y-%m-%d %H:%M')
 
-os.makedirs('../games', exist_ok=True)
+os.makedirs('games', exist_ok=True)
 
 
 def generate_table_row(index, game_entry):
@@ -108,7 +108,7 @@ for part in range(1, num_files + 1):
 
     # FIX
     filename = f'all-games_part{part}.md' if num_files > 1 else 'all-games.md'
-    with open(f'../games/{filename}', 'w', encoding='utf-8') as f:
+    with open(f'games/{filename}', 'w', encoding='utf-8') as f:
         f.write(''.join(content))
 
 # Genre files
@@ -123,7 +123,7 @@ for genre, game_list in genres.items():
     for i, game in enumerate(game_list, 1):
         content.append(generate_table_row(i, game))
 
-    with open(f'../games/{safe_name}.md', 'w', encoding='utf-8') as f:
+    with open(f'games/{safe_name}.md', 'w', encoding='utf-8') as f:
         f.write(''.join(content))
 
 print("Tables generated bro! No fetch, pure JSON read – safe & fast 🔥")
