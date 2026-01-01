@@ -16,4 +16,4 @@ git config --global user.name "poli0981"
 git config --global user.email "127664709+poli0981@users.noreply.github.com"
 git status
 git add games/top-online.md
-git diff --staged --quiet && echo "No changes – skip commit" || (git commit -m "Auto update tables online top & stats [$(date +'%Y-%m-%d')]" && git pull --rebase && git push)
+git diff --staged --quiet && echo "No changes – skip commit" || (git commit -m "Auto update tables online top & stats [$(date +'%Y-%m-%d')]" && git push)
