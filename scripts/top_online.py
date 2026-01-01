@@ -19,7 +19,7 @@ def extract_appid(link):
     return parts.split('/')[0]
 
 # Load data.json
-with open('data.json', 'r', encoding='utf-8') as f:
+with open('scripts/data.json', 'r', encoding='utf-8') as f:
     games = json.load(f)
 
 # Filter online games (manual type_game)
@@ -29,7 +29,7 @@ if not online_games:
     print("Not type_game = 'online' bro, check data.json :((")
     exit()
 
-print(f"Found {len(online_games)} game online – fetching fresh players với key...")
+print(f"Found {len(online_games)} game online – fetching fresh players with key...")
 
 # Fetch fresh players game online
 for idx, game in enumerate(tqdm(online_games, desc="Fetching fresh players", unit="game")):
@@ -79,4 +79,4 @@ with open('../games/top-online.md', 'w', encoding='utf-8') as f:
         status = player_status(player_count(g))
         f.write(f"| {rank} | {g.get('name', 'N/A')} | {g.get('current_players', 'N/A')} | {status} | {g.get('genre', 'N/A')} | {g.get('notes', '-')} | [Link]({g['link']}) |\n")
 
-print("Done bro! Top online generated tại games/top-online.md")
+print("Done bro! Top online generated at games/top-online.md")
