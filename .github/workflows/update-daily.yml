@@ -24,6 +24,6 @@ jobs:
 
       - name: run bash script to generate tables
         run: |
-          chmod +x ./bash/generate_tables.sh
-          ./bash/generate_tables.sh
+          chmod +x ./bash/daily.sh
+          ./bash/daily.sh
         shell: bash
