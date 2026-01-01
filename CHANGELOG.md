@@ -10,7 +10,7 @@ All notable changes to this awesome noob repo will be documented here.
 - Smarter fetch: Skip games with full info (reviews/players/developer/etc.) – faster daily update, less Steam throttle
   risk.
 - Full Wiki (English, noob friendly) – Home, FAQ, Code Explanation, Test Branch troll, Future Plans (you guess?), etc.
-- More issue templates: Delete Games + Feedback/Rant – clean rác + xả stress repo "like shit".
+- More issue templates: Delete Games + Feedback/Rant – clean garbage + stress reliefrepo "like shit".
 - CONTRIBUTING.md updated – "so easy" with issue forms.
 
 ### Improved

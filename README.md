@@ -1,7 +1,8 @@
 [![Games Count](https://img.shields.io/badge/Games-100%2B-green?style=flat&logo=steam)](games/all-games.md)
 [![Last Updated](https://img.shields.io/badge/Updated-Daily-blue?style=flat&logo=github-actions)](.github/workflows)
 [![Top Online](https://img.shields.io/badge/Top%20Online-Hot%20Games-red?style=flat&logo=steam)](games/top-online.md)
-[![Version](https://img.shields.io/badge/version-1.0.0-purple?style=flat&logo=github)](https://github.com/poli0981/free-steam-games-list)
+[![Version](https://img.shields.io/badge/version-1.1.0-purple?style=flat&logo=github)](https://github.com/poli0981/free-steam-games-list)
+![Visitors](https://visitor-badge.laobi.icu/badge?page_id=poli0981.free-steam-games-list)
 [![Sponsor](https://img.shields.io/badge/Sponsor-Buy%20me%20a%20coffee-ff5f5f?style=flat&logo=buy-me-a-coffee)](.github/FUNDING.yml)
 
 A **curated list** of free-to-play games on Steam – no quality guarantees, no endorsements, just pure listings by a
