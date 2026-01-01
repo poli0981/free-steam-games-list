@@ -16,8 +16,7 @@ git status
 git add .
 if git diff --cached --quiet; then
     echo "No diff detected"
-    git commit --allow-empty -m "JSON updated (timestamp update) [$(date +'%Y-%m-%d %H:%M')]" || echo "Empty commit
-    skip"
+    git commit --allow-empty -m "JSON updated (timestamp update) [$(date +'%Y-%m-%d %H:%M')]" || echo "Empty commit skip"
 else
     git commit -m "JSON updated [$(date +'%Y-%m-%d %H:%M')]"
 fi
