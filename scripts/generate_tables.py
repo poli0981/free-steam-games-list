@@ -30,7 +30,7 @@ def extract_appid(link):  # Fallback name if missing
 
 
 # Load data.json
-with open('data.json', 'r', encoding='utf-8') as f:
+with open('scripts/data.json', 'r', encoding='utf-8') as f:
     games = json.load(f)
 
 print(f"Loaded {len(games)} games from data.json – generating tables only (no fetch) 🔥")
