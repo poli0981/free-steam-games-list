@@ -1,6 +1,6 @@
 # Adventure Games
 
-12 games – Generated: 2025-12-31 00:17
+12 games – Generated: 2026-01-01 00:18
 
 | No. | Thumbnail | Game Name | Genre | Developer | Release Date | Short Desc | Steam Link | Reviews | Players | Anti-Cheat | Notes | Safe |
 |-----|-----------|-----------|-------|-----------|--------------|------------|------------|---------|---------|------------|-------|------|
