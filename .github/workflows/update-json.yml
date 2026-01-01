@@ -23,6 +23,6 @@ jobs:
         env:
           STEAM_API_KEY: ${{ secrets.STEAM_API_KEY }}
         run: |
-          chmod +x ./bash/update_json.sh
-          ./bash/update_json.sh
+          chmod +x ./bash/json.sh
+          ./bash/json.sh
         shell: bash
