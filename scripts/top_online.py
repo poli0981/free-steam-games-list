@@ -70,7 +70,7 @@ def player_status(count):
 
 # Generate top-online.md
 updated_time = datetime.now().strftime('%Y-%m-%d %H:%M')
-with open('../games/top-online.md', 'w', encoding='utf-8') as f:
+with open('games/top-online.md', 'w', encoding='utf-8') as f:
     f.write("# Top Online/Multiplayer Games (Fresh Players)\n\n")
     f.write(f"Total online games: {len(online_games)} – Updated: {updated_time} (realtime từ Steam key :)) )\n\n")
     f.write("| Rank | Game | Players | Status | Genre | Notes | Link |\n")
