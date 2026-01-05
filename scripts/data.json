@@ -3672,5 +3672,12 @@
         "reviews": "100% (4 user reviews)",
         "current_players": "2",
         "notes": "Not play - No review."
-    }
+    },
+  {
+    "genre": "Strategy",
+    "link": "https://store.steampowered.com/app/4181870/Medieval_Merchant/",
+     "safe": "?",
+     "type_game": "offline",
+     "name": "Medieval Merchant"
+  }
 ]
