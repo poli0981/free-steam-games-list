@@ -1,6 +1,6 @@
 # Arcade Games
 
-1 games – Generated: 2026-01-05 00:18
+1 games – Generated: 2026-01-05 18:25
 
 | No. | Thumbnail | Game Name | Genre | Developer | Release Date | Short Desc | Steam Link | Reviews | Players | Anti-Cheat | Notes | Safe |
 |-----|-----------|-----------|-------|-----------|--------------|------------|------------|---------|---------|------------|-------|------|
