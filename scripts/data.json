@@ -1477,7 +1477,7 @@
         "type_game": "online",
         "notes": "Beautiful Girl, Gacha outfit",
         "reviews": "83% (Very Positive)",
-        "current_players": "667"
+        "current_players": "4,828"
     },
     {
         "genre": "Fighting",
@@ -3696,7 +3696,7 @@
         "release_date": "Nov 1, 2016",
         "anti_cheat": "-",
         "reviews": "71% (Mostly Positive)",
-        "current_players": "1",
+        "current_players": "0",
         "notes": "Not play - No review."
     },
     {
@@ -4086,7 +4086,7 @@
         "release_date": "Jan 5, 2026",
         "anti_cheat": "-",
         "reviews": "No reviews",
-        "current_players": "0",
+        "current_players": "3",
         "notes": "Not play - No review."
     },
     {
@@ -4111,12 +4111,12 @@
         "type_game": "online",
         "name": "萍城异闻录",
         "desc": "This is a different chicken eating game, where you can choose a main battle character to fight, defeat other players and monsters in the scene to earn currency, form your team lineup, and have rich combos to bring a different experience.",
-        "header_image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3128530/dfca2ef974f58b2d2fb83c50c9dddd51efcc73fe/header.jpg?t=1767668170",
+        "header_image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3128530/dfca2ef974f58b2d2fb83c50c9dddd51efcc73fe/header.jpg?t=1767772284",
         "developer": "TianminChita",
         "release_date": "Jan 5, 2026",
         "anti_cheat": "-",
         "notes": " (No longer free! Check price bro)",
-        "reviews": "No reviews",
+        "reviews": "100% (1 user reviews)",
         "current_players": "0"
     },
     {
@@ -4236,7 +4236,8 @@
         "release_date": "Jan 5, 2026",
         "anti_cheat": "-",
         "current_players": "0",
-        "notes": "Not play - No review."
+        "notes": "Not play - No review.",
+        "reviews": "100% (3 user reviews)"
     },
     {
         "genre": "Adventure",
@@ -4508,18 +4509,34 @@
         "current_players": "2",
         "notes": "Not play - No review."
     },
-  {
-    "genre": "Hack & Slash",
-    "link": "https://store.steampowered.com/app/3979380/Pneuma/",
-     "safe": "?",
-     "type_game": "offline",
-     "name": "Pneuma"
-  },
-  {
-    "genre": "Platformer",
-    "link": "https://store.steampowered.com/app/3983390/Cooking_Time/",
-     "safe": "?",
-     "type_game": "online",
-     "name": "Cooking Time"
-  }
+    {
+        "genre": "Hack & Slash",
+        "link": "https://store.steampowered.com/app/3979380/Pneuma/",
+        "safe": "?",
+        "type_game": "offline",
+        "name": "Pneuma",
+        "desc": "Take the role of Zoe, Deaths apprentice, and fight back against the 7 Deadly sins who stole the fragments of your soul, engage in fast paced top-down hack and slash action, fending off hoards of Hell's spawn. Gain buffs throughout the different levels to increase your power to take on the bosses....",
+        "header_image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3979380/96f6e5dd41ae67b64056f1fde47ff8db116c3fcb/header.jpg?t=1767740415",
+        "developer": "Intarsia",
+        "release_date": "Jan 6, 2026",
+        "anti_cheat": "-",
+        "reviews": "100% (4 user reviews)",
+        "current_players": "1",
+        "notes": "Not play - No review."
+    },
+    {
+        "genre": "Platformer",
+        "link": "https://store.steampowered.com/app/3983390/Cooking_Time/",
+        "safe": "?",
+        "type_game": "online",
+        "name": "Cooking Time!",
+        "desc": "A chaotic multiplayer strategic shooter where players cook different dishes and throw them at their enemies.",
+        "header_image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3983390/67a5fc9270403db4cd700f52966c50e776289a96/header.jpg?t=1767768088",
+        "developer": "Niki Development, TalkedMat, Benediktas Rak",
+        "release_date": "6 Jan, 2026",
+        "anti_cheat": "-",
+        "reviews": "62% (8 user reviews)",
+        "current_players": "1",
+        "notes": "Not play - No review."
+    }
 ]
