@@ -1,6 +1,6 @@
 # Card Game Games
 
-11 games – Generated: 2026-01-06 00:17
+13 games – Generated: 2026-01-07 00:16
 
 | No. | Thumbnail | Game Name | Genre | Developer | Release Date | Short Desc | Steam Link | Reviews | Players | Anti-Cheat | Notes | Safe |
 |-----|-----------|-----------|-------|-----------|--------------|------------|------------|---------|---------|------------|-------|------|
@@ -15,3 +15,5 @@
 | 9 | ![Artifact](https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/583950/header.jpg?t=1677266975) | Artifact | Card Game | Valve | Nov 28, 2018 | Artifact now features two games: Artifact Classic, the original Dota 2 trading card game, and Artifact Foundry, a special edition with streamlined gameplay, new cards, new single-player content, and an improved new player experience. | [Link](https://store.steampowered.com/app/583950/Artifact/) | 47% (Mixed) | 45 | - | Not play - No review. | ? |
 | 10 | ![Echo of Equilibrium](https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3855520/4ecad9f2adc1d655d144e86af397a2d509cc9eed/header.jpg?t=1766654579) | Echo of Equilibrium | Card Game | UltraGloria Works | Dec 24, 2025 | 无需构筑牌组，回归卡牌桌游原初的乐趣与节奏感！非竞技，比输赢更重要的是一起玩！. | [Link](https://store.steampowered.com/app/3855520/Echo_of_Equilibrium/) | 40% (5 user reviews) | 0 | - | Not support English language. (Only Chinese) | ? |
 | 11 | ![Cybersoul](https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4233260/d58304a987cf6f958db5ee9a79b849ee8fdb45c5/header.jpg?t=1766660612) | Cybersoul | Card Game | Recoil Mojo | Dec 25, 2025 | Deckbuilding Card Game meets Incremental Data Mining. | [Link](https://store.steampowered.com/app/4233260/Cybersoul/) | 33% (3 user reviews) | 2 | - | Not play - No review. | ? |
+| 12 | ![Wizard’s Gambit](https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3755740/b82c0aaad9b29094f1984c2c8681b9487147f270/header.jpg?t=1767658067) | Wizard’s Gambit | Card Game | Ravi Trivedi | Jan 5, 2026 | Wizard’s Gambit — A 2D strategy card game where four magical factions battle for dominance through tactical card placement, faction powers, and evolving decks. | [Link](https://store.steampowered.com/app/3755740/Wizards_Gambit/) | 0% (1 user reviews) | 0 | - | Not play - No review. | ? |
+| 13 | ![Fight Poker](https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4201060/71d94facd36bdf3beecfe55f4c784d38b0eaa8b7/header.jpg?t=1767643203) | Fight Poker | Card Game | Carbone Dev | Jan 5, 2026 | Fight Poker is a turn based poker PvP card game. | [Link](https://store.steampowered.com/app/4201060/Fight_Poker/) | N/A | 0 | - | Not play - No review. | ? |

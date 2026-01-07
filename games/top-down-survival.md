@@ -1,6 +1,6 @@
 # Top-down Survival Games
 
-1 games – Generated: 2026-01-06 00:17
+1 games – Generated: 2026-01-07 00:16
 
 | No. | Thumbnail | Game Name | Genre | Developer | Release Date | Short Desc | Steam Link | Reviews | Players | Anti-Cheat | Notes | Safe |
 |-----|-----------|-----------|-------|-----------|--------------|------------|------------|---------|---------|------------|-------|------|

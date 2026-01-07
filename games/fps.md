@@ -1,6 +1,6 @@
 # FPS Games
 
-7 games – Generated: 2026-01-06 00:17
+8 games – Generated: 2026-01-07 00:16
 
 | No. | Thumbnail | Game Name | Genre | Developer | Release Date | Short Desc | Steam Link | Reviews | Players | Anti-Cheat | Notes | Safe |
 |-----|-----------|-----------|-------|-----------|--------------|------------|------------|---------|---------|------------|-------|------|
@@ -11,3 +11,4 @@
 | 5 | ![Marvel Rivals](https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2767030/5565a23d15c87e4dc921affd50dde4d86554c413/header.jpg?t=1765778992) | Marvel Rivals | FPS | NetEase Games | Dec 5, 2024 | Marvel Rivals is a Super Hero Team-Based PVP Shooter! Assemble an all-star Marvel squad, devise countless strategies by combining powers to form unique Team-Up skills and fight in destructible, ever-changing battlefields across the continually evolving Marvel universe!. | [Link](https://store.steampowered.com/app/2767030/Marvel_Rivals/) | 77% (Mostly Positive) | 40,157 | NetEase Game Security | Not play - No review. | ? |
 | 6 | ![Apex Legends™](https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1172470/6ae90b012e725a93622c3694d9d866b886cfd0f8/header.jpg?t=1762457261) | Apex Legends™ | FPS | Respawn | 4 Nov, 2020 | Apex Legends is the award-winning, free-to-play Hero Shooter from Respawn Entertainment. | [Link](https://store.steampowered.com/app/1172470/Apex_Legends/) | 67% (Mixed) | 121,082 | EAC | Not play - No review. | ? |
 | 7 | ![Pixel Gun 3D: PC Edition](https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2524890/4a6cbf8a1f8ba94ba899fd63844f83103990b1a8/header.jpg?t=1766078528) | Pixel Gun 3D: PC Edition | FPS | Cubic Games Studio | Apr 2, 2024 | The legendary mobile multiplayer FPS Pixel Gun 3D comes to PC! Experience an enhanced world of colorful, blocky action. | [Link](https://store.steampowered.com/app/2524890/Pixel_Gun_3D_PC_Edition/) | 67% (Mixed) | 1,420 | - | Not play - No review. | ? |
+| 8 | ![Dwarfare: All For The Forge](https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4003740/371502b03f3a724331a047443f276862a861b4de/header.jpg?t=1767671198) | Dwarfare: All For The Forge | FPS | Blanc Smith Studios | Jan 5, 2026 | Be the dwarf you know you are! Build towers to protect the beacons and keep production in motion! Use your weapons to corner any enemies that scrape through. | [Link](https://store.steampowered.com/app/4003740/Dwarfare_All_For_The_Forge/) | 67% (3 user reviews) | 0 | - | Not play - No review. | ? |
