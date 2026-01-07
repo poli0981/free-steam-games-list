@@ -1,0 +1,26 @@
+name: Export data from JSON file -> CSV
+on:
+  schedule:
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+
+jobs:
+  csv-export:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v6
+        with:
+          token: ${{ secrets.GH_TOKEN }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.14'
+
+      - name: Run bash script to export data
+        run:
+          chmod +x ./bash/csv_export.sh
+          ./bash/csv_export.sh
+        shell: bash
+
