@@ -1,6 +1,6 @@
 # Looter Shooter Games
 
-1 games – Generated: 2026-01-07 00:16
+1 games – Generated: 2026-01-07 14:36
 
 | No. | Thumbnail | Game Name | Genre | Developer | Release Date | Short Desc | Steam Link | Reviews | Players | Anti-Cheat | Notes | Safe |
 |-----|-----------|-----------|-------|-----------|--------------|------------|------------|---------|---------|------------|-------|------|
