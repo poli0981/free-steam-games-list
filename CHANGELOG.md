@@ -2,6 +2,23 @@
 
 All notable changes to this awesome noob repo will be documented here.
 
+## [v1.1.1] - 2026-01-07
+
+## Added
+- 50+ games. (by [@poli0981](/poli0981))
+- Delete game script: Delete a game with correct input link. (by [@poli0981](/poli0981))
+- Check dups script: Check game info duplication. (by [@poli0981](/poli0981))
+- Export JSON file to CSV/XLSX. (by [@poli0981](/poli0981))
+- Auto update CSV file use Actions. (by [@poli0981](/poli0981))
+
+## Fixed
+- Delete 3 duplicates link game. (by [@poli0981](/poli0981))
+
+## Improved
+- Use bash to help code workflow shorter. (by [@poli0981](/poli0981))
+- Add `export-ignore` in `.gitattributes`. (by [@poli0981](/poli0981))
+- Fix link to direct to `all-games_part[x].md`. (by [@poli0981](/poli0981))
+
 ## [v1.1.0] - 2025-12-30 (Scale Noob Edition)
 
 ### Added
