@@ -2669,7 +2669,7 @@
         "link": "https://store.steampowered.com/app/3814970/My_Sexy_Neighbour_2__Prologue/",
         "safe": "?",
         "type_game": "offline",
-        "name": "My Sexy Neighbour 2 | Prologue",
+        "name": "My Sexy Neighbour 2 Prologue",
         "desc": "Before the fame came the thrill. In this provocative prologue to My Sexy Neighbor 2, you take your first steps into a world of voyeurism, dares, and dirty cash. Sneak, stream, seduce — and discover how one wild night can change everything.",
         "header_image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3814970/81d40786cd02fb11701aa58d2731f0c50983705b/header.jpg?t=1764345917",
         "developer": "Pocket Rocket Studio 🚀",
@@ -3330,7 +3330,7 @@
         "safe": "?",
         "type_game": "offline",
         "notes": "Not support English language. (Only Japanese)",
-        "name": "宝姉妹 | スクラッチシミュレーター",
+        "name": "宝姉妹 : スクラッチシミュレーター",
         "desc": "「宝姉妹 | スクラッチシミュレーター」は、ヤングガンガンで連載中のハートフルマネーコメディ漫画『宝姉妹』のキャラクターたちと一緒に、スクラッチくじ気分を味わえるシミュレーションゲームです。スクラッチを削って当たりマスをチェック。 タテ・ヨコ・ナナメのいずれか一列に同じ絵柄が3個並ぶと当たり！そろった絵柄に応じて当選金が受け取れます。 1等100万円当選を目指していっぱい削ろう！ ※本作はゲーム内のみで完結するスクラッチ風シミュレーションです。 現実のお金の売買・賭け行為・実在のくじとは一切関係ありません。 ゲーム内で当選しても、現金や実物の賞品がもらえることはありません。",
         "header_image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4235540/64c6ce4bfb8983ecce06af4ae2a95010590e2b0a/header.jpg?t=1766612357",
         "developer": "久川はる, 園児ニア",
@@ -3959,7 +3959,7 @@
         "link": "https://store.steampowered.com/app/3943970/1_in_a_Million__A_game_of_odds/",
         "safe": "?",
         "type_game": "offline",
-        "name": "1 in a Million | A game of odds",
+        "name": "1 in a Million : A game of odds",
         "desc": "Can you get the 1 in a million achievement on Steam?",
         "header_image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3943970/63af3b50dda0e311177d86bc0985766a45a9b201/header.jpg?t=1756365923",
         "developer": "Mythroot Interactive",
@@ -4507,5 +4507,19 @@
         "reviews": "98% (Overwhelmingly Positive)",
         "current_players": "2",
         "notes": "Not play - No review."
-    }
+    },
+  {
+    "genre": "Hack & Slash",
+    "link": "https://store.steampowered.com/app/3979380/Pneuma/",
+     "safe": "?",
+     "type_game": "offline",
+     "name": "Pneuma"
+  },
+  {
+    "genre": "Platformer",
+    "link": "https://store.steampowered.com/app/3983390/Cooking_Time/",
+     "safe": "?",
+     "type_game": "online",
+     "name": "Cooking Time"
+  }
 ]
