@@ -138,7 +138,6 @@
     "genre"           : "Stimulation" ,
     "link"            : "https://store.steampowered.com/app/4143610/REAL_MOON/" ,
     "safe"            : "y" ,
-    "note"            : "Walking & taking photo on the moon simulator :)" ,
     "name"            : "REAL MOON" ,
     "desc"            : "Explore a precisely recreated lunar surface built from real data and a JAXA-backed simulation." ,
     "developer"       : "historia Inc." ,
@@ -154,7 +153,6 @@
     "genre"           : "MMORPG" ,
     "link"            : "https://store.steampowered.com/app/3564740/Where_Winds_Meet/" ,
     "safe"            : "y" ,
-    "note"            : "Need more time playing to review." ,
     "name"            : "Where Winds Meet" ,
     "desc"            : "Where Winds Meet is an epic Wuxia open-world action-adventure RPG set in ancient China at the tenth century. Players will assume the role of a young sword master as they embark on a journey to uncover the mysteries of their own identity. Let the wind carry your legend on an epic journey to the East!" ,
     "developer"       : "Everstone Studio" ,
@@ -906,7 +904,6 @@
     "link"            : "https://store.steampowered.com/app/3776670/Replicomica/" ,
     "safe"            : "?" ,
     "type_game"       : "offline" ,
-    "note"            : "Relax game :)" ,
     "name"            : "Replicomica" ,
     "desc"            : "A short, atmospheric experience set inside a handcrafted dream. You are a small, solitary citizen drifting through augmented memories. Boot up your LonelyOS and let the robots guide you." ,
     "header_image"    : "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3776670/53fb16f803aa31d249e3b6aa6a3e2a4887fd5315/header.jpg?t=1750904457" ,
@@ -2053,7 +2050,7 @@
     "notes"           : "Not play - No review."
   } ,
   {
-    "genre:"          : "Visual Novel" ,
+    "genre"          : "Visual Novel" ,
     "link"            : "https://store.steampowered.com/app/4222340/Denpa_Nightmares/" ,
     "safe"            : "?" ,
     "type_game"       : "offline" ,
