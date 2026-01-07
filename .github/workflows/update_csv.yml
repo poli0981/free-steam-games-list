@@ -19,7 +19,7 @@ jobs:
           python-version: '3.12'
 
       - name: Run bash script to export data
-        run:
+        run: |
           chmod +x ./bash/csv_export.sh
           ./bash/csv_export.sh
         shell: bash
