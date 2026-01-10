@@ -8,6 +8,9 @@
 
 .idea/ export-ignore
 .vscode/ export-ignore
+.env export-ignore
+.env.* export-ignore
+.vs/ export-ignore
 
 CODE_OF_CONDUCT.md export-ignore
 CONTRIBUTING.md export-ignore
@@ -15,4 +18,27 @@ SECURITY.md export-ignore
 /docs/Contact.md export-ignore
 /docs/PRIVACY_POLICY.md export-ignore
 CHANGELOG.md export-ignore
+
+*.csv export-ignore
+*.log export-ignore
+*.exe export-ignore
+*.dmg export-ignore
+*.pkg export-ignore
+*.msi export-ignore
+*.app export-ignore
+*.pdb export-ignore
+
+/logs/ export-ignore
+/tmp/ export-ignore
+/build/ export-ignore
+/node_modules/ export-ignore
+/dist/ export-ignore
+
+cache/ export-ignore
+*.cache export-ignore
+*.bak export-ignore
+*.old export-ignore
+*.tmp export-ignore
+
+.DS_Store export-ignore
 
