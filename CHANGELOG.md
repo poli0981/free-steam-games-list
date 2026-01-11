@@ -2,6 +2,11 @@
 
 All notable changes to this awesome noob repo will be documented here.
 
+## [v1.1.2] - 2026-01-11
+
+## Added
+- 40+ games.
+
 ## [v1.1.1] - 2026-01-07
 
 ## Added
