@@ -1,6 +1,6 @@
 # Action RPG Games
 
-5 games – Generated: 2026-01-10 00:16
+5 games – Generated: 2026-01-11 00:19
 
 | No. | Thumbnail | Game Name | Genre | Developer | Release Date | Short Desc | Steam Link | Reviews | Players | Anti-Cheat | Notes | Safe |
 |-----|-----------|-----------|-------|-----------|--------------|------------|------------|---------|---------|------------|-------|------|
