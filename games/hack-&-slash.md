@@ -1,6 +1,6 @@
 # Hack & Slash Games
 
-2 games – Generated: 2026-01-11 00:19
+2 games – Generated: 2026-01-12 00:17
 
 | No. | Thumbnail | Game Name | Genre | Developer | Release Date | Short Desc | Steam Link | Reviews | Players | Anti-Cheat | Notes | Safe |
 |-----|-----------|-----------|-------|-----------|--------------|------------|------------|---------|---------|------------|-------|------|
