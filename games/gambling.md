@@ -1,8 +1,8 @@
 # Gambling Games
 
-2 games – Generated: 2026-01-12 00:17
+2 games – Generated: 2026-01-13 00:14
 
 | No. | Thumbnail | Game Name | Genre | Developer | Release Date | Short Desc | Steam Link | Reviews | Players | Anti-Cheat | Notes | Safe |
 |-----|-----------|-----------|-------|-----------|--------------|------------|------------|---------|---------|------------|-------|------|
-| 1 | ![Umamusume: Pretty Derby](https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3224770/header.jpg?t=1765520190) | Umamusume: Pretty Derby | Gambling | Cygames, Inc. | Jun 24, 2025 | Umamusume: Pretty Derby, winner of Best Mobile Game at The Game Awards 2025, is ready to race! Scout featured trainees and supporters as you navigate the immersive sports life simulation through the game's in-depth training system and top-of-the-line 3D graphics!. | [Link](https://store.steampowered.com/app/3224770/Umamusume_Pretty_Derby/) | 94% (Very Positive) | 12,147 | - | Not play - No review. | ? |
+| 1 | ![Umamusume: Pretty Derby](https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3224770/header.jpg?t=1765520190) | Umamusume: Pretty Derby | Gambling | Cygames, Inc. | Jun 24, 2025 | Umamusume: Pretty Derby, winner of Best Mobile Game at The Game Awards 2025, is ready to race! Scout featured trainees and supporters as you navigate the immersive sports life simulation through the game's in-depth training system and top-of-the-line 3D graphics!. | [Link](https://store.steampowered.com/app/3224770/Umamusume_Pretty_Derby/) | 94% (Very Positive) | 12,147 | CrackProof® | Not play - No review. | ? |
 | 2 | ![Jackpot.de](https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3608300/2dfa11d296ec5cd1c59edfa21393927fbcd50502/header.jpg?t=1764250323) | Jackpot.de | Gambling | Whow Games GmbH | Nov 27, 2025 | Play our prize-winning slots in the best free2play funtime casino out there. | [Link](https://store.steampowered.com/app/3608300/Jackpotde/) | 40% (5 user reviews) | 1 | - | Not play - No review. | ? |
