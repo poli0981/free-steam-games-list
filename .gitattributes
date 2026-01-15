@@ -18,6 +18,8 @@ SECURITY.md export-ignore
 /docs/Contact.md export-ignore
 /docs/PRIVACY_POLICY.md export-ignore
 CHANGELOG.md export-ignore
+README.md export-ignore
+/docs/ToS.md export-ignore
 
 *.csv export-ignore
 *.log export-ignore
