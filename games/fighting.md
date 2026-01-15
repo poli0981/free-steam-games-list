@@ -1,6 +1,6 @@
 # Fighting Games
 
-4 games – Generated: 2026-01-14 00:17
+4 games – Generated: 2026-01-15 00:16
 
 | No. | Thumbnail | Game Name | Genre | Developer | Release Date | Short Desc | Steam Link | Reviews | Players | Anti-Cheat | Notes | Safe |
 |-----|-----------|-----------|-------|-----------|--------------|------------|------------|---------|---------|------------|-------|------|
