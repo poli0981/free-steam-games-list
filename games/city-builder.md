@@ -1,7 +1,8 @@
 # City Builder Games
 
-1 games – Generated: 2026-01-15 00:16
+2 games – Generated: 2026-01-16 00:17
 
 | No. | Thumbnail | Game Name | Genre | Developer | Release Date | Short Desc | Steam Link | Reviews | Players | Anti-Cheat | Notes | Safe |
 |-----|-----------|-----------|-------|-----------|--------------|------------|------------|---------|---------|------------|-------|------|
 | 1 | ![Virtual City Playground®: Build Your Metropolis](https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3760180/466e4e2e3afcec867336f60a44b68c85fe2ed467/header.jpg?t=1768216661) | Virtual City Playground®: Build Your Metropolis | City Builder | G5 Entertainment AB | Jan 12, 2026 | Relaxing city builder where you grow a vibrant metropolis, produce goods, manage transit and build iconic landmarks at your own pace. | [Link](https://store.steampowered.com/app/3760180/Virtual_City_Playground_Build_Your_Metropolis/) | 75% (8 user reviews) | 2 | - | Not play - No review. | ? |
+| 2 | ![Survivors: Match-3 Island Adventure](https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4207270/2202bba6566d252e62efaf8a508492b0c8c82357/header.jpg?t=1768309801) | Survivors: Match-3 Island Adventure | City Builder | G5 Entertainment AB | Jan 13, 2026 | Survive on a mysterious island after a plane crash! Solve match-3 puzzles, restore your camp, craft tools, grow crops, explore jungles and lagoons, uncover hidden treasures and reveal the island’s secrets!. | [Link](https://store.steampowered.com/app/4207270/Survivors_Match3_Island_Adventure/) | 67% (3 user reviews) | 1 | - | Not play - No review. | ? |

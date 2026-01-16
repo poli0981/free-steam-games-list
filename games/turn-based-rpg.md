@@ -1,6 +1,6 @@
 # Turn-based RPG Games
 
-2 games – Generated: 2026-01-15 00:16
+2 games – Generated: 2026-01-16 00:17
 
 | No. | Thumbnail | Game Name | Genre | Developer | Release Date | Short Desc | Steam Link | Reviews | Players | Anti-Cheat | Notes | Safe |
 |-----|-----------|-----------|-------|-----------|--------------|------------|------------|---------|---------|------------|-------|------|

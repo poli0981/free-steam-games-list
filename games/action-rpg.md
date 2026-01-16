@@ -1,6 +1,6 @@
 # Action RPG Games
 
-5 games – Generated: 2026-01-15 00:16
+6 games – Generated: 2026-01-16 00:17
 
 | No. | Thumbnail | Game Name | Genre | Developer | Release Date | Short Desc | Steam Link | Reviews | Players | Anti-Cheat | Notes | Safe |
 |-----|-----------|-----------|-------|-----------|--------------|------------|------------|---------|---------|------------|-------|------|
@@ -8,4 +8,5 @@
 | 2 | ![#Oyster Sooource 2120bb](https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3949890/158c395b045629911596acae5dcc428213d5eed4/header.jpg?t=1764342001) | #Oyster Sooource 2120bb | Action RPG | The_Ear_Man | Nov 28, 2025 | Destruction is Pleasure! Idle, upgrade, and dodge enemies in a Pac-Man-style action game with allies and endless retries. | [Link](https://store.steampowered.com/app/3949890/Oyster_Sooource_2120bb/) | 100% (5 user reviews) | 0 | - | Not play - No review. | ? |
 | 3 | ![Battle of Goldfish Scooping](https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2987080/78d25813f2b7a5133d89455a4462aee23d5017b5/header.jpg?t=1764253349) | Battle of Goldfish Scooping | Action RPG | CreCre | Nov 23, 2025 | &quot;Battle of Goldfish Scooping&quot; is an asymmetrical multiplayer action game. | [Link](https://store.steampowered.com/app/2987080/Battle_of_Goldfish_Scooping/) | 74% (Mostly Positive) | 1 | - | Not play - No review. | ? |
 | 4 | ![TRIBE NINE](https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2376580/header.jpg?t=1744953823) | TRIBE NINE | Action RPG | Akatsuki Games Inc. | Feb 18, 2025 | Defy the madness. | [Link](https://store.steampowered.com/app/2376580/TRIBE_NINE/) | 68% (Mixed) | 1 | - | Not play - No review. | ? |
-| 5 | ![Path of the Tank](https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2845940/8ecfa2fed0479408164785e80ccd45faef4d44fe/header.jpg?t=1766168949) | Path of the Tank | Action RPG | Niceas de Atenas | Dec 19, 2025 | Can you challenge oblivion itself?. | [Link](https://store.steampowered.com/app/2845940/Path_of_the_Tank/) | 60% (5 user reviews) | 0 | - | Not play - No review. | ? |
+| 5 | ![GrandChase](https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/985810/d1e3d30094ab0291c8fea475379950f80fe9a8a0/header.jpg?t=1764735928) | GrandChase | Action RPG | KOG | Jul 27, 2021 | Grand Chase is a free side-scrolling online action RPG with anime inspired graphics. | [Link](https://store.steampowered.com/app/985810/GrandChase/) | 65% (Mixed) | 2,813 | - | Not play - No review. | ? |
+| 6 | ![Path of the Tank](https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2845940/8ecfa2fed0479408164785e80ccd45faef4d44fe/header.jpg?t=1766168949) | Path of the Tank | Action RPG | Niceas de Atenas | Dec 19, 2025 | Can you challenge oblivion itself?. | [Link](https://store.steampowered.com/app/2845940/Path_of_the_Tank/) | 60% (5 user reviews) | 0 | - | Not play - No review. | ? |

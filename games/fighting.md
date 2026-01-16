@@ -1,6 +1,6 @@
 # Fighting Games
 
-4 games – Generated: 2026-01-15 00:16
+6 games – Generated: 2026-01-16 00:17
 
 | No. | Thumbnail | Game Name | Genre | Developer | Release Date | Short Desc | Steam Link | Reviews | Players | Anti-Cheat | Notes | Safe |
 |-----|-----------|-----------|-------|-----------|--------------|------------|------------|---------|---------|------------|-------|------|
@@ -8,3 +8,5 @@
 | 2 | ![Ktrl Smash](https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4223440/87f74d86bf6baac05a7a5800cac8e0b525a66823/header.jpg?t=1767207369) | Ktrl Smash | Fighting | FIFTYFIVE GAMING STUDIO PRIVATE LIMITED | Dec 31, 2025 | Krlt Smash is a fast-paced multiplayer arena game where anything can become a weapon. | [Link](https://store.steampowered.com/app/4223440/Ktrl_Smash/) | 100% (2 user reviews) | 0 | - | Not play - No review. | ? |
 | 3 | ![Brawlhalla](https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/291550/b984bbab869bd52d305b43b8358ab1581bc136c1/header_alt_assets_4.jpg?t=1764872854) | Brawlhalla | Fighting | Blue Mammoth Games | 17 Oct, 2017 | An epic platform fighter for up to 8 players online or local. | [Link](https://store.steampowered.com/app/291550/Brawlhalla/) | 81% (Very Positive) | 6,995 | - | Not play - No review. | ? |
 | 4 | ![DEAD OR ALIVE 5 Last Round: Core Fighters](https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/311730/header.jpg?t=1729051743) | DEAD OR ALIVE 5 Last Round: Core Fighters | Fighting | Team NINJA, KOEI TECMO GAMES CO., LTD. | 30 Mar, 2015 | The free version of the final word in fighting entertainment - DEAD OR ALIVE 5 Last Round!. | [Link](https://store.steampowered.com/app/311730/DEAD_OR_ALIVE_5_Last_Round_Core_Fighters/) | 69% (Mixed) | 52 | - | Not play - No review. | ? |
+| 5 | ![ONE PIECE Bounty Rush](https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2918150/header.jpg?t=1762511808) | ONE PIECE Bounty Rush | Fighting | SEGA | Sep 23, 2024 | Take the loot, pirates! Bounty Rush is a 4 vs 4 multiplayer team action game. | [Link](https://store.steampowered.com/app/2918150/ONE_PIECE_Bounty_Rush/) | 68% (Mixed) | 1,271 | - | Not play - No review. | ? |
+| 6 | ![Starward](https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2764370/807485e1794cceb1136cb72216a859a3d304a994/header.jpg?t=1768475037) | Starward | Fighting | Game Blender | Apr 24, 2024 | The Steam version of 《Starward》 is an Asian server version, and the account is not compatible with other servers. | [Link](https://store.steampowered.com/app/2764370/Starward/) | 63% (Mixed) | 331 | - | Not play - No review. | ? |
