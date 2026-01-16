@@ -32,7 +32,8 @@ bumped by AI.
 
 Contributions welcome – add games, fix bugs, save me from myself :))
 
-**Disclaimer:** Quality? Fun? Safety? Who knows. I only vouch for games I've played (Safe column: y = yes, ? =
+> [!WARNING]
+>  **Disclaimer:** Quality? Fun? Safety? Who knows. I only vouch for games I've played (Safe column: y = yes, ? =
 dunno, ! = careful, n = nope). Problems? Talk to Valve/devs, not me.
 
 ### Contribute
