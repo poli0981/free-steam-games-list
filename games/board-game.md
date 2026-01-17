@@ -1,8 +1,9 @@
 # Board Game Games
 
-2 games – Generated: 2026-01-16 00:17
+3 games – Generated: 2026-01-17 00:16
 
 | No. | Thumbnail | Game Name | Genre | Developer | Release Date | Short Desc | Steam Link | Reviews | Players | Anti-Cheat | Notes | Safe |
 |-----|-----------|-----------|-------|-----------|--------------|------------|------------|---------|---------|------------|-------|------|
 | 1 | ![RISK: Global Domination](https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1128810/header.jpg?t=1761095871) | RISK: Global Domination | Board Game | SMG Studio | Feb 19, 2020 | Take over the world in RISK: Global Domination, the iconic strategy board game with 100+ original and classic maps and millions of players. | [Link](https://store.steampowered.com/app/1128810/RISK_Global_Domination/) | 80% (Mostly Positive) | 1,549 | - | Not play - No review. | ? |
 | 2 | ![Drawful 2](https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/442070/header.jpg?t=1728584390) | Drawful 2 | Board Game | Jackbox Games, Inc. | Jun 20, 2016 | For 3-8 players and an audience of thousands! Your phones or tablets are your controllers! The game of terrible drawings and hilariously wrong answers. | [Link](https://store.steampowered.com/app/442070/Drawful_2/) | 74% (Mostly Positive) | 23 | - |  (No longer free! Check price bro) | ? |
+| 3 | ![Astral Party ](https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2622000/bf2f2f5bd97e0f3be91209888d067a4858235db7/header.jpg?t=1767777863) | Astral Party  | Board Game | STAR ENGINE PROJECT | Feb 28, 2024 | Astral Party is a multiplayer party game populated by cute anime girls! Choose your favorite character, strategize skills &amp; cards, and roll the dice to destroy friendships in this unique board game. | [Link](https://store.steampowered.com/app/2622000/Astral_Party/) | 55% (Mixed) | 320 | - | Not play - No review. | ? |
