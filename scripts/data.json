@@ -6265,7 +6265,7 @@
         "notes": "Not play - No review."
     },
     {
-        "genre": "Turn-Based Tactics",
+        "genre": "Turn-based Tactics",
         "link": "https://store.steampowered.com/app/1973710/_/",
         "safe": "?",
         "type_game": "online",
@@ -6548,5 +6548,118 @@
         "reviews": "71% (Mostly Positive)",
         "current_players": "342",
         "notes": "Not play - No review."
-    }
+    },
+  {
+    "genre": "Puzzle",
+    "link": "https://store.steampowered.com/app/4212730/Giant_Snake_Girl_wants_The_Burger/",
+    "safe": "?",
+     "type_game": "offline",
+     "name": "Giant Snake Girl wants The Burger!"
+
+  },{
+  "genre": "Stimulation",
+  "link": "https://store.steampowered.com/app/4260720/EmuDevz/",
+     "safe": "?",
+      "type_game": "offline",
+      "name": "EmuDevz"
+},{
+  "genre": "Visual Novel",
+  "link": "https://store.steampowered.com/app/2263250/A_Song_Of_Sunlight/",
+     "safe": "?",
+      "type_game": "offline",
+      "name": "A Song Of Sunlight"
+},
+  {
+    "genre": "Battle Royale",
+    "link": "https://store.steampowered.com/app/3649730/Legend_Battles/",
+     "safe": "?",
+      "type_game": "online",
+      "name": "Legend Battles",
+    "anti_cheat": "Easy Anti-Cheat"
+  },{
+  "genre": "FPS",
+  "link": "https://store.steampowered.com/app/949450/11th_Dream/",
+     "safe": "?",
+      "type_game": "online",
+      "name": "11th Dream"
+},{
+  "genre": "Visual Novel",
+  "link": "https://store.steampowered.com/app/2055390/11/",
+     "safe": "?",
+      "type_game": "offline",
+      "name": "11号小镇综合症"
+},{
+"genre": "Platformer",
+  "link": "https://store.steampowered.com/app/1393270/12_bananas/",
+     "safe": "?",
+      "type_game": "offline",
+      "name": "12 bananas"
+},{
+  "genre": "Visual Novel",
+  "link": "https://store.steampowered.com/app/1345080/12_Hours_to_Die/",
+     "safe": "?",
+      "type_game": "offline",
+      "name": "12 Hours to Die"
+},{
+  "genre": "Strategy",
+  "link": "https://store.steampowered.com/app/1798300/1940/",
+     "safe": "?",
+      "type_game": "offline",
+      "name": "1940",
+  "notes": "English language not supported - Chinese only"
+},{
+  "genre": "Puzzle",
+  "link": "https://store.steampowered.com/app/1476690/15_puzzle/",
+     "safe": "?",
+      "type_game": "offline",
+      "name": "15 puzzle"
+},{
+  "genre": "Horror",
+  "link": "https://store.steampowered.com/app/2362150/13iew/",
+     "safe": "?",
+      "type_game": "offline",
+      "name": "13iew"
+},{
+  "genre": "Puzzle",
+  "link": "https://store.steampowered.com/app/1689680/13ORIGIN__Prologue/",
+     "safe": "?",
+      "type_game": "offline",
+      "name": "13:ORIGIN - Prologue"
+},{
+  "genre": "Puzzle",
+  "link": "https://store.steampowered.com/app/2915860/1306_Chapter_1_Reactors__Robots/",
+     "safe": "?",
+      "type_game": "offline",
+      "name": "1306: Chapter 1 - Reactors & Robots"
+},{
+  "genre": "Horror",
+  "link": "https://store.steampowered.com/app/2200420/13_Candles/",
+     "safe": "?",
+      "type_game": "offline",
+      "name": "13 Candles"
+},{
+  "genre": "Puzzle",
+  "link": "https://store.steampowered.com/app/4143670/12_Memory_Lane/",
+     "safe": "?",
+      "type_game": "offline",
+      "name": "12 Memory Lane"
+},{
+  "genre": "City Builder",
+  "link": "https://store.steampowered.com/app/1397010/1980/",
+     "safe": "?",
+      "type_game": "offline",
+      "name": "1980"
+},{
+  "genre": "Arcade",
+  "link": "https://store.steampowered.com/app/639650/1982/",
+     "safe": "?",
+      "type_game": "offline",
+      "name": "1982"
+},{
+  "genre": "Turn-based RPG",
+     "link": "https://store.steampowered.com/app/2147580/1990/",
+     "safe": "?",
+          "type_game": "offline",
+          "name": "1990"
+}
 ]
