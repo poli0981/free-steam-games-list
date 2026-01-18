@@ -1462,7 +1462,7 @@
         "type_game": "online",
         "notes": "Beautiful Girl, Gacha outfit",
         "reviews": "83% (Very Positive)",
-        "current_players": "1,122"
+        "current_players": "1,111"
     },
     {
         "genre": "Fighting",
@@ -5690,7 +5690,7 @@
         "developer": "POSTITANIK",
         "release_date": "Jan 13, 2026",
         "anti_cheat": "-",
-        "reviews": "No reviews",
+        "reviews": "100% (1 user reviews)",
         "current_players": "0",
         "notes": "Not play - No review."
     },
@@ -6247,7 +6247,7 @@
         "release_date": "Jan 15, 2026",
         "anti_cheat": "-",
         "reviews": "No reviews",
-        "current_players": "1"
+        "current_players": "2"
     },
     {
         "genre": "Board Game",
@@ -6549,117 +6549,274 @@
         "current_players": "342",
         "notes": "Not play - No review."
     },
-  {
-    "genre": "Puzzle",
-    "link": "https://store.steampowered.com/app/4212730/Giant_Snake_Girl_wants_The_Burger/",
-    "safe": "?",
-     "type_game": "offline",
-     "name": "Giant Snake Girl wants The Burger!"
-
-  },{
-  "genre": "Stimulation",
-  "link": "https://store.steampowered.com/app/4260720/EmuDevz/",
-     "safe": "?",
-      "type_game": "offline",
-      "name": "EmuDevz"
-},{
-  "genre": "Visual Novel",
-  "link": "https://store.steampowered.com/app/2263250/A_Song_Of_Sunlight/",
-     "safe": "?",
-      "type_game": "offline",
-      "name": "A Song Of Sunlight"
-},
-  {
-    "genre": "Battle Royale",
-    "link": "https://store.steampowered.com/app/3649730/Legend_Battles/",
-     "safe": "?",
-      "type_game": "online",
-      "name": "Legend Battles",
-    "anti_cheat": "Easy Anti-Cheat"
-  },{
-  "genre": "FPS",
-  "link": "https://store.steampowered.com/app/949450/11th_Dream/",
-     "safe": "?",
-      "type_game": "online",
-      "name": "11th Dream"
-},{
-  "genre": "Visual Novel",
-  "link": "https://store.steampowered.com/app/2055390/11/",
-     "safe": "?",
-      "type_game": "offline",
-      "name": "11号小镇综合症"
-},{
-"genre": "Platformer",
-  "link": "https://store.steampowered.com/app/1393270/12_bananas/",
-     "safe": "?",
-      "type_game": "offline",
-      "name": "12 bananas"
-},{
-  "genre": "Visual Novel",
-  "link": "https://store.steampowered.com/app/1345080/12_Hours_to_Die/",
-     "safe": "?",
-      "type_game": "offline",
-      "name": "12 Hours to Die"
-},{
-  "genre": "Strategy",
-  "link": "https://store.steampowered.com/app/1798300/1940/",
-     "safe": "?",
-      "type_game": "offline",
-      "name": "1940",
-  "notes": "English language not supported - Chinese only"
-},{
-  "genre": "Puzzle",
-  "link": "https://store.steampowered.com/app/1476690/15_puzzle/",
-     "safe": "?",
-      "type_game": "offline",
-      "name": "15 puzzle"
-},{
-  "genre": "Horror",
-  "link": "https://store.steampowered.com/app/2362150/13iew/",
-     "safe": "?",
-      "type_game": "offline",
-      "name": "13iew"
-},{
-  "genre": "Puzzle",
-  "link": "https://store.steampowered.com/app/1689680/13ORIGIN__Prologue/",
-     "safe": "?",
-      "type_game": "offline",
-      "name": "13:ORIGIN - Prologue"
-},{
-  "genre": "Puzzle",
-  "link": "https://store.steampowered.com/app/2915860/1306_Chapter_1_Reactors__Robots/",
-     "safe": "?",
-      "type_game": "offline",
-      "name": "1306: Chapter 1 - Reactors & Robots"
-},{
-  "genre": "Horror",
-  "link": "https://store.steampowered.com/app/2200420/13_Candles/",
-     "safe": "?",
-      "type_game": "offline",
-      "name": "13 Candles"
-},{
-  "genre": "Puzzle",
-  "link": "https://store.steampowered.com/app/4143670/12_Memory_Lane/",
-     "safe": "?",
-      "type_game": "offline",
-      "name": "12 Memory Lane"
-},{
-  "genre": "City Builder",
-  "link": "https://store.steampowered.com/app/1397010/1980/",
-     "safe": "?",
-      "type_game": "offline",
-      "name": "1980"
-},{
-  "genre": "Arcade",
-  "link": "https://store.steampowered.com/app/639650/1982/",
-     "safe": "?",
-      "type_game": "offline",
-      "name": "1982"
-},{
-  "genre": "Turn-based RPG",
-     "link": "https://store.steampowered.com/app/2147580/1990/",
-     "safe": "?",
-          "type_game": "offline",
-          "name": "1990"
-}
+    {
+        "genre": "Puzzle",
+        "link": "https://store.steampowered.com/app/4212730/Giant_Snake_Girl_wants_The_Burger/",
+        "safe": "?",
+        "type_game": "offline",
+        "name": "Giant Snake Girl wants The Burger!",
+        "desc": "One silly Tsuchinoko's epic journey to feed The Burger to her Giant Snake friend.",
+        "header_image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4212730/c75f1dc477bb1306f50ec3f5096a90616f22f9cf/header.jpg?t=1768584222",
+        "developer": "Woah_maaan",
+        "release_date": "Jan 16, 2026",
+        "anti_cheat": "-",
+        "reviews": "100% (7 user reviews)",
+        "current_players": "2",
+        "notes": "Not play - No review."
+    },
+    {
+        "genre": "Stimulation",
+        "link": "https://store.steampowered.com/app/4260720/EmuDevz/",
+        "safe": "?",
+        "type_game": "offline",
+        "name": "EmuDevz",
+        "desc": "A game about building emulators! Implement your own NEEES core in JavaScript, get instant feedback with unit/video tests, build the graphics unit in real time, learn 6502 assembly, debug test ROMs, and have fun with the included homebrew games!",
+        "header_image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4260720/86f35d4a1acad2ab911ebca514b558fabcd64003/header.jpg?t=1768595115",
+        "developer": "[r]labs",
+        "release_date": "Jan 16, 2026",
+        "anti_cheat": "-",
+        "reviews": "100% (7 user reviews)",
+        "current_players": "9",
+        "notes": "Not play - No review."
+    },
+    {
+        "genre": "Visual Novel",
+        "link": "https://store.steampowered.com/app/2263250/A_Song_Of_Sunlight/",
+        "safe": "?",
+        "type_game": "offline",
+        "name": "A Song Of Sunlight",
+        "desc": "An RPG set in a distant, lonely future. Follow Arem, a young man lured from his small island community to explore the desolate megastructure beneath it: “The Well.” With the simple goal of finding the exit, Arem will burden himself with something more terrible than he ever thought possible.",
+        "header_image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2263250/86ff2274db84b99995010135735f6294288b5f51/header.jpg?t=1768600860",
+        "developer": "RageForDragons",
+        "release_date": "Jan 16, 2026",
+        "anti_cheat": "-",
+        "reviews": "100% (4 user reviews)",
+        "current_players": "6",
+        "notes": "Not play - No review."
+    },
+    {
+        "genre": "Battle Royale",
+        "link": "https://store.steampowered.com/app/3649730/Legend_Battles/",
+        "safe": "?",
+        "type_game": "online",
+        "name": "Legend Battles",
+        "anti_cheat": "Easy Anti-Cheat",
+        "desc": "Free-to-play UE 5.6 Extraction Battle Royale in 400 km² neo-futuristic world with destructible environment and vehicles, massive ET-ACUs, armored Aliens, ferocious Monsters, heavily armed MetaHumans, complete missions to attack, defend, loot, extract facing dynamic weathers.",
+        "header_image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3649730/db822b2aab0553955db63863ab399eb2490b37bd/header.jpg?t=1768615126",
+        "developer": "Hanxiang",
+        "release_date": "Jan 16, 2026",
+        "reviews": "62% (Mixed)",
+        "current_players": "1",
+        "notes": "Not play - No review."
+    },
+    {
+        "genre": "FPS",
+        "link": "https://store.steampowered.com/app/949450/11th_Dream/",
+        "safe": "?",
+        "type_game": "online",
+        "name": "11th Dream",
+        "desc": "11th Dream is a fast-paced third person abstract shooter aimed at hard-core difficulty enthusiasts and fast runners. Visit a place after biological history, where bots became tools for other tools.",
+        "header_image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/949450/header.jpg?t=1755171666",
+        "developer": "Blue Pulsar Games",
+        "release_date": "Sep 17, 2021",
+        "anti_cheat": "-",
+        "reviews": "83% (Positive)",
+        "current_players": "0",
+        "notes": "Not play - No review."
+    },
+    {
+        "genre": "Visual Novel",
+        "link": "https://store.steampowered.com/app/2055390/11/",
+        "safe": "?",
+        "type_game": "offline",
+        "name": "11号小镇综合症",
+        "desc": "欢迎来到11号小镇，在这个诡异的小镇里，您是一位新来的画家。为了完成镇上居民们的绘画委托，您需要收集对话中的关键词，将关键词提炼成绘画素材组合到画布上。面对居民们奇怪的委托，您能顺利完成作画并融入镇子，证明自己是“正常”的吗？",
+        "header_image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2055390/header.jpg?t=1657490001",
+        "developer": "Hell Delivery",
+        "release_date": "Jul 10, 2022",
+        "anti_cheat": "-",
+        "reviews": "85% (Very Positive)",
+        "current_players": "0",
+        "notes": "Not play - No review."
+    },
+    {
+        "genre": "Platformer",
+        "link": "https://store.steampowered.com/app/1393270/12_bananas/",
+        "safe": "?",
+        "type_game": "offline",
+        "name": "12 bananas",
+        "desc": "Leap over treacherous chasms, navigate past a sea of hazards, and locate all 12 bananas as you embark on an epic quest and travel the patience-testing path that lies ahead in this infuriatingly challenging, unforgiving, puzzling, memey platformer.",
+        "header_image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1393270/header.jpg?t=1600281807",
+        "developer": "Klode",
+        "release_date": "Sep 16, 2020",
+        "anti_cheat": "-",
+        "reviews": "84% (Very Positive)",
+        "current_players": "1",
+        "notes": "Not play - No review."
+    },
+    {
+        "genre": "Visual Novel",
+        "link": "https://store.steampowered.com/app/1345080/12_Hours_to_Die/",
+        "safe": "?",
+        "type_game": "offline",
+        "name": "12 Hours to Die",
+        "desc": "A mystery visual novel about six students forced to play a 12-hour long killing game.",
+        "header_image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1345080/header.jpg?t=1593954128",
+        "developer": "Wesley Reitsma",
+        "release_date": "Jul 5, 2020",
+        "anti_cheat": "-",
+        "reviews": "73% (Mostly Positive)",
+        "current_players": "0",
+        "notes": "Not play - No review."
+    },
+    {
+        "genre": "Strategy",
+        "link": "https://store.steampowered.com/app/1798300/1940/",
+        "safe": "?",
+        "type_game": "offline",
+        "name": "1940",
+        "notes": "English language not supported - Chinese only",
+        "desc": "本遊戲以日治時期的小說家、影人劉吶鷗生平為故事文本，以臺灣文學館收藏劉吶鷗的麻將牌為關鍵道具，遊戲舞台從上海百樂門、天津萬國橋、黑龍江大興安嶺、北京明陵地宮到臺灣臺南州廳。在科幻背景中，使玩家進行一場益智解謎遊戲。",
+        "header_image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1798300/header.jpg?t=1636611779",
+        "developer": "愛迪斯科技有限公司, Pixelight",
+        "release_date": "Nov 10, 2021",
+        "anti_cheat": "-",
+        "reviews": "68% (Mixed)",
+        "current_players": "0"
+    },
+    {
+        "genre": "Puzzle",
+        "link": "https://store.steampowered.com/app/1476690/15_puzzle/",
+        "safe": "?",
+        "type_game": "offline",
+        "name": "15 puzzle",
+        "desc": "A classic game of puzzle 8 (3x3), 15 (4x4), 24 (5x5) or 35 (6x6) in which player has to move pieces on board so they are from 1 to 8, 15, 24 or 35.",
+        "header_image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1476690/header.jpg?t=1668028611",
+        "developer": "Vectura Games",
+        "release_date": "Dec 4, 2020",
+        "anti_cheat": "-",
+        "reviews": "59% (Mixed)",
+        "current_players": "0",
+        "notes": "Not play - No review."
+    },
+    {
+        "genre": "Horror",
+        "link": "https://store.steampowered.com/app/2362150/13iew/",
+        "safe": "?",
+        "type_game": "offline",
+        "name": "13iew",
+        "desc": "A girl abandoned in the basement of a hospital for some reason. Escape the hospital avoiding the doctor who abandoned the girl in the basement! Complete the story through hidden foreshadowings and various devices throughout the map and find out why the doctor abandoned the girl in the basement.",
+        "header_image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2362150/header.jpg?t=1680692781",
+        "developer": "GMD Studio",
+        "release_date": "Apr 4, 2023",
+        "anti_cheat": "-",
+        "reviews": "62% (Mixed)",
+        "current_players": "0",
+        "notes": "Not play - No review."
+    },
+    {
+        "genre": "Puzzle",
+        "link": "https://store.steampowered.com/app/1689680/13ORIGIN__Prologue/",
+        "safe": "?",
+        "type_game": "offline",
+        "name": "13:ORIGIN - Prologue",
+        "desc": "13: Origin is a web of clues that you must follow and not miss, as in most room escape/puzzle games. As you untie each knotted loop, you will realize how long and endless the thread you hold on to the end is.",
+        "header_image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1689680/header.jpg?t=1683321422",
+        "developer": "Corvus Studio Yazilim Anonim Sirketi",
+        "release_date": "Aug 27, 2021",
+        "anti_cheat": "-",
+        "reviews": "78% (Mostly Positive)",
+        "current_players": "0",
+        "notes": "Not play - No review."
+    },
+    {
+        "genre": "Puzzle",
+        "link": "https://store.steampowered.com/app/2915860/1306_Chapter_1_Reactors__Robots/",
+        "safe": "?",
+        "type_game": "offline",
+        "name": "1306 Chapter 1: Reactors & Robots",
+        "desc": "Join 1306, a little reactor maintenance robot, on a terrifying new adventure filled with robotic horrors! Get the rods. Fix the reactor. Prevent the meltdown! Most importantly, don't get disassembled.",
+        "header_image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2915860/ef81357de39adc0c2207d601665b79892548fd63/header.jpg?t=1749045628",
+        "developer": "ItsAHootGames, RJDev",
+        "release_date": "May 7, 2025",
+        "anti_cheat": "-",
+        "reviews": "88% (8 user reviews)",
+        "current_players": "0",
+        "notes": "Not play - No review."
+    },
+    {
+        "genre": "Horror",
+        "link": "https://store.steampowered.com/app/2200420/13_Candles/",
+        "safe": "?",
+        "type_game": "offline",
+        "name": "13 Candles",
+        "desc": "13 Candles is an atmospheric horror game where you play as Sara, 13 year old girl who wakes up in an abandoned hospital. Find your way to the light switch and wake up from your nightmare.",
+        "header_image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2200420/header.jpg?t=1675244559",
+        "developer": "13 Candles Studio",
+        "release_date": "Dec 13, 2022",
+        "anti_cheat": "-",
+        "reviews": "33% (Mostly Negative)",
+        "current_players": "0",
+        "notes": "Not play - No review."
+    },
+    {
+        "genre": "Puzzle",
+        "link": "https://store.steampowered.com/app/4143670/12_Memory_Lane/",
+        "safe": "?",
+        "type_game": "offline",
+        "name": "12, Memory Lane",
+        "desc": "Explore the shifting manor of the enigmatic Henri Villemaine and uncover the truth behind his family’s sudden disappearance. Bend reality to recreate the scenes from his diary and expose long-buried secrets. What if your role in this case went beyond that of a simple investigator?",
+        "header_image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4143670/aa67194919e69b02094ebef33f8d64d685fb53d9/header.jpg?t=1765821621",
+        "developer": "Forget-Me-Not Studio",
+        "release_date": "Dec 15, 2025",
+        "anti_cheat": "-",
+        "reviews": "92% (Very Positive)",
+        "current_players": "5",
+        "notes": "Not play - No review."
+    },
+    {
+        "genre": "City Builder",
+        "link": "https://store.steampowered.com/app/1397010/1980/",
+        "safe": "?",
+        "type_game": "offline",
+        "name": "1980",
+        "desc": "Welcome to the 1980s! This is a city which just started to develop, and you're in charge of this small urban village. How will the city's future be tied to this place? Manage your land, construct new buildings, explore the stories, and find out the ultimate fate of this urban village!",
+        "header_image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1397010/header.jpg?t=1598858585",
+        "developer": "Merxon22",
+        "release_date": "Aug 31, 2020",
+        "anti_cheat": "-",
+        "reviews": "89% (Very Positive)",
+        "current_players": "0",
+        "notes": "Not play - No review."
+    },
+    {
+        "genre": "Arcade",
+        "link": "https://store.steampowered.com/app/639650/1982/",
+        "safe": "?",
+        "type_game": "offline",
+        "name": "1982",
+        "desc": "1982 is a FREE retro inspired blasta-thon that will test your gaming skills to the max.",
+        "header_image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/639650/header.jpg?t=1560444918",
+        "developer": "Binary Zoo",
+        "release_date": "Jun 28, 2017",
+        "anti_cheat": "-",
+        "reviews": "93% (Very Positive)",
+        "current_players": "0",
+        "notes": "Not play - No review."
+    },
+    {
+        "genre": "Turn-based RPG",
+        "link": "https://store.steampowered.com/app/2147580/1990/",
+        "safe": "?",
+        "type_game": "offline",
+        "name": "1990",
+        "desc": "1990 is a fun, casual RPG with turn-based combat.",
+        "header_image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2147580/header.jpg?t=1672792703",
+        "developer": "Laxluster Games LLC",
+        "release_date": "Oct 3, 2022",
+        "anti_cheat": "-",
+        "reviews": "75% (Mostly Positive)",
+        "current_players": "0",
+        "notes": "Not play - No review."
+    }
 ]
