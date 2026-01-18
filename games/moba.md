@@ -1,6 +1,6 @@
 # MOBA Games
 
-5 games – Generated: 2026-01-17 00:16
+5 games – Generated: 2026-01-18 00:18
 
 | No. | Thumbnail | Game Name | Genre | Developer | Release Date | Short Desc | Steam Link | Reviews | Players | Anti-Cheat | Notes | Safe |
 |-----|-----------|-----------|-------|-----------|--------------|------------|------------|---------|---------|------------|-------|------|
@@ -8,4 +8,4 @@
 | 2 | ![Dota 2](https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/570/header.jpg?t=1766010373) | Dota 2 | MOBA | Valve | 9 Jul, 2013 | Every day, millions of players worldwide enter battle as one of over a hundred Dota heroes. | [Link](https://store.steampowered.com/app/570/Dota_2/) | 81% (Very Positive) | 604,392 | VAC | Not play - No review. | ? |
 | 3 | ![DRAGON BALL GEKISHIN SQUADRA](https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2072560/eb151a2237125fa69d7cd3b40d835c023c15d083/header.jpg?t=1763532358) | DRAGON BALL GEKISHIN SQUADRA | MOBA | GANBARION Co., Ltd. | Sep 9, 2025 | DRAGON BALL GEKISHIN SQUADRA is Dragon Ball's first team-oriented free to play game. | [Link](https://store.steampowered.com/app/2072560/DRAGON_BALL_GEKISHIN_SQUADRA/) | 64% (Mixed) | 2,021 | - | Not play - No review. | ? |
 | 4 | ![SMITE 2](https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2437170/header.jpg?t=1765910356) | SMITE 2 | MOBA | Titan Forge Games | Aug 27, 2024 | Become a god and wage war in SMITE 2, the free-to-play Unreal Engine 5-powered sequel to the legendary third-person action MOBA. | [Link](https://store.steampowered.com/app/2437170/SMITE_2/) | 56% (Mixed) | 5,446 | - | Not play - No review. | ? |
-| 5 | ![英雄之城3](https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3896290/11ac38183e581c9f08d95a081a1a6e3e21e5e1b2/header.jpg?t=1768530277) | 英雄之城3 | MOBA | Suzhou Snail Digital Technology Co.,Ltd | Jan 15, 2026 | Dear lord, welcome to City of Heroes 3, an epic war strategy feast! This game is like an encyclopedia of ancient civilizations. | [Link](https://store.steampowered.com/app/3896290/3/) | No reviews | 1 | - | Not support English language (Chinese only) | ? |
+| 5 | ![英雄之城3](https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3896290/11ac38183e581c9f08d95a081a1a6e3e21e5e1b2/header.jpg?t=1768530277) | 英雄之城3 | MOBA | Suzhou Snail Digital Technology Co.,Ltd | Jan 15, 2026 | Dear lord, welcome to City of Heroes 3, an epic war strategy feast! This game is like an encyclopedia of ancient civilizations. | [Link](https://store.steampowered.com/app/3896290/3/) | No reviews | 2 | - | Not support English language (Chinese only) | ? |
