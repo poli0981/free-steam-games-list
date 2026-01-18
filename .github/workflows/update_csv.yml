@@ -6,6 +6,7 @@ on:
 
 permissions:
   contents: write
+
 jobs:
   csv-export:
     runs-on: ubuntu-latest
