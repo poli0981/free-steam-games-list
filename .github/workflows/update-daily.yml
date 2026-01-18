@@ -1,12 +1,12 @@
 name: Automatically Steam F2P Generate Tables
-
 on:
   workflow_run:
     workflows:
       [ 'Auto update JSON' ]
     types: [ completed ]
   workflow_dispatch:
-
+permissions:
+    contents: write
 jobs:
   generate:
     if: ${{ github.event.workflow_run.conclusion == 'success' }}

@@ -1,10 +1,10 @@
 name: Auto update JSON
-
 on:
   schedule:
     - cron: '0 0 * * *'
   workflow_dispatch:
-
+permissions:
+    contents: write
 jobs:
   update-tables:
     runs-on: ubuntu-latest

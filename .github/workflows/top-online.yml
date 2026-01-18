@@ -3,7 +3,8 @@ on:
   schedule:
     - cron: '0 3 * * 0,3,5'
   workflow_dispatch:
-
+permissions:
+    contents: write
 jobs:
   update-tables:
     runs-on: ubuntu-latest
