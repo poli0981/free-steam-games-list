@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # install dependencies
-pip install requests tqdm
+pip install requests tqdm jsonlines
 
 # run the online script
 python scripts/top_online.py

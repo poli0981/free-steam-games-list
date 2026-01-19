@@ -1,12 +1,12 @@
 # Check duplicate links
-import json
+import jsonlines
 
-# Path to JSON file
-json_path = "data.json"
+# Path to JSONL file
+json_path = "scripts/data.jsonl"
 
-# Load JSON
-with open(json_path, 'r', encoding='utf-8') as f:
-    data = json.load(f)
+# Load JSONL data
+with jsonlines.open('scripts/test.jsonl', 'r') as reader:
+    data = list(reader)
 
 # Check for duplicate links
 seen_links = set()

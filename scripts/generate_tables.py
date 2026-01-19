@@ -1,4 +1,4 @@
-import json
+import jsonlines
 import os
 from collections import defaultdict
 from datetime import datetime
@@ -29,9 +29,9 @@ def extract_appid(link):  # Fallback name if missing
     return parts.split('/')[0]
 
 
-# Load data.json
-with open('scripts/data.json', 'r', encoding='utf-8') as f:
-    games = json.load(f)
+# Load data.jsonl
+with jsonlines.open('scripts/data.jsonl', 'r') as reader:
+    games = list(reader)
 
 print(f"Loaded {len(games)} games from data.json – generating tables only (no fetch) 🔥")
 

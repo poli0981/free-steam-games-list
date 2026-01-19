@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# install dependencies
+pip install jsonlines
+
 # run python script
 python scripts/generate_tables.py
 

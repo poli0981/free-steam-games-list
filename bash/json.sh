@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Install python dependencies
-pip install requests
+pip install requests jsonlines
 
 # Run python script
 python scripts/update_data.py

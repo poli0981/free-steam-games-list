@@ -1,11 +1,11 @@
-import json
+import jsonlines
 import os
 import requests
 import time
 import random
 from tqdm import tqdm
 from datetime import datetime
-# API key từ env (Action friendly)
+# API key from env (Action friendly)
 api_key = os.getenv('STEAM_API_KEY')
 use_key = bool(api_key)
 if not use_key:
@@ -19,8 +19,8 @@ def extract_appid(link):
     return parts.split('/')[0]
 
 # Load data.json
-with open('scripts/data.json', 'r', encoding='utf-8') as f:
-    games = json.load(f)
+with jsonlines.open('scripts/data.jsonl', 'r') as reader:
+    games = list(reader)
 
 # Filter online games (manual type_game)
 online_games = [g for g in games if g.get('type_game', 'offline').lower() == 'online']

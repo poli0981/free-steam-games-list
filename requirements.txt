@@ -1,3 +1,4 @@
 requests~=2.32.5
 tqdm~=4.67.1
 pandas~=2.3.3
+jsonlines~=4.0.0

@@ -1,4 +1,4 @@
-import json
+import jsonlines
 import os
 import sys
 
@@ -6,14 +6,15 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 from steam_fetcher import update_all
 
-# Read data.json (folder scripts/)
-with open('scripts/data.json', 'r', encoding='utf-8') as f:
-    games = json.load(f)
+# Read data.jsonl (folder scripts/)
+with jsonlines.open('scripts/data.jsonl', 'r') as reader:
+    games = list(reader)
 
 update = update_all(games)
 
-# Save data.json fresh
-with open("scripts/data.json", "w", encoding="utf-8") as f:
-    json.dump(games, f, indent=4, ensure_ascii=False)
+# Save data.jsonl fresh
+with jsonlines.open('scripts/data.jsonl', 'w') as writer:
+    for game in games:
+        writer.write(game)
 
 print("Done. JSON file is updated.")
