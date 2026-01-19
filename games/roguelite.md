@@ -1,6 +1,6 @@
 # Roguelite Games
 
-1 games – Generated: 2026-01-19 00:18
+1 games – Generated: 2026-01-19 15:10
 
 | No. | Thumbnail | Game Name | Genre | Developer | Release Date | Short Desc | Steam Link | Reviews | Players | Anti-Cheat | Notes | Safe |
 |-----|-----------|-----------|-------|-----------|--------------|------------|------------|---------|---------|------------|-------|------|

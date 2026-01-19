@@ -1,6 +1,6 @@
 # MOBA Games
 
-6 games – Generated: 2026-01-19 00:18
+7 games – Generated: 2026-01-19 15:10
 
 | No. | Thumbnail | Game Name | Genre | Developer | Release Date | Short Desc | Steam Link | Reviews | Players | Anti-Cheat | Notes | Safe |
 |-----|-----------|-----------|-------|-----------|--------------|------------|------------|---------|---------|------------|-------|------|
@@ -10,3 +10,4 @@
 | 4 | ![Dota 2](https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/570/header.jpg?t=1766010373) | Dota 2 | MOBA | Valve | 9 Jul, 2013 | Every day, millions of players worldwide enter battle as one of over a hundred Dota heroes. | [Link](https://store.steampowered.com/app/570/Dota_2/) | 81% (Very Positive) | 604,392 | VAC | Not play - No review. | ? |
 | 5 | ![DRAGON BALL GEKISHIN SQUADRA](https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2072560/eb151a2237125fa69d7cd3b40d835c023c15d083/header.jpg?t=1763532358) | DRAGON BALL GEKISHIN SQUADRA | MOBA | GANBARION Co., Ltd. | Sep 9, 2025 | DRAGON BALL GEKISHIN SQUADRA is Dragon Ball's first team-oriented free to play game. | [Link](https://store.steampowered.com/app/2072560/DRAGON_BALL_GEKISHIN_SQUADRA/) | 64% (Mixed) | 2,021 | - | Not play - No review. | ? |
 | 6 | ![SMITE 2](https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2437170/header.jpg?t=1765910356) | SMITE 2 | MOBA | Titan Forge Games | Aug 27, 2024 | Become a god and wage war in SMITE 2, the free-to-play Unreal Engine 5-powered sequel to the legendary third-person action MOBA. | [Link](https://store.steampowered.com/app/2437170/SMITE_2/) | 56% (Mixed) | 5,446 | - | Not play - No review. | ? |
+| 7 | ![7 Bones and 7 Stones - The Ritual](https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/712080/header.jpg?t=1618251665) | 7 Bones and 7 Stones - The Ritual | MOBA | RunAroundGames | Oct 20, 2020 | 7 Bones and 7 Stones - The Ritual is a multiplayer (4vs1) action adventure game where one player takes on the role of a terrible Monster and the other four players play as Villagers, trying to perform a ritual while hiding and running from the Monster. | [Link](https://store.steampowered.com/app/712080/7_Bones_and_7_Stones__The_Ritual/) | 54% (Mixed) | 0 | - | Not play - No review. | ? |
