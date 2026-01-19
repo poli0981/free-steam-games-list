@@ -1,6 +1,6 @@
 # Card Game Games
 
-22 games – Generated: 2026-01-19 15:10
+22 games – Generated: 2026-01-19 15:33
 
 | No. | Thumbnail | Game Name | Genre | Developer | Release Date | Short Desc | Steam Link | Reviews | Players | Anti-Cheat | Notes | Safe |
 |-----|-----------|-----------|-------|-----------|--------------|------------|------------|---------|---------|------------|-------|------|
