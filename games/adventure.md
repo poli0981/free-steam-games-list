@@ -1,6 +1,6 @@
 # Adventure Games
 
-17 games – Generated: 2026-01-22 00:18
+17 games – Generated: 2026-01-23 00:17
 
 | No. | Thumbnail | Game Name | Genre | Developer | Release Date | Short Desc | Steam Link | Reviews | Players | Anti-Cheat | Notes | Safe |
 |-----|-----------|-----------|-------|-----------|--------------|------------|------------|---------|---------|------------|-------|------|
