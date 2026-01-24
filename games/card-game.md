@@ -1,6 +1,6 @@
 # Card Game Games
 
-22 games – Generated: 2026-01-23 00:17
+22 games – Generated: 2026-01-24 00:16
 
 | No. | Thumbnail | Game Name | Genre | Developer | Release Date | Short Desc | Steam Link | Reviews | Players | Anti-Cheat | Notes | Safe |
 |-----|-----------|-----------|-------|-----------|--------------|------------|------------|---------|---------|------------|-------|------|
@@ -25,4 +25,4 @@
 | 19 | ![Cybersoul](https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4233260/d58304a987cf6f958db5ee9a79b849ee8fdb45c5/header.jpg?t=1766660612) | Cybersoul | Card Game | Recoil Mojo | Dec 25, 2025 | Deckbuilding Card Game meets Incremental Data Mining. | [Link](https://store.steampowered.com/app/4233260/Cybersoul/) | 33% (3 user reviews) | 2 | - | Not play - No review. | ? |
 | 20 | ![Shadowverse: Worlds Beyond](https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2584990/bab5a90e2765d340ca3ba8553e1b0ee679176dda/header.jpg?t=1765346606) | Shadowverse: Worlds Beyond | Card Game | Cygames, Inc. | Jun 14, 2025 | Shadowverse: Worlds Beyond is a brand-new strategy card game from the popular Shadowverse CCG. | [Link](https://store.steampowered.com/app/2584990/Shadowverse_Worlds_Beyond/) | 29% (Mostly Negative) | 7,110 | - | Not play - No review. | ? |
 | 21 | ![Wizard’s Gambit](https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3755740/b82c0aaad9b29094f1984c2c8681b9487147f270/header.jpg?t=1767658067) | Wizard’s Gambit | Card Game | Ravi Trivedi | Jan 5, 2026 | Wizard’s Gambit — A 2D strategy card game where four magical factions battle for dominance through tactical card placement, faction powers, and evolving decks. | [Link](https://store.steampowered.com/app/3755740/Wizards_Gambit/) | 0% (1 user reviews) | 0 | - | Not play - No review. | ? |
-| 22 | ![Pantheon Poker](https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3844940/29454ee767f66e825e1d2d766d7a9c1ce0df8bea/header.jpg?t=1768228101) | Pantheon Poker | Card Game | Praetorian Games | Jan 12, 2026 | Pantheon Poker reinvents Texas Hold ’em as a mythology-themed digital card game. | [Link](https://store.steampowered.com/app/3844940/Pantheon_Poker) | No reviews | 0 | - | Not play - No review. | ? |
+| 22 | ![Pantheon Poker](https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3844940/29454ee767f66e825e1d2d766d7a9c1ce0df8bea/header.jpg?t=1768228101) | Pantheon Poker | Card Game | Praetorian Games | Jan 12, 2026 | Pantheon Poker reinvents Texas Hold ’em as a mythology-themed digital card game. | [Link](https://store.steampowered.com/app/3844940/Pantheon_Poker) | No reviews | 1 | - | Not play - No review. | ? |
