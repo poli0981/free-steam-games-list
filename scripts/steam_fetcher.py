@@ -12,11 +12,11 @@ if use_key:
 else:
     print("No key – skip players")
 
-SKIP_GENRES = [
+SKIP_GENRES = {
     'Free to Play', 'Indie', 'Casual', 'Early Access', 'Multiplayer', 'Singleplayer',
     'Co-op', 'Online Co-Op', 'PvP', 'Cross-Platform Multiplayer', 'In-App Purchases',
     'Massively Multiplayer', 'Competitive'
-]
+}
 
 
 def extract_appid(link):
