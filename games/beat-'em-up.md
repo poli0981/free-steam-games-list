@@ -1,6 +1,6 @@
 # Beat 'em up Games
 
-4 games – Generated: 2026-01-27 00:18
+4 games – Generated: 2026-01-28 00:17
 
 | No. | Thumbnail | Game Name | Genre | Developer | Release Date | Short Desc | Steam Link | Reviews | Players | Anti-Cheat | Notes | Safe |
 |-----|-----------|-----------|-------|-----------|--------------|------------|------------|---------|---------|------------|-------|------|
