@@ -1,6 +1,6 @@
 # Sports Games
 
-11 games – Generated: 2026-01-28 00:17
+11 games – Generated: 2026-01-29 00:19
 
 | No. | Thumbnail | Game Name | Genre | Developer | Release Date | Short Desc | Steam Link | Reviews | Players | Anti-Cheat | Notes | Safe |
 |-----|-----------|-----------|-------|-----------|--------------|------------|------------|---------|---------|------------|-------|------|
