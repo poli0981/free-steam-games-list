@@ -1,6 +1,6 @@
 # Gambling Games
 
-3 games – Generated: 2026-02-07 00:20
+3 games – Generated: 2026-02-08 00:27
 
 | No. | Thumbnail | Game Name | Genre | Developer | Release Date | Short Desc | Steam Link | Reviews | Players | Anti-Cheat | Notes | Safe |
 |-----|-----------|-----------|-------|-----------|--------------|------------|------------|---------|---------|------------|-------|------|
