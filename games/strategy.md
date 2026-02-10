@@ -1,6 +1,6 @@
 # Strategy Games
 
-15 games – Generated: 2026-02-09 00:21
+15 games – Generated: 2026-02-10 00:26
 
 | No. | Thumbnail | Game Name | Genre | Developer | Release Date | Short Desc | Steam Link | Reviews | Players | Anti-Cheat | Notes | Safe |
 |-----|-----------|-----------|-------|-----------|--------------|------------|------------|---------|---------|------------|-------|------|
