@@ -1,6 +1,6 @@
 # Souls-like Games
 
-2 games – Generated: 2026-02-11 00:25
+2 games – Generated: 2026-02-12 00:20
 
 | No. | Thumbnail | Game Name | Genre | Developer | Release Date | Short Desc | Steam Link | Reviews | Players | Anti-Cheat | Notes | Safe |
 |-----|-----------|-----------|-------|-----------|--------------|------------|------------|---------|---------|------------|-------|------|
