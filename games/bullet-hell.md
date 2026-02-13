@@ -1,6 +1,6 @@
 # Bullet Hell Games
 
-9 games – Generated: 2026-02-12 00:20
+9 games – Generated: 2026-02-13 00:23
 
 | No. | Thumbnail | Game Name | Genre | Developer | Release Date | Short Desc | Steam Link | Reviews | Players | Anti-Cheat | Notes | Safe |
 |-----|-----------|-----------|-------|-----------|--------------|------------|------------|---------|---------|------------|-------|------|
