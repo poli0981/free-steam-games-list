@@ -1,6 +1,6 @@
 # Battle Royale Games
 
-12 games – Generated: 2026-02-19 00:22
+12 games – Generated: 2026-02-28 00:18
 
 | No. | Thumbnail | Game Name | Genre | Developer | Release Date | Short Desc | Steam Link | Reviews | Players | Anti-Cheat | Notes | Safe |
 |-----|-----------|-----------|-------|-----------|--------------|------------|------------|---------|---------|------------|-------|------|
