@@ -1,6 +1,6 @@
 # Social Deduction Games
 
-1 games – Generated: 2026-03-02 00:20
+1 games – Generated: 2026-03-03 00:21
 
 | No. | Thumbnail | Game Name | Genre | Developer | Release Date | Short Desc | Steam Link | Reviews | Players | Anti-Cheat | Notes | Safe |
 |-----|-----------|-----------|-------|-----------|--------------|------------|------------|---------|---------|------------|-------|------|
