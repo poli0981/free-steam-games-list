@@ -1,6 +1,6 @@
 # Visual Novel Games
 
-49 games – Generated: 2026-03-05 00:21
+50 games – Generated: 2026-03-06 01:47
 
 | No. | Thumbnail | Game Name | Genre | Developer | Release Date | Short Desc | Steam Link | Reviews | Players | Anti-Cheat | Notes | Safe |
 |-----|-----------|-----------|-------|-----------|--------------|------------|------------|---------|---------|------------|-------|------|
@@ -53,3 +53,4 @@
 | 47 | ![Beneath The Cherry Trees](https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/531200/header.jpg?t=1581330938) | Beneath The Cherry Trees | Visual Novel | Katsudou Mangaya | Oct 14, 2016 | &quot;There are bodies buried beneath the cherry trees!&quot; A Japanese poetic literature &quot;Beneath The Cherry Trees(1928)&quot; by Motojirō Kajii starts from a shocking sentence. | [Link](https://store.steampowered.com/app/531200/Beneath_The_Cherry_Trees/) | 66% (Mixed) | 0 | - | Not play - No review. | ? |
 | 48 | ![6 PEOPLE](https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1258770/header.jpg?t=1653471549) | 6 PEOPLE | Visual Novel | GsK | Mar 26, 2020 | A man travels in a subway car alone. | [Link](https://store.steampowered.com/app/1258770/6_PEOPLE/) | 50% (Mixed) | 0 | - | Not play - No review. | ? |
 | 49 | ![Ashes of the Forum](https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3978000/d3387a0ae4f9b425701a30758ea85b58bfe76f0e/header.jpg?t=1768234672) | Ashes of the Forum | Visual Novel | Sungwon Chung | Jan 12, 2026 | Ashes of the Forum is a 3d first person visual novel themed in ancient Rome with a polygon art style. | [Link](https://store.steampowered.com/app/3978000/Ashes_of_the_Forum/) | 0% (1 user reviews) | 0 | - | Not play - No review. | ? |
+| 50 | ![Taleweavers Alliance Anthology](https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4356450/835817551bd9b504e87e7904f88dd80e873f9b4b/header.jpg?t=1772717596) | Taleweavers Alliance Anthology | Visual Novel | Taleweavers Alliance, Kat Serre, Jenny Laronde | Mar 5, 2026 | A linear visual novel featuring five different Ontario (Canada) youths' stories. | [Link](https://store.steampowered.com/app/4356450/Taleweavers_Alliance_Anthology/) | No reviews | 0 | - | Not play - No review. | ? |

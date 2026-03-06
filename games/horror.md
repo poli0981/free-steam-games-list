@@ -1,6 +1,6 @@
 # Horror Games
 
-57 games – Generated: 2026-03-05 00:21
+58 games – Generated: 2026-03-06 01:47
 
 | No. | Thumbnail | Game Name | Genre | Developer | Release Date | Short Desc | Steam Link | Reviews | Players | Anti-Cheat | Notes | Safe |
 |-----|-----------|-----------|-------|-----------|--------------|------------|------------|---------|---------|------------|-------|------|
@@ -61,3 +61,4 @@
 | 55 | ![ Why? - Chapter 1](https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3650860/a7efd7986cb47cf3816d678ced8ec93492e09ce5/header.jpg?t=1768076204) |  Why? - Chapter 1 | Horror | Orchalys | Jan 10, 2026 | Why? is a horror game where you are trapped inside a magical mansion where a series of dreadful events took place. | [Link](https://store.steampowered.com/app/3650860/_Why__Chapter_1/) | 50% (2 user reviews) | 0 | - | Not play - No review. | ? |
 | 56 | ![13 Candles](https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2200420/header.jpg?t=1675244559) | 13 Candles | Horror | 13 Candles Studio | Dec 13, 2022 | 13 Candles is an atmospheric horror game where you play as Sara, 13 year old girl who wakes up in an abandoned hospital. | [Link](https://store.steampowered.com/app/2200420/13_Candles/) | 33% (Mostly Negative) | 0 | - | Not play - No review. | ? |
 | 57 | ![The Backrooms Deluxe 2](https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4066790/442facae7ea0c095317f20fd107f3441b01d951f/header.jpg?t=1766603908) | The Backrooms Deluxe 2 | Horror | Lory Games | Dec 24, 2025 | A roguelite multiplayer Backrooms game that bases itself on The Backrooms Deluxe's levels and expands on the mechanics, levels, networking and enemy AI. | [Link](https://store.steampowered.com/app/4066790/The_Backrooms_Deluxe_2/) | 28% (Mostly Negative) | 617 | - | Not play - No review. | ? |
+| 58 | ![Echoed Nights](https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4340810/6ce07a2c636ab3966dcf0a820a51f31831cff202/header.jpg?t=1772722458) | Echoed Nights | Horror | Landon Armstrong | Mar 5, 2026 | Trapped in a realm of shattered memories, monsters hunger for you to join them in decay. | [Link](https://store.steampowered.com/app/4340810/Echoed_Nights/) | No reviews | 0 | - | Not play - No review. | ? |

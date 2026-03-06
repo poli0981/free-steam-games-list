@@ -1,6 +1,6 @@
 # Strategy Games
 
-15 games – Generated: 2026-03-05 00:21
+16 games – Generated: 2026-03-06 01:47
 
 | No. | Thumbnail | Game Name | Genre | Developer | Release Date | Short Desc | Steam Link | Reviews | Players | Anti-Cheat | Notes | Safe |
 |-----|-----------|-----------|-------|-----------|--------------|------------|------------|---------|---------|------------|-------|------|
@@ -19,3 +19,4 @@
 | 13 | !["Going Up?"](https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1102740/header.jpg?t=1696509487) | "Going Up?" | Strategy | Gavin Ray, Peter Hugh Olmsted | Apr 19, 2020 | Because who wouldn't want to get trapped in an elevator with a yappy little dude? Check out this totally unique remake of the old-school RPGs. | [Link](https://store.steampowered.com/app/1102740/Going_Up/) | 67% (Mixed) | 1 | - | Not play - No review. | ? |
 | 14 | ![4X-Galaxy 无主之地：银河](https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/922450/header.jpg?t=1584328393) | 4X-Galaxy 无主之地：银河 | Strategy | Mercator | Dec 20, 2018 | “4X-Galaxy” is a game developed by the 4X concept system(eXplore、eXpand、eXploit、eXterminate). | [Link](https://store.steampowered.com/app/922450/4XGalaxy/) | 51% (Mixed) | 0 | - | Not play - No review. | ? |
 | 15 | ![50](https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1830480/header.jpg?t=1655563413) | 50 | Strategy | XYZStudio | Mar 11, 2022 | COLLECT MEMBERS!ENFORCE YOUR MEMBER!MAKE YOUR OWN RAIDER!. | [Link](https://store.steampowered.com/app/1830480/50/) | 43% (Mixed) | 0 | - | Not play - No review. | ? |
+| 16 | ![Taimanin Squad](https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4195470/7f318962fdb24f7213ac97c32e82f4ef213aeda8/header.jpg?t=1772673617) | Taimanin Squad | Strategy | LiLith | 4 Mar, 2026 | Lead your squad of captivating girls in this Strategic RPG!. | [Link](https://store.steampowered.com/app/4195470/Taimanin_Squad/) | 42% (Mixed) | 1,655 | - | Not play - No review. | ? |
