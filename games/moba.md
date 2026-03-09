@@ -1,6 +1,6 @@
 # MOBA Games
 
-7 games – Generated: 2026-03-08 00:20
+7 games – Generated: 2026-03-09 00:20
 
 | No. | Thumbnail | Game Name | Genre | Developer | Release Date | Short Desc | Steam Link | Reviews | Players | Anti-Cheat | Notes | Safe |
 |-----|-----------|-----------|-------|-----------|--------------|------------|------------|---------|---------|------------|-------|------|
