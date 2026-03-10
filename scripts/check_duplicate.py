@@ -5,7 +5,7 @@ import jsonlines
 json_path = "scripts/data.jsonl"
 
 # Load JSONL data
-with jsonlines.open('scripts/test.jsonl', 'r') as reader:
+with jsonlines.open(json_path, 'r') as reader:
     data = list(reader)
 
 # Check for duplicate links
