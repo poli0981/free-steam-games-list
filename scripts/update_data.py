@@ -1,20 +1,23 @@
-import jsonlines
-import os
-import sys
+"""
+Full data update – fetches details, reviews, and player counts
+for games with incomplete information.
+"""
+import sys, os
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+from core.data_store import load_main, save_main
+from core.fetcher import update_all_full
 
-from steam_fetcher import update_all
 
-# Read data.jsonl (folder scripts/)
-with jsonlines.open('scripts/data.jsonl', 'r') as reader:
-    games = list(reader)
+def main():
+    games = load_main()
+    print(f"Loaded {len(games)} games from data.jsonl")
 
-update = update_all(games)
+    update_all_full(games)
+    save_main(games)
 
-# Save data.jsonl fresh
-with jsonlines.open('scripts/data.jsonl', 'w') as writer:
-    for game in games:
-        writer.write(game)
+    print(f"\n✓ Saved {len(games)} games to data.jsonl")
 
-print("Done. JSON file is updated.")
+
+if __name__ == "__main__":
+    main()
