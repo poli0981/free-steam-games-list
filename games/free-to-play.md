@@ -1,6 +1,6 @@
 # Free To Play Games
 
-98 games · Generated: 2026-03-12 06:15 UTC
+98 games · Generated: 2026-03-12 06:16 UTC
 
 | # | Thumbnail | Game | Genre | Developer | Released | Metacritic | Reviews | Players | Anti-Cheat | DRM | Status | Description | Link |
 |---|-----------|------|-------|-----------|----------|------------|---------|---------|------------|-----|--------|-------------|------|
