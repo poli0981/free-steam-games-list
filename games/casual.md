@@ -1,0 +1,10 @@
+# Casual Games
+
+4 games · Generated: 2026-03-12 06:15 UTC
+
+| # | Thumbnail | Game | Genre | Developer | Released | Metacritic | Reviews | Players | Anti-Cheat | DRM | Status | Description | Link |
+|---|-----------|------|-------|-----------|----------|------------|---------|---------|------------|-----|--------|-------------|------|
+| 1 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/787980/header.jpg?t=1541187241' width='120'> | 4D Minesweeper | Casual | Julian Schlüntz | Feb 14, 2018 | N/A | 94% (Very Positive) | 6 | - | None detected | ✅ | 4D Minesweeper brings the classic mechanics of Minesweeper into the fourth dimension and adds some new features to it. | [Steam](https://store.steampowered.com/app/787980/) |
+| 2 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2174300/cfcd2c9c41e4bd326fe2aead1b44b928b9dd822e/header.jpg?t=1768886594' width='120'> | Piczle World of Puzzles | Casual | Score Studios LLC | Nov 30, 2025 | N/A | 85% (Positive) | 2 | - | None detected | ✅ | All your favourite logic-puzzles in one feature-rich package, Piczle World of Puzzles is the ultimate in picture logic-p... | [Steam](https://store.steampowered.com/app/2174300/) |
+| 3 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1627520/1ac42bf6d1c88606ca2201399fc35a78e20156de/header.jpg?t=1759445231' width='120'> | 2236 A.D. Secretary Stories | Casual | Chloro | Jul 23, 2021 | N/A | 80% (Very Positive) | 0 | - | None detected | ✅ | A prequel to 2236 A. | [Steam](https://store.steampowered.com/app/1627520/) |
+| 4 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1476690/header.jpg?t=1668028611' width='120'> | 15 puzzle | Casual | Vectura Games | Dec 4, 2020 | N/A | 62% (Mixed) | 0 | - | None detected | ✅ | A classic game of puzzle 8 (3x3), 15 (4x4), 24 (5x5) or 35 (6x6) in which player has to move pieces on board so they are... | [Steam](https://store.steampowered.com/app/1476690/) |
