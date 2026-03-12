@@ -1,31 +1,29 @@
-name: Automatically Steam F2P Generate Tables
+name: Generate Markdown Tables
 on:
   workflow_run:
-    workflows:
-      [ 'Auto update JSON' ]
-    types: [ completed ]
+    workflows: ['Auto Update JSON Data']
+    types: [completed]
   workflow_dispatch:
 
 permissions:
-    contents: write
+  contents: write
 
 jobs:
   generate:
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repo (with push permission)
-        uses: actions/checkout@v4
+      - name: Checkout repo
+        uses: actions/checkout@v6
         with:
-          token: ${{ secrets.GH_TOKEN }}  # PAT repo scope + workflow, add secret GH_TOKEN
+          token: ${{ secrets.GH_TOKEN }}
 
       - name: Setup Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
-          python-version: '3.12'
+          python-version: '3.14'
 
-      - name: run bash script to generate tables
+      - name: Generate tables
         run: |
           chmod +x ./bash/daily.sh
           ./bash/daily.sh
-        shell: bash
