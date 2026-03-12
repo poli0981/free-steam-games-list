@@ -1,6 +1,6 @@
 # Party Game Games
 
-5 games – Generated: 2026-03-11 00:18
+6 games – Generated: 2026-03-12 00:18
 
 | No. | Thumbnail | Game Name | Genre | Developer | Release Date | Short Desc | Steam Link | Reviews | Players | Anti-Cheat | Notes | Safe |
 |-----|-----------|-----------|-------|-----------|--------------|------------|------------|---------|---------|------------|-------|------|
@@ -9,3 +9,4 @@
 | 3 | ![8Bit Fiesta - The Drinking Game](https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/382260/header.jpg?t=1723586951) | 8Bit Fiesta - The Drinking Game | Party Game | Linus Fredriksson | Sep 30, 2016 | 8Bit Fiesta brings everything you need to the table with its action packed local multiplayer mayhem including a built in drinking game! Choose between a ton of characters and challenge your friends and prove yourself worthy the title &quot;King of the Fiesta&quot;. | [Link](https://store.steampowered.com/app/382260/8Bit_Fiesta__The_Drinking_Game/) | 93% (Very Positive) | 0 | - | Not play - No review. | ? |
 | 4 | ![Republic of Jungle](https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1413250/header.jpg?t=1763931450) | Republic of Jungle | Party Game | Gerdoo Games | Nov 23, 2025 | Gather your friends (5 to 10 players) and play as advisors to President Puma. | [Link](https://store.steampowered.com/app/1413250/Republic_of_Jungle/) | 77% (Mostly Positive) | 0 | - | Not play - No review. | ? |
 | 5 | ![Janky Golf with Stream](https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4178160/272301a8024f6e94141c6af43e94f4e67909ff71/header.jpg?t=1764338038) | Janky Golf with Stream | Party Game | Ayrton Alexis | Nov 28, 2025 | A chaotic Twitch integrated mini golf game where your viewers control the shots. | [Link](https://store.steampowered.com/app/4178160/Janky_Golf_with_Stream/) | 50% (2 user reviews) | 0 | - | Not play - No review. | ? |
+| 6 | ![Specter Hideout](https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4385310/4dd3a74a506251696e21ab2827ddeb1c0a033b3d/header.jpg?t=1772229843) | Specter Hideout | Party Game | G64 | Feb 27, 2026 | Specter Hideout is a top-down, asymmetrical multiplayer experience for 2 to 5 players. | [Link](https://store.steampowered.com/app/4385310/Specter_Hideout/) | 50% (2 user reviews) | 1 | - | Not play - No review. | ? |

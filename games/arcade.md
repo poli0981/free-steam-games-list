@@ -1,6 +1,6 @@
 # Arcade Games
 
-5 games – Generated: 2026-03-11 00:18
+6 games – Generated: 2026-03-12 00:18
 
 | No. | Thumbnail | Game Name | Genre | Developer | Release Date | Short Desc | Steam Link | Reviews | Players | Anti-Cheat | Notes | Safe |
 |-----|-----------|-----------|-------|-----------|--------------|------------|------------|---------|---------|------------|-------|------|
@@ -9,3 +9,4 @@
 | 3 | ![HeXpunk](https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3632680/2a85379bb2b00ea9893b3997fe7f284969541cd2/header.jpg?t=1750218273) | HeXpunk | Arcade | DigitalWizardsGames | May 9, 2025 | HexPunk is a co-op, third-person shooter with an emphasis on stylish and fast-paced combat. | [Link](https://store.steampowered.com/app/3632680/HeXpunk/) | 68% (Mixed) | 0 | - | Not play - No review. | ? |
 | 4 | ![0Gravity](https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1101290/header.jpg?t=1714868822) | 0Gravity | Arcade | Viktor Kunshin | Jul 26, 2019 | 0Gravity is a game whose action takes place in zero gravity (predictably). | [Link](https://store.steampowered.com/app/1101290/0Gravity/) | 67% (Mixed) | 0 | - | Not play - No review. | ? |
 | 5 | ![0101](https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2930280/header.jpg?t=1731783766) | 0101 | Arcade | edybtt Studios | Jun 13, 2024 | The game consists of finishing several levels, solving by clicking with the mouse or using the keyboard to complete the tasks. | [Link](https://store.steampowered.com/app/2930280/0101/) | 66% (Mixed) | 1 | - | Not play - No review. | ? |
+| 6 | ![Gibby's Candy Store](https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4332360/bed46951ae349a8a49c3fef5755f2e1866d429aa/header.jpg?t=1773084431) | Gibby's Candy Store | Arcade | Collin Gibboney | Mar 9, 2026 | A free, candy-coated arcade game inspired by Space Invaders. | [Link](https://store.steampowered.com/app/4332360/Gibbys_Candy_Store/) | No reviews | 0 | - | Not play - No review. | ? |

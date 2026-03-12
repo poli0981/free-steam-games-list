@@ -1,6 +1,6 @@
 # Turn-based Strategy Games
 
-6 games – Generated: 2026-03-11 00:18
+8 games – Generated: 2026-03-12 00:18
 
 | No. | Thumbnail | Game Name | Genre | Developer | Release Date | Short Desc | Steam Link | Reviews | Players | Anti-Cheat | Notes | Safe |
 |-----|-----------|-----------|-------|-----------|--------------|------------|------------|---------|---------|------------|-------|------|
@@ -10,3 +10,5 @@
 | 4 | ![300k - The Game](https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1344570/header.jpg?t=1737486372) | 300k - The Game | Turn-based Strategy | PixelNadja | Jul 23, 2020 | ...a funny implementation of the cellular automaton theory.... | [Link](https://store.steampowered.com/app/1344570/300k__The_Game/) | 78% (9 user reviews) | 0 | - | Not play - No review. | ? |
 | 5 | ![Summoners War](https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2426960/aff09e5b6524828ef6902009f5de3d78bd79c443/header.jpg?t=1763533096) | Summoners War | Turn-based Strategy | Com2uS | Jan 7, 2024 | A global hit RPG that captured the Summoners all around the world! Jump into the Sky Arena, a world under battle over the vital resource: Mana Crystals. | [Link](https://store.steampowered.com/app/2426960/Summoners_War/) | 72% (Mostly Positive) | 5,723 | - | Not play - No review. | ? |
 | 6 | ![25920](https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3395920/header.jpg?t=1735139092) | 25920 | Turn-based Strategy | BmoneyDC | Dec 25, 2024 | Three dimensional grid turn-based strategy game. | [Link](https://store.steampowered.com/app/3395920/25920/) | 71% (Mostly Positive) | 0 | - | Not play - No review. | ? |
+| 7 | ![Ready, Set, Block!](https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3710320/8ef1b6018c4b349311778196abaf7e52dde02849/header.jpg?t=1772152947) | Ready, Set, Block! | Turn-based Strategy | Shadowmime, Toppeepop | Feb 26, 2026 | &quot;Ready, Set, Block!&quot; is a fast-paced PvP board game where players race to reach the opposite side first. | [Link](https://store.steampowered.com/app/3710320/Ready_Set_Block/) | 67% (3 user reviews) | 0 | - | English language only | ? |
+| 8 | ![Jujutsu Kaisen Phantom Parade](https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4224240/0ec65f811aca74b2891ad425476afb6925c0591f/header.jpg?t=1772179217) | Jujutsu Kaisen Phantom Parade | Turn-based Strategy | BILIBILI HK LIMITED | Feb 27, 2026 | ◆The world of &quot;TV Anime&quot; and the story of &quot;Jujutsu Kaisen&quot; unique to the game◆ The anime story is recreated with new full voices. | [Link](https://store.steampowered.com/app/4224240/Jujutsu_Kaisen_Phantom_Parade/) | 36% (Mostly Negative) | 159 | Fairguard | Not play - No review. | ? |
