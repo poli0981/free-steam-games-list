@@ -1,17 +1,13 @@
 #!/bin/bash
+set -euo pipefail
 
-# Install python dependencies
-pip install requests jsonlines
+echo "── Full data update ──"
 
-# Run python script
+pip install --quiet requests jsonlines
 python scripts/update_data.py
 
-# Check if files are updated
-ls -la scripts/
-
-# Commit changes if any
-git config --global user.name 'github-actions[bot]'
+git config --global user.name  'github-actions[bot]'
 git config --global user.email '41898282+github-actions[bot]@users.noreply.github.com'
-git status
 git add .
-git diff --staged --quiet && echo "No changes – skip commit" || (git commit -m "Auto update tables online top & stats [$(date +'%Y-%m-%d')] by GitHub Action" && git push)
+git diff --staged --quiet && echo "No changes – skip commit" \
+  || (git commit -m "Auto update data [$(date +'%Y-%m-%d')] by GitHub Action" && git push)
