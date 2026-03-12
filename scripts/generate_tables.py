@@ -61,9 +61,9 @@ def status_icon(game: dict) -> str:
 
 HEADER = (
     "| # | Thumbnail | Game | Genre | Developer | Released | Metacritic | "
-    "Reviews | Players | Anti-Cheat | DRM | Status | Description | Link |\n"
+    "Reviews | Players | Anti-Cheat | DRM | Status | Description | Link | Notes |\n"
     "|---|-----------|------|-------|-----------|----------|------------|"
-    "---------|---------|------------|-----|--------|-------------|------|\n"
+    "---------|---------|------------|-----|--------|-------------|------|------|\n"
 )
 
 
@@ -91,6 +91,7 @@ def make_row(idx: int, g: dict) -> str:
         status_icon(g),
         short_desc(g.get("desc", "N/A")),
         f"[Steam]({g.get('link', '#')})",
+        g.get("notes", ""),
     ]
     return "| " + " | ".join(cols) + " |\n"
 
