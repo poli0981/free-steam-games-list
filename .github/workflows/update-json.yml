@@ -1,14 +1,14 @@
-name: Auto update JSON
+name: Auto Update JSON Data
 on:
   schedule:
-    - cron: '0 0 * * *'
+    - cron: '0 0 * * *'   # Daily at midnight UTC
   workflow_dispatch:
 
 permissions:
-    contents: write
+  contents: write
 
 jobs:
-  update-tables:
+  update-data:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
@@ -21,10 +21,9 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: run bash script to update json files
+      - name: Full data update
         env:
           STEAM_API_KEY: ${{ secrets.STEAM_API_KEY }}
         run: |
           chmod +x ./bash/json.sh
           ./bash/json.sh
-        shell: bash

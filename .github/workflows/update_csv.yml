@@ -1,7 +1,7 @@
-name: Export data from JSON file -> CSV
+name: Export CSV
 on:
   schedule:
-    - cron: '0 2 * * *'
+    - cron: '0 2 * * *'   # Daily at 02:00 UTC
   workflow_dispatch:
 
 permissions:
@@ -16,14 +16,12 @@ jobs:
         with:
           token: ${{ secrets.GH_TOKEN }}
 
-      - name: Set up Python
+      - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
 
-      - name: Run bash script to export data
+      - name: Export CSV
         run: |
           chmod +x ./bash/csv_export.sh
           ./bash/csv_export.sh
-        shell: bash
-

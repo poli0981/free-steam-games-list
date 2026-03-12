@@ -1,14 +1,14 @@
-name: Top online game by player
+name: Top Online Leaderboard
 on:
   schedule:
-    - cron: '0 3 * * 0,3,5'
+    - cron: '0 3 * * 0,3,5'   # Sun, Wed, Fri at 03:00 UTC
   workflow_dispatch:
 
 permissions:
-    contents: write
+  contents: write
 
 jobs:
-  update-tables:
+  top-online:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
@@ -21,10 +21,9 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: run bash script to update top online game
+      - name: Generate top online
         env:
           STEAM_API_KEY: ${{ secrets.STEAM_API_KEY }}
         run: |
           chmod +x ./bash/online.sh
           ./bash/online.sh
-        shell: bash
