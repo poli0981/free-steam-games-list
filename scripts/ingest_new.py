@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 """
 Ingest new game links.
 
@@ -20,6 +21,29 @@ from core.fetcher import fetch_full
 from core.steam_client import get_client
 
 
+def parse_temp_entries(temp_records: list) -> list[dict]:
+    """
+    Parse temp_info.jsonl entries into a list of dicts.
+    Each entry can be:
+      - a bare string (link/appid only)
+      - a dict with "link" + optional manual fields
+    """
+    entries = []
+    for rec in temp_records:
+        if isinstance(rec, str):
+            entries.append({"link": rec.strip()})
+        elif isinstance(rec, dict) and rec.get("link"):
+            entries.append(rec)
+        else:
+            print(f"  ⚠ Skipping unrecognized entry: {rec}")
+    return entries
+
+
+# Fields that users can set manually in temp_info.jsonl
+# and should NOT be overwritten by Steam fetch
+MANUAL_FIELDS = {"anti_cheat", "notes", "type_game", "safe", "genre"}
+
+
 def main():
     temp_records = load_temp()
     if not temp_records:
@@ -28,28 +52,19 @@ def main():
 
     games = load_main()
     index = build_index(games)
+    entries = parse_temp_entries(temp_records)
 
-    # Parse links from temp file
-    raw_links: list[str] = []
-    for rec in temp_records:
-        if isinstance(rec, str):
-            raw_links.append(rec)
-        elif isinstance(rec, dict):
-            raw_links.append(rec.get("link", ""))
-        else:
-            continue
-
-    print(f"Found {len(raw_links)} entries in temp_info.jsonl")
+    print(f"Found {len(entries)} entries in temp_info.jsonl")
 
     added = 0
     skipped_invalid = 0
     skipped_dup = 0
     client = get_client()
 
-    for raw in raw_links:
-        link = normalize_link(raw)
+    for entry in entries:
+        link = normalize_link(entry["link"])
         if not link:
-            print(f"  ✗ Invalid link format, skipping: {raw[:80]}")
+            print(f"  ✗ Invalid link format, skipping: {entry['link'][:80]}")
             skipped_invalid += 1
             continue
 
@@ -59,10 +74,28 @@ def main():
             skipped_dup += 1
             continue
 
-        # Create skeleton & fetch
+        # 1) Create skeleton with normalized link
         game = make_skeleton(link)
+
+        # 2) Apply manual overrides BEFORE fetch so fetcher respects them
+        manual_overrides = {}
+        for key in MANUAL_FIELDS:
+            val = entry.get(key)
+            if val is not None and str(val).strip():
+                game[key] = str(val).strip()
+                manual_overrides[key] = game[key]
+
+        if manual_overrides:
+            print(f"  📝 Manual fields: {manual_overrides}")
+
+        # 3) Fetch from Steam (respects pre-filled genre, anti_cheat, etc.)
         print(f"  ➕ New game (appid {appid}) – fetching from Steam...")
         fetch_full(game, client=client)
+
+        # 4) Re-apply manual overrides that fetch might have clobbered
+        for key, val in manual_overrides.items():
+            game[key] = val
+
         games.append(game)
         index[appid] = len(games) - 1
         added += 1

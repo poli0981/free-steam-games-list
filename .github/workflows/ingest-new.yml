@@ -1,14 +1,17 @@
-name: Auto Update JSON Data
+name: Ingest New Game Links
 on:
-  schedule:
-    - cron: '0 0 * * *'   # Daily at midnight UTC
+  push:
+    paths:
+      - 'scripts/temp_info.jsonl'
+    branches:
+      - main
   workflow_dispatch:
 
 permissions:
   contents: write
 
 jobs:
-  update-data:
+  ingest:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
@@ -21,9 +24,9 @@ jobs:
         with:
           python-version: '3.14'
 
-      - name: Full data update
+      - name: Ingest new games
         env:
           STEAM_API_KEY: ${{ secrets.STEAM_API_KEY }}
         run: |
-          chmod +x ./bash/json.sh
-          ./bash/json.sh
+          chmod +x ./bash/ingest.sh
+          ./bash/ingest.sh
