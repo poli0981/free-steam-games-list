@@ -1,8 +1,7 @@
-# Third-Person Shooter Games
+# Third-person Shooter Games
 
-2 games – Generated: 2026-03-12 00:18
+1 games · Generated: 2026-03-12 08:40 UTC
 
-| No. | Thumbnail | Game Name | Genre | Developer | Release Date | Short Desc | Steam Link | Reviews | Players | Anti-Cheat | Notes | Safe |
-|-----|-----------|-----------|-------|-----------|--------------|------------|------------|---------|---------|------------|-------|------|
-| 1 | ![Snowbreak: Containment Zone](https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2668080/9e8a2143f52186b8e7806b4a3bd9c2a491fd3d8a/header.jpg?t=1765998639) | Snowbreak: Containment Zone | Third-Person Shooter | Amazing Seasun Games | Dec 24, 2023 | The new 3D Waifu Sci-Fi RPG Shooter is here! Aim at fate, fight by our side! Clear the specified stage to claim an Orange-Tier Operative!. | [Link](https://store.steampowered.com/app/2668080/Snowbreak_Containment_Zone/) | 74% (Mostly Positive) | 392 | - | Not play - No review. | ? |
-| 2 | ![S.P.E.C.T.O.R 01](https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4256310/51e26e13a61bf299fd2564e49c1e6a3971037cc2/header.jpg?t=1767164124) | S.P.E.C.T.O.R 01 | Third-Person Shooter | NAKGAMES | Dec 30, 2025 | S. | [Link](https://store.steampowered.com/app/4256310/SPECTOR_01/) | 0% (1 user reviews) | 0 | - | Not play - No review. | ? |
+| # | Thumbnail | Game | Genre | Developer | Released | Metacritic | Reviews | Players | Anti-Cheat | DRM | Status | Description | Link |
+|---|-----------|------|-------|-----------|----------|------------|---------|---------|------------|-----|--------|-------------|------|
+| 1 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3688610/e66f6d9017520fc186505a95a86562163163b837/header.jpg?t=1772127046' width='120'> | KamiKaZe | Third-person Shooter | Insomnia Dreamers | Feb 26, 2026 | N/A | 100% (2 user reviews) | 0 | - | None detected | ✅ | KamiKaZe is a controller-only multiplayer shooter where it's every player for themselves—no teams, just pure free-for-al... | [Steam](https://store.steampowered.com/app/3688610/) |
