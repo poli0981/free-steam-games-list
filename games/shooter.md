@@ -1,6 +1,6 @@
 # Shooter Games
 
-1 games · Generated: 2026-03-13 01:55 UTC
+1 games · Generated: 2026-03-13 04:37 UTC
 
 | # | Thumbnail | Game | Genre | Developer | Released | Metacritic | Reviews | Players | Anti-Cheat | DRM | Status | Description | Link | Notes |
 |---|-----------|------|-------|-----------|----------|------------|---------|---------|------------|-----|--------|-------------|------|------|

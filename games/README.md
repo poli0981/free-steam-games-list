@@ -1,6 +1,6 @@
 # 🎮 Steam Free-to-Play Game Tracker
 
-**Total games:** 637 · **Last updated:** 2026-03-13 01:55 UTC
+**Total games:** 621 · **Last updated:** 2026-03-13 04:37 UTC
 
 ## 📋 Full List
 
@@ -15,24 +15,24 @@
 |-------|-------|------|
 | - | 3 | [-.md](-.md) |
 | Action | 4 | [action.md](action.md) |
-| Action RPG | 7 | [action-rpg.md](action-rpg.md) |
+| Action RPG | 6 | [action-rpg.md](action-rpg.md) |
 | Action RPG, Gacha | 2 | [action-rpg-gacha.md](action-rpg-gacha.md) |
 | Action-Adventure | 1 | [action-adventure.md](action-adventure.md) |
-| Adventure | 21 | [adventure.md](adventure.md) |
+| Adventure | 20 | [adventure.md](adventure.md) |
 | Arcade | 6 | [arcade.md](arcade.md) |
 | Arena Shooter | 3 | [arena-shooter.md](arena-shooter.md) |
 | Auto Battler | 1 | [auto-battler.md](auto-battler.md) |
 | Battle Royale | 12 | [battle-royale.md](battle-royale.md) |
-| Beat 'em up | 5 | [beat-'em-up.md](beat-'em-up.md) |
-| Board Game | 3 | [board-game.md](board-game.md) |
+| Beat 'em up | 4 | [beat-'em-up.md](beat-'em-up.md) |
+| Board Game | 2 | [board-game.md](board-game.md) |
 | Building | 1 | [building.md](building.md) |
 | Bullet Hell | 9 | [bullet-hell.md](bullet-hell.md) |
 | Card Game | 27 | [card-game.md](card-game.md) |
 | City Builder | 4 | [city-builder.md](city-builder.md) |
 | Clicker | 12 | [clicker.md](clicker.md) |
-| Cozy | 4 | [cozy.md](cozy.md) |
+| Cozy | 3 | [cozy.md](cozy.md) |
 | Crafting | 1 | [crafting.md](crafting.md) |
-| Dating Sim | 7 | [dating-sim.md](dating-sim.md) |
+| Dating Sim | 6 | [dating-sim.md](dating-sim.md) |
 | Deckbuilding | 1 | [deckbuilding.md](deckbuilding.md) |
 | Dungeon Crawler | 3 | [dungeon-crawler.md](dungeon-crawler.md) |
 | Education | 1 | [education.md](education.md) |
@@ -45,7 +45,7 @@
 | Fishing | 1 | [fishing.md](fishing.md) |
 | Gambling | 3 | [gambling.md](gambling.md) |
 | Hack & Slash | 4 | [hack-&-slash.md](hack-&-slash.md) |
-| Hero Shooter | 3 | [hero-shooter.md](hero-shooter.md) |
+| Hero Shooter | 2 | [hero-shooter.md](hero-shooter.md) |
 | Hidden Object | 29 | [hidden-object.md](hidden-object.md) |
 | Horror | 60 | [horror.md](horror.md) |
 | Idler | 9 | [idler.md](idler.md) |
@@ -53,7 +53,7 @@
 | Life Sim | 2 | [life-sim.md](life-sim.md) |
 | Looter Shooter | 3 | [looter-shooter.md](looter-shooter.md) |
 | MMO | 12 | [mmo.md](mmo.md) |
-| MMORPG | 37 | [mmorpg.md](mmorpg.md) |
+| MMORPG | 29 | [mmorpg.md](mmorpg.md) |
 | MOBA | 7 | [moba.md](moba.md) |
 | Parkour | 1 | [parkour.md](parkour.md) |
 | Party Game | 6 | [party-game.md](party-game.md) |
@@ -88,7 +88,7 @@
 | Turn-based RPG | 5 | [turn-based-rpg.md](turn-based-rpg.md) |
 | Turn-based Strategy | 8 | [turn-based-strategy.md](turn-based-strategy.md) |
 | Turn-based Tactics | 3 | [turn-based-tactics.md](turn-based-tactics.md) |
-| Visual Novel | 55 | [visual-novel.md](visual-novel.md) |
+| Visual Novel | 54 | [visual-novel.md](visual-novel.md) |
 | Walking Simulator | 1 | [walking-simulator.md](walking-simulator.md) |
 
 ## 🏆 Online Leaderboard
