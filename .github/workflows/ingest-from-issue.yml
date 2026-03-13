@@ -1,0 +1,150 @@
+name: Ingest from Issue
+on:
+  issues:
+    types: [opened]
+
+permissions:
+  contents: write
+  issues: write
+
+jobs:
+  ingest-from-issue:
+    if: contains(github.event.issue.title, '[add-game]')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v6
+        with:
+          token: ${{ secrets.GH_TOKEN }}
+
+      - name: Setup Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.14'
+
+      - name: Parse issue and write to temp_info.jsonl
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const body = context.payload.issue.body || '';
+            const title = context.payload.issue.title || '';
+            const isBulk = title.includes('[add-game-bulk]');
+
+            // Extract JSON block from issue body
+            const jsonMatch = body.match(/```json\s*([\s\S]*?)\s*```/);
+            if (!jsonMatch) {
+              core.setFailed('No JSON block found in issue body');
+              return;
+            }
+
+            let parsed;
+            try {
+              parsed = JSON.parse(jsonMatch[1]);
+            } catch (e) {
+              core.setFailed(`Invalid JSON in issue: ${e.message}`);
+              return;
+            }
+
+            // Normalize: always work with an array
+            const games = Array.isArray(parsed) ? parsed : [parsed];
+
+            // Validate each entry has a link
+            const valid = games.filter(g => g && g.link);
+            if (valid.length === 0) {
+              core.setFailed('No valid game entries found (each needs a "link" field)');
+              return;
+            }
+
+            // Write to temp_info.jsonl (one JSON object per line)
+            const fs = require('fs');
+            const lines = valid.map(g => JSON.stringify(g)).join('\n') + '\n';
+            fs.writeFileSync('scripts/temp_info.jsonl', lines, 'utf8');
+
+            core.info(`Parsed ${valid.length} game(s) from ${isBulk ? 'bulk' : 'single'} issue`);
+
+      - name: Run ingest pipeline
+        env:
+          STEAM_API_KEY: ${{ secrets.STEAM_API_KEY }}
+        run: |
+          pip install --quiet requests jsonlines
+          python scripts/ingest_new.py
+
+          # Also regenerate tables
+          python scripts/generate_tables.py
+
+      - name: Commit changes
+        run: |
+          git config --global user.name  'github-actions[bot]'
+          git config --global user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add .
+          git diff --staged --quiet && echo "No changes" || \
+            (git commit -m "Ingest game from issue #${{ github.event.issue.number }} [$(date +'%Y-%m-%d')]" && git push)
+
+      - name: Comment and close issue
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const issueNumber = context.payload.issue.number;
+            const title = context.payload.issue.title || '';
+            const isBulk = title.includes('[add-game-bulk]');
+
+            // Check if temp was cleared (= ingest succeeded)
+            let tempContent = '';
+            try {
+              tempContent = fs.readFileSync('scripts/temp_info.jsonl', 'utf8').trim();
+            } catch {}
+
+            const success = tempContent === '';
+            const label = isBulk ? 'bulk add' : 'game';
+
+            if (success) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issueNumber,
+                body: [
+                  `✅ **${isBulk ? 'Bulk add' : 'Game added'} successfully!**`,
+                  '',
+                  'Games have been ingested into the tracker and tables regenerated.',
+                  'Check the workflow logs for per-game details (duplicates, health check results).',
+                  '',
+                  '*Processed by Steam F2P Tracker automation v2*'
+                ].join('\n')
+              });
+
+              await github.rest.issues.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issueNumber,
+                state: 'closed',
+                labels: ['add-game', 'completed']
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issueNumber,
+                body: [
+                  '❌ **Ingest failed or all entries skipped.**',
+                  '',
+                  'Possible reasons per game:',
+                  '- Already exists in tracker (duplicate)',
+                  '- Invalid link format',
+                  '- Game unavailable / delisted / not free on Steam',
+                  '- Network error during fetch',
+                  '',
+                  'Check the workflow logs for details.',
+                  '',
+                  '*Processed by Steam F2P Tracker automation v2*'
+                ].join('\n')
+              });
+
+              await github.rest.issues.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issueNumber,
+                state: 'closed',
+                labels: ['add-game', 'rejected']
+              });
+            }
