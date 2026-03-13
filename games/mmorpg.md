@@ -1,10 +1,10 @@
 # MMORPG Games
 
-36 games · Generated: 2026-03-12 09:23 UTC
+36 games · Generated: 2026-03-13 01:45 UTC
 
 | # | Thumbnail | Game | Genre | Developer | Released | Metacritic | Reviews | Players | Anti-Cheat | DRM | Status | Description | Link | Notes |
 |---|-----------|------|-------|-----------|----------|------------|---------|---------|------------|-----|--------|-------------|------|------|
-| 1 | <img src='' width='120'> |  | MMORPG |  |  | N/A | 95% (Very Positive) | 11 | - | - | ✅ | N/A | [Steam](https://store.steampowered.com/app/4134080/) | Not support English language. (Only Chinese) |
+| 1 | <img src='' width='120'> |  | MMORPG |  |  | N/A | 95% (Very Positive) | 13 | - | - | ✅ | N/A | [Steam](https://store.steampowered.com/app/4134080/) | Not support English language. (Only Chinese) |
 | 2 | <img src='' width='120'> |  | MMORPG |  |  | N/A | 93% (Very Positive) | 0 | - | - | ✅ | N/A | [Steam](https://store.steampowered.com/app/3998950/) | Not support English language. (Only Chinese) |
 | 3 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/438040/header.jpg?t=1772447704' width='120'> | Shakes and Fidget | MMORPG | Playa Games GmbH | Feb 24, 2016 | N/A | 92% (Very Positive) | 936 | - | None detected | ✅ | Shakes &amp; Fidget is a hilarious fantasy role-playing satire and at the same time, an award-winning RPG! Sounds crazy?... | [Steam](https://store.steampowered.com/app/438040/) | Not reviewed yet |
 | 4 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1286830/header.jpg?t=1772549924' width='120'> | STAR WARS™: The Old Republic™ | MMORPG | Broadsword | Jul 21, 2020 | 85 | 90% (Very Positive) | 2,148 | - | None detected | ✅ | STAR WARS™: The Old Republic™ is a free-to-play MMORPG that puts you at the center of your own story-driven saga. | [Steam](https://store.steampowered.com/app/1286830/) | Not reviewed yet |
@@ -39,4 +39,4 @@
 | 33 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3609170/aed22a59c057c7da1c9fadc16c9856f0cfafb065/header.jpg?t=1768978908' width='120'> | 4STORY : The Original | MMORPG | Zemi Interactive | Jun 10, 2025 | N/A | 34% (Mostly Negative) | 9 | - | None detected | ✅ | Between Berkilious, the God of Destruction, and Lea, the Goddess of creation, long-lasting antagonism has repeated numer... | [Steam](https://store.steampowered.com/app/3609170/) | Not reviewed yet |
 | 34 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3540640/17d22247a5904057473f8f24a17234abfbd34667/header.jpg?t=1766391086' width='120'> | 浮空秘境 | MMORPG | 厦门魔兔网络科技有限公司 | Dec 22, 2025 | N/A | 33% (3 user reviews) | 0 | - | None detected | ✅ | 《浮空秘境》是一款经典日式RPG像素风休闲放置游戏。传说中光之女神缔造了神圣的埃蒙大陆，然而这里的魔法文明正悄然被恶念侵蚀，蛰伏千年的魔王即将复苏。纷乱的时空下，一个光怪陆离的梦开启了你尘封的记忆，你开始回想起遥远时光里的一切：在那片被战火... | [Steam](https://store.steampowered.com/app/3540640/) | Not support English language. (Only Chinese) |
 | 35 | <img src='' width='120'> |  | MMORPG |  |  | N/A | 25% (4 user reviews) | 0 | - | - | ✅ | N/A | [Steam](https://store.steampowered.com/app/4096370/) | Not support English language. (Only Chinese) |
-| 36 | <img src='' width='120'> |  | MMORPG |  |  | N/A | 0% (4 user reviews) | 63 | - | - | ✅ | N/A | [Steam](https://store.steampowered.com/app/4279820/) | Not reviewed yet |
+| 36 | <img src='' width='120'> |  | MMORPG |  |  | N/A | 0% (5 user reviews) | 61 | - | - | ✅ | N/A | [Steam](https://store.steampowered.com/app/4279820/) | Not reviewed yet |

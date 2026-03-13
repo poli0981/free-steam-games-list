@@ -1,6 +1,6 @@
 # Puzzle Games
 
-36 games · Generated: 2026-03-12 09:23 UTC
+36 games · Generated: 2026-03-13 01:45 UTC
 
 | # | Thumbnail | Game | Genre | Developer | Released | Metacritic | Reviews | Players | Anti-Cheat | DRM | Status | Description | Link | Notes |
 |---|-----------|------|-------|-----------|----------|------------|---------|---------|------------|-----|--------|-------------|------|------|

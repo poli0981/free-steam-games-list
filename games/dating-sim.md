@@ -1,6 +1,6 @@
 # Dating Sim Games
 
-6 games · Generated: 2026-03-12 09:23 UTC
+6 games · Generated: 2026-03-13 01:45 UTC
 
 | # | Thumbnail | Game | Genre | Developer | Released | Metacritic | Reviews | Players | Anti-Cheat | DRM | Status | Description | Link | Notes |
 |---|-----------|------|-------|-----------|----------|------------|---------|---------|------------|-----|--------|-------------|------|------|
@@ -8,5 +8,5 @@
 | 2 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4156010/7c454ceff9213ea317611a3c990f34ff0e768312/header.jpg?t=1765898801' width='120'> | Love and Sex: First Base | Dating Sim | Andrealphus Games | Dec 16, 2025 | N/A | 88% (Positive) | 10 | - | None detected | ✅ | Become roommates with two gorgeous girls and explore the largest free hand-drawn 18+ dating sim ever. | [Steam](https://store.steampowered.com/app/4156010/) | NSFW |
 | 3 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3707750/dd21ec58e71ca452eed74330a155b54bad0ea10e/header.jpg?t=1766422872' width='120'> | Price of Obsession | Dating Sim | Renaius | Dec 22, 2025 | N/A | 88% (8 user reviews) | 0 | - | None detected | ✅ | Price of Obsession is a choice-driven narrative game featuring multiple endings, where your decisions determine who live... | [Steam](https://store.steampowered.com/app/3707750/) | Not reviewed yet |
 | 4 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/777130/e1526bc9d1dffd98d78f69097bf4e40634eda98a/header.jpg?t=1762380845' width='120'> | Blush Blush | Dating Sim | Sad Panda Studios | Apr 22, 2020 | N/A | 86% (Very Positive) | 198 | - | None detected | ✅ | You are responsible somehow for a curse that befalls 12 unfortunate hawt dudes. | [Steam](https://store.steampowered.com/app/777130/) | Not reviewed yet |
-| 5 | <img src='' width='120'> |  | Dating Sim |  |  | N/A | 83% (Very Positive) | 1,832 | - | - | ✅ | N/A | [Steam](https://store.steampowered.com/app/958260/) | Beautiful Girl, Gacha outfit |
+| 5 | <img src='' width='120'> |  | Dating Sim |  |  | N/A | 83% (Very Positive) | 1,641 | - | - | ✅ | N/A | [Steam](https://store.steampowered.com/app/958260/) | Beautiful Girl, Gacha outfit |
 | 6 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3744380/71b927708e479359a36b00afcff0bd8f30ca5ddc/header.jpg?t=1768585478' width='120'> | Sexy Beaches | Dating Sim | Silver Fox Lab | Jan 8, 2026 | N/A | 58% (Mixed) | 2 | - | None detected | ✅ | Sexy Beaches is a casual idle dating sim where you upgrade girls' tropical islands to progress your relationships. | [Steam](https://store.steampowered.com/app/3744380/) | Not reviewed yet |
