@@ -1,6 +1,6 @@
 # Puzzle Games
 
-36 games · Generated: 2026-03-13 01:45 UTC
+37 games · Generated: 2026-03-13 01:55 UTC
 
 | # | Thumbnail | Game | Genre | Developer | Released | Metacritic | Reviews | Players | Anti-Cheat | DRM | Status | Description | Link | Notes |
 |---|-----------|------|-------|-----------|----------|------------|---------|---------|------------|-----|--------|-------------|------|------|
@@ -40,3 +40,4 @@
 | 34 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1083700/header.jpg?t=1572215893' width='120'> | 3D Text Adventure | Puzzle | Ariel Love | Sep 10, 2019 | N/A | 49% (Mixed) | 0 | - | None detected | ✅ | This Australian Indie studio is committed to converting the old Infocom text adventures to 3d first person adventures. | [Steam](https://store.steampowered.com/app/1083700/) | Not reviewed yet |
 | 35 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4159140/f331f6c38c8d77df9ed17b542574420f5f6d844d/header.jpg?t=1764410633' width='120'> | MindEscape | Puzzle | RealMINT ai | Nov 29, 2025 | N/A | 33% (6 user reviews) | 0 | - | None detected | ✅ | Step into immersive 3D escape rooms and reveal your true self. | [Steam](https://store.steampowered.com/app/4159140/) | Not reviewed yet |
 | 36 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4159900/53857f68038f921ee59440eec5867a6731d17aad/header.jpg?t=1771196569' width='120'> | Stories Adrift: Wake - Prologue | Puzzle | HIATUS Productions | Dec 20, 2025 | N/A | 14% (7 user reviews) | 0 | - | None detected | ✅ | As the new owner of a book boat, you are entrusted with returning a single page of a book and embarks on a journey throu... | [Steam](https://store.steampowered.com/app/4159900/) | Not reviewed yet |
+| 37 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4436290/f73baeac8b9299fa9c42b36e41606d4a1bd743ec/header.jpg?t=1773156160' width='120'> | Tomoshibi no Yoru | Puzzle | NISAKE | Mar 10, 2026 | N/A | No reviews | 0 | - | None detected | ✅ | A cooperative puzzle adventure where a small flame and a girl journey together through the night. | [Steam](https://store.steampowered.com/app/4436290/) | Not reviewed yet |

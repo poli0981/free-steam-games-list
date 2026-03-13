@@ -1,6 +1,6 @@
 # Action RPG Games
 
-6 games · Generated: 2026-03-13 01:45 UTC
+7 games · Generated: 2026-03-13 01:55 UTC
 
 | # | Thumbnail | Game | Genre | Developer | Released | Metacritic | Reviews | Players | Anti-Cheat | DRM | Status | Description | Link | Notes |
 |---|-----------|------|-------|-----------|----------|------------|---------|---------|------------|-----|--------|-------------|------|------|
@@ -10,3 +10,4 @@
 | 4 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2376580/header.jpg?t=1772544857' width='120'> | TRIBE NINE | Action RPG | Akatsuki Games Inc. | Feb 18, 2025 | N/A | 68% (Mixed) | 0 | - | None detected | 💰 | Defy the madness. | [Steam](https://store.steampowered.com/app/2376580/) | ⚠ No longer free! Check price. |
 | 5 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2845940/8ecfa2fed0479408164785e80ccd45faef4d44fe/header.jpg?t=1766168949' width='120'> | Path of the Tank | Action RPG | Niceas de Atenas | Dec 19, 2025 | N/A | 67% (6 user reviews) | 0 | - | None detected | ✅ | Can you challenge oblivion itself?. | [Steam](https://store.steampowered.com/app/2845940/) | Not reviewed yet |
 | 6 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/985810/4678bde86fb96e1c7879c44e303cf6cd87155030/header.jpg?t=1770975555' width='120'> | GrandChase | Action RPG | KOG | Jul 27, 2021 | N/A | 65% (Mixed) | 1,589 | - | None detected | ✅ | Grand Chase is a free side-scrolling online action RPG with anime inspired graphics. | [Steam](https://store.steampowered.com/app/985810/) | Not reviewed yet |
+| 7 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2484250/8b9713ec8d97bb85d422fdfc7ccc18c1d6b3e887/header.jpg?t=1754276051' width='120'> | ASTRA: Knights of Veda | Action RPG | FLINT | Apr 1, 2024 | N/A | 46% (Mixed) | 76 | - | ACE<br>None machine activat... | ✅ | ASTRA: Knights of Veda is a visually stunning, story-rich, 2D RPG. | [Steam](https://store.steampowered.com/app/2484250/) | Not reviewed yet |

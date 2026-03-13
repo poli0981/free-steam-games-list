@@ -1,6 +1,6 @@
 # Dating Sim Games
 
-6 games · Generated: 2026-03-13 01:45 UTC
+7 games · Generated: 2026-03-13 01:55 UTC
 
 | # | Thumbnail | Game | Genre | Developer | Released | Metacritic | Reviews | Players | Anti-Cheat | DRM | Status | Description | Link | Notes |
 |---|-----------|------|-------|-----------|----------|------------|---------|---------|------------|-----|--------|-------------|------|------|
@@ -10,3 +10,4 @@
 | 4 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/777130/e1526bc9d1dffd98d78f69097bf4e40634eda98a/header.jpg?t=1762380845' width='120'> | Blush Blush | Dating Sim | Sad Panda Studios | Apr 22, 2020 | N/A | 86% (Very Positive) | 198 | - | None detected | ✅ | You are responsible somehow for a curse that befalls 12 unfortunate hawt dudes. | [Steam](https://store.steampowered.com/app/777130/) | Not reviewed yet |
 | 5 | <img src='' width='120'> |  | Dating Sim |  |  | N/A | 83% (Very Positive) | 1,641 | - | - | ✅ | N/A | [Steam](https://store.steampowered.com/app/958260/) | Beautiful Girl, Gacha outfit |
 | 6 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3744380/71b927708e479359a36b00afcff0bd8f30ca5ddc/header.jpg?t=1768585478' width='120'> | Sexy Beaches | Dating Sim | Silver Fox Lab | Jan 8, 2026 | N/A | 58% (Mixed) | 2 | - | None detected | ✅ | Sexy Beaches is a casual idle dating sim where you upgrade girls' tropical islands to progress your relationships. | [Steam](https://store.steampowered.com/app/3744380/) | Not reviewed yet |
+| 7 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1745200/adda9201eca5b721ef1175c0420aed462b4d0803/header.jpg?t=1762162098' width='120'> | Sexy Airlines EVO | Dating Sim | Playduction | Dec 20, 2021 | N/A | 44% (Mixed) | 79 | - | None detected | ✅ | Sexy Airlines is an idle-clicker dating game, that puts you in charge of an airlines company. | [Steam](https://store.steampowered.com/app/1745200/) | NSFW, nudity content. |
