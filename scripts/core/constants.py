@@ -7,6 +7,7 @@ import os
 DATA_JSONL       = "scripts/data.jsonl"
 TEMP_JSONL       = "scripts/temp_info.jsonl"
 DEAD_LINKS_LOG   = "scripts/dead_links.log"
+REMOVED_JSONL    = "scripts/removed_games.jsonl"
 GAMES_DIR        = "games"
 
 # ──────────── Steam API ────────────

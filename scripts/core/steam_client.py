@@ -131,21 +131,40 @@ class SteamClient:
 
     def fetch_app_details(self, appid: str) -> Optional[dict]:
         """Fetch store details for a single appid. Returns data dict or None."""
+        status, data = self.fetch_app_details_full(appid)
+        return data if status == "ok" else None
+
+    def fetch_app_details_full(self, appid: str) -> tuple[str, Optional[dict]]:
+        """
+        Fetch store details with full status reporting.
+
+        Returns (status, data) where status is one of:
+          - "ok"           : success, data dict returned
+          - "unavailable"  : Steam says success=false (delisted / removed / region-locked)
+          - "not_found"    : HTTP 404 or 410
+          - "network_error": timeout / connection issue / unexpected failure
+        """
         resp = self._get(
-            f"https://store.steampowered.com/api/appdetails",
+            "https://store.steampowered.com/api/appdetails",
             params={"appids": appid},
             throttle_fn=self._throttle_store,
         )
         if not resp:
-            return None
+            return ("network_error", None)
+
+        if resp.status_code in (404, 410):
+            return ("not_found", None)
+
         try:
             body = resp.json()
             entry = body.get(str(appid), {})
             if entry.get("success"):
-                return entry["data"]
+                return ("ok", entry["data"])
+            else:
+                # Steam explicitly returned success: false
+                return ("unavailable", None)
         except (ValueError, KeyError):
-            pass
-        return None
+            return ("network_error", None)
 
     def fetch_reviews(self, appid: str) -> Optional[dict]:
         """Fetch review summary. Returns query_summary dict or None."""

@@ -1,0 +1,29 @@
+name: Purge Unhealthy Games
+on:
+  schedule:
+    - cron: '0 5 * * 1'   # Every Monday at 05:00 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  purge:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v6
+        with:
+          token: ${{ secrets.GH_TOKEN }}
+
+      - name: Setup Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.14'
+
+      - name: Purge unhealthy games
+        env:
+          STEAM_API_KEY: ${{ secrets.STEAM_API_KEY }}
+        run: |
+          chmod +x ./bash/purge.sh
+          ./bash/purge.sh
