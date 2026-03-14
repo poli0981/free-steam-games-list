@@ -1,6 +1,6 @@
 # 🎮 Steam Free-to-Play Game Tracker
 
-**Total games:** 623 · **Last updated:** 2026-03-14 02:11 UTC
+**Total games:** 625 · **Last updated:** 2026-03-14 02:17 UTC
 
 ## 📋 Full List
 
@@ -18,7 +18,7 @@
 | Action RPG | 6 | [action-rpg.md](action-rpg.md) |
 | Action RPG, Gacha | 2 | [action-rpg-gacha.md](action-rpg-gacha.md) |
 | Action-Adventure | 1 | [action-adventure.md](action-adventure.md) |
-| Adventure | 20 | [adventure.md](adventure.md) |
+| Adventure | 21 | [adventure.md](adventure.md) |
 | Arcade | 6 | [arcade.md](arcade.md) |
 | Arena Shooter | 3 | [arena-shooter.md](arena-shooter.md) |
 | Auto Battler | 1 | [auto-battler.md](auto-battler.md) |
@@ -60,7 +60,7 @@
 | Party-Based RPG | 1 | [party-based-rpg.md](party-based-rpg.md) |
 | Platformer | 46 | [platformer.md](platformer.md) |
 | Point-and-Click | 1 | [point-and-click.md](point-and-click.md) |
-| Puzzle | 37 | [puzzle.md](puzzle.md) |
+| Puzzle | 38 | [puzzle.md](puzzle.md) |
 | RPG | 1 | [rpg.md](rpg.md) |
 | Racing | 6 | [racing.md](racing.md) |
 | Real-Time Strategy | 1 | [real-time-strategy.md](real-time-strategy.md) |
