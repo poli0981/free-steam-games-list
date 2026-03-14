@@ -1,6 +1,6 @@
 # 🎮 Steam Free-to-Play Game Tracker
 
-**Total games:** 621 · **Last updated:** 2026-03-14 00:19 UTC
+**Total games:** 623 · **Last updated:** 2026-03-14 02:11 UTC
 
 ## 📋 Full List
 
@@ -14,7 +14,7 @@
 | Genre | Games | File |
 |-------|-------|------|
 | - | 3 | [-.md](-.md) |
-| Action | 4 | [action.md](action.md) |
+| Action | 5 | [action.md](action.md) |
 | Action RPG | 6 | [action-rpg.md](action-rpg.md) |
 | Action RPG, Gacha | 2 | [action-rpg-gacha.md](action-rpg-gacha.md) |
 | Action-Adventure | 1 | [action-adventure.md](action-adventure.md) |
@@ -47,7 +47,7 @@
 | Hack & Slash | 4 | [hack-&-slash.md](hack-&-slash.md) |
 | Hero Shooter | 2 | [hero-shooter.md](hero-shooter.md) |
 | Hidden Object | 29 | [hidden-object.md](hidden-object.md) |
-| Horror | 60 | [horror.md](horror.md) |
+| Horror | 61 | [horror.md](horror.md) |
 | Idler | 9 | [idler.md](idler.md) |
 | Isometric | 1 | [isometric.md](isometric.md) |
 | Life Sim | 2 | [life-sim.md](life-sim.md) |
