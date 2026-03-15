@@ -1,6 +1,6 @@
 # Looter Shooter Games
 
-3 games · Generated: 2026-03-15 17:40 UTC
+3 games · Generated: 2026-03-15 17:41 UTC
 
 | # | Thumbnail | Game | Genre | Developer | Released | Metacritic | Reviews | Players | Anti-Cheat | DRM | Status | Description | Link | Notes |
 |---|-----------|------|-------|-----------|----------|------------|---------|---------|------------|-----|--------|-------------|------|------|
