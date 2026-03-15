@@ -1,6 +1,6 @@
 # 🎮 Steam Free-to-Play Game Tracker
 
-**Total games:** 626 · **Last updated:** 2026-03-15 00:24 UTC
+**Total games:** 629 · **Last updated:** 2026-03-15 15:29 UTC
 
 ## 📋 Full List
 
@@ -14,7 +14,7 @@
 | Genre | Games | File |
 |-------|-------|------|
 | - | 3 | [-.md](-.md) |
-| Action | 6 | [action.md](action.md) |
+| Action | 8 | [action.md](action.md) |
 | Action RPG | 6 | [action-rpg.md](action-rpg.md) |
 | Action RPG, Gacha | 2 | [action-rpg-gacha.md](action-rpg-gacha.md) |
 | Action-Adventure | 1 | [action-adventure.md](action-adventure.md) |
@@ -77,7 +77,7 @@
 | Souls-like | 2 | [souls-like.md](souls-like.md) |
 | Sports | 13 | [sports.md](sports.md) |
 | Stealth | 3 | [stealth.md](stealth.md) |
-| Strategy | 23 | [strategy.md](strategy.md) |
+| Strategy | 24 | [strategy.md](strategy.md) |
 | Surreal | 1 | [surreal.md](surreal.md) |
 | Survival | 2 | [survival.md](survival.md) |
 | Third-Person Shooter | 2 | [third-person-shooter.md](third-person-shooter.md) |
