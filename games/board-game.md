@@ -1,6 +1,6 @@
 # Board Game Games
 
-2 games · Generated: 2026-03-15 17:41 UTC
+2 games · Generated: 2026-03-15 18:23 UTC
 
 | # | Thumbnail | Game | Genre | Developer | Released | Metacritic | Reviews | Players | Anti-Cheat | DRM | Status | Description | Link | Notes |
 |---|-----------|------|-------|-----------|----------|------------|---------|---------|------------|-----|--------|-------------|------|------|

@@ -1,6 +1,6 @@
 # 🎮 Steam Free-to-Play Game Tracker
 
-**Total games:** 630 · **Last updated:** 2026-03-15 17:41 UTC
+**Total games:** 633 · **Last updated:** 2026-03-15 18:23 UTC
 
 ## 📋 Full List
 
@@ -47,13 +47,13 @@
 | Hack & Slash | 4 | [hack-&-slash.md](hack-&-slash.md) |
 | Hero Shooter | 2 | [hero-shooter.md](hero-shooter.md) |
 | Hidden Object | 29 | [hidden-object.md](hidden-object.md) |
-| Horror | 61 | [horror.md](horror.md) |
+| Horror | 62 | [horror.md](horror.md) |
 | Idler | 9 | [idler.md](idler.md) |
 | Isometric | 1 | [isometric.md](isometric.md) |
 | Life Sim | 2 | [life-sim.md](life-sim.md) |
 | Looter Shooter | 3 | [looter-shooter.md](looter-shooter.md) |
 | MMO | 12 | [mmo.md](mmo.md) |
-| MMORPG | 29 | [mmorpg.md](mmorpg.md) |
+| MMORPG | 30 | [mmorpg.md](mmorpg.md) |
 | MOBA | 7 | [moba.md](moba.md) |
 | Parkour | 1 | [parkour.md](parkour.md) |
 | Party Game | 6 | [party-game.md](party-game.md) |
@@ -71,7 +71,7 @@
 | Score Attack | 1 | [score-attack.md](score-attack.md) |
 | Shoot'em up | 1 | [shoot'em-up.md](shoot'em-up.md) |
 | Shooter | 1 | [shooter.md](shooter.md) |
-| Simulation | 34 | [simulation.md](simulation.md) |
+| Simulation | 35 | [simulation.md](simulation.md) |
 | Social Deduction | 1 | [social-deduction.md](social-deduction.md) |
 | Software | 1 | [software.md](software.md) |
 | Souls-like | 2 | [souls-like.md](souls-like.md) |
