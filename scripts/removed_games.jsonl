@@ -14,3 +14,4 @@
 {"link": "https://store.steampowered.com/app/4241850/", "name": "Dreadmyst", "appid": "4241850", "reason": "No longer free-to-play", "status_code": "not_free", "removed_at": "2026-03-13T04:30:12Z"}
 {"link": "https://store.steampowered.com/app/4279820/", "name": "https://store.steampowered.com/app/4279820/", "appid": "4279820", "reason": "No longer available on Steam (delisted)", "status_code": "unavailable", "removed_at": "2026-03-13T04:35:22Z"}
 {"link": "https://store.steampowered.com/app/4128260/", "name": "Highguard", "appid": "4128260", "reason": "No longer free-to-play", "status_code": "not_free", "removed_at": "2026-03-13T04:37:02Z"}
+{"link": "https://store.steampowered.com/app/1536610/", "name": "OpenTTD", "appid": "1536610", "reason": "No longer available on Steam (delisted)", "status_code": "unavailable", "removed_at": "2026-03-16T05:48:49Z"}

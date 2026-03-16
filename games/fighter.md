@@ -1,6 +1,6 @@
 # Fighter Games
 
-1 games · Generated: 2026-03-16 00:24 UTC
+1 games · Generated: 2026-03-16 05:55 UTC
 
 | # | Thumbnail | Game | Genre | Developer | Released | Metacritic | Reviews | Players | Anti-Cheat | DRM | Status | Description | Link | Notes |
 |---|-----------|------|-------|-----------|----------|------------|---------|---------|------------|-----|--------|-------------|------|------|

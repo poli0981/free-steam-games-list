@@ -1,6 +1,6 @@
 # 🎮 Steam Free-to-Play Game Tracker
 
-**Total games:** 633 · **Last updated:** 2026-03-16 00:24 UTC
+**Total games:** 632 · **Last updated:** 2026-03-16 05:55 UTC
 
 ## 📋 Full List
 
@@ -71,7 +71,7 @@
 | Score Attack | 1 | [score-attack.md](score-attack.md) |
 | Shoot'em up | 1 | [shoot'em-up.md](shoot'em-up.md) |
 | Shooter | 1 | [shooter.md](shooter.md) |
-| Simulation | 35 | [simulation.md](simulation.md) |
+| Simulation | 34 | [simulation.md](simulation.md) |
 | Social Deduction | 1 | [social-deduction.md](social-deduction.md) |
 | Software | 1 | [software.md](software.md) |
 | Souls-like | 2 | [souls-like.md](souls-like.md) |
