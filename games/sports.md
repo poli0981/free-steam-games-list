@@ -1,6 +1,6 @@
 # Sports Games
 
-13 games · Generated: 2026-03-16 05:55 UTC
+13 games · Generated: 2026-03-17 00:22 UTC
 
 | # | Thumbnail | Game | Genre | Developer | Released | Metacritic | Reviews | Players | Anti-Cheat | DRM | Status | Description | Link | Notes |
 |---|-----------|------|-------|-----------|----------|------------|---------|---------|------------|-----|--------|-------------|------|------|
