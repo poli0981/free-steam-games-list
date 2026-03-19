@@ -1,6 +1,6 @@
 # Platformer Games
 
-46 games · Generated: 2026-03-18 00:22 UTC
+46 games · Generated: 2026-03-19 00:23 UTC
 
 | # | Thumbnail | Game | Genre | Developer | Released | Metacritic | Reviews | Players | Anti-Cheat | DRM | Status | Description | Link | Notes |
 |---|-----------|------|-------|-----------|----------|------------|---------|---------|------------|-----|--------|-------------|------|------|
