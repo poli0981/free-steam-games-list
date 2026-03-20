@@ -1,10 +1,10 @@
 # Roguelike Games
 
-7 games · Generated: 2026-03-19 00:23 UTC
+7 games · Generated: 2026-03-20 00:21 UTC
 
 | # | Thumbnail | Game | Genre | Developer | Released | Metacritic | Reviews | Players | Anti-Cheat | DRM | Status | Description | Link | Notes |
 |---|-----------|------|-------|-----------|----------|------------|---------|---------|------------|-----|--------|-------------|------|------|
-| 1 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4379280/df73b06399197184c0a524e1ea12f6f22a8af6f8/header.jpg?t=1772802391' width='120'> | 로보클린 | Roguelike | 밥은 먹고 합시다. | Mar 6, 2026 | N/A | 100% (6 user reviews) | 0 | - | None detected | ✅ | &quot;몬스터 소탕부터 완벽한 청소까지!&quot; 메이드 로봇이 되어 난장판이 된 연구실을 정화하는 스타일리시 액션 게임입니다. | [Steam](https://store.steampowered.com/app/4379280/) | Korean language only |
+| 1 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4379280/df73b06399197184c0a524e1ea12f6f22a8af6f8/header.jpg?t=1772802391' width='120'> | 로보클린 | Roguelike | 밥은 먹고 합시다. | Mar 6, 2026 | N/A | 100% (7 user reviews) | 0 | - | None detected | ✅ | &quot;몬스터 소탕부터 완벽한 청소까지!&quot; 메이드 로봇이 되어 난장판이 된 연구실을 정화하는 스타일리시 액션 게임입니다. | [Steam](https://store.steampowered.com/app/4379280/) | Korean language only |
 | 2 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2691350/header.jpg?t=1711381424' width='120'> | .Forty-Five | Roguelike | Microwave Studios | Mar 24, 2024 | N/A | 95% (Overwhelmingly Positive) | 2 | - | None detected | ✅ | A perfect mix of card game, rogue-lite, and pure wild west mayhem. | [Steam](https://store.steampowered.com/app/2691350/) | Not reviewed yet |
 | 3 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3917010/35ae9e596e0cdc16de5512b71bd4f227151e95d5/header.jpg?t=1767817133' width='120'> | CRACKED | Roguelike | PurrNet, Pebbles Games | Jan 7, 2026 | N/A | 89% (Very Positive) | 14 | - | None detected | ✅ | Physics-based wizard brawling! In CRACKED, glass-headed mages duel in chaotic 1v1 to 4v4 battles. | [Steam](https://store.steampowered.com/app/3917010/) | Not reviewed yet |
 | 4 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4123780/171d09d8f61e285c636ae10c5dde84f59205659a/header.jpg?t=1767162779' width='120'> | The wild darkness | Roguelike | popeyed inc | Dec 30, 2025 | N/A | 81% (Very Positive) | 31 | - | None detected | ✅ | Explore a survival-roguelike RPG set in an unknown and bizarre world. | [Steam](https://store.steampowered.com/app/4123780/) | Not reviewed yet |
