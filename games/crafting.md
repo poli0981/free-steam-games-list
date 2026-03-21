@@ -1,6 +1,6 @@
 # Crafting Games
 
-1 games · Generated: 2026-03-20 00:21 UTC
+1 games · Generated: 2026-03-21 00:19 UTC
 
 | # | Thumbnail | Game | Genre | Developer | Released | Metacritic | Reviews | Players | Anti-Cheat | DRM | Status | Description | Link | Notes |
 |---|-----------|------|-------|-----------|----------|------------|---------|---------|------------|-----|--------|-------------|------|------|
