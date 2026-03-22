@@ -1,6 +1,6 @@
 # Action RPG Games
 
-6 games · Generated: 2026-03-21 00:19 UTC
+6 games · Generated: 2026-03-22 00:22 UTC
 
 | # | Thumbnail | Game | Genre | Developer | Released | Metacritic | Reviews | Players | Anti-Cheat | DRM | Status | Description | Link | Notes |
 |---|-----------|------|-------|-----------|----------|------------|---------|---------|------------|-----|--------|-------------|------|------|

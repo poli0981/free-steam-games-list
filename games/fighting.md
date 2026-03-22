@@ -1,6 +1,6 @@
 # Fighting Games
 
-6 games · Generated: 2026-03-21 00:19 UTC
+6 games · Generated: 2026-03-22 00:22 UTC
 
 | # | Thumbnail | Game | Genre | Developer | Released | Metacritic | Reviews | Players | Anti-Cheat | DRM | Status | Description | Link | Notes |
 |---|-----------|------|-------|-----------|----------|------------|---------|---------|------------|-----|--------|-------------|------|------|
@@ -9,4 +9,4 @@
 | 3 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4223440/7216efd379c835a6bde34ad754f5ab9d73e12992/header.jpg?t=1773290425' width='120'> | Ktrl Smash | Fighting | FIFTYFIVE GAMING STUDIO PRIVATE LIMITED | Dec 31, 2025 | N/A | 71% (Mostly Positive) | 0 | - | None detected | ✅ | Ktrl Smash is a fast-paced multiplayer arena game where anything can become a weapon. | [Steam](https://store.steampowered.com/app/4223440/) | Not reviewed yet |
 | 4 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/311730/header.jpg?t=1729051743' width='120'> | DEAD OR ALIVE 5 Last Round: Core Fighters | Fighting | Team NINJA, KOEI TECMO GAMES CO., LTD. | Mar 30, 2015 | 69 | 69% (Mixed) | 48 | - | None detected | ✅ | The free version of the final word in fighting entertainment - DEAD OR ALIVE 5 Last Round!. | [Steam](https://store.steampowered.com/app/311730/) | Not reviewed yet |
 | 5 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2918150/header.jpg?t=1762511808' width='120'> | ONE PIECE Bounty Rush | Fighting | SEGA | Sep 23, 2024 | N/A | 68% (Mixed) | 1,115 | - | None detected | ✅ | Take the loot, pirates! Bounty Rush is a 4 vs 4 multiplayer team action game. | [Steam](https://store.steampowered.com/app/2918150/) | Not reviewed yet |
-| 6 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2764370/78eccf23f82551585dbd8a0c193076792ef80ddf/header.jpg?t=1773109455' width='120'> | Starward | Fighting | Game Blender | Apr 24, 2024 | N/A | 63% (Mixed) | 659 | - | None detected | ✅ | The Steam version of 《Starward》 is an Asian server version, and the account is not compatible with other servers. | [Steam](https://store.steampowered.com/app/2764370/) | Not reviewed yet |
+| 6 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2764370/78eccf23f82551585dbd8a0c193076792ef80ddf/header.jpg?t=1773109455' width='120'> | Starward | Fighting | Game Blender | Apr 24, 2024 | N/A | 64% (Mixed) | 659 | - | None detected | ✅ | The Steam version of 《Starward》 is an Asian server version, and the account is not compatible with other servers. | [Steam](https://store.steampowered.com/app/2764370/) | Not reviewed yet |

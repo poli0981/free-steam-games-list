@@ -1,6 +1,6 @@
 # Roguelike Games
 
-7 games · Generated: 2026-03-21 00:19 UTC
+7 games · Generated: 2026-03-22 00:22 UTC
 
 | # | Thumbnail | Game | Genre | Developer | Released | Metacritic | Reviews | Players | Anti-Cheat | DRM | Status | Description | Link | Notes |
 |---|-----------|------|-------|-----------|----------|------------|---------|---------|------------|-----|--------|-------------|------|------|
@@ -10,4 +10,4 @@
 | 4 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4123780/171d09d8f61e285c636ae10c5dde84f59205659a/header.jpg?t=1767162779' width='120'> | The wild darkness | Roguelike | popeyed inc | Dec 30, 2025 | N/A | 81% (Very Positive) | 31 | - | None detected | ✅ | Explore a survival-roguelike RPG set in an unknown and bizarre world. | [Steam](https://store.steampowered.com/app/4123780/) | Not reviewed yet |
 | 5 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4162630/95a165401864655b0a9b6ab30251128d69efd28b/header.jpg?t=1765988954' width='120'> | MINOS: Home A-Labyrinth | Roguelike | Artificer | Dec 17, 2025 | N/A | 80% (Positive) | 1 | - | None detected | ✅ | A free MINOS spin-off inspired by everyone's favorite holiday film. | [Steam](https://store.steampowered.com/app/4162630/) | Not reviewed yet |
 | 6 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2462430/700a2dc78f00a386dc7bc91043837711fb84aeee/header.jpg?t=1767157279' width='120'> | Rogue Slots | Roguelike | WubsGames | Dec 25, 2025 | N/A | 63% (Mixed) | 1 | - | None detected | ✅ | A deckbuilding roguelike, with a slot machine as your Dungeon Master. | [Steam](https://store.steampowered.com/app/2462430/) | Not reviewed yet |
-| 7 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2753740/a0d499459156ac34bce35147622ea46052f5fbc0/header.jpg?t=1766371850' width='120'> | TOREROWA | Roguelike | Asobimo, Inc. | Dec 21, 2025 | N/A | 40% (Mixed) | 0 | - | None detected | ✅ | Explore dungeons in your spare time! Roguelike dungeon RPG with a party of up to 3 players to challenge dungeons!. | [Steam](https://store.steampowered.com/app/2753740/) | Not reviewed yet |
+| 7 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2753740/a0d499459156ac34bce35147622ea46052f5fbc0/header.jpg?t=1766371850' width='120'> | TOREROWA | Roguelike | Asobimo, Inc. | Dec 21, 2025 | N/A | 41% (Mixed) | 0 | - | None detected | ✅ | Explore dungeons in your spare time! Roguelike dungeon RPG with a party of up to 3 players to challenge dungeons!. | [Steam](https://store.steampowered.com/app/2753740/) | Not reviewed yet |
