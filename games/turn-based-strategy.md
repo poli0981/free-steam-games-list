@@ -1,6 +1,6 @@
 # Turn-based Strategy Games
 
-8 games · Generated: 2026-03-23 00:23 UTC
+8 games · Generated: 2026-03-23 05:51 UTC
 
 | # | Thumbnail | Game | Genre | Developer | Released | Metacritic | Reviews | Players | Anti-Cheat | DRM | Status | Description | Link | Notes |
 |---|-----------|------|-------|-----------|----------|------------|---------|---------|------------|-----|--------|-------------|------|------|

@@ -1,6 +1,6 @@
 # 🎮 Steam Free-to-Play Game Tracker
 
-**Total games:** 632 · **Last updated:** 2026-03-23 00:23 UTC
+**Total games:** 631 · **Last updated:** 2026-03-23 05:51 UTC
 
 ## 📋 Full List
 
@@ -60,7 +60,7 @@
 | Party-Based RPG | 1 | [party-based-rpg.md](party-based-rpg.md) |
 | Platformer | 46 | [platformer.md](platformer.md) |
 | Point-and-Click | 1 | [point-and-click.md](point-and-click.md) |
-| Puzzle | 38 | [puzzle.md](puzzle.md) |
+| Puzzle | 37 | [puzzle.md](puzzle.md) |
 | RPG | 1 | [rpg.md](rpg.md) |
 | Racing | 6 | [racing.md](racing.md) |
 | Real-Time Strategy | 1 | [real-time-strategy.md](real-time-strategy.md) |
