@@ -1,6 +1,6 @@
 # All Free-to-Play Games (Part 4/4)
 
-Games 601–636 of 636 · Generated: 2026-03-24 13:21 UTC
+Games 601–637 of 637 · Generated: 2026-03-24 13:23 UTC
 
 | # | Thumbnail | Game | Genre | Developer | Released | Metacritic | Reviews | Players | Anti-Cheat | DRM | Status | Description | Link | Notes |
 |---|-----------|------|-------|-----------|----------|------------|---------|---------|------------|-----|--------|-------------|------|------|
@@ -40,3 +40,4 @@ Games 601–636 of 636 · Generated: 2026-03-24 13:21 UTC
 | 634 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4159900/53857f68038f921ee59440eec5867a6731d17aad/header.jpg?t=1771196569' width='120'> | Stories Adrift: Wake - Prologue | Puzzle | HIATUS Productions | Dec 20, 2025 | N/A | 14% (7 user reviews) | 0 | - | None detected | ✅ | As the new owner of a book boat, you are entrusted with returning a single page of a book and embarks on a journey throu... | [Steam](https://store.steampowered.com/app/4159900/) | Not reviewed yet |
 | 635 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4434310/60da10771342e5a1c0e504ff5b588d97c72c24d6/header.jpg?t=1774351019' width='120'> | VampireBlaze | Platformer | dhr-Lab,, dHR研 | Mar 24, 2026 | N/A | No reviews | 0 | - | None detected | ✅ | This is a classic platformer. | [Steam](https://store.steampowered.com/app/4434310/) | Not reviewed yet |
 | 636 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4507750/12f1826ccfc5672469ff96a11f4ce6dd68f694dc/header.jpg?t=1774338336' width='120'> | Mystologia: The Witch & The Noisy Forest | Bullet Hell | T.K Game Team | Mar 24, 2026 | N/A | No reviews | 0 | - | None detected | ✅ | Survive waves of relentless bullets and defeat your enemies. | [Steam](https://store.steampowered.com/app/4507750/) | Not reviewed yet |
+| 637 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3303200/5569823294960609a7630c1012e18c6c0916cfed/header.jpg?t=1774285797' width='120'> | BitSlaps | Action | 249 TECH SMC-PRIVATE LIMTED | Mar 23, 2026 | N/A | No reviews | 1 | - | None detected | ✅ | BitSlaps is a chaotic, interactive multiplayer game where streamers become gladiators and viewers pull the strings. | [Steam](https://store.steampowered.com/app/3303200/) | English only |
