@@ -1,6 +1,6 @@
 # Simulation Games
 
-35 games · Generated: 2026-03-24 18:14 UTC
+35 games · Generated: 2026-03-24 18:15 UTC
 
 | # | Thumbnail | Game | Genre | Developer | Released | Metacritic | Reviews | Players | Anti-Cheat | DRM | Status | Description | Link | Notes |
 |---|-----------|------|-------|-----------|----------|------------|---------|---------|------------|-----|--------|-------------|------|------|
