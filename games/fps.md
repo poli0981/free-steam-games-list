@@ -1,6 +1,6 @@
 # FPS Games
 
-22 games · Generated: 2026-03-24 13:23 UTC
+22 games · Generated: 2026-03-24 13:46 UTC
 
 | # | Thumbnail | Game | Genre | Developer | Released | Metacritic | Reviews | Players | Anti-Cheat | DRM | Status | Description | Link | Notes |
 |---|-----------|------|-------|-----------|----------|------------|---------|---------|------------|-----|--------|-------------|------|------|
