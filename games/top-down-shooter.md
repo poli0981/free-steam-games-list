@@ -1,6 +1,6 @@
 # Top-down Shooter Games
 
-11 games · Generated: 2026-03-24 00:19 UTC
+11 games · Generated: 2026-03-24 13:10 UTC
 
 | # | Thumbnail | Game | Genre | Developer | Released | Metacritic | Reviews | Players | Anti-Cheat | DRM | Status | Description | Link | Notes |
 |---|-----------|------|-------|-----------|----------|------------|---------|---------|------------|-----|--------|-------------|------|------|

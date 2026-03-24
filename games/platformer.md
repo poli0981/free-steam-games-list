@@ -1,6 +1,6 @@
 # Platformer Games
 
-46 games · Generated: 2026-03-24 00:19 UTC
+47 games · Generated: 2026-03-24 13:10 UTC
 
 | # | Thumbnail | Game | Genre | Developer | Released | Metacritic | Reviews | Players | Anti-Cheat | DRM | Status | Description | Link | Notes |
 |---|-----------|------|-------|-----------|----------|------------|---------|---------|------------|-----|--------|-------------|------|------|
@@ -50,3 +50,4 @@
 | 44 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3459490/99b729ae53b473c7aafcb6091317a3998ca77e0b/header.jpg?t=1768510191' width='120'> | Bubba Yuga | Platformer | Wanli Lu, Xinyan Wang, Yang Zhang, Rishabh Anand, Wanyi Tao, Yifu Ding, Flora Liu, Rachel Clark, Evelyn Zhang, Wentao Yang, Ven Ferlin, Mingyu Yang, Murong Jing, Alex Ingram, Wyatt Getzen | Jan 15, 2026 | N/A | 43% (7 user reviews) | 0 | - | None detected | ✅ | Bubba Yuga is a 2-player couch co-op puzzle game based on the Slavic folktales of the Baba Yaga. | [Steam](https://store.steampowered.com/app/3459490/) | Not reviewed yet |
 | 45 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/822550/header.jpg?t=1585756367' width='120'> | 2DGameManias Taken | Platformer | 2DGameMania | May 4, 2018 | N/A | 40% (Mostly Negative) | 0 | - | None detected | ✅ | 2DGameManias Taken is a 2. | [Steam](https://store.steampowered.com/app/822550/) | Not reviewed yet |
 | 46 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4111880/695f5dbb7bac2381415b6c12f7ab8a92e39c185a/header.jpg?t=1773306530' width='120'> | Räv Kafé | Platformer | Mr. Wincent Fox | Mar 12, 2026 | N/A | 33% (3 user reviews) | 0 | - | None detected | ✅ | Räv Kafé is a 2D action platformer where you wander around in the world and in order to survive you need to find materia... | [Steam](https://store.steampowered.com/app/4111880/) | Swedish language only. |
+| 47 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4434310/60da10771342e5a1c0e504ff5b588d97c72c24d6/header.jpg?t=1774351019' width='120'> | VampireBlaze | Platformer | dhr-Lab,, dHR研 | Mar 24, 2026 | N/A | No reviews | 0 | - | None detected | ✅ | This is a classic platformer. | [Steam](https://store.steampowered.com/app/4434310/) | Not reviewed yet |

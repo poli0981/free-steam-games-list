@@ -1,6 +1,6 @@
 # 🎮 Steam Free-to-Play Game Tracker
 
-**Total games:** 631 · **Last updated:** 2026-03-24 00:19 UTC
+**Total games:** 635 · **Last updated:** 2026-03-24 13:10 UTC
 
 ## 📋 Full List
 
@@ -26,8 +26,9 @@
 | Beat 'em up | 4 | [beat-'em-up.md](beat-'em-up.md) |
 | Board Game | 2 | [board-game.md](board-game.md) |
 | Building | 1 | [building.md](building.md) |
-| Bullet Hell | 9 | [bullet-hell.md](bullet-hell.md) |
+| Bullet Hell | 10 | [bullet-hell.md](bullet-hell.md) |
 | Card Game | 27 | [card-game.md](card-game.md) |
+| Casual | 1 | [casual.md](casual.md) |
 | City Builder | 4 | [city-builder.md](city-builder.md) |
 | Clicker | 12 | [clicker.md](clicker.md) |
 | Cozy | 3 | [cozy.md](cozy.md) |
@@ -58,9 +59,9 @@
 | Parkour | 1 | [parkour.md](parkour.md) |
 | Party Game | 6 | [party-game.md](party-game.md) |
 | Party-Based RPG | 1 | [party-based-rpg.md](party-based-rpg.md) |
-| Platformer | 46 | [platformer.md](platformer.md) |
+| Platformer | 47 | [platformer.md](platformer.md) |
 | Point-and-Click | 1 | [point-and-click.md](point-and-click.md) |
-| Puzzle | 37 | [puzzle.md](puzzle.md) |
+| Puzzle | 38 | [puzzle.md](puzzle.md) |
 | RPG | 1 | [rpg.md](rpg.md) |
 | Racing | 6 | [racing.md](racing.md) |
 | Real-Time Strategy | 1 | [real-time-strategy.md](real-time-strategy.md) |

@@ -1,6 +1,6 @@
 # Bullet Hell Games
 
-9 games · Generated: 2026-03-24 00:19 UTC
+10 games · Generated: 2026-03-24 13:10 UTC
 
 | # | Thumbnail | Game | Genre | Developer | Released | Metacritic | Reviews | Players | Anti-Cheat | DRM | Status | Description | Link | Notes |
 |---|-----------|------|-------|-----------|----------|------------|---------|---------|------------|-----|--------|-------------|------|------|
@@ -13,3 +13,4 @@
 | 7 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2520610/header.jpg?t=1693924339' width='120'> | 4D:XD | Bullet Hell | Ryan Brammen | Sep 5, 2023 | N/A | 82% (Positive) | 0 | - | None detected | ✅ | 4D:XD is a top-down 2D bullet hell space shooter. | [Steam](https://store.steampowered.com/app/2520610/) | Not reviewed yet |
 | 8 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2348120/header.jpg?t=1749282347' width='120'> | Kagura Survivors: Endless Night | Bullet Hell | Big Bang Studio, Swaps4 Productions | Mar 31, 2023 | N/A | 80% (Very Positive) | 11 | - | None detected | ✅ | Something is wrong in the Kaguraverse. | [Steam](https://store.steampowered.com/app/2348120/) | Not reviewed yet |
 | 9 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1065670/header.jpg?t=1611082934' width='120'> | 4004-022 | Bullet Hell | Aaron D. | May 5, 2019 | N/A | 42% (Mixed) | 0 | - | None detected | ✅ | In the year 2040 you and the 12 billion inhabitants of the Earth fled from the Earth after being attacked by extraterres... | [Steam](https://store.steampowered.com/app/1065670/) | Not reviewed yet |
+| 10 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4507750/12f1826ccfc5672469ff96a11f4ce6dd68f694dc/header.jpg?t=1774338336' width='120'> | Mystologia: The Witch & The Noisy Forest | Bullet Hell | T.K Game Team | Mar 24, 2026 | N/A | No reviews | 0 | - | None detected | ✅ | Survive waves of relentless bullets and defeat your enemies. | [Steam](https://store.steampowered.com/app/4507750/) | Not reviewed yet |
