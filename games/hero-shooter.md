@@ -1,6 +1,6 @@
 # Hero Shooter Games
 
-2 games · Generated: 2026-03-24 15:20 UTC
+2 games · Generated: 2026-03-24 18:14 UTC
 
 | # | Thumbnail | Game | Genre | Developer | Released | Metacritic | Reviews | Players | Anti-Cheat | DRM | Status | Description | Link | Notes |
 |---|-----------|------|-------|-----------|----------|------------|---------|---------|------------|-----|--------|-------------|------|------|

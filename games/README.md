@@ -1,6 +1,6 @@
 # 🎮 Steam Free-to-Play Game Tracker
 
-**Total games:** 649 · **Last updated:** 2026-03-24 15:20 UTC
+**Total games:** 654 · **Last updated:** 2026-03-24 18:14 UTC
 
 ## 📋 Full List
 
@@ -14,7 +14,7 @@
 | Genre | Games | File |
 |-------|-------|------|
 | - | 3 | [-.md](-.md) |
-| Action | 11 | [action.md](action.md) |
+| Action | 12 | [action.md](action.md) |
 | Action RPG | 6 | [action-rpg.md](action-rpg.md) |
 | Action RPG, Gacha | 2 | [action-rpg-gacha.md](action-rpg-gacha.md) |
 | Action-Adventure | 1 | [action-adventure.md](action-adventure.md) |
@@ -22,12 +22,12 @@
 | Arcade | 6 | [arcade.md](arcade.md) |
 | Arena Shooter | 3 | [arena-shooter.md](arena-shooter.md) |
 | Auto Battler | 1 | [auto-battler.md](auto-battler.md) |
-| Battle Royale | 12 | [battle-royale.md](battle-royale.md) |
+| Battle Royale | 13 | [battle-royale.md](battle-royale.md) |
 | Beat 'em up | 4 | [beat-'em-up.md](beat-'em-up.md) |
 | Board Game | 2 | [board-game.md](board-game.md) |
 | Building | 1 | [building.md](building.md) |
 | Bullet Hell | 11 | [bullet-hell.md](bullet-hell.md) |
-| Card Game | 27 | [card-game.md](card-game.md) |
+| Card Game | 28 | [card-game.md](card-game.md) |
 | Casual | 2 | [casual.md](casual.md) |
 | City Builder | 4 | [city-builder.md](city-builder.md) |
 | Clicker | 12 | [clicker.md](clicker.md) |
@@ -49,7 +49,7 @@
 | Hack & Slash | 5 | [hack-&-slash.md](hack-&-slash.md) |
 | Hero Shooter | 2 | [hero-shooter.md](hero-shooter.md) |
 | Hidden Object | 29 | [hidden-object.md](hidden-object.md) |
-| Horror | 62 | [horror.md](horror.md) |
+| Horror | 63 | [horror.md](horror.md) |
 | Idler | 9 | [idler.md](idler.md) |
 | Indie | 2 | [indie.md](indie.md) |
 | Isometric | 1 | [isometric.md](isometric.md) |
@@ -87,7 +87,7 @@
 | Third-person Shooter | 1 | [third-person-shooter.md](third-person-shooter.md) |
 | Top-down Shooter | 11 | [top-down-shooter.md](top-down-shooter.md) |
 | Top-down Survival | 1 | [top-down-survival.md](top-down-survival.md) |
-| Tower Defense | 4 | [tower-defense.md](tower-defense.md) |
+| Tower Defense | 5 | [tower-defense.md](tower-defense.md) |
 | Turn-based RPG | 5 | [turn-based-rpg.md](turn-based-rpg.md) |
 | Turn-based Strategy | 8 | [turn-based-strategy.md](turn-based-strategy.md) |
 | Turn-based Tactics | 3 | [turn-based-tactics.md](turn-based-tactics.md) |
