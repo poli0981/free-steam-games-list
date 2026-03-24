@@ -1,6 +1,6 @@
 # City Builder Games
 
-4 games · Generated: 2026-03-23 05:51 UTC
+4 games · Generated: 2026-03-24 00:19 UTC
 
 | # | Thumbnail | Game | Genre | Developer | Released | Metacritic | Reviews | Players | Anti-Cheat | DRM | Status | Description | Link | Notes |
 |---|-----------|------|-------|-----------|----------|------------|---------|---------|------------|-----|--------|-------------|------|------|
