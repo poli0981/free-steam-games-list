@@ -1,6 +1,6 @@
 # 🎮 Steam Free-to-Play Game Tracker
 
-**Total games:** 638 · **Last updated:** 2026-03-24 13:47 UTC
+**Total games:** 643 · **Last updated:** 2026-03-24 13:52 UTC
 
 ## 📋 Full List
 
@@ -14,7 +14,7 @@
 | Genre | Games | File |
 |-------|-------|------|
 | - | 3 | [-.md](-.md) |
-| Action | 9 | [action.md](action.md) |
+| Action | 11 | [action.md](action.md) |
 | Action RPG | 6 | [action-rpg.md](action-rpg.md) |
 | Action RPG, Gacha | 2 | [action-rpg-gacha.md](action-rpg-gacha.md) |
 | Action-Adventure | 1 | [action-adventure.md](action-adventure.md) |
@@ -28,7 +28,7 @@
 | Building | 1 | [building.md](building.md) |
 | Bullet Hell | 10 | [bullet-hell.md](bullet-hell.md) |
 | Card Game | 27 | [card-game.md](card-game.md) |
-| Casual | 1 | [casual.md](casual.md) |
+| Casual | 2 | [casual.md](casual.md) |
 | City Builder | 4 | [city-builder.md](city-builder.md) |
 | Clicker | 12 | [clicker.md](clicker.md) |
 | Cozy | 3 | [cozy.md](cozy.md) |
@@ -50,6 +50,7 @@
 | Hidden Object | 29 | [hidden-object.md](hidden-object.md) |
 | Horror | 62 | [horror.md](horror.md) |
 | Idler | 9 | [idler.md](idler.md) |
+| Indie | 2 | [indie.md](indie.md) |
 | Isometric | 1 | [isometric.md](isometric.md) |
 | Life Sim | 2 | [life-sim.md](life-sim.md) |
 | Looter Shooter | 3 | [looter-shooter.md](looter-shooter.md) |

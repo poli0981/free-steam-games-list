@@ -1,6 +1,6 @@
 # Adventure Games
 
-22 games · Generated: 2026-03-24 13:47 UTC
+22 games · Generated: 2026-03-24 13:52 UTC
 
 | # | Thumbnail | Game | Genre | Developer | Released | Metacritic | Reviews | Players | Anti-Cheat | DRM | Status | Description | Link | Notes |
 |---|-----------|------|-------|-----------|----------|------------|---------|---------|------------|-----|--------|-------------|------|------|
