@@ -1,6 +1,6 @@
 # 🎮 Steam Free-to-Play Game Tracker
 
-**Total games:** 648 · **Last updated:** 2026-03-24 15:02 UTC
+**Total games:** 649 · **Last updated:** 2026-03-24 15:20 UTC
 
 ## 📋 Full List
 
@@ -69,7 +69,7 @@
 | Real-Time Strategy | 1 | [real-time-strategy.md](real-time-strategy.md) |
 | Rhythm | 6 | [rhythm.md](rhythm.md) |
 | Roguelike | 8 | [roguelike.md](roguelike.md) |
-| Roguelite | 2 | [roguelite.md](roguelite.md) |
+| Roguelite | 3 | [roguelite.md](roguelite.md) |
 | Rougelite | 2 | [rougelite.md](rougelite.md) |
 | Score Attack | 1 | [score-attack.md](score-attack.md) |
 | Shoot'em up | 1 | [shoot'em-up.md](shoot'em-up.md) |

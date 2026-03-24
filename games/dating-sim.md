@@ -1,6 +1,6 @@
 # Dating Sim Games
 
-6 games · Generated: 2026-03-24 15:02 UTC
+6 games · Generated: 2026-03-24 15:20 UTC
 
 | # | Thumbnail | Game | Genre | Developer | Released | Metacritic | Reviews | Players | Anti-Cheat | DRM | Status | Description | Link | Notes |
 |---|-----------|------|-------|-----------|----------|------------|---------|---------|------------|-----|--------|-------------|------|------|
