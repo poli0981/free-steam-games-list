@@ -1,6 +1,6 @@
 # Action-Adventure Games
 
-1 games · Generated: 2026-03-24 14:37 UTC
+1 games · Generated: 2026-03-24 15:02 UTC
 
 | # | Thumbnail | Game | Genre | Developer | Released | Metacritic | Reviews | Players | Anti-Cheat | DRM | Status | Description | Link | Notes |
 |---|-----------|------|-------|-----------|----------|------------|---------|---------|------------|-----|--------|-------------|------|------|
