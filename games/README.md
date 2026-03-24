@@ -1,6 +1,6 @@
 # 🎮 Steam Free-to-Play Game Tracker
 
-**Total games:** 643 · **Last updated:** 2026-03-24 13:52 UTC
+**Total games:** 647 · **Last updated:** 2026-03-24 14:37 UTC
 
 ## 📋 Full List
 
@@ -38,6 +38,7 @@
 | Dungeon Crawler | 3 | [dungeon-crawler.md](dungeon-crawler.md) |
 | Education | 1 | [education.md](education.md) |
 | Exploration | 6 | [exploration.md](exploration.md) |
+| Extraction Shooter | 1 | [extraction-shooter.md](extraction-shooter.md) |
 | FMV | 2 | [fmv.md](fmv.md) |
 | FPS | 22 | [fps.md](fps.md) |
 | Farming Sim | 1 | [farming-sim.md](farming-sim.md) |
@@ -45,7 +46,7 @@
 | Fighting | 6 | [fighting.md](fighting.md) |
 | Fishing | 1 | [fishing.md](fishing.md) |
 | Gambling | 3 | [gambling.md](gambling.md) |
-| Hack & Slash | 4 | [hack-&-slash.md](hack-&-slash.md) |
+| Hack & Slash | 5 | [hack-&-slash.md](hack-&-slash.md) |
 | Hero Shooter | 2 | [hero-shooter.md](hero-shooter.md) |
 | Hidden Object | 29 | [hidden-object.md](hidden-object.md) |
 | Horror | 62 | [horror.md](horror.md) |
@@ -67,13 +68,13 @@
 | Racing | 6 | [racing.md](racing.md) |
 | Real-Time Strategy | 1 | [real-time-strategy.md](real-time-strategy.md) |
 | Rhythm | 6 | [rhythm.md](rhythm.md) |
-| Roguelike | 7 | [roguelike.md](roguelike.md) |
+| Roguelike | 8 | [roguelike.md](roguelike.md) |
 | Roguelite | 2 | [roguelite.md](roguelite.md) |
 | Rougelite | 2 | [rougelite.md](rougelite.md) |
 | Score Attack | 1 | [score-attack.md](score-attack.md) |
 | Shoot'em up | 1 | [shoot'em-up.md](shoot'em-up.md) |
 | Shooter | 1 | [shooter.md](shooter.md) |
-| Simulation | 34 | [simulation.md](simulation.md) |
+| Simulation | 35 | [simulation.md](simulation.md) |
 | Social Deduction | 1 | [social-deduction.md](social-deduction.md) |
 | Software | 1 | [software.md](software.md) |
 | Souls-like | 2 | [souls-like.md](souls-like.md) |
