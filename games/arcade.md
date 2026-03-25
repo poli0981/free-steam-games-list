@@ -1,6 +1,6 @@
 # Arcade Games
 
-6 games · Generated: 2026-03-25 11:54 UTC
+7 games · Generated: 2026-03-25 12:00 UTC
 
 | # | Thumbnail | Game | Genre | Developer | Released | Metacritic | Reviews | Players | Anti-Cheat | DRM | Status | Description | Link | Notes |
 |---|-----------|------|-------|-----------|----------|------------|---------|---------|------------|-----|--------|-------------|------|------|
@@ -10,3 +10,4 @@
 | 4 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3632680/2a85379bb2b00ea9893b3997fe7f284969541cd2/header.jpg?t=1750218273' width='120'> | HeXpunk | Arcade | DigitalWizardsGames | May 9, 2025 | N/A | 69% (Mixed) | 0 | - | None detected | ✅ | HexPunk is a co-op, third-person shooter with an emphasis on stylish and fast-paced combat. | [Steam](https://store.steampowered.com/app/3632680/) | Not reviewed yet |
 | 5 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2930280/header.jpg?t=1731783766' width='120'> | 0101 | Arcade | edybtt Studios | Jun 13, 2024 | N/A | 66% (Mixed) | 0 | - | None detected | ✅ | The game consists of finishing several levels, solving by clicking with the mouse or using the keyboard to complete the ... | [Steam](https://store.steampowered.com/app/2930280/) | Not reviewed yet |
 | 6 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1101290/header.jpg?t=1714868822' width='120'> | 0Gravity | Arcade | Viktor Kunshin | Jul 26, 2019 | N/A | 64% (Mixed) | 0 | - | None detected | ✅ | 0Gravity is a game whose action takes place in zero gravity (predictably). | [Steam](https://store.steampowered.com/app/1101290/) | Not reviewed yet |
+| 7 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4459470/b069f67bbce10d7837447f6fc21e5b958fad350d/header.jpg?t=1774423419' width='120'> | Purr Bricks | Arcade | PurrSoft | Mar 25, 2026 | N/A | No reviews | 1 | - | None detected | ✅ | Smash through over 100 brick-packed levels in this fast-paced arcade brick breaker! Collect wild powerups, dodge chaotic... | [Steam](https://store.steampowered.com/app/4459470/) | Not reviewed yet |

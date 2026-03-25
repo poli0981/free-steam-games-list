@@ -1,6 +1,6 @@
 # 🎮 Steam Free-to-Play Game Tracker
 
-**Total games:** 654 · **Last updated:** 2026-03-25 11:54 UTC
+**Total games:** 657 · **Last updated:** 2026-03-25 12:00 UTC
 
 ## 📋 Full List
 
@@ -19,7 +19,7 @@
 | Action RPG, Gacha | 2 | [action-rpg-gacha.md](action-rpg-gacha.md) |
 | Action-Adventure | 1 | [action-adventure.md](action-adventure.md) |
 | Adventure | 22 | [adventure.md](adventure.md) |
-| Arcade | 6 | [arcade.md](arcade.md) |
+| Arcade | 7 | [arcade.md](arcade.md) |
 | Arena Shooter | 3 | [arena-shooter.md](arena-shooter.md) |
 | Auto Battler | 1 | [auto-battler.md](auto-battler.md) |
 | Battle Royale | 13 | [battle-royale.md](battle-royale.md) |
@@ -49,7 +49,7 @@
 | Hack & Slash | 5 | [hack-&-slash.md](hack-&-slash.md) |
 | Hero Shooter | 2 | [hero-shooter.md](hero-shooter.md) |
 | Hidden Object | 29 | [hidden-object.md](hidden-object.md) |
-| Horror | 63 | [horror.md](horror.md) |
+| Horror | 64 | [horror.md](horror.md) |
 | Idler | 9 | [idler.md](idler.md) |
 | Indie | 2 | [indie.md](indie.md) |
 | Isometric | 1 | [isometric.md](isometric.md) |
@@ -65,7 +65,7 @@
 | Point-and-Click | 1 | [point-and-click.md](point-and-click.md) |
 | Puzzle | 38 | [puzzle.md](puzzle.md) |
 | RPG | 1 | [rpg.md](rpg.md) |
-| Racing | 6 | [racing.md](racing.md) |
+| Racing | 7 | [racing.md](racing.md) |
 | Real-Time Strategy | 1 | [real-time-strategy.md](real-time-strategy.md) |
 | Rhythm | 6 | [rhythm.md](rhythm.md) |
 | Roguelike | 8 | [roguelike.md](roguelike.md) |
