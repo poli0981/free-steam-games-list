@@ -1,6 +1,6 @@
 # 🎮 Steam Free-to-Play Game Tracker
 
-**Total games:** 663 · **Last updated:** 2026-03-25 12:20 UTC
+**Total games:** 664 · **Last updated:** 2026-03-25 12:21 UTC
 
 ## 📋 Full List
 
@@ -19,7 +19,7 @@
 | Action RPG, Gacha | 2 | [action-rpg-gacha.md](action-rpg-gacha.md) |
 | Action-Adventure | 1 | [action-adventure.md](action-adventure.md) |
 | Adventure | 22 | [adventure.md](adventure.md) |
-| Arcade | 8 | [arcade.md](arcade.md) |
+| Arcade | 9 | [arcade.md](arcade.md) |
 | Arena Shooter | 3 | [arena-shooter.md](arena-shooter.md) |
 | Auto Battler | 1 | [auto-battler.md](auto-battler.md) |
 | Battle Royale | 13 | [battle-royale.md](battle-royale.md) |

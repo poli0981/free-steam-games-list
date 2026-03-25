@@ -1,6 +1,6 @@
 # Party Game Games
 
-6 games · Generated: 2026-03-25 12:20 UTC
+6 games · Generated: 2026-03-25 12:21 UTC
 
 | # | Thumbnail | Game | Genre | Developer | Released | Metacritic | Reviews | Players | Anti-Cheat | DRM | Status | Description | Link | Notes |
 |---|-----------|------|-------|-----------|----------|------------|---------|---------|------------|-----|--------|-------------|------|------|
