@@ -1,6 +1,6 @@
 # MMORPG Games
 
-30 games · Generated: 2026-03-25 12:00 UTC
+30 games · Generated: 2026-03-25 12:05 UTC
 
 | # | Thumbnail | Game | Genre | Developer | Released | Metacritic | Reviews | Players | Anti-Cheat | DRM | Status | Description | Link | Notes |
 |---|-----------|------|-------|-----------|----------|------------|---------|---------|------------|-----|--------|-------------|------|------|

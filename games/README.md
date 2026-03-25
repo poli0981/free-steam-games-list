@@ -1,6 +1,6 @@
 # 🎮 Steam Free-to-Play Game Tracker
 
-**Total games:** 657 · **Last updated:** 2026-03-25 12:00 UTC
+**Total games:** 659 · **Last updated:** 2026-03-25 12:05 UTC
 
 ## 📋 Full List
 
@@ -40,7 +40,7 @@
 | Exploration | 6 | [exploration.md](exploration.md) |
 | Extraction Shooter | 1 | [extraction-shooter.md](extraction-shooter.md) |
 | FMV | 2 | [fmv.md](fmv.md) |
-| FPS | 22 | [fps.md](fps.md) |
+| FPS | 23 | [fps.md](fps.md) |
 | Farming Sim | 1 | [farming-sim.md](farming-sim.md) |
 | Fighter | 1 | [fighter.md](fighter.md) |
 | Fighting | 6 | [fighting.md](fighting.md) |
@@ -91,7 +91,7 @@
 | Turn-based RPG | 5 | [turn-based-rpg.md](turn-based-rpg.md) |
 | Turn-based Strategy | 8 | [turn-based-strategy.md](turn-based-strategy.md) |
 | Turn-based Tactics | 3 | [turn-based-tactics.md](turn-based-tactics.md) |
-| Visual Novel | 54 | [visual-novel.md](visual-novel.md) |
+| Visual Novel | 55 | [visual-novel.md](visual-novel.md) |
 | Walking Simulator | 1 | [walking-simulator.md](walking-simulator.md) |
 
 ## 🏆 Online Leaderboard
