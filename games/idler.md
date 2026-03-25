@@ -1,6 +1,6 @@
 # Idler Games
 
-9 games · Generated: 2026-03-24 18:15 UTC
+9 games · Generated: 2026-03-25 00:22 UTC
 
 | # | Thumbnail | Game | Genre | Developer | Released | Metacritic | Reviews | Players | Anti-Cheat | DRM | Status | Description | Link | Notes |
 |---|-----------|------|-------|-----------|----------|------------|---------|---------|------------|-----|--------|-------------|------|------|
