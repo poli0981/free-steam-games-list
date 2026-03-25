@@ -1,6 +1,6 @@
 # 🎮 Steam Free-to-Play Game Tracker
 
-**Total games:** 661 · **Last updated:** 2026-03-25 12:10 UTC
+**Total games:** 663 · **Last updated:** 2026-03-25 12:19 UTC
 
 ## 📋 Full List
 
@@ -27,7 +27,7 @@
 | Board Game | 2 | [board-game.md](board-game.md) |
 | Building | 1 | [building.md](building.md) |
 | Bullet Hell | 11 | [bullet-hell.md](bullet-hell.md) |
-| Card Game | 28 | [card-game.md](card-game.md) |
+| Card Game | 29 | [card-game.md](card-game.md) |
 | Casual | 2 | [casual.md](casual.md) |
 | City Builder | 4 | [city-builder.md](city-builder.md) |
 | Clicker | 12 | [clicker.md](clicker.md) |
@@ -61,7 +61,7 @@
 | Parkour | 1 | [parkour.md](parkour.md) |
 | Party Game | 6 | [party-game.md](party-game.md) |
 | Party-Based RPG | 1 | [party-based-rpg.md](party-based-rpg.md) |
-| Platformer | 48 | [platformer.md](platformer.md) |
+| Platformer | 49 | [platformer.md](platformer.md) |
 | Point-and-Click | 1 | [point-and-click.md](point-and-click.md) |
 | Puzzle | 39 | [puzzle.md](puzzle.md) |
 | RPG | 1 | [rpg.md](rpg.md) |
