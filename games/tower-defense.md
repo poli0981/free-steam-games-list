@@ -1,6 +1,6 @@
 # Tower Defense Games
 
-5 games · Generated: 2026-03-25 00:22 UTC
+5 games · Generated: 2026-03-25 11:54 UTC
 
 | # | Thumbnail | Game | Genre | Developer | Released | Metacritic | Reviews | Players | Anti-Cheat | DRM | Status | Description | Link | Notes |
 |---|-----------|------|-------|-----------|----------|------------|---------|---------|------------|-----|--------|-------------|------|------|
@@ -8,4 +8,4 @@
 | 2 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1059420/header.jpg?t=1671323625' width='120'> | 5Leaps (Space Tower Defense) | Tower Defense | DeepDimensionGames | May 15, 2019 | N/A | 100% (Positive) | 0 | - | None detected | ✅ | 5Leaps is a retro-futuristic strategy game &quot;Tower Defense&quot; style. | [Steam](https://store.steampowered.com/app/1059420/) | Not reviewed yet |
 | 3 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3307710/header.jpg?t=1773352500' width='120'> | Grove | Tower Defense | Bumblebean Games, Levi Lillioja | Mar 12, 2026 | N/A | 79% (Mostly Positive) | 1 | - | None detected | ✅ | Nurture a small forest under siege by lumberjacks in this cozy tower defense game. | [Steam](https://store.steampowered.com/app/3307710/) | Not reviewed yet |
 | 4 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1158770/header.jpg?t=1712418545' width='120'> | 1BIT CASTLE | Tower Defense | kantal collective | Oct 25, 2019 | N/A | 75% (Mostly Positive) | 0 | - | None detected | ✅ | 1BIT CASTLE is a little tower defense game in which we are defending castle from the monsters. | [Steam](https://store.steampowered.com/app/1158770/) | Not reviewed yet |
-| 5 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4407470/bac7920ab48fe8854175254d5e1f9f919a90385a/header.jpg?t=1772023424' width='120'> | Mini Warrior Defense | Tower Defense | Playonesoft | Feb 25, 2026 | N/A | 28% (Mostly Negative) | 1 | - | None detected | ✅ | Lead your warriors on an epic adventure to defend your kingdom from invaders - in this action tower defense game, you ca... | [Steam](https://store.steampowered.com/app/4407470/) | Has paid DLC |
+| 5 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4407470/bac7920ab48fe8854175254d5e1f9f919a90385a/header.jpg?t=1772023424' width='120'> | Mini Warrior Defense | Tower Defense | Playonesoft | Feb 25, 2026 | N/A | 26% (Mostly Negative) | 1 | - | None detected | ✅ | Lead your warriors on an epic adventure to defend your kingdom from invaders - in this action tower defense game, you ca... | [Steam](https://store.steampowered.com/app/4407470/) | Has paid DLC |
