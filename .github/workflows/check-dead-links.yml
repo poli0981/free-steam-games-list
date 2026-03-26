@@ -1,27 +1,14 @@
 name: Check Dead Links
 on:
-  schedule:
-    - cron: '0 4 1,6,11,16,21,26 * *'   # ~Every 5 days at 04:00 UTC
+  schedule: [{cron: '0 4 1,6,11,16,21,26 * *'}]
   workflow_dispatch:
-
-permissions:
-  contents: write
-
+permissions: {contents: write}
 jobs:
-  dead-links:
+  check:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v6
-        with:
-          token: ${{ secrets.GH_TOKEN }}
-
-      - name: Setup Python
-        uses: actions/setup-python@v6
-        with:
-          python-version: '3.14'
-
-      - name: Check dead links
-        run: |
-          chmod +x ./bash/dead_links.sh
-          ./bash/dead_links.sh
+      - uses: actions/checkout@v6
+        with: {token: '${{ secrets.GH_TOKEN }}'}
+      - uses: actions/setup-python@v6
+        with: {python-version: '3.14'}
+      - run: chmod +x ./bash/dead_links.sh && ./bash/dead_links.sh

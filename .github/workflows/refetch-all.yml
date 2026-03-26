@@ -1,0 +1,39 @@
+name: Force Re-fetch All (v2.1 Schema)
+
+# ⚠ MANUAL ONLY – this re-fetches ALL games from Steam.
+# Takes a long time for large datasets (300+ games ≈ 15-30 min).
+# Creates a backup at data.jsonl.bak before starting.
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: 'Type "yes" to confirm force re-fetch of ALL games'
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  refetch:
+    if: ${{ github.event.inputs.confirm == 'yes' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v6
+        with:
+          token: ${{ secrets.GH_TOKEN }}
+
+      - name: Setup Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.14'
+
+      - name: Force re-fetch all games
+        env:
+          STEAM_API_KEY: ${{ secrets.STEAM_API_KEY }}
+        run: |
+          chmod +x ./bash/refetch_all.sh
+          ./bash/refetch_all.sh

@@ -1,27 +1,14 @@
 name: Update Reviews
 on:
-  schedule:
-    - cron: '0 6 */2 * *'   # Every 2 days at 06:00 UTC
+  schedule: [{cron: '0 6 */2 * *'}]
   workflow_dispatch:
-
-permissions:
-  contents: write
-
+permissions: {contents: write}
 jobs:
   reviews:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v6
-        with:
-          token: ${{ secrets.GH_TOKEN }}
-
-      - name: Setup Python
-        uses: actions/setup-python@v6
-        with:
-          python-version: '3.14'
-
-      - name: Update reviews
-        run: |
-          chmod +x ./bash/reviews.sh
-          ./bash/reviews.sh
+      - uses: actions/checkout@v6
+        with: {token: '${{ secrets.GH_TOKEN }}'}
+      - uses: actions/setup-python@v6
+        with: {python-version: '3.14'}
+      - run: chmod +x ./bash/reviews.sh && ./bash/reviews.sh
