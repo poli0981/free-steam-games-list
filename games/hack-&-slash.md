@@ -1,6 +1,6 @@
 # Hack & Slash Games
 
-5 games · Generated: 2026-03-26 05:43 UTC
+5 games · Generated: 2026-03-26 05:44 UTC
 
 | # | Thumbnail | Game | Genre | Developer | Released | Metacritic | Reviews | Players | Anti-Cheat | DRM | Status | Description | Link | Notes |
 |---|-----------|------|-------|-----------|----------|------------|---------|---------|------------|-----|--------|-------------|------|------|
