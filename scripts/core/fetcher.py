@@ -82,12 +82,36 @@ def apply_details(game: dict, data: dict) -> dict:
     if _is_empty(game.get("languages")):
         lang_str = data.get("supported_languages", "")
         if lang_str:
-            # Parse "English<strong>*</strong>, French, German" → ["English", "French", "German"]
             import re
+            # Steam format:
+            #   "English<strong>*</strong>, French, Portuguese - Brazil<br><strong>*</strong>languages with full audio support"
+            #
+            # Step 1: Cut everything after <br> (footnote about audio support)
+            lang_str = re.split(r"<br\s*/?>", lang_str, maxsplit=1)[0]
+            # Step 2: Strip remaining HTML tags
             clean = re.sub(r"<[^>]+>", "", lang_str)
+            # Step 3: Remove asterisk markers
             clean = re.sub(r"\*", "", clean)
+            # Step 4: Split by comma, strip whitespace
             langs = [l.strip() for l in clean.split(",") if l.strip()]
             game["languages"] = langs
+
+            # Build language_details from the footnote (which langs have full audio)
+            if _is_empty(game.get("language_details")):
+                full_audio_raw = data.get("supported_languages", "")
+                details = []
+                for lang_name in langs:
+                    # A language has full audio if it's followed by <strong>*</strong> in the raw HTML
+                    # Pattern: "English<strong>*</strong>" means English has full audio
+                    pattern = re.escape(lang_name) + r"\s*<strong>\*</strong>"
+                    has_audio = bool(re.search(pattern, full_audio_raw))
+                    details.append({
+                        "name": lang_name,
+                        "interface": True,  # All listed languages have interface support
+                        "audio": has_audio,
+                        "subtitles": False,  # API doesn't distinguish subtitles
+                    })
+                game["language_details"] = details
 
     # Anti-cheat: only if empty/default
     if _is_empty(game.get("anti_cheat")) or game.get("anti_cheat") == "-":
@@ -146,12 +170,6 @@ def apply_details(game: dict, data: dict) -> dict:
         if dlc:
             game["has_paid_dlc"] = True
 
-    # Tags from API (only if extension didn't provide)
-    if _is_empty(game.get("tags")):
-        # Steam API doesn't return user tags in appdetails
-        # Tags come from extension or store page scraping
-        pass
-
     return game
 
 
@@ -183,7 +201,8 @@ def apply_players(game: dict, count: int) -> dict:
 
 # ──────────── Full single-game fetch ────────────
 
-def fetch_full(game: dict, client=None, fetch_players: bool = True) -> dict:
+def fetch_full(game: dict, client=None, fetch_players: bool = True,
+               fetch_tags: bool = True) -> dict:
     c = client or get_client()
     appid = extract_appid(game.get("link", ""))
     if not appid:
@@ -202,6 +221,12 @@ def fetch_full(game: dict, client=None, fetch_players: bool = True) -> dict:
         count = c.fetch_player_count(appid, STEAM_API_KEY)
         if count is not None:
             apply_players(game, count)
+
+    # Tags: fetch from store page HTML (API doesn't provide user tags)
+    if fetch_tags and _is_empty(game.get("tags")):
+        tags = c.fetch_tags(appid)
+        if tags:
+            game["tags"] = tags
 
     if not game.get("notes", "").strip():
         game["notes"] = "Not reviewed yet"
