@@ -89,7 +89,6 @@ def make_skeleton(link: str) -> dict:
         # Identity
         "link": link,
         "name": "",
-        "desc": "",
         "description": "",
         "header_image": "",
 
@@ -202,11 +201,13 @@ def merge_extension_data(game: dict, ext: dict) -> dict:
         if key in ("developer", "publisher"):
             val = _normalize_developer(val)
 
-        # Handle 'description' → also set 'desc' for backward compat
+        # Handle 'description' (and legacy 'desc' input → normalize to 'description')
         if key == "description":
             game["description"] = val
-            if _is_empty(game.get("desc")):
-                game["desc"] = val[:200] if len(val) > 200 else val
+            continue
+        if key == "desc":
+            if _is_empty(game.get("description")):
+                game["description"] = val
             continue
 
         # MANUAL_FIELDS: only fill if empty (don't overwrite user edits)
@@ -253,10 +254,10 @@ def migrate_record(game: dict) -> dict:
     if isinstance(pub, str):
         game["publisher"] = _normalize_developer(pub)
 
-    # Sync description ↔ desc
-    if game.get("description") and not game.get("desc"):
-        game["desc"] = game["description"][:200]
-    elif game.get("desc") and not game.get("description"):
-        game["description"] = game["desc"]
+    # Migrate legacy 'desc' → 'description', then drop 'desc'
+    if "desc" in game:
+        if game.get("desc") and _is_empty(game.get("description")):
+            game["description"] = game["desc"]
+        del game["desc"]
 
     return game

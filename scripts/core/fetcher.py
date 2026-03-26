@@ -36,11 +36,8 @@ def apply_details(game: dict, data: dict) -> dict:
 
     # Description
     short_desc = (data.get("short_description") or "").strip()
-    if short_desc:
-        if _is_empty(game.get("description")):
-            game["description"] = short_desc
-        if _is_empty(game.get("desc")):
-            game["desc"] = short_desc[:200]
+    if short_desc and _is_empty(game.get("description")):
+        game["description"] = short_desc
 
     # Header image
     img = data.get("header_image", "")

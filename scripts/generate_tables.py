@@ -86,7 +86,7 @@ def make_row(idx, g):
         g.get("reviews", "N/A"), g.get("current_players", "N/A"),
         ac, g.get("metacritic", "N/A"),
         status_icon(g),
-        short_desc(g.get("description") or g.get("desc", "N/A")),
+        short_desc(g.get("description", "N/A")),
         f"[Steam]({g.get('link', '#')})",
         g.get("notes", ""),
     ]

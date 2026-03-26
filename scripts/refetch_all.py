@@ -40,7 +40,7 @@ from core.steam_client import get_client
 
 # Fields that are safe to clear (will be re-fetched from API)
 CLEARABLE_FIELDS = {
-    "name", "desc", "description", "header_image",
+    "name", "description", "header_image",
     "developer", "publisher", "release_date",
     "reviews", "current_players", "peak_today", "metacritic",
     "drm_notes", "free_type", "has_paid_dlc",
