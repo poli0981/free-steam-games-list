@@ -1,29 +1,15 @@
 name: Top Online Leaderboard
 on:
-  schedule:
-    - cron: '0 3 * * 0,3,5'   # Sun, Wed, Fri at 03:00 UTC
+  schedule: [{cron: '0 3 * * 0,3,5'}]
   workflow_dispatch:
-
-permissions:
-  contents: write
-
+permissions: {contents: write}
 jobs:
-  top-online:
+  leaderboard:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v6
-        with:
-          token: ${{ secrets.GH_TOKEN }}
-
-      - name: Setup Python
-        uses: actions/setup-python@v6
-        with:
-          python-version: '3.14'
-
-      - name: Generate top online
-        env:
-          STEAM_API_KEY: ${{ secrets.STEAM_API_KEY }}
-        run: |
-          chmod +x ./bash/online.sh
-          ./bash/online.sh
+      - uses: actions/checkout@v6
+        with: {token: '${{ secrets.GH_TOKEN }}'}
+      - uses: actions/setup-python@v6
+        with: {python-version: '3.14'}
+      - run: chmod +x ./bash/online.sh && ./bash/online.sh
+        env: {STEAM_API_KEY: '${{ secrets.STEAM_API_KEY }}'}
