@@ -1,6 +1,6 @@
 # Horror Games
 
-64 games · Generated: 2026-03-26 03:15 UTC
+64 games · Generated: 2026-03-26 03:16 UTC
 
 | # | Thumbnail | Game | Genre | Developer | Released | Metacritic | Reviews | Players | Anti-Cheat | DRM | Status | Description | Link | Notes |
 |---|-----------|------|-------|-----------|----------|------------|---------|---------|------------|-----|--------|-------------|------|------|

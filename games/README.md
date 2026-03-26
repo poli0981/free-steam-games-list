@@ -1,6 +1,6 @@
 # 🎮 Steam Free-to-Play Game Tracker
 
-**Total games:** 667 · **Last updated:** 2026-03-26 03:15 UTC
+**Total games:** 667 · **Last updated:** 2026-03-26 03:16 UTC
 
 ## 📋 Full List
 
