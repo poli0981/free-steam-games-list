@@ -26,14 +26,14 @@ Safety:
   - Saves a backup to data.jsonl.bak before starting
   - Batched with rate limiting (same as normal fetch)
 """
+import sys
 import os
 import shutil
-import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from core.constants import DATA_JSONL, STEAM_API_KEY
-from core.data_store import load_main, save_main, migrate_record, now_iso
+from core.constants import DATA_JSONL, STEAM_API_KEY, MANUAL_FIELDS
+from core.data_store import load_main, save_main, migrate_record, extract_appid, now_iso
 from core.fetcher import fetch_full, _process_batch
 from core.steam_client import get_client
 
