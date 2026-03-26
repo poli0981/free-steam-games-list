@@ -1,6 +1,6 @@
 # 🎮 Steam Free-to-Play Game Tracker
 
-**Total games:** 666 · **Last updated:** 2026-03-26 02:45 UTC
+**Total games:** 667 · **Last updated:** 2026-03-26 03:15 UTC
 
 ## 📋 Full List
 
@@ -91,7 +91,7 @@
 | Turn-based RPG | 5 | [turn-based-rpg.md](turn-based-rpg.md) |
 | Turn-based Strategy | 8 | [turn-based-strategy.md](turn-based-strategy.md) |
 | Turn-based Tactics | 3 | [turn-based-tactics.md](turn-based-tactics.md) |
-| Visual Novel | 55 | [visual-novel.md](visual-novel.md) |
+| Visual Novel | 56 | [visual-novel.md](visual-novel.md) |
 | Walking Simulator | 1 | [walking-simulator.md](walking-simulator.md) |
 
 ## 🏆 Online Leaderboard

@@ -1,6 +1,6 @@
 # Cozy Games
 
-3 games · Generated: 2026-03-26 02:45 UTC
+3 games · Generated: 2026-03-26 03:15 UTC
 
 | # | Thumbnail | Game | Genre | Developer | Released | Metacritic | Reviews | Players | Anti-Cheat | DRM | Status | Description | Link | Notes |
 |---|-----------|------|-------|-----------|----------|------------|---------|---------|------------|-----|--------|-------------|------|------|
