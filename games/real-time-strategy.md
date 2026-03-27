@@ -1,6 +1,6 @@
 # Real-Time Strategy Games
 
-1 games · Generated: 2026-03-27 00:23 UTC
+1 games · Generated: 2026-03-27 17:38 UTC
 
 | # | Thumb | Game | Genre | Developer | Publisher | Released | Platforms | Languages | Reviews | Players | Anti-Cheat | Metacritic | Status | Description | Link | Notes |
 |---|-------|------|-------|-----------|-----------|----------|----------|-----------|---------|---------|------------|-----------|--------|-------------|------|-------|
