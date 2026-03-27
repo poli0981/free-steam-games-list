@@ -147,43 +147,20 @@ class SteamClient:
         except (ValueError, KeyError):
             return None
 
-    def fetch_tags(self, appid: str) -> list[str]:
+    def fetch_store_page(self, appid: str) -> Optional[str]:
         """
-        Fetch user-defined tags from the store page HTML.
-
-        Steam appdetails API does NOT return user tags.
-        We GET the store page and parse the tag links from
-        .popular_tags a.app_tag elements.
-
-        Returns list of tag strings, e.g. ["Action", "FPS", "Multiplayer"].
-        Empty list on failure.
+        GET the full store page HTML for an appid.
+        Used to scrape data not available via API: tags, language table, DLC prices.
+        Returns HTML string or None on failure.
         """
-        import re as _re
         resp = self._get(
             f"https://store.steampowered.com/app/{appid}/",
             throttle_fn=self._throttle_store,
             timeout=20,
         )
         if not resp or resp.status_code != 200:
-            return []
-        try:
-            html = resp.text
-            # Pattern: <a href="...tags/en/TagName/..." class="app_tag" ...> TagName </a>
-            # Matches both visible and display:none tags
-            matches = _re.findall(
-                r'class="app_tag"[^>]*>\s*([^<]+?)\s*</a>',
-                html,
-            )
-            tags = []
-            seen = set()
-            for m in matches:
-                t = m.strip()
-                if t and t != "+" and t.lower() not in seen:
-                    tags.append(t)
-                    seen.add(t.lower())
-            return tags
-        except Exception:
-            return []
+            return None
+        return resp.text
 
     def check_store_page(self, appid: str) -> int:
         self._throttle_store()

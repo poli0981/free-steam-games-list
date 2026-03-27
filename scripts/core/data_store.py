@@ -95,7 +95,6 @@ def make_skeleton(link: str) -> dict:
         # Classification
         "genre": "",
         "type_game": "offline",
-        "free_type": "",
         "has_paid_dlc": False,
 
         # People
@@ -191,8 +190,8 @@ def merge_extension_data(game: dict, ext: dict) -> dict:
     (future-proofing).
     """
     for key, val in ext.items():
-        if key in ("link", "appid", "added_at"):
-            continue  # Identity fields handled separately
+        if key in ("link", "appid", "added_at", "free_type"):
+            continue  # Identity / deprecated fields
 
         if _is_empty(val):
             continue
@@ -259,5 +258,8 @@ def migrate_record(game: dict) -> dict:
         if game.get("desc") and _is_empty(game.get("description")):
             game["description"] = game["desc"]
         del game["desc"]
+
+    # Remove deprecated 'free_type' field
+    game.pop("free_type", None)
 
     return game

@@ -3,7 +3,7 @@ Shared constants & configuration for the Steam F2P tracker v2.1.
 
 Changelog v2.1:
   - Expanded game schema: publisher, platforms, languages, language_details,
-    tags, description, free_type, has_paid_dlc, anti_cheat_note, is_kernel_ac
+    tags, description, has_paid_dlc, anti_cheat_note, is_kernel_ac
   - Anti-cheat registry (mirrors extension detector.js ANTI_CHEAT_DB)
   - New merge rules for array vs scalar fields
 """
@@ -66,7 +66,7 @@ ANTI_CHEAT_PATTERNS: dict[str, list[str]] = {
 # These are NEVER overwritten by Steam API fetch if already set.
 MANUAL_FIELDS = frozenset({
     "anti_cheat", "anti_cheat_note", "is_kernel_ac",
-    "notes", "type_game", "safe", "genre", "free_type",
+    "notes", "type_game", "safe", "genre",
 })
 
 # Fields from extension that are arrays and should be preserved as-is
@@ -77,7 +77,7 @@ ARRAY_FIELDS = frozenset({
 
 # All extension-provided fields (superset of MANUAL + ARRAY + auto)
 EXTENSION_FIELDS = frozenset({
-    "name", "genre", "type_game", "free_type", "has_paid_dlc",
+    "name", "genre", "type_game", "has_paid_dlc",
     "developer", "publisher", "release_date", "description",
     "header_image", "anti_cheat", "anti_cheat_note", "is_kernel_ac",
     "platforms", "languages", "language_details", "tags",

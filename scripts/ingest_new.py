@@ -122,7 +122,7 @@ def main():
 
         # 2) Merge ALL extension-provided data (rich fields)
         #    This handles developer[], publisher[], platforms[], languages[],
-        #    language_details[], tags[], description, free_type, etc.
+        #    language_details[], tags[], description, etc.
         has_ext_data = any(k in entry for k in ("developer", "platforms", "tags", "description"))
         if has_ext_data:
             print(f"  📦 Extension data: {sum(1 for k in entry if k != 'link')} fields")

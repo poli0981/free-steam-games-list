@@ -75,40 +75,11 @@ def apply_details(game: dict, data: dict) -> dict:
         if plat_data.get("linux"):   platforms.append("Linux")
         game["platforms"] = platforms
 
-    # Languages: only if empty (API gives HTML string, extension gives clean list)
-    if _is_empty(game.get("languages")):
-        lang_str = data.get("supported_languages", "")
-        if lang_str:
-            import re
-            # Steam format:
-            #   "English<strong>*</strong>, French, Portuguese - Brazil<br><strong>*</strong>languages with full audio support"
-            #
-            # Step 1: Cut everything after <br> (footnote about audio support)
-            lang_str = re.split(r"<br\s*/?>", lang_str, maxsplit=1)[0]
-            # Step 2: Strip remaining HTML tags
-            clean = re.sub(r"<[^>]+>", "", lang_str)
-            # Step 3: Remove asterisk markers
-            clean = re.sub(r"\*", "", clean)
-            # Step 4: Split by comma, strip whitespace
-            langs = [l.strip() for l in clean.split(",") if l.strip()]
-            game["languages"] = langs
-
-            # Build language_details from the footnote (which langs have full audio)
-            if _is_empty(game.get("language_details")):
-                full_audio_raw = data.get("supported_languages", "")
-                details = []
-                for lang_name in langs:
-                    # A language has full audio if it's followed by <strong>*</strong> in the raw HTML
-                    # Pattern: "English<strong>*</strong>" means English has full audio
-                    pattern = re.escape(lang_name) + r"\s*<strong>\*</strong>"
-                    has_audio = bool(re.search(pattern, full_audio_raw))
-                    details.append({
-                        "name": lang_name,
-                        "interface": True,  # All listed languages have interface support
-                        "audio": has_audio,
-                        "subtitles": False,  # API doesn't distinguish subtitles
-                    })
-                game["language_details"] = details
+    # Languages + language_details: DEFERRED to HTML scrape
+    # The API supported_languages field is an HTML string that lacks per-language
+    # subtitles/audio breakdown. The store page HTML has a proper table with
+    # Interface / Full Audio / Subtitles columns per language.
+    # → Handled in apply_scraped_data() below, not here.
 
     # Anti-cheat: only if empty/default
     if _is_empty(game.get("anti_cheat")) or game.get("anti_cheat") == "-":
@@ -153,19 +124,11 @@ def apply_details(game: dict, data: dict) -> dict:
     if not is_free and "No longer free" not in game.get("notes", ""):
         game["notes"] = (game.get("notes", "") + " ⚠ No longer free! Check price.").strip()
 
-    # Free type: only if empty
-    if _is_empty(game.get("free_type")):
-        if is_free:
-            genres = [g["description"].lower() for g in data.get("genres", [])]
-            game["free_type"] = "f2p" if "free to play" in genres else "free_game"
-        else:
-            game["free_type"] = "paid"
-
-    # DLC detection
-    if not game.get("has_paid_dlc"):
-        dlc = data.get("dlc", [])
-        if dlc:
-            game["has_paid_dlc"] = True
+    # has_paid_dlc: DEFERRED to HTML scrape
+    # The API only gives DLC appid list, not their prices.
+    # Checking categories for "In-App Purchases" is unreliable (many F2P games
+    # have IAP tag but free DLC, or vice versa).
+    # → Handled in apply_scraped_data() by parsing actual DLC price elements.
 
     return game
 
@@ -183,6 +146,7 @@ def apply_reviews(game: dict, summary: dict) -> dict:
 
 
 def apply_players(game: dict, count: int) -> dict:
+    """Set current player count + update peak if higher."""
     game["current_players"] = f"{count:,}"
     old_peak = game.get("peak_today", "N/A")
     if old_peak in ("N/A", "Error", ""):
@@ -196,35 +160,87 @@ def apply_players(game: dict, count: int) -> dict:
     return game
 
 
+def apply_scraped_data(game: dict, scraped: dict) -> dict:
+    """
+    Apply data parsed from store page HTML.
+
+    scraped comes from scraper.scrape_store_page() and contains:
+      - languages: list[str]
+      - language_details: list[dict] with interface/audio/subtitles booleans
+      - has_paid_dlc: bool (actual DLC price check, not just existence)
+      - tags: list[str]
+    """
+    # Languages + language_details: only if empty
+    if _is_empty(game.get("languages")) and scraped.get("languages"):
+        game["languages"] = scraped["languages"]
+    if _is_empty(game.get("language_details")) and scraped.get("language_details"):
+        game["language_details"] = scraped["language_details"]
+
+    # Tags: only if empty
+    if _is_empty(game.get("tags")) and scraped.get("tags"):
+        game["tags"] = scraped["tags"]
+
+    # has_paid_dlc: HTML scrape is authoritative (checks actual prices)
+    # Only override if we haven't been manually set
+    game["has_paid_dlc"] = scraped.get("has_paid_dlc", False)
+
+    return game
+
+
 # ──────────── Full single-game fetch ────────────
 
 def fetch_full(game: dict, client=None, fetch_players: bool = True,
-               fetch_tags: bool = True) -> dict:
+               scrape_page: bool = True) -> dict:
+    """
+    Fetch all available data for one game.
+
+    Steps:
+      1. Steam appdetails API → name, genre, developer, etc.
+      2. Steam reviews API → review score
+      3. Steam player count API → concurrent players (needs key)
+      4. Store page HTML scrape → languages (table), tags, DLC prices
+
+    Step 4 is a single GET request that provides languages, tags, and
+    has_paid_dlc — all three are unavailable or unreliable from the API.
+    """
+    from .scraper import scrape_store_page
+
     c = client or get_client()
     appid = extract_appid(game.get("link", ""))
     if not appid:
         print(f"    ✗ Invalid link: {game.get('link', '?')}")
         return game
 
+    # 1) App details API
     data = c.fetch_app_details(appid)
     if data:
         apply_details(game, data)
 
+    # 2) Reviews API
     summary = c.fetch_reviews(appid)
     if summary:
         apply_reviews(game, summary)
 
+    # 3) Player count (needs key)
     if fetch_players and STEAM_API_KEY:
         count = c.fetch_player_count(appid, STEAM_API_KEY)
         if count is not None:
             apply_players(game, count)
 
-    # Tags: fetch from store page HTML (API doesn't provide user tags)
-    if fetch_tags and _is_empty(game.get("tags")):
-        tags = c.fetch_tags(appid)
-        if tags:
-            game["tags"] = tags
+    # 4) Store page HTML scrape (languages, tags, DLC prices)
+    needs_scrape = (
+        _is_empty(game.get("languages")) or
+        _is_empty(game.get("language_details")) or
+        _is_empty(game.get("tags"))
+        # has_paid_dlc always re-checked from HTML for accuracy
+    )
+    if scrape_page and needs_scrape:
+        html = c.fetch_store_page(appid)
+        if html:
+            scraped = scrape_store_page(html)
+            apply_scraped_data(game, scraped)
 
+    # Housekeeping
     if not game.get("notes", "").strip():
         game["notes"] = "Not reviewed yet"
     if not game.get("safe"):

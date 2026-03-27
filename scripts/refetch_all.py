@@ -6,9 +6,9 @@ Force re-fetch ALL games into v2.1 schema.
 
 This script:
   1. Migrates every record to v2.1 skeleton (adds missing fields, normalizes types)
-  2. Clears all API-fetchable fields (name, desc, developer, publisher, platforms,
+  2. Clears all API-fetchable fields (name, description, developer, publisher, platforms,
      languages, header_image, genre, release_date, reviews, players, metacritic,
-     drm_notes, free_type, anti_cheat) while PRESERVING manual fields
+     drm_notes, anti_cheat) while PRESERVING manual fields
      (notes, safe, type_game – and anti_cheat/genre/anti_cheat_note IF manually set)
   3. Re-fetches everything from Steam API into the clean schema
   4. Saves the fully refreshed data.jsonl
@@ -43,7 +43,7 @@ CLEARABLE_FIELDS = {
     "name", "description", "header_image",
     "developer", "publisher", "release_date",
     "reviews", "current_players", "peak_today", "metacritic",
-    "drm_notes", "free_type", "has_paid_dlc",
+    "drm_notes", "has_paid_dlc",
     "platforms", "languages", "language_details", "tags",
 }
 
