@@ -1,6 +1,6 @@
 # Stealth Games
 
-3 games · Generated: 2026-03-26 17:16 UTC
+3 games · Generated: 2026-03-27 00:23 UTC
 
 | # | Thumb | Game | Genre | Developer | Publisher | Released | Platforms | Languages | Reviews | Players | Anti-Cheat | Metacritic | Status | Description | Link | Notes |
 |---|-------|------|-------|-----------|-----------|----------|----------|-----------|---------|---------|------------|-----------|--------|-------------|------|-------|
