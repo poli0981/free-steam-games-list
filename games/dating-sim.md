@@ -1,6 +1,6 @@
 # Dating Sim Games
 
-6 games · 2026-03-28 14:20 UTC
+6 games · 2026-03-28 15:23 UTC
 
 | # | Thumb | Game | Genre | Developer | Publisher | Released | Platforms | Languages | Reviews | Players | Anti-Cheat | Metacritic | Status | Description | Link | Notes |
 |---|-------|------|-------|-----------|-----------|----------|----------|-----------|---------|---------|------------|-----------|--------|-------------|------|-------|
