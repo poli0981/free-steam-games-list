@@ -1,6 +1,6 @@
 # Top-down Shooter Games
 
-11 games · 2026-03-28 09:07 UTC
+11 games · 2026-03-28 12:56 UTC
 
 | # | Thumb | Game | Genre | Developer | Publisher | Released | Platforms | Languages | Reviews | Players | Anti-Cheat | Metacritic | Status | Description | Link | Notes |
 |---|-------|------|-------|-----------|-----------|----------|----------|-----------|---------|---------|------------|-----------|--------|-------------|------|-------|
