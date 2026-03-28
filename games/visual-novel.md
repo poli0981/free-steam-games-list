@@ -1,6 +1,6 @@
 # Visual Novel Games
 
-56 games · Generated: 2026-03-27 17:38 UTC
+56 games · Generated: 2026-03-28 00:22 UTC
 
 | # | Thumb | Game | Genre | Developer | Publisher | Released | Platforms | Languages | Reviews | Players | Anti-Cheat | Metacritic | Status | Description | Link | Notes |
 |---|-------|------|-------|-----------|-----------|----------|----------|-----------|---------|---------|------------|-----------|--------|-------------|------|-------|
