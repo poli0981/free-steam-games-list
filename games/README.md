@@ -1,6 +1,6 @@
-# 🎮 Steam Free-to-Play Game Tracker
+# 🎮 Steam F2P Tracker
 
-**Total games:** 669 · **Last updated:** 2026-03-28 00:22 UTC
+**669 games** · 2026-03-28 08:47 UTC
 
 ## 📋 Full List
 
@@ -11,8 +11,8 @@
 
 ## 🏷️ By Genre
 
-| Genre | Games | File |
-|-------|-------|------|
+| Genre | # | File |
+|-------|---|------|
 | Action | 14 | [action.md](action.md) |
 | Action RPG | 6 | [action-rpg.md](action-rpg.md) |
 | Action RPG, Gacha | 2 | [action-rpg-gacha.md](action-rpg-gacha.md) |
@@ -93,6 +93,6 @@
 | Visual Novel | 56 | [visual-novel.md](visual-novel.md) |
 | Walking Simulator | 1 | [walking-simulator.md](walking-simulator.md) |
 
-## 🏆 Online Leaderboard
+## 🏆 Leaderboard
 
 - [top-online.md](top-online.md)
