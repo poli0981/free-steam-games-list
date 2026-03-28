@@ -1,7 +1,7 @@
 [![Games Count](https://img.shields.io/badge/Games-300%2B-green?style=flat&logo=steam)](games/all-games.md)
 [![Last Updated](https://img.shields.io/badge/Updated-Daily-blue?style=flat&logo=github-actions)](.github/workflows)
 [![Top Online](https://img.shields.io/badge/Top%20Online-Live%20Leaderboard-red?style=flat&logo=steam)](games/top-online.md)
-[![Version](https://img.shields.io/badge/version-2.0.0-purple?style=flat&logo=github)](https://github.com/poli0981/free-steam-games-list)
+[![Version](https://img.shields.io/badge/version-2.1.0-purple?style=flat&logo=github)](https://github.com/poli0981/free-steam-games-list)
 [![Health Check](https://img.shields.io/badge/Health%20Check-Weekly-orange?style=flat&logo=github-actions)](.github/workflows/purge-unhealthy.yml)
 ![Visitors](https://visitor-badge.laobi.icu/badge?page_id=poli0981.free-steam-games-list)
 [![Sponsor](https://img.shields.io/badge/Sponsor-Buy%20me%20a%20coffee-ff5f5f?style=flat&logo=buy-me-a-coffee)](.github/FUNDING.yml)
@@ -9,8 +9,9 @@
 A **curated list** of free-to-play games on Steam – no quality guarantees, no endorsements, just pure listings by a
 broke, unemployed Vietnamese dev with too much free time and a Steam library full of sale games (80% under $10).
 
-**v2.0.0** – complete rewrite. Modular Python core, health detection, smart rate limiting, 3 new columns, live
-leaderboard with trends. Still broke, still unemployed, but the code is actually organized now.
+**v2.1.0** – extension-compatible schema, HTML scraping for accurate language/DLC data, performance optimized.
+Now tracks publisher, platforms, languages (with audio/subtitle breakdown), user tags, and kernel-level anti-cheat
+detection. 1,579 lines of Python, zero `jsonlines` dependency, no double-fetch.
 
 **Powered ~70% by AI** (Grok for v1, Claude for v2) – fetching data, fixing bugs, writing code/docs while I
 procrastinate.
@@ -19,123 +20,125 @@ procrastinate.
 
 ### Quick Links
 
-| What          | Where                                                                          |
-|---------------|--------------------------------------------------------------------------------|
-| 📋 All Games  | [Full list](games/all-games.md) (sorted by reviews, best first)                |
-| 🏷️ By Genre  | [games/](games/) – separate files (FPS, RPG, MOBA, etc.)                       |
-| 🏆 Top Online | [top-online.md](games/top-online.md) – live player counts, trends, tier badges |
-| 📖 Index      | [games/README.md](games/README.md) – full index with genre breakdown           |
+| What          | Where                                                                    |
+|---------------|--------------------------------------------------------------------------|
+| 📋 All Games  | [Full list](games/all-games.md) (sorted by reviews, best first)          |
+| 🏷️ By Genre  | [games/](games/) – separate files per genre                              |
+| 🏆 Top Online | [top-online.md](games/top-online.md) – live players, trends, tier badges |
+| 📖 Index      | [games/README.md](games/README.md) – genre breakdown + file links        |
 
-### What's New in v2.0.0
+### What's New in v2.1.0
 
 <details>
-<summary><b>Architecture overhaul</b> – click to expand</summary>
+<summary><b>Extension-compatible schema</b> – 7 new fields</summary>
 
-Complete rewrite of the backend. Old monolithic scripts → modular `scripts/core/` package:
+Every game record now includes data matching the companion Chrome extension output:
+
+| Field              | Type       | Example                                                  |
+|--------------------|------------|----------------------------------------------------------|
+| `publisher`        | list       | `["Square Enix", "Feral Interactive"]`                   |
+| `platforms`        | list       | `["Windows", "macOS", "Linux"]`                          |
+| `languages`        | list       | `["English", "French", "Japanese"]`                      |
+| `language_details` | list[dict] | `[{name, interface, audio, subtitles}]`                  |
+| `tags`             | list       | `["Story Rich", "Choices Matter", "Female Protagonist"]` |
+| `anti_cheat_note`  | str        | `"NetEase Game Security [Non-Kernel]"`                   |
+| `is_kernel_ac`     | bool/null  | `true` = kernel 🔴, `false` = non-kernel 🟢              |
+
+Extension pushes rich data → backend merges intelligently → API enriches missing fields only.
+
+</details>
+
+<details>
+<summary><b>HTML scraper</b> – accurate languages, DLC, tags</summary>
+
+New `scraper.py` module parses the Steam store page HTML for data the API gets wrong or doesn't provide:
+
+- **Languages**: Store page has a table with Interface ✔ / Full Audio ✔ / Subtitles ✔ per language. API only gives a
+  mangled HTML string that was producing broken output like `"Brazillanguages with full audio"`.
+- **DLC pricing**: Checks actual `data-price-final` attribute per DLC row. Games with free-only DLC (soundtracks, etc.)
+  are no longer falsely flagged as `has_paid_dlc: true`.
+- **Tags**: All user-defined tags including hidden overflow ones. API `appdetails` doesn't return these at all.
+
+All three extracted from **one GET request** per game.
+
+</details>
+
+<details>
+<summary><b>Performance</b> – faster, leaner, no double-fetch</summary>
+
+- **No double-fetch**: Health check caches API response → ingest reuses it → 1 fewer request per game.
+- **Dropped jsonlines**: Pure `json` stdlib I/O. ~20-30% faster for large files.
+- **Pre-compiled regex**: 8 scraper patterns compiled once at import, not per-game.
+- **1,579 lines total** (down from ~1,900 in v2.0). 18 Python files, 6 core modules.
+
+</details>
+
+<details>
+<summary><b>Architecture</b></summary>
 
 ```
 scripts/
 ├── core/
-│   ├── constants.py        # Config, rate limits, enums
-│   ├── steam_client.py     # HTTP client with backoff + retry
-│   ├── data_store.py       # JSONL I/O, validation, dedup
-│   ├── fetcher.py          # Batch processor, smart skip
-│   └── health_checker.py   # Game status detection
-├── ingest_new.py           # Add new games (with health check)
-├── update_data.py          # Full data refresh
-├── update_reviews.py       # Reviews-only update
-├── check_dead_links.py     # 404/410 detection
-├── purge_unhealthy.py      # Remove dead/delisted/not-free
-├── top_online.py           # Live leaderboard
-├── generate_tables.py      # Markdown table generator
-└── export_data.py          # CSV export
+│   ├── constants.py        # Config, rate limits, anti-cheat patterns
+│   ├── steam_client.py     # HTTP client, backoff, retry, session pooling
+│   ├── data_store.py       # JSONL I/O, validation, dedup, schema merge
+│   ├── fetcher.py          # Batch processor, apply_details/reviews/players/scraped
+│   ├── scraper.py          # Store page HTML parser (languages, DLC, tags)
+│   └── health_checker.py   # Game status detection with cached API data
+├── ingest_new.py           # Add new games (health check + extension merge)
+├── update_data.py          # Daily full refresh
+├── update_reviews.py       # Reviews-only (every 2 days)
+├── check_dead_links.py     # HEAD-request 404/410 scanner
+├── purge_unhealthy.py      # Remove delisted/not-free/invalid
+├── top_online.py           # Live leaderboard with trends
+├── generate_tables.py      # Markdown tables + genre files + index
+├── refetch_all.py          # Force re-fetch ALL (manual only)
+├── migrate_schema.py       # Upgrade old records to v2.1
+├── export_data.py          # CSV export
+└── delete_game.py          # Interactive delete
 ```
-
-</details>
-
-<details>
-<summary><b>Health detection</b> – auto-cleans dead games</summary>
-
-Games are automatically checked and removed if they are:
-
-- 💀 **Delisted** (404/410 on Steam store)
-- 🚫 **Unavailable** (Steam API returns `success: false`)
-- 💰 **No longer free** (price changed from free to paid)
-- ❌ **Invalid link** (unparseable URL)
-
-Removed games are logged to `scripts/removed_games.jsonl` with reason and timestamp.
-New game submissions are health-checked **before** being added – dead/paid links are rejected immediately.
-
-</details>
-
-<details>
-<summary><b>New columns</b></summary>
-
-| Column     | Source                | Description                           |
-|------------|-----------------------|---------------------------------------|
-| Metacritic | Steam API             | Metacritic score (when available)     |
-| DRM        | Steam categories      | DRM/3rd-party account requirements    |
-| Peak Today | Player count tracking | Highest concurrent players seen today |
-| Status     | Health checker        | ✅ Active / 💀 Delisted / 💰 Not free  |
-
-</details>
-
-<details>
-<summary><b>Top Online leaderboard</b> – upgraded</summary>
-
-- 📈📉 Trend arrows with percentage change
-- 🔥⭐🟢🟡🟠🔴💀 Tier badges by population
-- ★★★★★ Star rating from reviews
-- Summary stats: total players, tier distribution, top genres, anti-cheat breakdown
-- Genre + anti-cheat index at the top
-
-</details>
-
-<details>
-<summary><b>Rate limiting & anti-ban</b></summary>
-
-- Store API: 1.2-2s delay, 50 games/batch, 15-30s inter-batch pause
-- Web API (key): 0.3-0.8s delay
-- Exponential backoff + jitter on 429/5xx
-- Respects `Retry-After` headers
-- Connection pooling via `requests.Session`
 
 </details>
 
 ### Automated Workflows
 
-| Workflow          | Schedule                  | What it does                                    |
-|-------------------|---------------------------|-------------------------------------------------|
-| Auto Update JSON  | Daily 00:00 UTC           | Full data refresh (details + reviews + players) |
-| Generate Tables   | After JSON update         | Regenerate all markdown tables                  |
-| Export CSV        | Daily 02:00 UTC           | Export data.jsonl → data.csv                    |
-| Top Online        | Sun/Wed/Fri 03:00 UTC     | Live player count leaderboard                   |
-| Update Reviews    | Every 2 days 06:00 UTC    | Reviews-only refresh                            |
-| Check Dead Links  | Every 5 days 04:00 UTC    | HEAD-request 404/410 scanner                    |
-| Purge Unhealthy   | Weekly Mon 05:00 UTC      | Full health scan + removal                      |
-| Ingest New        | On `temp_info.jsonl` push | Add new games with health check                 |
-| Ingest from Issue | On `[add-game]` issue     | Parse issue → ingest → auto-close               |
+| Workflow          | Schedule                  | What it does                          |
+|-------------------|---------------------------|---------------------------------------|
+| Auto Update JSON  | Daily 00:00 UTC           | Full data refresh (API + HTML scrape) |
+| Generate Tables   | After JSON update         | Regenerate all markdown tables        |
+| Export CSV        | Daily 02:00 UTC           | data.jsonl → data.csv                 |
+| Top Online        | Sun/Wed/Fri 03:00 UTC     | Live player leaderboard               |
+| Update Reviews    | Every 2 days 06:00 UTC    | Reviews-only refresh                  |
+| Check Dead Links  | Every 5 days 04:00 UTC    | HEAD-request 404/410 scanner          |
+| Purge Unhealthy   | Weekly Mon 05:00 UTC      | Full health scan + removal            |
+| Ingest New        | On `temp_info.jsonl` push | Add new games with health check       |
+| Ingest from Issue | On `[add-game]` issue     | Parse issue → ingest → auto-close     |
+| Force Re-fetch    | Manual only               | Re-fetch ALL games into v2.1 schema   |
+| Migrate Schema    | Manual only               | Upgrade old records                   |
 
 ### Contribute
 
 **Easy way (recommended):**
 
 1. Open an [Issue](../../issues/new) with title starting with `[add-game]` and a Steam link in the body.
-2. Workflow auto-picks it up, fetches data, adds to tracker, closes the issue.
+2. Workflow auto-picks it up, health-checks, fetches data, adds to tracker, closes the issue.
+
+**With the Chrome extension:**
+
+1. Browse Steam store → extension detects F2P games → click "Add to Queue" → push to repo.
+2. Extension provides rich data (developer, publisher, platforms, languages, tags, anti-cheat) automatically.
 
 **Manual way:**
 
 1. Fork & add entries to `scripts/temp_info.jsonl`:
    ```jsonl
-   {"link": "https://store.steampowered.com/app/730/", "type_game": "online", "safe": "y", "notes": "CS2 babyyy"}
-   {"link": "570"}
+   {"link": "730", "type_game": "online", "safe": "y", "notes": "CS2 babyyy"}
+   {"link": "https://store.steampowered.com/app/570/", "genre": "MOBA"}
    ```
-   Accepts: full URL, short URL, or bare appid. Optional fields: `type_game`, `genre`, `anti_cheat`, `safe`, `notes`.
-2. Push – ingest pipeline auto-triggers: validates → dedup check → health check → fetch from Steam → add to
-   `data.jsonl` → regenerate tables → clear temp file.
-3. Open PR for big changes.
+   Accepts: full URL, short URL, or bare appid. Optional: `type_game`, `genre`, `anti_cheat`, `safe`, `notes`.
+2. Push → auto ingest: validate → dedup → health check → fetch + scrape → add → regenerate tables.
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) | [Issue Templates](.github/ISSUE_TEMPLATE) for bug/feature reports.
+See [CONTRIBUTING.md](CONTRIBUTING.md) | [Issue Templates](.github/ISSUE_TEMPLATE).
 
 ### Why This Exists
 
@@ -143,7 +146,7 @@ Unemployed, introvert max level, dropped out uni year 3, mooching off family. Ne
 Steam every time "hôm nay chơi free cái gì đây". So this repo was born – hobby project of a "barely competent" dev
 bumped by AI.
 
-v1 was spaghetti code that somehow worked. v2 is... organized spaghetti? At least it has modules now.
+v1 was spaghetti. v2.0 was organized spaghetti. v2.1 is... spaghetti with proper seasoning? It has a scraper now.
 
 > [!WARNING]
 > **Disclaimer:** Quality? Fun? Safety? Who knows. I only vouch for games I've played (Safe column: y = yes, ? =
@@ -156,7 +159,7 @@ v1 was spaghetti code that somehow worked. v2 is... organized spaghetti? At leas
 - [PRIVACY POLICY](docs/PRIVACY_POLICY.md) – Zero data collected.
 - [EULA](docs/EULA.md) - You read if you want to use this.
 - [Terms of Use](docs/ToS.md)
-- [SECURITY](SECURITY.md) - Security.
+- [SECURITY](SECURITY.md) - Security???
 - [ACKNOWLEDGEMENTS](docs/ACKNOWLEDGEMENTS.md) - My thanks for reason for this repo.
 - [Contact](docs/CONTACT.md) - You want Contact me? Check this? :)
 - [CODE OF CONDUCT](CODE_OF_CONDUCT.md) – Be chill, no toxicity.
@@ -168,4 +171,4 @@ Made with boredom, instant noodles, and AI. Star if you find a hidden gem ✨
 Want to support this broke dev? Check [FUNDING.yml](.github/FUNDING.yml) – buy me a coffee (or Steam sale gift card) to
 keep the noob alive :))
 
-Last auto-update: use GitHub Actions. Manual run anytime.
+Last auto-update: Daily via GitHub Actions. Manual run anytime.
