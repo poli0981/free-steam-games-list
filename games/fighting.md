@@ -1,6 +1,6 @@
 # Fighting Games
 
-6 games · 2026-03-28 15:23 UTC
+6 games · 2026-03-28 15:24 UTC
 
 | # | Thumb | Game | Genre | Developer | Publisher | Released | Platforms | Languages | Reviews | Players | Anti-Cheat | Metacritic | Status | Description | Link | Notes |
 |---|-------|------|-------|-----------|-----------|----------|----------|-----------|---------|---------|------------|-----------|--------|-------------|------|-------|
