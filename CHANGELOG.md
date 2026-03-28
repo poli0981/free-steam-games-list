@@ -2,126 +2,123 @@
 
 All notable changes to this awesome noob repo will be documented here.
 
+## [v2.1.0] - 2026-03-28 (The "Extension-Ready + Performance" Edition)
+
+### 💥 Breaking Changes
+
+- `desc` field **removed** from schema. Use `description` only. Migration script handles upgrade automatically.
+- `free_type` field removed (unreliable from API, extension handles classification client-side).
+- `jsonlines` pip dependency dropped – all I/O now uses stdlib `json` (faster, zero deps).
+- `fetcher.py` function renamed: `_process_batch()` → `process_batch()` (public API).
+
+### 🏗️ Schema v2.1 (Extension-Compatible)
+
+- **7 new fields** added to every game record, matching Chrome extension output:
+    - `publisher` (list) – e.g. `["Square Enix", "Feral Interactive (Mac)"]`
+    - `platforms` (list) – e.g. `["Windows", "macOS", "Linux"]`
+    - `languages` (list) – e.g. `["English", "French", "Japanese"]`
+    - `language_details` (list[dict]) – per-language `{name, interface, audio, subtitles}` booleans
+    - `tags` (list) – all user-defined Steam tags including hidden overflow
+    - `anti_cheat_note` (str) – raw anti-cheat name from store page
+    - `is_kernel_ac` (bool|null) – `true` = kernel-level, `false` = non-kernel, `null` = unknown
+- `developer` normalized: string → list everywhere (API, extension, migration).
+- `desc` merged into `description`, then dropped. One field, no duplication.
+
+### 🔌 Extension Data Integration
+
+- New `merge_extension_data()` in `data_store.py` – smart merge with 3-tier priority:
+    - **MANUAL_FIELDS** (notes, safe, type_game, genre, anti_cheat): only fill if empty (preserves user edits).
+    - **ARRAY_FIELDS** (developer, publisher, platforms, languages, tags): replace wholesale (extension data is richer).
+    - **Other fields**: overwrite if extension provides non-empty value.
+- `ingest_new.py` now accepts full extension output (20+ fields per entry) – merges before fetch, re-applies manual
+  overrides after fetch.
+- Ingest summary shows field counts: `dev=DONTNOD plat=[Windows, macOS, Linux] langs=6 tags=20`.
+
+### 🔍 HTML Scraper (New Module)
+
+- New `scraper.py` – extracts data unavailable from Steam API:
+    - **Language table**: parses `<table class="game_language_options">` → accurate Interface/Audio/Subtitles per
+      language (API only gives a broken HTML string with no subtitle info).
+    - **DLC pricing**: parses `#gameAreaDLCSection` → checks `data-price-final` per DLC row. Only marks
+      `has_paid_dlc=true` if at least one DLC has actual non-zero price (API just lists DLC IDs with no prices).
+    - **Tags**: parses `.app_tag` elements including `display:none` overflow tags (API `appdetails` doesn't return user
+      tags at all).
+- All 3 extracted from **single GET request** to store page – one HTML fetch per game, not three.
+- 8 regex patterns pre-compiled at module level.
+
+### ⚡ Performance Optimizations
+
+- **Eliminated double-fetch in ingest**: `health_checker` now caches API response in `HealthResult.data`.
+  `ingest_new.py` passes `prefetched_details=health.data` to `fetch_full()` → skips redundant `fetch_app_details()`
+  call. Saves 1 API request per game (300 games = ~450s saved).
+- **Dropped jsonlines dependency**: `load_jsonl()` uses `json.loads()` line-by-line, `save_jsonl()` uses
+  `json.dumps()` + `f.write()` directly. ~20-30% faster I/O for large files, zero pip deps for core.
+- **Pre-compiled regex**: `scraper.py` compiles all 8 patterns at import time, not per-call. 300 games = 8 compiles
+  instead of 2400.
+- **Faster `is_empty()`**: uses `frozenset` lookup for empty string variants, early returns for `None`/`list`.
+- **`SteamClient.__slots__`**: reduced memory per instance, faster attribute access.
+- **`extract_appid()` regex simplified**: `/app/(\d+)` instead of full domain match – shorter, same correctness.
+- **`make_skeleton()` template**: shallow-copies from frozen template dict instead of building from scratch.
+- **`generate_tables.py`**: `lines.extend(generator)` instead of `append()` loop.
+
+### 🔄 New Scripts & Workflows
+
+- `refetch_all.py` + `refetch-all.yml` – **manual-only** force re-fetch of ALL games into v2.1 schema. Creates backup →
+  migrates → clears fetchable fields → re-fetches from Steam API + HTML scrape. Preserves manual fields (notes, safe,
+  type_game). Requires typing `"yes"` to confirm. Timeout: 120 minutes.
+- `migrate_schema.py` + `migrate-schema.yml` – upgrades existing `data.jsonl` records: adds missing fields, normalizes
+  types, drops deprecated fields. Idempotent.
+
+### 🐛 Bug Fixes
+
+- **`languages` corrupted**: API HTML string `"Brazil<br>languages with full audio"` was parsed as
+  `"Brazillanguages..."`. Fixed by switching to HTML table scraping.
+- **`subtitles` always `false`**: API has no subtitle breakdown. Fixed by parsing store page language table (
+  Interface/Audio/Subtitles columns).
+- **`has_paid_dlc` false positives**: Games with free-only DLC were marked `true`. Fixed by scraping actual
+  `data-price-final` attributes.
+- **`description` duplicated**: Both `desc` and `description` stored same text. Unified to `description` only.
+
+### 🧹 Improved
+
+- Tables: Publisher column, Platforms column, Language count, kernel anti-cheat badge (🔴/🟢).
+- `health_checker.py`: `@dataclass(slots=True)` for leaner objects.
+- `top_online.py`: tier thresholds as tuple list (cleaner).
+- All scripts: consistent `sys.path.insert(0, ...)` for imports.
+
+---
+
 ## [v2.0.0] - 2026-03-26 (The "Finally Got Serious" Edition)
 
 ### 💥 Breaking Changes
-- Data format migrated from `data.json` to `data.jsonl` (JSON Lines). Old scripts won't work – use the new ones.
+
+- Data format migrated from `data.json` to `data.jsonl` (JSON Lines).
 - All Python scripts rewritten from scratch under `scripts/core/` modular architecture.
-- Bash scripts rewritten with `set -euo pipefail` – no more silent failures.
-- Workflow names changed – old workflow references in forks will break.
+- Bash scripts rewritten with `set -euo pipefail`.
 
 ### 🏗️ Architecture (Complete Rewrite)
-- **Modular core package** (`scripts/core/`) – 5 modules, zero spaghetti:
-  - `constants.py` – all config centralized, auto-detects CI environment for rate tuning.
-  - `steam_client.py` – HTTP client with exponential backoff + jitter, `Retry-After` header respect, separate rate buckets for Store API (~1.5s/req) vs Web API key (~0.5s/req), session connection pooling.
-  - `data_store.py` – atomic JSONL I/O (write-tmp → rename), link normalization (accepts full URL / short URL / bare appid), O(1) duplicate check via `build_index()`.
-  - `fetcher.py` – batch processor with inter-batch cooldown (15-30s), smart skip for already-complete records, separate `update_all_full()` / `update_reviews_only()` / `update_players_only()` functions.
-  - `health_checker.py` – single source of truth for game status detection (see below).
 
-### 🔍 Health Detection System (New)
-- Central `health_checker.py` module detects 5 unhealthy statuses:
-  - `invalid_format` – link can't be parsed to an appid.
-  - `not_found_404` – Steam store page returns 404.
-  - `not_found_410` – Steam store page returns 410 Gone.
-  - `unavailable` – `appdetails` API returns `success: false` (delisted/region-locked).
-  - `not_free` – game exists but `is_free=false` and `price > 0`.
-  - `network_error` – transient, game is NOT removed (retry later).
-- `purge_unhealthy.py` – full scan of `data.jsonl`, removes unhealthy games, logs to `scripts/removed_games.jsonl` with `[link, reason, removed_at]`.
-- `check_dead_links.py` – lightweight HEAD-request scanner, marks 404/410 as `status: "delisted"` without removing.
-- Ingest pipeline (`ingest_new.py`) now runs **pre-flight health check** before adding any game – rejects dead/delisted/not-free links immediately + logs to `removed_games.jsonl`.
-
-### ➕ New Game Ingest Flow
-- New flow: `temp_info.jsonl` → validate → dedup → health check → fetch → `data.jsonl`.
-- Supports manual fields in `temp_info.jsonl` entries: `anti_cheat`, `notes`, `type_game`, `genre`, `safe` – values are preserved through fetch (applied before AND re-applied after Steam fetch).
-- Link format flexible: accepts full Steam URL, short URL, or bare appid number.
-- Invalid/duplicate/unhealthy links are rejected immediately with clear log messages.
-- Auto-triggers on push to `scripts/temp_info.jsonl` via `ingest-new.yml` workflow.
-
-### 📊 New Table Columns
-- **Metacritic** – score pulled from Steam `appdetails` API.
-- **DRM Notes** – auto-detected from Steam categories ("Requires 3rd-party account", etc.).
-- **Peak Today** – tracks daily peak concurrent players.
-- **Status** – visual icon: ✅ active, 💀 delisted, 💰 no longer free.
-
-### 🏆 Top Online Leaderboard (Upgraded)
-- Trend arrows with percentage: 📈 +25%, ↓ -8%, → stable, 🆕 new.
-- Tier badges by population: 🔥 Mega (100k+), ⭐ Hot (30k+), 🟢 Healthy (10k+), 🟡 Stable (3k+), 🟠 Low (500+), 🔴 Dying (50+), 💀 Dead.
-- Star rating from reviews: ★★★★★ to ☆☆☆☆☆.
-- Summary stats header: total players, average per game, tier distribution, top genres, anti-cheat breakdown.
-- `games/README.md` index file with genre table + links to all generated files.
-
-### 🤖 New CI/CD Workflows
-- `update-reviews.yml` – reviews-only update every 2 days (`0 6 */2 * *`). Lighter than full fetch.
-- `check-dead-links.yml` – HEAD-request dead link check every 5 days.
-- `purge-unhealthy.yml` – full health scan + removal, weekly (Monday 05:00 UTC).
-- `ingest-from-issue.yml` – GitHub Issue trigger: issues titled `[add-game]` are auto-parsed, ingested, and closed with result comment (prepares for browser extension).
-- All existing workflows rewritten for consistency + `set -euo pipefail`.
-
-### 🛡️ Anti-Ban / Rate Limiting
-- Store API: ~1.2-2s delay between requests (Steam limit ~200 req/5 min).
-- Web API (with key): 0.3-0.8s delay (100k/day quota).
-- Batch 50 games/batch, 15-30s pause between batches.
-- Exponential backoff (2^attempt + random jitter) on errors.
-- 429: reads `Retry-After` header, fallback 60s wait.
-- Session reuse with connection pooling (no new TCP per request).
-
-### 🧹 Improved
-- `delete_game.py` – now supports search by name/appid/link, shows matches, asks confirmation before delete.
-- `export_data.py` – reads JSONL format, cleaner output.
-- `generate_tables.py` – uses `<img>` tags for thumbnails (width=120), produces `games/README.md` index.
-- All bash scripts use `pip install --quiet` and `set -euo pipefail`.
-- Git commit messages include timestamps.
-
-### 📝 Logging
-- `scripts/dead_links.log` – append-only log of dead link check results.
-- `scripts/removed_games.jsonl` – structured log of all removed/rejected games with reason + timestamp.
+- Modular core: `constants.py`, `steam_client.py`, `data_store.py`, `fetcher.py`, `health_checker.py`.
+- Rate-limited HTTP client with backoff, retry, 429 handling, session pooling.
+- Health detection (5 statuses), purge, dead link check, pre-flight ingest validation.
+- New ingest flow: `temp_info.jsonl` → validate → dedup → health check → fetch → `data.jsonl`.
+- 9 CI/CD workflows. Metacritic, DRM, Peak Today, Status columns. Top Online leaderboard with trends.
 
 ---
 
 ## [v1.1.2] - 2026-01-11
 
-## Added
-- 40+ games.
+- 40+ games added.
 
 ## [v1.1.1] - 2026-01-07
 
-## Added
-- 50+ games. (by [@poli0981](https://github.com/poli0981))
-- Delete game script: Delete a game with correct input link. (by [@poli0981](https://github.com/poli0981))
-- Check dups script: Check game info duplication. (by [@poli0981](https://github.com/poli0981))
-- Export JSON file to CSV/XLSX. (by [@poli0981](https://github.com/poli0981))
-- Auto update CSV file use Actions. (by [@poli0981](https://github.com/poli0981))
-
-## Fixed
-- Delete 3 duplicates link game. (by [@poli0981](https://github.com/poli0981))
-
-## Improved
-- Use bash to help code workflow shorter. (by [@poli0981](https://github.com/poli0981))
-- Add `export-ignore` in `.gitattributes`. (by [@poli0981](https://github.com/poli0981))
-- Fix link to direct to `all-games_part[x].md`. (by [@poli0981](https://github.com/poli0981))
+- 50+ games, delete/dedup scripts, CSV export, auto CSV Actions. (by [@poli0981](https://github.com/poli0981))
 
 ## [v1.1.0] - 2025-12-30 (Scale Noob Edition)
 
-### Added
+- Split all-games.md into parts. Smart fetch skip. Wiki. Issue templates.
+- Batch + delay optimize for 500+ games. Various Action fixes.
 
-- Split all-games.md into parts when >200 games (part1, part2...) – mobile friendly, no more endless scroll hell.
-- Smarter fetch: Skip games with full info (reviews/players/developer/etc.) – faster daily update, less Steam throttle
-  risk.
-- Full Wiki (English, noob friendly) – Home, FAQ, Code Explanation, Test Branch troll, Future Plans (you guess?), etc.
-- More issue templates: Delete Games + Feedback/Rant – clean garbage + stress reliefrepo "like shit".
-- CONTRIBUTING.md updated – "so easy" with issue forms.
-
-### Improved
-
-- Tables robust more (safe fallback name/thumbnail, no KeyError crash Action).
-- Fetch batch + delay optimize – scale 500+ games ok, good, no timeout die.
-
-### Fixed
-
-- Various Action trolls (no commit clean, closed file, Unknown spam) – thanks Grok buddy fix 99%.
-
-Thanks contributors (if any :))) ) – this broke unemployed dev appreciates stars + coffee donate.
-
-Previous: [v1.0.0] – Initial stable, auto tables, templates, donate?.
+Previous: [v1.0.0] – Initial stable.
 
 Made with boredom, instant noodles, sale addiction, and AI power ✨
