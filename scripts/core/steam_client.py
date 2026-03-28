@@ -1,5 +1,5 @@
 """
-Rate-limited Steam HTTP client v2.1.
+Rate-limited Steam HTTP client v2.2.
 """
 import random
 import time

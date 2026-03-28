@@ -1,5 +1,5 @@
 """
-Data store v2.1 – JSONL I/O, validation, dedup, schema merge.
+Data store v2.2 – JSONL I/O, validation, dedup, schema merge.
 
 Optimizations:
   - _is_empty() simplified with early returns (no set lookup)
@@ -84,14 +84,11 @@ def save_jsonl(path: str, records: list[dict]):
 def load_main() -> list[dict]:
     return load_jsonl(DATA_JSONL)
 
-
 def save_main(records: list[dict]):
     save_jsonl(DATA_JSONL, records)
 
-
 def load_temp() -> list[dict]:
     return load_jsonl(TEMP_JSONL)
-
 
 def clear_temp():
     if os.path.isfile(TEMP_JSONL):
@@ -103,7 +100,6 @@ def clear_temp():
 # ──────────── Timestamps ────────────
 
 _UTC = timezone.utc
-
 
 def now_iso() -> str:
     return datetime.now(_UTC).strftime("%Y-%m-%dT%H:%M:%SZ")
@@ -126,7 +122,7 @@ _SKELETON_TEMPLATE = {
 
 
 def make_skeleton(link: str) -> dict:
-    """Create a full v2.1 game record. Shallow-copies lists to avoid aliasing."""
+    """Create a full v2.2 game record. Shallow-copies lists to avoid aliasing."""
     rec = {}
     for k, v in _SKELETON_TEMPLATE.items():
         rec[k] = list(v) if isinstance(v, list) else v
@@ -214,6 +210,7 @@ def merge_extension_data(game: dict, ext: dict) -> dict:
 
 
 def migrate_record(game: dict) -> dict:
+    """Migrate v2.0 record to v2.2. Idempotent."""
     # Add missing keys
     for key, default in _SKELETON_TEMPLATE.items():
         if key not in game:

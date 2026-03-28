@@ -1,5 +1,11 @@
 """
-Steam fetcher v2.1
+Steam fetcher v2.2.
+
+Optimizations vs v2.1:
+  - fetch_full() accepts pre-fetched API data (avoids double-fetch after health check)
+  - scraper imported at module level (not per-call)
+  - apply_details() uses is_empty() from data_store (no re-import)
+  - _process_batch() consolidated, no closure overhead
 """
 import random
 import time

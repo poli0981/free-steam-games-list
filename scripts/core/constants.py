@@ -1,5 +1,5 @@
 """
-Shared constants & configuration – v2.1.0
+Shared constants & configuration – v2.2
 """
 import os
 

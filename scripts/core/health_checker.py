@@ -1,31 +1,30 @@
 """
-Health checker v2.1 – game status detection.
+Health checker v2.2 – game status detection.
 """
 from dataclasses import dataclass
 from typing import Optional
 from .data_store import extract_appid
 from .steam_client import SteamClient, get_client
 
-OK = "ok"
+OK             = "ok"
 INVALID_FORMAT = "invalid_format"
-NOT_FOUND_404 = "not_found_404"
-NOT_FOUND_410 = "not_found_410"
-UNAVAILABLE = "unavailable"
-NOT_FREE = "not_free"
-NETWORK_ERROR = "network_error"
+NOT_FOUND_404  = "not_found_404"
+NOT_FOUND_410  = "not_found_410"
+UNAVAILABLE    = "unavailable"
+NOT_FREE       = "not_free"
+NETWORK_ERROR  = "network_error"
 
 REMOVABLE = frozenset({INVALID_FORMAT, NOT_FOUND_404, NOT_FOUND_410, UNAVAILABLE, NOT_FREE})
 
 REASON_LABELS = {
     INVALID_FORMAT: "Invalid link format",
-    NOT_FOUND_404: "Store page 404",
-    NOT_FOUND_410: "Store page 410 – removed",
-    UNAVAILABLE: "Delisted / unavailable",
-    NOT_FREE: "No longer free-to-play",
-    NETWORK_ERROR: "Network error (skipped)",
-    OK: "Healthy",
+    NOT_FOUND_404:  "Store page 404",
+    NOT_FOUND_410:  "Store page 410 – removed",
+    UNAVAILABLE:    "Delisted / unavailable",
+    NOT_FREE:       "No longer free-to-play",
+    NETWORK_ERROR:  "Network error (skipped)",
+    OK:             "Healthy",
 }
-
 
 @dataclass(slots=True)
 class HealthResult:
@@ -37,10 +36,8 @@ class HealthResult:
 
     @property
     def is_healthy(self): return self.status == OK
-
     @property
     def should_remove(self): return self.status in REMOVABLE
-
     @property
     def reason(self): return REASON_LABELS.get(self.status, self.status)
 

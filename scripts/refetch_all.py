@@ -4,7 +4,6 @@ Force re-fetch ALL games. MANUAL ONLY.
 Backup → migrate → clear fetchable → re-fetch → save.
 """
 import sys, os, shutil
-
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from core.constants import DATA_JSONL, STEAM_API_KEY
@@ -20,12 +19,12 @@ CLEARABLE = {
     "platforms", "languages", "language_details", "tags",
 }
 CONDITIONAL = {
-    "genre": ("", "N/A", "Uncategorized"),
-    "anti_cheat": ("-",),
+    "genre":           ("", "N/A", "Uncategorized"),
+    "anti_cheat":      ("-",),
     "anti_cheat_note": ("",),
-    "is_kernel_ac": (None,),
+    "is_kernel_ac":    (None,),
 }
-_LIST_FIELDS = {"developer", "publisher", "platforms", "languages", "language_details", "tags"}
+_LIST_FIELDS = {"developer","publisher","platforms","languages","language_details","tags"}
 
 
 def clear_fetchable(game):
@@ -76,7 +75,7 @@ def main():
 
     # Stats
     has = lambda k: sum(1 for g in games if g.get(k) and g[k] not in ("", "N/A", [], False))
-    print(f"\n{'═' * 50}")
+    print(f"\n{'═'*50}")
     print(f"✓ {total} games saved. Backup: {backup}")
     print(f"  name: {has('name')} | dev: {has('developer')} | pub: {has('publisher')}")
     print(f"  plat: {has('platforms')} | lang: {has('languages')} | tags: {has('tags')}")

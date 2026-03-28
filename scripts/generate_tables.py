@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate markdown tables v2.1."""
+"""Generate markdown tables v2.2."""
 import sys, os
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 

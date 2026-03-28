@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Ingest new games v2.1.
+Ingest new games v2.2.
 
 Key optimization: health_checker now returns cached API data in HealthResult.data,
 so fetch_full() can skip its own fetch_app_details() call → eliminates double-fetch.

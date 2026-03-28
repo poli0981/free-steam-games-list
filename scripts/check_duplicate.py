@@ -2,7 +2,7 @@
 import jsonlines
 
 # Path to JSONL file
-json_path = "scripts/data.jsonl"
+json_path = "data.jsonl"
 
 # Load JSONL data
 with jsonlines.open(json_path, 'r') as reader:

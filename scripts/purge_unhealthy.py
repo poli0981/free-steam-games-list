@@ -1,16 +1,11 @@
 #!/usr/bin/env python3
 """Purge unhealthy games."""
-import os
-import random
-import sys
-import time
-
+import sys, os, random, time
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from core.constants import REMOVED_JSONL, BATCH_SIZE, BATCH_PAUSE_MIN, BATCH_PAUSE_MAX
 from core.data_store import load_main, save_main, load_jsonl, save_jsonl, now_iso
 from core.steam_client import get_client
 from core.health_checker import check_game_health
-
 
 def main():
     games = load_main()

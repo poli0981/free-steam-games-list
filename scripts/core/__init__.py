@@ -1,1 +1,1 @@
-# scripts/core – Steam F2P Tracker v2.1
+# scripts/core – Steam F2P Tracker v2.2
