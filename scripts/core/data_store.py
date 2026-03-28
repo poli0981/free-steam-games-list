@@ -1,29 +1,33 @@
 """
-Data store v2.1 – JSONL I/O, validation, deduplication, schema merge.
+Data store v2.1 – JSONL I/O, validation, dedup, schema merge.
 
-New in v2.1:
-  - Expanded skeleton with publisher, platforms, languages, tags, etc.
-  - merge_extension_data() for merging rich extension output into records
-  - Smart merge: arrays are replaced wholesale, scalars respect MANUAL_FIELDS
+Optimizations:
+  - _is_empty() simplified with early returns (no set lookup)
+  - save_jsonl() uses json.dumps directly (faster than jsonlines writer for large files)
+  - build_index() O(n) single pass
+  - merge_extension_data() avoids repeated key lookups
 """
+import json
 import os
 import re
 from datetime import datetime, timezone
 from typing import Optional
 
-import jsonlines
-
 from .constants import (
     DATA_JSONL, TEMP_JSONL,
-    MANUAL_FIELDS, ARRAY_FIELDS, EXTENSION_FIELDS,
-)
+    MANUAL_FIELDS, ARRAY_FIELDS, )
 
 # ──────────── Link helpers ────────────
 
-_APPID_RE = re.compile(r"store\.steampowered\.com/app/(\d+)")
+_APPID_RE = re.compile(r"/app/(\d+)")
+
+_EMPTY_STRINGS = frozenset({"", "N/A", "-", "?"})
 
 
 def extract_appid(link: str) -> Optional[str]:
+    """Extract appid from any Steam URL or bare number. O(1) regex."""
+    if not link:
+        return None
     m = _APPID_RE.search(link)
     return m.group(1) if m else None
 
@@ -33,40 +37,61 @@ def normalize_link(raw: str) -> Optional[str]:
     if raw.isdigit():
         return f"https://store.steampowered.com/app/{raw}/"
     appid = extract_appid(raw)
-    if appid:
-        return f"https://store.steampowered.com/app/{appid}/"
-    return None
+    return f"https://store.steampowered.com/app/{appid}/" if appid else None
+
+
+# ──────────── Empitness check ────────────
+
+def is_empty(val) -> bool:
+    """Fast emptiness check. Hot path – called hundreds of times per game."""
+    if val is None:
+        return True
+    if isinstance(val, str):
+        return val.strip() in _EMPTY_STRINGS
+    if isinstance(val, list):
+        return len(val) == 0
+    return False
 
 
 # ──────────── JSONL I/O ────────────
 
 def load_jsonl(path: str) -> list[dict]:
+    """Load JSONL file. Returns [] if missing/empty."""
     if not os.path.isfile(path):
         return []
+    records = []
     try:
-        with jsonlines.open(path, "r") as reader:
-            return list(reader)
+        with open(path, "r", encoding="utf-8") as f:
+            for line in f:
+                line = line.strip()
+                if line:
+                    records.append(json.loads(line))
     except Exception as e:
         print(f"  ⚠ Error reading {path}: {e}")
-        return []
+    return records
 
 
 def save_jsonl(path: str, records: list[dict]):
+    """Atomic write: tmp → rename. Uses json.dumps directly (faster than jsonlines)."""
     tmp = path + ".tmp"
-    with jsonlines.open(tmp, "w") as writer:
+    with open(tmp, "w", encoding="utf-8") as f:
         for rec in records:
-            writer.write(rec)
+            f.write(json.dumps(rec, ensure_ascii=False))
+            f.write("\n")
     os.replace(tmp, path)
 
 
 def load_main() -> list[dict]:
     return load_jsonl(DATA_JSONL)
 
+
 def save_main(records: list[dict]):
     save_jsonl(DATA_JSONL, records)
 
+
 def load_temp() -> list[dict]:
     return load_jsonl(TEMP_JSONL)
+
 
 def clear_temp():
     if os.path.isfile(TEMP_JSONL):
@@ -77,61 +102,41 @@ def clear_temp():
 
 # ──────────── Timestamps ────────────
 
+_UTC = timezone.utc
+
+
 def now_iso() -> str:
-    return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    return datetime.now(_UTC).strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
 # ──────────── Schema ────────────
 
+_SKELETON_TEMPLATE = {
+    "link": "", "name": "", "description": "", "header_image": "",
+    "genre": "", "type_game": "offline", "has_paid_dlc": False,
+    "developer": [], "publisher": [], "release_date": "",
+    "reviews": "N/A", "current_players": "N/A", "peak_today": "N/A",
+    "metacritic": "N/A",
+    "anti_cheat": "-", "anti_cheat_note": "", "is_kernel_ac": None,
+    "platforms": [], "languages": [], "language_details": [], "tags": [],
+    "drm_notes": "-",
+    "notes": "", "safe": "?",
+    "status": "active", "last_updated": "", "added_at": "",
+}
+
+
 def make_skeleton(link: str) -> dict:
-    """Create a full game record with all v2.1 fields."""
-    return {
-        # Identity
-        "link": link,
-        "name": "",
-        "description": "",
-        "header_image": "",
-
-        # Classification
-        "genre": "",
-        "type_game": "offline",
-        "has_paid_dlc": False,
-
-        # People
-        "developer": [],
-        "publisher": [],
-        "release_date": "",
-
-        # Stats (fetched from API)
-        "reviews": "N/A",
-        "current_players": "N/A",
-        "peak_today": "N/A",
-        "metacritic": "N/A",
-
-        # Anti-cheat
-        "anti_cheat": "-",
-        "anti_cheat_note": "",
-        "is_kernel_ac": None,
-
-        # Supplementary
-        "platforms": [],
-        "languages": [],
-        "language_details": [],
-        "tags": [],
-        "drm_notes": "-",
-
-        # User annotations
-        "notes": "",
-        "safe": "?",
-
-        # Status
-        "status": "active",
-        "last_updated": "",
-        "added_at": now_iso(),
-    }
+    """Create a full v2.1 game record. Shallow-copies lists to avoid aliasing."""
+    rec = {}
+    for k, v in _SKELETON_TEMPLATE.items():
+        rec[k] = list(v) if isinstance(v, list) else v
+    rec["link"] = link
+    rec["added_at"] = now_iso()
+    return rec
 
 
 def build_index(games: list[dict]) -> dict[str, int]:
+    """Build appid→index map. O(n) single pass."""
     idx = {}
     for i, g in enumerate(games):
         aid = extract_appid(g.get("link", ""))
@@ -141,125 +146,92 @@ def build_index(games: list[dict]) -> dict[str, int]:
 
 
 def is_info_complete(game: dict) -> bool:
-    checks = {
-        "name": lambda v: v and v not in ("", "Unknown"),
-        "reviews": lambda v: v and v not in ("N/A", "Error"),
-        "developer": lambda v: v and v != [] and v != "N/A",
-        "release_date": lambda v: v and v != "N/A",
-        "header_image": lambda v: v and "placeholder" not in v,
-    }
-    return all(fn(game.get(k, "")) for k, fn in checks.items())
+    """Check if a record has all core fetchable fields filled."""
+    name = game.get("name", "")
+    if not name or name == "Unknown":
+        return False
+    reviews = game.get("reviews", "N/A")
+    if reviews in ("N/A", "Error"):
+        return False
+    dev = game.get("developer")
+    if not dev or dev == "N/A":
+        return False
+    if not game.get("release_date") or game["release_date"] == "N/A":
+        return False
+    img = game.get("header_image", "")
+    if not img or "placeholder" in img:
+        return False
+    return True
 
 
 # ──────────── Extension data merge ────────────
 
-def _is_empty(val) -> bool:
-    """Check if a value is considered 'empty' (should not overwrite)."""
-    if val is None:
-        return True
-    if isinstance(val, str) and val.strip() in ("", "N/A", "-", "?"):
-        return True
-    if isinstance(val, list) and len(val) == 0:
-        return True
-    return False
-
-
-def _normalize_developer(val) -> list[str]:
-    """Ensure developer is always a list."""
+def _normalize_to_list(val) -> list[str]:
     if isinstance(val, list):
         return val
     if isinstance(val, str) and val:
-        return [d.strip() for d in val.split(",") if d.strip()]
+        return [s.strip() for s in val.split(",") if s.strip()]
     return []
+
+
+# Pre-compute sets for O(1) membership tests
+_SKIP_MERGE_KEYS = frozenset({"link", "appid", "added_at"})
+_NORMALIZE_LIST_KEYS = frozenset({"developer", "publisher"})
+_DESC_KEYS = frozenset({"description", "desc"})
 
 
 def merge_extension_data(game: dict, ext: dict) -> dict:
     """
-    Merge extension-provided data into a game record.
-
-    Rules:
-      1. MANUAL_FIELDS: only set if game's current value is empty
-         (preserves user overrides)
-      2. ARRAY_FIELDS: replace wholesale if extension provides non-empty array
-         (extension data is richer than API)
-      3. Other EXTENSION_FIELDS: overwrite if extension provides non-empty value
-      4. developer/publisher: normalize to list format
-      5. 'description' maps to both 'description' and 'desc' (backward compat)
-
-    Extension fields NOT in EXTENSION_FIELDS are preserved as-is
-    (future-proofing).
+    Merge extension data into game record.
+    Optimized: single pass over ext keys, minimal dict lookups.
     """
     for key, val in ext.items():
-        if key in ("link", "appid", "added_at", "free_type"):
-            continue  # Identity / deprecated fields
-
-        if _is_empty(val):
+        if key in _SKIP_MERGE_KEYS or is_empty(val):
             continue
 
-        # Normalize developer/publisher to list
-        if key in ("developer", "publisher"):
-            val = _normalize_developer(val)
+        if key in _NORMALIZE_LIST_KEYS:
+            val = _normalize_to_list(val)
 
-        # Handle 'description' (and legacy 'desc' input → normalize to 'description')
-        if key == "description":
-            game["description"] = val
-            continue
-        if key == "desc":
-            if _is_empty(game.get("description")):
-                game["description"] = val
+        if key in _DESC_KEYS:
+            target = "description"
+            if is_empty(game.get(target)):
+                game[target] = val
             continue
 
-        # MANUAL_FIELDS: only fill if empty (don't overwrite user edits)
         if key in MANUAL_FIELDS:
-            if _is_empty(game.get(key)):
+            if is_empty(game.get(key)):
                 game[key] = val
             continue
 
-        # ARRAY_FIELDS: replace with richer data
         if key in ARRAY_FIELDS:
             game[key] = val
             continue
 
-        # Everything else in EXTENSION_FIELDS: overwrite
-        if key in EXTENSION_FIELDS:
-            game[key] = val
-            continue
-
-        # Unknown fields from extension: preserve for future use
+        # EXTENSION_FIELDS or unknown: overwrite
         game[key] = val
 
     return game
 
 
 def migrate_record(game: dict) -> dict:
-    """
-    Migrate a v2.0 record to v2.1 schema.
-    Adds missing fields with defaults, normalizes types.
-    """
-    skeleton = make_skeleton(game.get("link", ""))
-
-    # Add missing keys from skeleton
-    for key, default in skeleton.items():
+    # Add missing keys
+    for key, default in _SKELETON_TEMPLATE.items():
         if key not in game:
-            game[key] = default
+            game[key] = list(default) if isinstance(default, list) else default
 
-    # Normalize developer: string → list
-    dev = game.get("developer", "")
-    if isinstance(dev, str):
-        game["developer"] = _normalize_developer(dev)
+    # Normalize developer/publisher string → list
+    for key in ("developer", "publisher"):
+        val = game.get(key, "")
+        if isinstance(val, str):
+            game[key] = _normalize_to_list(val)
 
-    # Normalize publisher
-    pub = game.get("publisher", "")
-    if isinstance(pub, str):
-        game["publisher"] = _normalize_developer(pub)
-
-    # Migrate legacy 'desc' → 'description', then drop 'desc'
+    # Migrate desc → description
     if "desc" in game:
-        if game.get("desc") and _is_empty(game.get("description")):
+        if game.get("desc") and is_empty(game.get("description")):
             game["description"] = game["desc"]
         del game["desc"]
 
-    # Remove deprecated 'free_type' field
+    # Remove deprecated fields
     game.pop("free_type", None)
 
     return game

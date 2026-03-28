@@ -1,6 +1,5 @@
 """
-Rate-limited Steam HTTP client.
-Unchanged from v2.0 – already handles backoff, retry, 429, session pooling.
+Rate-limited Steam HTTP client v2.1.
 """
 import random
 import time
@@ -22,6 +21,8 @@ def _jitter(lo: float, hi: float) -> float:
 
 
 class SteamClient:
+    __slots__ = ("_session", "_last_store", "_last_api")
+
     def __init__(self):
         self._session = self._build_session()
         self._last_store = 0.0
@@ -31,13 +32,12 @@ class SteamClient:
     def _build_session() -> requests.Session:
         s = requests.Session()
         s.headers.update({
-            "User-Agent": "SteamF2PTracker/2.1 (GitHub Actions)",
+            "User-Agent": "SteamF2PTracker/2.2 (GitHub Actions)",
             "Accept-Language": "en",
-            "Accept": "application/json",
         })
         adapter = HTTPAdapter(
             max_retries=Retry(total=2, backoff_factor=0.5,
-                              status_forcelist=[], allowed_methods=["GET"]),
+                              status_forcelist=[], allowed_methods=["GET", "HEAD"]),
             pool_connections=10, pool_maxsize=10,
         )
         s.mount("https://", adapter)
@@ -64,42 +64,33 @@ class SteamClient:
         for attempt in range(1, MAX_RETRIES + 1):
             try:
                 resp = self._session.get(url, params=params, timeout=timeout)
-                if resp.status_code == 200:
+                code = resp.status_code
+                if code == 200:
                     return resp
-                if resp.status_code == 429:
+                if code == 429:
                     wait = int(resp.headers.get("Retry-After", RETRY_429_WAIT))
-                    print(f"  ⚠ 429 – waiting {wait}s (attempt {attempt})")
                     time.sleep(wait + _jitter(1, 5))
                     continue
-                if resp.status_code in (403, 401):
-                    print(f"  ✗ {resp.status_code} auth error for {url}")
+                if code in (403, 401):
                     return None
-                if resp.status_code in (404, 410):
-                    return resp
-                if resp.status_code >= 500:
-                    wait = RETRY_BACKOFF ** attempt + _jitter(0, 2)
-                    print(f"  ⚠ {resp.status_code} – retry in {wait:.1f}s")
-                    time.sleep(wait)
+                if code in (404, 410):
+                    return resp  # Caller handles
+                if code >= 500:
+                    time.sleep(RETRY_BACKOFF ** attempt + _jitter(0, 2))
                     continue
-                print(f"  ✗ Unexpected {resp.status_code} for {url}")
                 return None
             except requests.exceptions.Timeout:
                 time.sleep(RETRY_BACKOFF ** attempt)
-            except requests.exceptions.ConnectionError as e:
+            except requests.exceptions.ConnectionError:
                 time.sleep(RETRY_BACKOFF ** attempt + _jitter(0, 3))
-            except Exception as e:
-                print(f"  ✗ Unexpected error: {e}")
+            except Exception:
                 return None
-        print(f"  ✗ All {MAX_RETRIES} retries exhausted")
         return None
 
-    # ──────────── Public API ────────────
-
-    def fetch_app_details(self, appid: str) -> Optional[dict]:
-        status, data = self.fetch_app_details_full(appid)
-        return data if status == "ok" else None
+    # ──── Public API ────
 
     def fetch_app_details_full(self, appid: str) -> tuple[str, Optional[dict]]:
+        """Returns (status, data). Status: 'ok'|'unavailable'|'not_found'|'network_error'."""
         resp = self._get(
             "https://store.steampowered.com/api/appdetails",
             params={"appids": appid},
@@ -110,13 +101,16 @@ class SteamClient:
         if resp.status_code in (404, 410):
             return ("not_found", None)
         try:
-            body = resp.json()
-            entry = body.get(str(appid), {})
+            entry = resp.json().get(str(appid), {})
             if entry.get("success"):
                 return ("ok", entry["data"])
             return ("unavailable", None)
         except (ValueError, KeyError):
             return ("network_error", None)
+
+    def fetch_app_details(self, appid: str) -> Optional[dict]:
+        status, data = self.fetch_app_details_full(appid)
+        return data if status == "ok" else None
 
     def fetch_reviews(self, appid: str) -> Optional[dict]:
         resp = self._get(
@@ -128,11 +122,9 @@ class SteamClient:
             return None
         try:
             body = resp.json()
-            if body.get("success") == 1:
-                return body.get("query_summary")
+            return body.get("query_summary") if body.get("success") == 1 else None
         except (ValueError, KeyError):
-            pass
-        return None
+            return None
 
     def fetch_player_count(self, appid: str, api_key: str) -> Optional[int]:
         resp = self._get(
@@ -148,11 +140,7 @@ class SteamClient:
             return None
 
     def fetch_store_page(self, appid: str) -> Optional[str]:
-        """
-        GET the full store page HTML for an appid.
-        Used to scrape data not available via API: tags, language table, DLC prices.
-        Returns HTML string or None on failure.
-        """
+        """GET full store page HTML. Single request for tags + languages + DLC prices."""
         resp = self._get(
             f"https://store.steampowered.com/app/{appid}/",
             throttle_fn=self._throttle_store,
@@ -163,6 +151,7 @@ class SteamClient:
         return resp.text
 
     def check_store_page(self, appid: str) -> int:
+        """HEAD request only – lightweight dead link check."""
         self._throttle_store()
         try:
             resp = self._session.head(

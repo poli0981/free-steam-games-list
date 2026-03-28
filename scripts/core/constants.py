@@ -1,38 +1,32 @@
 """
-Shared constants & configuration for the Steam F2P tracker v2.1.
-
-Changelog v2.1:
-  - Expanded game schema: publisher, platforms, languages, language_details,
-    tags, description, has_paid_dlc, anti_cheat_note, is_kernel_ac
-  - Anti-cheat registry (mirrors extension detector.js ANTI_CHEAT_DB)
-  - New merge rules for array vs scalar fields
+Shared constants & configuration – v2.1.0
 """
 import os
 
 # ──────────── Paths ────────────
-DATA_JSONL       = "scripts/data.jsonl"
-TEMP_JSONL       = "scripts/temp_info.jsonl"
-DEAD_LINKS_LOG   = "scripts/dead_links.log"
-REMOVED_JSONL    = "scripts/removed_games.jsonl"
-GAMES_DIR        = "games"
+DATA_JSONL     = "scripts/data.jsonl"
+TEMP_JSONL     = "scripts/temp_info.jsonl"
+DEAD_LINKS_LOG = "scripts/dead_links.log"
+REMOVED_JSONL  = "scripts/removed_games.jsonl"
+GAMES_DIR      = "games"
 
 # ──────────── Steam API ────────────
-STEAM_API_KEY    = os.getenv("STEAM_API_KEY", "")
-IS_CI            = os.getenv("GITHUB_ACTIONS") == "true"
+STEAM_API_KEY  = os.getenv("STEAM_API_KEY", "")
+IS_CI          = os.getenv("GITHUB_ACTIONS") == "true"
 
 # ──────────── Rate limiting ────────────
-STORE_DELAY_MIN  = 1.2 if IS_CI else 1.5
-STORE_DELAY_MAX  = 2.0 if IS_CI else 3.0
-API_DELAY_MIN    = 0.3 if IS_CI else 0.5
-API_DELAY_MAX    = 0.8 if IS_CI else 1.2
+STORE_DELAY_MIN = 1.2 if IS_CI else 1.5
+STORE_DELAY_MAX = 2.0 if IS_CI else 3.0
+API_DELAY_MIN   = 0.3 if IS_CI else 0.5
+API_DELAY_MAX   = 0.8 if IS_CI else 1.2
 
-BATCH_SIZE       = 50
-BATCH_PAUSE_MIN  = 15
-BATCH_PAUSE_MAX  = 30
+BATCH_SIZE      = 50
+BATCH_PAUSE_MIN = 15
+BATCH_PAUSE_MAX = 30
 
-MAX_RETRIES      = 3
-RETRY_BACKOFF    = 2.0
-RETRY_429_WAIT   = 60
+MAX_RETRIES     = 3
+RETRY_BACKOFF   = 2.0
+RETRY_429_WAIT  = 60
 
 # ──────────── Genre tag filter ────────────
 SKIP_GENRE_TAGS = frozenset({
@@ -42,9 +36,7 @@ SKIP_GENRE_TAGS = frozenset({
     "Massively Multiplayer", "Competitive",
 })
 
-# ──────────── Anti-Cheat Registry ────────────
-# Mirrors extension ANTI_CHEAT_DB for consistency.
-# Used by fetcher to detect AC from Steam API categories.
+# ──────────── Anti-Cheat patterns ────────────
 ANTI_CHEAT_PATTERNS: dict[str, list[str]] = {
     "VAC":        ["valve anti-cheat", "valve anti cheat", "vac enabled"],
     "EAC":        ["easy anti-cheat", "easy anti cheat", "easyanticheat"],
@@ -62,20 +54,15 @@ ANTI_CHEAT_PATTERNS: dict[str, list[str]] = {
     "Hyperion":   ["hyperion", "byfron"],
 }
 
-# ──────────── Fields that extension can provide ────────────
-# These are NEVER overwritten by Steam API fetch if already set.
+# ──────────── Field classification ────────────
 MANUAL_FIELDS = frozenset({
     "anti_cheat", "anti_cheat_note", "is_kernel_ac",
     "notes", "type_game", "safe", "genre",
 })
-
-# Fields from extension that are arrays and should be preserved as-is
 ARRAY_FIELDS = frozenset({
     "platforms", "languages", "language_details", "tags",
     "developer", "publisher",
 })
-
-# All extension-provided fields (superset of MANUAL + ARRAY + auto)
 EXTENSION_FIELDS = frozenset({
     "name", "genre", "type_game", "has_paid_dlc",
     "developer", "publisher", "release_date", "description",
