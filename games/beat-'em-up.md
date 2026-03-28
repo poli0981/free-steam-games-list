@@ -1,6 +1,6 @@
 # Beat 'em up Games
 
-4 games · 2026-03-28 08:57 UTC
+4 games · 2026-03-28 09:07 UTC
 
 | # | Thumb | Game | Genre | Developer | Publisher | Released | Platforms | Languages | Reviews | Players | Anti-Cheat | Metacritic | Status | Description | Link | Notes |
 |---|-------|------|-------|-----------|-----------|----------|----------|-----------|---------|---------|------------|-----------|--------|-------------|------|-------|
