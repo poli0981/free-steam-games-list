@@ -1,18 +1,15 @@
-name : Ingest New Game Links
-on :
-  push : { paths : [ 'scripts/temp_info.jsonl' ] }
-  workflow_dispatch :
-permissions : { contents : write }
-jobs :
-  ingest :
-    runs-on : ubuntu-latest
-    steps :
-      -
-        uses : actions/checkout@v6
-        with : { token : '${{ secrets.GH_TOKEN }}' }
-      -
-        uses : actions/setup-python@v6
-        with : { python-version : '3.14' }
-      -
-        run : chmod +x ./bash/ingest.sh && ./bash/ingest.sh
-        env : { STEAM_API_KEY : '${{ secrets.STEAM_API_KEY }}' }
+name: Ingest New Game Links
+on:
+  push: {paths: ['scripts/temp_info.jsonl']}
+  workflow_dispatch:
+permissions: {contents: write}
+jobs:
+  ingest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: {token: '${{ secrets.GH_TOKEN }}'}
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - run: chmod +x ./bash/ingest.sh && ./bash/ingest.sh
+        env: {STEAM_API_KEY: '${{ secrets.STEAM_API_KEY }}'}

@@ -1,14 +1,17 @@
-name: Update Reviews
-on:
-  schedule: [{cron: '0 6 */2 * *'}]
-  workflow_dispatch:
-permissions: {contents: write}
-jobs:
-  reviews:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v6
-        with: {token: '${{ secrets.GH_TOKEN }}'}
-      - uses: actions/setup-python@v6
-        with: {python-version: '3.14'}
-      - run: chmod +x ./bash/reviews.sh && ./bash/reviews.sh
+name : Update Reviews
+on :
+  schedule : [ { cron : '0 6 */2 * *' } ]
+  workflow_dispatch :
+permissions : { contents : write }
+jobs :
+  reviews :
+    runs-on : ubuntu-latest
+    steps :
+      -
+        uses : actions/checkout@v6
+        with : { token : '${{ secrets.GH_TOKEN }}' }
+      -
+        uses : actions/setup-python@v6
+        with : { python-version : '3.14' }
+      -
+        run : chmod +x ./bash/reviews.sh && ./bash/reviews.sh

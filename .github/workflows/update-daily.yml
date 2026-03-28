@@ -8,8 +8,8 @@ jobs:
     if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v4
         with: {token: '${{ secrets.GH_TOKEN }}'}
-      - uses: actions/setup-python@v6
-        with: {python-version: '3.14'}
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
       - run: chmod +x ./bash/daily.sh && ./bash/daily.sh

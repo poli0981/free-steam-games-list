@@ -1,18 +1,15 @@
-name : Auto Update JSON Data
-on :
-  schedule : [ { cron : '0 0 * * *' } ]
-  workflow_dispatch :
-permissions : { contents : write }
-jobs :
-  update :
-    runs-on : ubuntu-latest
-    steps :
-      -
-        uses : actions/checkout@v6
-        with : { token : '${{ secrets.GH_TOKEN }}' }
-      -
-        uses : actions/setup-python@v6
-        with : { python-version : '3.14' }
-      -
-        run : chmod +x ./bash/json.sh && ./bash/json.sh
-        env : { STEAM_API_KEY : '${{ secrets.STEAM_API_KEY }}' }
+name: Auto Update JSON Data
+on:
+  schedule: [{cron: '0 0 * * *'}]
+  workflow_dispatch:
+permissions: {contents: write}
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with: {token: '${{ secrets.GH_TOKEN }}'}
+      - uses: actions/setup-python@v6
+        with: {python-version: '3.14'}
+      - run: chmod +x ./bash/json.sh && ./bash/json.sh
+        env: {STEAM_API_KEY: '${{ secrets.STEAM_API_KEY }}'}
