@@ -1,6 +1,6 @@
 # 🎮 Steam F2P Tracker
 
-**669 games** · 2026-03-28 08:47 UTC
+**672 games** · 2026-03-28 08:57 UTC
 
 ## 📋 Full List
 
@@ -29,7 +29,7 @@
 | Card Game | 31 | [card-game.md](card-game.md) |
 | Casual | 2 | [casual.md](casual.md) |
 | City Builder | 4 | [city-builder.md](city-builder.md) |
-| Clicker | 12 | [clicker.md](clicker.md) |
+| Clicker | 13 | [clicker.md](clicker.md) |
 | Cozy | 3 | [cozy.md](cozy.md) |
 | Crafting | 1 | [crafting.md](crafting.md) |
 | Dating Sim | 6 | [dating-sim.md](dating-sim.md) |
@@ -49,7 +49,7 @@
 | Hero Shooter | 2 | [hero-shooter.md](hero-shooter.md) |
 | Hidden Object | 29 | [hidden-object.md](hidden-object.md) |
 | Horror | 64 | [horror.md](horror.md) |
-| Idler | 9 | [idler.md](idler.md) |
+| Idler | 10 | [idler.md](idler.md) |
 | Indie | 2 | [indie.md](indie.md) |
 | Isometric | 1 | [isometric.md](isometric.md) |
 | Life Sim | 2 | [life-sim.md](life-sim.md) |
@@ -67,7 +67,7 @@
 | Racing | 7 | [racing.md](racing.md) |
 | Real-Time Strategy | 1 | [real-time-strategy.md](real-time-strategy.md) |
 | Rhythm | 7 | [rhythm.md](rhythm.md) |
-| Roguelike | 8 | [roguelike.md](roguelike.md) |
+| Roguelike | 9 | [roguelike.md](roguelike.md) |
 | Roguelite | 3 | [roguelite.md](roguelite.md) |
 | Rougelite | 2 | [rougelite.md](rougelite.md) |
 | Score Attack | 1 | [score-attack.md](score-attack.md) |
