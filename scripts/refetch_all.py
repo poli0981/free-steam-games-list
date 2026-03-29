@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Force re-fetch ALL games. MANUAL ONLY.
-Backup → migrate → clear fetchable → re-fetch → save.
+Backup → migrate → clear fetchable + ephemeral → re-fetch → cleanup → save.
 """
 import sys, os, shutil
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -24,10 +24,15 @@ CONDITIONAL = {
     "anti_cheat_note": ("",),
     "is_kernel_ac":    (None,),
 }
-_LIST_FIELDS = {"developer","publisher","platforms","languages","language_details","tags"}
+_LIST_FIELDS = {"developer", "publisher", "platforms", "languages", "language_details", "tags"}
+
+# Extension-only ephemeral fields that should never be in data.jsonl
+_EPHEMERAL = ("free_type", "is_free", "is_dlc", "is_demo",
+              "is_playtest", "price", "auto_notes", "desc")
 
 
 def clear_fetchable(game):
+    """Reset API-fetchable fields to empty. Preserves manual fields."""
     for f in CLEARABLE:
         if f in _LIST_FIELDS:
             game[f] = []
@@ -42,6 +47,16 @@ def clear_fetchable(game):
     game["current_players"] = "N/A"
     game["peak_today"] = "N/A"
     game["metacritic"] = "N/A"
+
+    # Remove ephemeral fields from old data
+    for k in _EPHEMERAL:
+        game.pop(k, None)
+
+
+def cleanup_record(game):
+    """Final cleanup before save – remove any ephemeral fields that leaked."""
+    for k in _EPHEMERAL:
+        game.pop(k, None)
 
 
 def main():
@@ -68,8 +83,10 @@ def main():
     client = get_client()
     process_batch(games, lambda g: fetch_full(g, client=client), "Re-fetching")
 
+    # Final cleanup + timestamp
     stamp = now_iso()
     for g in games:
+        cleanup_record(g)
         g["last_updated"] = stamp
     save_main(games)
 
