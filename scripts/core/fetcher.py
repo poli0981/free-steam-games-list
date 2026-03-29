@@ -177,15 +177,25 @@ def fetch_full(game: dict, client=None, fetch_players=True,
         if count is not None:
             apply_players(game, count)
 
-    # 4) HTML scrape (languages + tags + DLC) – single request
-    if scrape and (is_empty(game.get("languages")) or
-                   is_empty(game.get("tags")) or
-                   is_empty(game.get("language_details"))):
+    # 4) HTML scrape (languages + tags + DLC pricing) – single request
+    #    Always scrape if has_paid_dlc hasn't been set by extension,
+    #    or if any of languages/tags/language_details are missing.
+    needs_scrape = (
+        is_empty(game.get("languages")) or
+        is_empty(game.get("tags")) or
+        is_empty(game.get("language_details")) or
+        not game.get("_dlc_checked")  # internal flag: DLC not yet verified from HTML
+    )
+    if scrape and needs_scrape:
         html = c.fetch_store_page(appid)
         if html:
             apply_scraped(game, scrape_store_page(html))
+            game["_dlc_checked"] = True
 
     # Housekeeping
+    game.pop("_dlc_checked", None)  # internal flag, don't persist
+    if not game.get("type_game"):
+        game["type_game"] = "offline"
     if not game.get("notes", "").strip():
         game["notes"] = "Not reviewed yet"
     if not game.get("safe"):

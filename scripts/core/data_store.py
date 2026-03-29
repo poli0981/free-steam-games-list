@@ -15,7 +15,8 @@ from typing import Optional
 
 from .constants import (
     DATA_JSONL, TEMP_JSONL,
-    MANUAL_FIELDS, ARRAY_FIELDS, )
+    MANUAL_FIELDS, ARRAY_FIELDS, EXTENSION_FIELDS,
+)
 
 # ──────────── Link helpers ────────────
 
@@ -109,7 +110,7 @@ def now_iso() -> str:
 
 _SKELETON_TEMPLATE = {
     "link": "", "name": "", "description": "", "header_image": "",
-    "genre": "", "type_game": "offline", "has_paid_dlc": False,
+    "genre": "", "type_game": "", "has_paid_dlc": False,
     "developer": [], "publisher": [], "release_date": "",
     "reviews": "N/A", "current_players": "N/A", "peak_today": "N/A",
     "metacritic": "N/A",
@@ -171,7 +172,13 @@ def _normalize_to_list(val) -> list[str]:
 
 
 # Pre-compute sets for O(1) membership tests
-_SKIP_MERGE_KEYS = frozenset({"link", "appid", "added_at"})
+# Keys from extension that should NEVER be stored in data.jsonl
+_SKIP_MERGE_KEYS = frozenset({
+    "link", "appid", "added_at",
+    # Extension-only classification (not stored server-side)
+    "free_type", "is_free", "is_dlc", "is_demo", "is_playtest",
+    "price", "auto_notes",
+})
 _NORMALIZE_LIST_KEYS = frozenset({"developer", "publisher"})
 _DESC_KEYS = frozenset({"description", "desc"})
 
@@ -206,6 +213,9 @@ def merge_extension_data(game: dict, ext: dict) -> dict:
         # EXTENSION_FIELDS or unknown: overwrite
         game[key] = val
 
+    # Strip any ephemeral fields that may have leaked through
+    for k in ("free_type", "is_free", "is_dlc", "is_demo", "is_playtest", "price", "auto_notes"):
+        game.pop(k, None)
     return game
 
 
@@ -228,7 +238,9 @@ def migrate_record(game: dict) -> dict:
             game["description"] = game["desc"]
         del game["desc"]
 
-    # Remove deprecated fields
-    game.pop("free_type", None)
+    # Remove deprecated/ephemeral fields
+    for k in ("free_type", "is_free", "is_dlc", "is_demo",
+              "is_playtest", "price", "auto_notes"):
+        game.pop(k, None)
 
     return game

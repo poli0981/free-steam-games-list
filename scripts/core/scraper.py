@@ -18,12 +18,15 @@ _RE_HAS_CHECK = re.compile(r'<span[^>]*>[^<]*</span>')
 _RE_STRIP_HTML = re.compile(r'<[^>]+>')
 _RE_UNSUPPORTED = re.compile(r'class\s*=\s*"[^"]*unsupported[^"]*"', re.IGNORECASE)
 
-_RE_DLC_SECTION = re.compile(
-    r'(?:id\s*=\s*"gameAreaDLCSection"|class\s*=\s*"game_area_dlc_section")'
-    r'(.*?)(?=<div\s+(?:class|id)\s*=\s*"(?!game_area_dlc)|$)',
-    re.DOTALL | re.IGNORECASE,
+_RE_DLC_SECTION_START = re.compile(
+    r'(?:id\s*=\s*"gameAreaDLCSection"|class\s*=\s*"game_area_dlc_section")',
+    re.IGNORECASE,
 )
 _RE_DLC_PRICE_ATTR = re.compile(r'data-price-final\s*=\s*"(\d+)"')
+_RE_DLC_ROW = re.compile(
+    r'class\s*=\s*"game_area_dlc_row[^"]*"[^>]*>.*?</a>',
+    re.DOTALL | re.IGNORECASE,
+)
 _RE_DLC_PRICE_TEXT = re.compile(
     r'class\s*=\s*"game_area_dlc_price"[^>]*>(.*?)</div>',
     re.DOTALL | re.IGNORECASE,
@@ -106,25 +109,39 @@ def parse_language_table(html: str) -> dict:
 # ──── DLC pricing ────
 
 def parse_has_paid_dlc(html: str) -> bool:
-    """Check if any DLC has a non-zero price via data-price-final or text."""
-    m = _RE_DLC_SECTION.search(html)
-    if not m:
+    """
+    Check if the game has PAID DLC by looking at DLC rows on the page.
+
+    Strategy:
+      1. Verify DLC section exists (don't false-positive on non-DLC pages)
+      2. Find all game_area_dlc_row elements
+      3. Check data-price-final attributes in each row (most reliable)
+      4. Fallback: check price text in game_area_dlc_price divs
+
+    Returns False if no DLC section, or all DLC are free.
+    """
+    # Must have a DLC section
+    if not _RE_DLC_SECTION_START.search(html):
         return False
 
-    dlc_html = m.group(1)
+    # Method 1: Check data-price-final in DLC rows
+    for row_match in _RE_DLC_ROW.finditer(html):
+        row_html = row_match.group(0)
+        for price_match in _RE_DLC_PRICE_ATTR.finditer(row_html):
+            if int(price_match.group(1)) > 0:
+                return True
 
-    # Fast path: check data-price-final attributes
-    for price_match in _RE_DLC_PRICE_ATTR.finditer(dlc_html):
-        if int(price_match.group(1)) > 0:
-            return True
-
-    # Fallback: check price text
-    for text_match in _RE_DLC_PRICE_TEXT.finditer(dlc_html):
-        text = _RE_STRIP_HTML.sub('', text_match.group(1)).strip().lower()
-        if text in ("", "free", "n/a", "free to play"):
-            continue
-        if _RE_HAS_DIGIT.search(text):
-            return True
+    # Method 2: Check price text in any DLC price div on the page
+    # (only search after the DLC section marker)
+    dlc_start = _RE_DLC_SECTION_START.search(html)
+    if dlc_start:
+        dlc_area = html[dlc_start.start():]
+        for text_match in _RE_DLC_PRICE_TEXT.finditer(dlc_area):
+            text = _RE_STRIP_HTML.sub('', text_match.group(1)).strip().lower()
+            if text in ("", "free", "n/a", "free to play"):
+                continue
+            if _RE_HAS_DIGIT.search(text):
+                return True
 
     return False
 
