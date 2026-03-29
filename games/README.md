@@ -1,6 +1,6 @@
 # 🎮 Steam F2P Tracker
 
-**772 games** · 2026-03-29 01:21 UTC
+**773 games** · 2026-03-29 01:54 UTC
 
 ## 📋 Full List
 
@@ -20,7 +20,7 @@
 | Action-Adventure | 1 | [action-adventure.md](action-adventure.md) |
 | Adventure | 28 | [adventure.md](adventure.md) |
 | Arcade | 11 | [arcade.md](arcade.md) |
-| Arena Shooter | 5 | [arena-shooter.md](arena-shooter.md) |
+| Arena Shooter | 6 | [arena-shooter.md](arena-shooter.md) |
 | Auto Battler | 1 | [auto-battler.md](auto-battler.md) |
 | Battle Royale | 14 | [battle-royale.md](battle-royale.md) |
 | Beat 'em up | 4 | [beat-'em-up.md](beat-'em-up.md) |
