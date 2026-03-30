@@ -1,6 +1,6 @@
 # Hidden Object Games
 
-29 games · 2026-03-29 05:19 UTC
+29 games · 2026-03-30 00:25 UTC
 
 | # | Thumb | Game | Genre | Developer | Publisher | Released | Platforms | Languages | Reviews | Players | Anti-Cheat | Metacritic | Status | Description | Link | Notes |
 |---|-------|------|-------|-----------|-----------|----------|----------|-----------|---------|---------|------------|-----------|--------|-------------|------|-------|
