@@ -1,6 +1,6 @@
 # Roguelite Games
 
-3 games · 2026-04-01 00:27 UTC
+3 games · 2026-04-02 00:23 UTC
 
 | # | Thumb | Game | Genre | Developer | Publisher | Released | Platforms | Languages | Reviews | Players | Anti-Cheat | Metacritic | Status | Description | Link | Notes |
 |---|-------|------|-------|-----------|-----------|----------|----------|-----------|---------|---------|------------|-----------|--------|-------------|------|-------|
