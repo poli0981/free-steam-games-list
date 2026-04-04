@@ -1,6 +1,6 @@
 # Exploration Games
 
-6 games · 2026-04-03 00:24 UTC
+6 games · 2026-04-04 00:23 UTC
 
 | # | Thumb | Game | Genre | Developer | Publisher | Released | Platforms | Languages | Reviews | Players | Anti-Cheat | Metacritic | Status | Description | Link | Notes |
 |---|-------|------|-------|-----------|-----------|----------|----------|-----------|---------|---------|------------|-----------|--------|-------------|------|-------|
