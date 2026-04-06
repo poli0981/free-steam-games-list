@@ -1,6 +1,6 @@
 # Action Games
 
-19 games · 2026-04-06 00:25 UTC
+19 games · 2026-04-06 06:07 UTC
 
 | # | Thumb | Game | Genre | Developer | Publisher | Released | Platforms | Languages | Reviews | Players | Anti-Cheat | Metacritic | Status | Description | Link | Notes |
 |---|-------|------|-------|-----------|-----------|----------|----------|-----------|---------|---------|------------|-----------|--------|-------------|------|-------|

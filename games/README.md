@@ -1,6 +1,6 @@
 # 🎮 Steam F2P Tracker
 
-**773 games** · 2026-04-06 00:25 UTC
+**772 games** · 2026-04-06 06:07 UTC
 
 ## 📋 Full List
 
@@ -84,7 +84,7 @@
 | Souls-like | 2 | [souls-like.md](souls-like.md) |
 | Sports | 15 | [sports.md](sports.md) |
 | Stealth | 3 | [stealth.md](stealth.md) |
-| Strategy | 27 | [strategy.md](strategy.md) |
+| Strategy | 26 | [strategy.md](strategy.md) |
 | Surreal | 1 | [surreal.md](surreal.md) |
 | Survival | 4 | [survival.md](survival.md) |
 | Third-Person Shooter | 2 | [third-person-shooter.md](third-person-shooter.md) |
