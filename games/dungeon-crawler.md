@@ -1,6 +1,6 @@
 # Dungeon Crawler Games
 
-3 games · 2026-04-07 00:25 UTC
+3 games · 2026-04-08 00:26 UTC
 
 | # | Thumb | Game | Genre | Developer | Publisher | Released | Platforms | Languages | Reviews | Players | Anti-Cheat | Metacritic | Status | Description | Link | Notes |
 |---|-------|------|-------|-----------|-----------|----------|----------|-----------|---------|---------|------------|-----------|--------|-------------|------|-------|

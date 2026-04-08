@@ -1,6 +1,6 @@
 # Racing Games
 
-8 games · 2026-04-07 00:25 UTC
+8 games · 2026-04-08 00:26 UTC
 
 | # | Thumb | Game | Genre | Developer | Publisher | Released | Platforms | Languages | Reviews | Players | Anti-Cheat | Metacritic | Status | Description | Link | Notes |
 |---|-------|------|-------|-----------|-----------|----------|----------|-----------|---------|---------|------------|-----------|--------|-------------|------|-------|
@@ -11,4 +11,4 @@
 | 5 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2225070/7f7b095f71d8e3b54612927c0bb4b9f0713eac21/header.jpg?t=1769529679' width='120'> | Trackmania | Racing | Nadeo | Ubisoft | Feb 2, 2023 | Windows | 15 langs | 78% (Mostly Positive) | 1,104 |  | N/A | ✅ | Trackmania – the unique racing game that combines precision and creativity. | [Steam](https://store.steampowered.com/app/2225070/) | Not reviewed yet |
 | 6 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4107970/afd90bf462b5eb790a1080ab6a612bbabf2f6318/header.jpg?t=1766761456' width='120'> | Once Upon a Shell | Racing | Razzledazzle Studio | DADIU | Dec 26, 2025 | Windows, macOS | English | 77% (Mostly Positive) | 0 |  | N/A | ✅ | Once Upon a Shell is a roguelike racing game of ridiculous speed and wild upgrades. | [Steam](https://store.steampowered.com/app/4107970/) | Not reviewed yet |
 | 7 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3273690/header.jpg?t=1766407161' width='120'> | Hypercar Evolution 2025 | Racing | Petr Šimůnek | Petr Šimůnek | Dec 22, 2025 | Windows | 21 langs | 63% (Mixed) | 0 |  | N/A | ✅ | The first-ever true MMO hypercar racing game is here! Play with up to 39 friends!. | [Steam](https://store.steampowered.com/app/3273690/) | Not reviewed yet |
-| 8 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3273680/header.jpg?t=1767022451' width='120'> | Supercar Evolution 2025 | Racing | Petr Šimůnek | Petr Šimůnek | Dec 29, 2025 | Windows | 21 langs | 59% (Mixed) | 1 |  | N/A | ✅ | The first-ever true MMO supercar racing game is here! Play with up to 39 friends!. | [Steam](https://store.steampowered.com/app/3273680/) | Not reviewed yet |
+| 8 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3273680/header.jpg?t=1767022451' width='120'> | Supercar Evolution 2025 | Racing | Petr Šimůnek | Petr Šimůnek | Dec 29, 2025 | Windows | 21 langs | 57% (Mixed) | 1 |  | N/A | ✅ | The first-ever true MMO supercar racing game is here! Play with up to 39 friends!. | [Steam](https://store.steampowered.com/app/3273680/) | Not reviewed yet |
