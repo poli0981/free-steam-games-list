@@ -1,6 +1,6 @@
 # Hidden Object Games
 
-29 games · 2026-04-09 00:21 UTC
+29 games · 2026-04-10 00:25 UTC
 
 | # | Thumb | Game | Genre | Developer | Publisher | Released | Platforms | Languages | Reviews | Players | Anti-Cheat | Metacritic | Status | Description | Link | Notes |
 |---|-------|------|-------|-----------|-----------|----------|----------|-----------|---------|---------|------------|-----------|--------|-------------|------|-------|
@@ -32,4 +32,4 @@
 | 26 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2845250/header.jpg?t=1744908087' width='120'> | 100 Istanbul Cats | Hidden Object | 100 Cozy Games, Cats | 100 Cozy Games | May 17, 2024 | Windows | 103 langs | 84% (Very Positive) | 1 |  | N/A | ✅ | 🐾 Join the cutest adventure in the Istanbul 🕌, Türkiye full of cats! Explore the charming hand-drawn artwork of Istanbul... | [Steam](https://store.steampowered.com/app/2845250/) | Not reviewed yet |
 | 27 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1238280/header.jpg?t=1726051403' width='120'> | 100 Doors Game - Escape from School | Hidden Object | Peaksel | Peaksel | Mar 20, 2020 | Windows, macOS | 19 langs | 74% (Mostly Positive) | 4 |  | N/A | ✅ | A girl named Mia is locked inside a school. | [Steam](https://store.steampowered.com/app/1238280/) | Not reviewed yet |
 | 28 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2854290/header.jpg?t=1744908093' width='120'> | 100 Space Cats | Hidden Object | 100 Cozy Games, Cats | 100 Cozy Games | Jun 16, 2024 | Windows | 30 langs | 70% (Mixed) | 5 |  | N/A | ✅ | 👨‍🚀🌌Join the cutest space adventure with Cats in Space! 🪐🚀 Explore charming hand-drawn space locations and adorable cosm... | [Steam](https://store.steampowered.com/app/2854290/) | Not reviewed yet |
-| 29 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2701240/header.jpg?t=1718632865' width='120'> | 100 Hidden Cats in America | Hidden Object | ms | ms | Dec 18, 2023 | Windows | English | 33% (Mostly Negative) | 0 |  | N/A | ✅ | Can you find all 100 Hidden Cats in America?. | [Steam](https://store.steampowered.com/app/2701240/) | Not reviewed yet |
+| 29 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2701240/header.jpg?t=1718632865' width='120'> | 100 Hidden Cats in America | Hidden Object | ms | ms | Dec 18, 2023 | Windows | English | 34% (Mostly Negative) | 0 |  | N/A | ✅ | Can you find all 100 Hidden Cats in America?. | [Steam](https://store.steampowered.com/app/2701240/) | Not reviewed yet |
