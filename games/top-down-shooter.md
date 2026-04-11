@@ -1,10 +1,10 @@
 # Top-down Shooter Games
 
-11 games · 2026-04-10 00:25 UTC
+11 games · 2026-04-11 00:24 UTC
 
 | # | Thumb | Game | Genre | Developer | Publisher | Released | Platforms | Languages | Reviews | Players | Anti-Cheat | Metacritic | Status | Description | Link | Notes |
 |---|-------|------|-------|-----------|-----------|----------|----------|-----------|---------|---------|------------|-----------|--------|-------------|------|-------|
-| 1 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/630/header.jpg?t=1763407010' width='120'> | Alien Swarm | Top-down Shooter | Valve | Valve | Jul 19, 2010 | Windows | English | 95% (Very Positive) | 18 |  | 77 | ✅ | Co-operative multiplayer game and complete code base available for free. | [Steam](https://store.steampowered.com/app/630/) | Not reviewed yet |
+| 1 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/630/header.jpg?t=1763407010' width='120'> | Alien Swarm | Top-down Shooter | Valve | Valve | Jul 19, 2010 | Windows | English | 95% (Very Positive) | 4 |  | 77 | ✅ | Co-operative multiplayer game and complete code base available for free. | [Steam](https://store.steampowered.com/app/630/) | Not reviewed yet |
 | 2 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2061630/header.jpg?t=1690283530' width='120'> | (square) | Top-down Shooter | Brennan Curtis Cottrell | Brennan Curtis Cottrell | Aug 8, 2022 | Windows | English | 92% (Positive) | 0 |  | N/A | ✅ | Launch. | [Steam](https://store.steampowered.com/app/2061630/) | Not reviewed yet |
 | 3 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2426500/header.jpg?t=1685629402' width='120'> | 2 Minutes 16 Seconds (2分16秒) | Top-down Shooter | Tiansu Game Design | Tiansu Game Design | Jun 1, 2023 | Windows | English, Simplified Chinese | 88% (Positive) | 0 |  | N/A | ✅ | This is a 2D Pixel Top-Down Space Shooter Game. | [Steam](https://store.steampowered.com/app/2426500/) | Not reviewed yet |
 | 4 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4371620/89b9dbd1af02d403788eee5f8e6a9dd10977c930/header.jpg?t=1772234271' width='120'> | EXODUS | Top-down Shooter | Common Mistakes | DigiPen Institute of Technology | Feb 27, 2026 | Windows | English | 83% (6 user reviews) | 0 |  | N/A | ✅ | Defend Earth from the waves of alien invaders in this action-packed top-down shooter!. | [Steam](https://store.steampowered.com/app/4371620/) | English language only |
