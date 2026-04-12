@@ -1,6 +1,6 @@
 # Souls-like Games
 
-2 games · 2026-04-11 00:24 UTC
+2 games · 2026-04-12 00:27 UTC
 
 | # | Thumb | Game | Genre | Developer | Publisher | Released | Platforms | Languages | Reviews | Players | Anti-Cheat | Metacritic | Status | Description | Link | Notes |
 |---|-------|------|-------|-----------|-----------|----------|----------|-----------|---------|---------|------------|-----------|--------|-------------|------|-------|
