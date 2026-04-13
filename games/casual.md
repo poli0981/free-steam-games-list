@@ -1,9 +1,9 @@
 # Casual Games
 
-3 games · 2026-04-12 00:27 UTC
+3 games · 2026-04-13 00:27 UTC
 
 | # | Thumb | Game | Genre | Developer | Publisher | Released | Platforms | Languages | Reviews | Players | Anti-Cheat | Metacritic | Status | Description | Link | Notes |
 |---|-------|------|-------|-----------|-----------|----------|----------|-----------|---------|---------|------------|-----------|--------|-------------|------|-------|
 | 1 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4372100/f9ad2fccc65d735a9ff302b17cffc1b625cab965/header.jpg?t=1771776834' width='120'> | 魔法桌宠 - MagicPet | Casual | 你为啥直接commit到我的main分支啊 | 强制合并 | Feb 22, 2026 | Windows | 13 langs | 100% (4 user reviews) | 0 |  | N/A | ✅ | Magic Desktop Pet is a free, open-source, and lightweight desktop companion that blends productivity with charm. | [Steam](https://store.steampowered.com/app/4372100/) | Not reviewed yet |
 | 2 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4038250/33943f1ec73200c59b29e6082671df12fa9e2d4e/header.jpg?t=1774014866' width='120'> | Run Shiba Run! | Casual | Table for Twenty | Table for Twenty | Mar 20, 2026 | Windows, macOS, Linux | 13 langs | 95% (Positive) | 0 |  | N/A | ✅ | Goma the dog has escaped from their owner’s leash and is running around the park without restraint to eat as many biscui... | [Steam](https://store.steampowered.com/app/4038250/) | Not reviewed yet |
-| 3 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4335440/8dca3ee43268b318d8b9bd649704ab065e03629c/header.jpg?t=1774297290' width='120'> | Focus Knight: Productivity RPG | Casual | Trailwinds Studios | Trailwinds Studios | Mar 23, 2026 | Windows | 6 langs | 74% (Mostly Positive) | 4 |  | N/A | ✅ | Focus Knight is a relaxing focus and productivity RPG. | [Steam](https://store.steampowered.com/app/4335440/) | Not reviewed yet |
+| 3 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4335440/8dca3ee43268b318d8b9bd649704ab065e03629c/header.jpg?t=1774297290' width='120'> | Focus Knight: Productivity RPG | Casual | Trailwinds Studios | Trailwinds Studios | Mar 23, 2026 | Windows | 6 langs | 74% (Mostly Positive) | 2 |  | N/A | ✅ | Focus Knight is a relaxing focus and productivity RPG. | [Steam](https://store.steampowered.com/app/4335440/) | Not reviewed yet |
