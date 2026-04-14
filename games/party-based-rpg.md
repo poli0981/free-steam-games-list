@@ -1,6 +1,6 @@
 # Party-Based RPG Games
 
-2 games · 2026-04-13 06:17 UTC
+2 games · 2026-04-14 00:30 UTC
 
 | # | Thumb | Game | Genre | Developer | Publisher | Released | Platforms | Languages | Reviews | Players | Anti-Cheat | Metacritic | Status | Description | Link | Notes |
 |---|-------|------|-------|-----------|-----------|----------|----------|-----------|---------|---------|------------|-----------|--------|-------------|------|-------|
