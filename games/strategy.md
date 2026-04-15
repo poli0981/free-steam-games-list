@@ -1,6 +1,6 @@
 # Strategy Games
 
-26 games · 2026-04-14 00:30 UTC
+26 games · 2026-04-15 00:30 UTC
 
 | # | Thumb | Game | Genre | Developer | Publisher | Released | Platforms | Languages | Reviews | Players | Anti-Cheat | Metacritic | Status | Description | Link | Notes |
 |---|-------|------|-------|-----------|-----------|----------|----------|-----------|---------|---------|------------|-----------|--------|-------------|------|-------|
