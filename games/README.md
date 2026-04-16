@@ -1,6 +1,6 @@
 # 🎮 Steam F2P Tracker
 
-**772 games** · 2026-04-16 00:31 UTC
+**774 games** · 2026-04-16 12:50 UTC
 
 ## 📋 Full List
 
@@ -18,7 +18,7 @@
 | Action RPG | 6 | [action-rpg.md](action-rpg.md) |
 | Action RPG, Gacha | 2 | [action-rpg-gacha.md](action-rpg-gacha.md) |
 | Action-Adventure | 1 | [action-adventure.md](action-adventure.md) |
-| Adventure | 28 | [adventure.md](adventure.md) |
+| Adventure | 29 | [adventure.md](adventure.md) |
 | Arcade | 11 | [arcade.md](arcade.md) |
 | Arena Shooter | 6 | [arena-shooter.md](arena-shooter.md) |
 | Auto Battler | 1 | [auto-battler.md](auto-battler.md) |
@@ -84,7 +84,7 @@
 | Souls-like | 2 | [souls-like.md](souls-like.md) |
 | Sports | 15 | [sports.md](sports.md) |
 | Stealth | 3 | [stealth.md](stealth.md) |
-| Strategy | 26 | [strategy.md](strategy.md) |
+| Strategy | 27 | [strategy.md](strategy.md) |
 | Surreal | 1 | [surreal.md](surreal.md) |
 | Survival | 4 | [survival.md](survival.md) |
 | Third-Person Shooter | 2 | [third-person-shooter.md](third-person-shooter.md) |
