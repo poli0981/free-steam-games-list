@@ -1,6 +1,6 @@
 # Turn-based RPG Games
 
-5 games · 2026-04-15 00:30 UTC
+5 games · 2026-04-16 00:31 UTC
 
 | # | Thumb | Game | Genre | Developer | Publisher | Released | Platforms | Languages | Reviews | Players | Anti-Cheat | Metacritic | Status | Description | Link | Notes |
 |---|-------|------|-------|-----------|-----------|----------|----------|-----------|---------|---------|------------|-----------|--------|-------------|------|-------|
