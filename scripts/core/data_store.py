@@ -128,9 +128,30 @@ def save_main(records: list[dict]):
         new_paths.add(os.path.normpath(path))
         save_jsonl(path, chunk)
 
+    _save_index(chunks)
+
     for old in _shard_paths():
         if os.path.normpath(old) not in new_paths:
             os.remove(old)
+
+
+def _save_index(chunks: list[list[dict]]):
+    """Write data/index.json with shard metadata."""
+    index = {
+        "max_per_file": MAX_RECORDS_PER_FILE,
+        "total": sum(len(c) for c in chunks),
+        "last_updated": now_iso(),
+        "files": [
+            {"name": f"{SHARD_PREFIX}{i:03d}.jsonl", "count": len(c)}
+            for i, c in enumerate(chunks, start=1)
+        ],
+    }
+    path = os.path.join(DATA_DIR, "index.json")
+    tmp = path + ".tmp"
+    with open(tmp, "w", encoding="utf-8") as f:
+        json.dump(index, f, indent=2, ensure_ascii=False)
+        f.write("\n")
+    os.replace(tmp, path)
 
 def load_temp() -> list[dict]:
     return load_jsonl(TEMP_JSONL)
