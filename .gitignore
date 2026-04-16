@@ -172,5 +172,7 @@ temp_data/
 debug_info/
 countdata.py
 checkduplicates.py
+data.bak/
+*.pre_shard
 
 # End of .gitignore file

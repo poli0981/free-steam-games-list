@@ -1,6 +1,6 @@
 #!/bin/bash
 set -euo pipefail
-pip install --quiet requests jsonlines
+pip install --quiet requests
 python scripts/purge_unhealthy.py
 python scripts/generate_tables.py
 git config --global user.name 'github-actions[bot]'
