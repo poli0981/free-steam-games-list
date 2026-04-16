@@ -6,7 +6,7 @@ Backup → migrate → clear fetchable + ephemeral → re-fetch → cleanup → 
 import sys, os, shutil
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from core.constants import DATA_JSONL, STEAM_API_KEY
+from core.constants import DATA_DIR, STEAM_API_KEY
 from core.data_store import load_main, save_main, migrate_record, now_iso
 from core.fetcher import fetch_full, process_batch
 from core.steam_client import get_client
@@ -67,9 +67,11 @@ def main():
     total = len(games)
     print(f"Force re-fetch: {total} games\n")
 
-    backup = DATA_JSONL + ".bak"
-    shutil.copy2(DATA_JSONL, backup)
-    print(f"✓ Backup → {backup}")
+    backup_dir = DATA_DIR + ".bak"
+    if os.path.isdir(backup_dir):
+        shutil.rmtree(backup_dir)
+    shutil.copytree(DATA_DIR, backup_dir)
+    print(f"Backup -> {backup_dir}")
 
     # Migrate + clear
     for g in games:
@@ -93,7 +95,7 @@ def main():
     # Stats
     has = lambda k: sum(1 for g in games if g.get(k) and g[k] not in ("", "N/A", [], False))
     print(f"\n{'═'*50}")
-    print(f"✓ {total} games saved. Backup: {backup}")
+    print(f"Done {total} games. Backup: {backup_dir}")
     print(f"  name: {has('name')} | dev: {has('developer')} | pub: {has('publisher')}")
     print(f"  plat: {has('platforms')} | lang: {has('languages')} | tags: {has('tags')}")
 

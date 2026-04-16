@@ -7,6 +7,7 @@ Optimizations:
   - build_index() O(n) single pass
   - merge_extension_data() avoids repeated key lookups
 """
+import glob as _glob
 import json
 import os
 import re
@@ -14,7 +15,8 @@ from datetime import datetime, timezone
 from typing import Optional
 
 from .constants import (
-    DATA_JSONL, TEMP_JSONL,
+    DATA_DIR, LEGACY_JSONL, TEMP_JSONL,
+    MAX_RECORDS_PER_FILE, SHARD_PREFIX,
     MANUAL_FIELDS, ARRAY_FIELDS, EXTENSION_FIELDS,
 )
 
@@ -82,11 +84,53 @@ def save_jsonl(path: str, records: list[dict]):
     os.replace(tmp, path)
 
 
+# ──────────── Shard helpers ────────────
+
+def _shard_paths() -> list[str]:
+    """Return sorted list of existing shard files in DATA_DIR."""
+    return sorted(_glob.glob(os.path.join(DATA_DIR, f"{SHARD_PREFIX}*.jsonl")))
+
+
+def _shard_name(index: int) -> str:
+    """Generate shard filename: data_001.jsonl, data_002.jsonl, ..."""
+    return os.path.join(DATA_DIR, f"{SHARD_PREFIX}{index:03d}.jsonl")
+
+
+# ──────────── Main data I/O (sharded) ────────────
+
 def load_main() -> list[dict]:
-    return load_jsonl(DATA_JSONL)
+    """Load all records from sharded data/ directory. Falls back to legacy file."""
+    shards = _shard_paths()
+    if shards:
+        records = []
+        for path in shards:
+            records.extend(load_jsonl(path))
+        return records
+    if os.path.isfile(LEGACY_JSONL):
+        print(f"  Loading from legacy {LEGACY_JSONL} (data/ dir empty)")
+        return load_jsonl(LEGACY_JSONL)
+    return []
+
 
 def save_main(records: list[dict]):
-    save_jsonl(DATA_JSONL, records)
+    """Save records to sharded JSONL files (MAX_RECORDS_PER_FILE per shard)."""
+    os.makedirs(DATA_DIR, exist_ok=True)
+
+    chunks = []
+    for i in range(0, max(len(records), 1), MAX_RECORDS_PER_FILE):
+        chunks.append(records[i:i + MAX_RECORDS_PER_FILE])
+    if not chunks:
+        chunks = [[]]
+
+    new_paths = set()
+    for idx, chunk in enumerate(chunks, start=1):
+        path = _shard_name(idx)
+        new_paths.add(os.path.normpath(path))
+        save_jsonl(path, chunk)
+
+    for old in _shard_paths():
+        if os.path.normpath(old) not in new_paths:
+            os.remove(old)
 
 def load_temp() -> list[dict]:
     return load_jsonl(TEMP_JSONL)

@@ -4,11 +4,16 @@ Shared constants & configuration – v2.2
 import os
 
 # ──────────── Paths ────────────
-DATA_JSONL     = "scripts/data.jsonl"
+DATA_DIR       = "data"
+LEGACY_JSONL   = "scripts/data.jsonl"      # fallback pre-migration
 TEMP_JSONL     = "scripts/temp_info.jsonl"
 DEAD_LINKS_LOG = "scripts/dead_links.log"
 REMOVED_JSONL  = "scripts/removed_games.jsonl"
 GAMES_DIR      = "games"
+
+# ──────────── Sharding ────────────
+MAX_RECORDS_PER_FILE = 800
+SHARD_PREFIX         = "data_"
 
 # ──────────── Steam API ────────────
 STEAM_API_KEY  = os.getenv("STEAM_API_KEY", "")
