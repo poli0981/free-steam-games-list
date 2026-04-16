@@ -1,6 +1,6 @@
 # Platformer Games
 
-57 games · 2026-04-16 12:51 UTC
+58 games · 2026-04-16 14:58 UTC
 
 | # | Thumb | Game | Genre | Developer | Publisher | Released | Platforms | Languages | Reviews | Players | Anti-Cheat | Metacritic | Status | Description | Link | Notes |
 |---|-------|------|-------|-----------|-----------|----------|----------|-----------|---------|---------|------------|-----------|--------|-------------|------|-------|
@@ -61,3 +61,4 @@
 | 55 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3459490/99b729ae53b473c7aafcb6091317a3998ca77e0b/header.jpg?t=1768510191' width='120'> | Bubba Yuga | Platformer | Wanli Lu, Xinyan Wang, Yang Zhang, Rishabh Anand, Wanyi Tao, Yifu Ding, Flora Liu, Rachel Clark, Evelyn Zhang, Wentao Yang, Ven Ferlin, Mingyu Yang, Murong Jing, Alex Ingram, Wyatt Getzen | Team Gaga | Jan 15, 2026 | Windows | English | 43% (7 user reviews) | 0 |  | N/A | ✅ | Bubba Yuga is a 2-player couch co-op puzzle game based on the Slavic folktales of the Baba Yaga. | [Steam](https://store.steampowered.com/app/3459490/) | Not reviewed yet |
 | 56 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/822550/header.jpg?t=1585756367' width='120'> | 2DGameManias Taken | Platformer | 2DGameMania | 2DGameMania | May 4, 2018 | Windows | English | 40% (Mostly Negative) | 0 |  | N/A | ✅ | 2DGameManias Taken is a 2. | [Steam](https://store.steampowered.com/app/822550/) | Not reviewed yet |
 | 57 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4111880/cc9e946372489331b86387679ce74c8849814448/header.jpg?t=1774744917' width='120'> | Räv Kafé | Platformer | Mr. Wincent Fox, KällRäven | FoxMask® | Mar 12, 2026 | Windows | Swedish | 25% (4 user reviews) | 0 |  | N/A | ✅ | Räv Kafé is a 2D action platformer where you wander around in the world and in order to survive you need to find materia... | [Steam](https://store.steampowered.com/app/4111880/) | Swedish language only. |
+| 58 | <img src='https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/4556900/b1fc96016cb57e0cf4c97e9bea8b0dddb1c15ee1/header.jpg?t=1776347977' width='120'> | Rescue Quest: Lexi's Mountain Adventure | Platformer | Victoria Arenas, Amy Woods, Pablo Arenas | Revved Mode Games | 16 Apr, 2026 | Windows | English | No reviews | 2 | - | N/A | ✅ | A 2D action platformer where you battle mountain wildlife, dodge dangerous obstacles, and rescue endangered animals acro... | [Steam](https://store.steampowered.com/app/4556900/) | Not reviewed yet |

@@ -1,6 +1,6 @@
 # 🎮 Steam F2P Tracker
 
-**774 games** · 2026-04-16 12:51 UTC
+**778 games** · 2026-04-16 14:58 UTC
 
 ## 📋 Full List
 
@@ -14,11 +14,11 @@
 | Genre | # | File |
 |-------|---|------|
 | 2D Fighter | 1 | [2d-fighter.md](2d-fighter.md) |
-| Action | 19 | [action.md](action.md) |
+| Action | 20 | [action.md](action.md) |
 | Action RPG | 6 | [action-rpg.md](action-rpg.md) |
 | Action RPG, Gacha | 2 | [action-rpg-gacha.md](action-rpg-gacha.md) |
 | Action-Adventure | 1 | [action-adventure.md](action-adventure.md) |
-| Adventure | 29 | [adventure.md](adventure.md) |
+| Adventure | 30 | [adventure.md](adventure.md) |
 | Arcade | 11 | [arcade.md](arcade.md) |
 | Arena Shooter | 6 | [arena-shooter.md](arena-shooter.md) |
 | Auto Battler | 1 | [auto-battler.md](auto-battler.md) |
@@ -36,7 +36,7 @@
 | Dating Sim | 6 | [dating-sim.md](dating-sim.md) |
 | Deckbuilding | 1 | [deckbuilding.md](deckbuilding.md) |
 | Dungeon Crawler | 3 | [dungeon-crawler.md](dungeon-crawler.md) |
-| Education | 1 | [education.md](education.md) |
+| Education | 2 | [education.md](education.md) |
 | Exploration | 6 | [exploration.md](exploration.md) |
 | Extraction Shooter | 1 | [extraction-shooter.md](extraction-shooter.md) |
 | FMV | 2 | [fmv.md](fmv.md) |
@@ -64,7 +64,7 @@
 | Parkour | 1 | [parkour.md](parkour.md) |
 | Party Game | 7 | [party-game.md](party-game.md) |
 | Party-Based RPG | 2 | [party-based-rpg.md](party-based-rpg.md) |
-| Platformer | 57 | [platformer.md](platformer.md) |
+| Platformer | 58 | [platformer.md](platformer.md) |
 | Point-and-Click | 1 | [point-and-click.md](point-and-click.md) |
 | Puzzle | 50 | [puzzle.md](puzzle.md) |
 | RPG | 1 | [rpg.md](rpg.md) |
