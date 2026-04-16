@@ -175,4 +175,5 @@ checkduplicates.py
 data.bak/
 *.pre_shard
 
+.claude/
 # End of .gitignore file
