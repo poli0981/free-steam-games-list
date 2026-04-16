@@ -177,7 +177,7 @@ def make_skeleton(link: str) -> dict:
 
 
 def build_index(games: list[dict]) -> dict[str, int]:
-    """Build appid→index map. O(n) single pass."""
+    """Build appid→index.json map. O(n) single pass."""
     idx = {}
     for i, g in enumerate(games):
         aid = extract_appid(g.get("link", ""))
