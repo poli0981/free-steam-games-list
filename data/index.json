@@ -2,7 +2,7 @@
     "max_per_file": 500,
     "files": [
         {
-            "name": "data_001.json",
+            "name": "data_001.jsonl",
             "count": 774
         }
     ]
