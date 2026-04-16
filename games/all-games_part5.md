@@ -1,0 +1,9 @@
+# All Free-to-Play Games (Part 5/5)
+
+Games 801–803 of 803 · Generated: 2026-04-16 15:50 UTC
+
+| # | Thumb | Game | Genre | Developer | Publisher | Released | Platforms | Languages | Reviews | Players | Anti-Cheat | Metacritic | Status | Description | Link | Notes |
+|---|-------|------|-------|-----------|-----------|----------|----------|-----------|---------|---------|------------|-----------|--------|-------------|------|-------|
+| 801 | <img src='https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/4532020/0246cff373d311b194da3e5c30e165ecd14d1aae/header.jpg?t=1776347909' width='120'> | Agro Life | Farming Sim | Nosatskyi Games | Nosatskyi Games | 15 Apr, 2026 | Windows | English | 0% (1 user reviews) | 0 | - | N/A | ✅ | Agro Life is a relaxing low-poly farming simulation where you grow crops, raise animals, craft tools, and build your own... | [Steam](https://store.steampowered.com/app/4532020/) | Not reviewed yet |
+| 802 | <img src='https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/3784820/81d295fea753ae966b5c6973ce5a54c18d0af4e7/header.jpg?t=1776186275' width='120'> | Autoloo | Turn-Based Tactics | John Amarante | Powder and Iron Games | 15 Apr, 2026 | Windows | English | 0% (1 user reviews) | 0 | - | N/A | ✅ | Autoloo is a fast-paced Napoleonic auto-battler. | [Steam](https://store.steampowered.com/app/3784820/) | Not reviewed yet |
+| 803 | <img src='https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/4551820/803d5ce5019f710720ad41a78be280efed64a800/header.jpg?t=1775838977' width='120'> | Yuki Jump | Platformer | YukiGames | YukiGames | 10 Apr, 2026 | Windows | English | 0% (1 user reviews) | 0 | - | N/A | ✅ | Climb the Forbidden Jungle Tower in this fast-paced 2D platformer! Jump higher, defeat creepy spiders, snakes, scorpions... | [Steam](https://store.steampowered.com/app/4551820/) | Not reviewed yet |

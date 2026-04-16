@@ -1,6 +1,6 @@
 # 🎮 Steam F2P Tracker
 
-**778 games** · 2026-04-16 14:58 UTC
+**803 games** · 2026-04-16 15:50 UTC
 
 ## 📋 Full List
 
@@ -8,40 +8,42 @@
 - [all-games_part2.md](all-games_part2.md)
 - [all-games_part3.md](all-games_part3.md)
 - [all-games_part4.md](all-games_part4.md)
+- [all-games_part5.md](all-games_part5.md)
 
 ## 🏷️ By Genre
 
 | Genre | # | File |
 |-------|---|------|
 | 2D Fighter | 1 | [2d-fighter.md](2d-fighter.md) |
-| Action | 20 | [action.md](action.md) |
+| Action | 22 | [action.md](action.md) |
 | Action RPG | 6 | [action-rpg.md](action-rpg.md) |
 | Action RPG, Gacha | 2 | [action-rpg-gacha.md](action-rpg-gacha.md) |
 | Action-Adventure | 1 | [action-adventure.md](action-adventure.md) |
-| Adventure | 30 | [adventure.md](adventure.md) |
-| Arcade | 11 | [arcade.md](arcade.md) |
+| Adventure | 31 | [adventure.md](adventure.md) |
+| Arcade | 12 | [arcade.md](arcade.md) |
 | Arena Shooter | 6 | [arena-shooter.md](arena-shooter.md) |
-| Auto Battler | 1 | [auto-battler.md](auto-battler.md) |
+| Auto Battler | 2 | [auto-battler.md](auto-battler.md) |
 | Battle Royale | 14 | [battle-royale.md](battle-royale.md) |
 | Beat 'em up | 4 | [beat-'em-up.md](beat-'em-up.md) |
 | Board Game | 3 | [board-game.md](board-game.md) |
 | Building | 1 | [building.md](building.md) |
 | Bullet Hell | 13 | [bullet-hell.md](bullet-hell.md) |
-| Card Game | 33 | [card-game.md](card-game.md) |
+| Card Game | 34 | [card-game.md](card-game.md) |
 | Casual | 3 | [casual.md](casual.md) |
 | City Builder | 4 | [city-builder.md](city-builder.md) |
 | Clicker | 13 | [clicker.md](clicker.md) |
+| Cooking | 1 | [cooking.md](cooking.md) |
 | Cozy | 3 | [cozy.md](cozy.md) |
 | Crafting | 1 | [crafting.md](crafting.md) |
 | Dating Sim | 6 | [dating-sim.md](dating-sim.md) |
 | Deckbuilding | 1 | [deckbuilding.md](deckbuilding.md) |
 | Dungeon Crawler | 3 | [dungeon-crawler.md](dungeon-crawler.md) |
 | Education | 2 | [education.md](education.md) |
-| Exploration | 6 | [exploration.md](exploration.md) |
+| Exploration | 7 | [exploration.md](exploration.md) |
 | Extraction Shooter | 1 | [extraction-shooter.md](extraction-shooter.md) |
 | FMV | 2 | [fmv.md](fmv.md) |
 | FPS | 25 | [fps.md](fps.md) |
-| Farming Sim | 1 | [farming-sim.md](farming-sim.md) |
+| Farming Sim | 2 | [farming-sim.md](farming-sim.md) |
 | Fighter | 1 | [fighter.md](fighter.md) |
 | Fighting | 6 | [fighting.md](fighting.md) |
 | Fishing | 1 | [fishing.md](fishing.md) |
@@ -52,8 +54,8 @@
 | Hacking | 1 | [hacking.md](hacking.md) |
 | Hero Shooter | 2 | [hero-shooter.md](hero-shooter.md) |
 | Hidden Object | 29 | [hidden-object.md](hidden-object.md) |
-| Horror | 70 | [horror.md](horror.md) |
-| Idler | 13 | [idler.md](idler.md) |
+| Horror | 74 | [horror.md](horror.md) |
+| Idler | 14 | [idler.md](idler.md) |
 | Indie | 3 | [indie.md](indie.md) |
 | Isometric | 1 | [isometric.md](isometric.md) |
 | Life Sim | 2 | [life-sim.md](life-sim.md) |
@@ -64,14 +66,14 @@
 | Parkour | 1 | [parkour.md](parkour.md) |
 | Party Game | 7 | [party-game.md](party-game.md) |
 | Party-Based RPG | 2 | [party-based-rpg.md](party-based-rpg.md) |
-| Platformer | 58 | [platformer.md](platformer.md) |
+| Platformer | 59 | [platformer.md](platformer.md) |
 | Point-and-Click | 1 | [point-and-click.md](point-and-click.md) |
-| Puzzle | 50 | [puzzle.md](puzzle.md) |
+| Puzzle | 51 | [puzzle.md](puzzle.md) |
 | RPG | 1 | [rpg.md](rpg.md) |
 | Racing | 8 | [racing.md](racing.md) |
 | Real-Time Strategy | 1 | [real-time-strategy.md](real-time-strategy.md) |
 | Rhythm | 8 | [rhythm.md](rhythm.md) |
-| Roguelike | 14 | [roguelike.md](roguelike.md) |
+| Roguelike | 16 | [roguelike.md](roguelike.md) |
 | Roguelite | 3 | [roguelite.md](roguelite.md) |
 | Rougelite | 2 | [rougelite.md](rougelite.md) |
 | Sandbox | 1 | [sandbox.md](sandbox.md) |
@@ -84,21 +86,21 @@
 | Souls-like | 2 | [souls-like.md](souls-like.md) |
 | Sports | 15 | [sports.md](sports.md) |
 | Stealth | 3 | [stealth.md](stealth.md) |
-| Strategy | 27 | [strategy.md](strategy.md) |
+| Strategy | 28 | [strategy.md](strategy.md) |
 | Surreal | 1 | [surreal.md](surreal.md) |
 | Survival | 4 | [survival.md](survival.md) |
-| Third-Person Shooter | 2 | [third-person-shooter.md](third-person-shooter.md) |
+| Third-Person Shooter | 4 | [third-person-shooter.md](third-person-shooter.md) |
 | Third-person Shooter | 1 | [third-person-shooter.md](third-person-shooter.md) |
 | Top-Down | 1 | [top-down.md](top-down.md) |
 | Top-down Shooter | 11 | [top-down-shooter.md](top-down-shooter.md) |
 | Top-down Survival | 1 | [top-down-survival.md](top-down-survival.md) |
 | Tower Defense | 6 | [tower-defense.md](tower-defense.md) |
 | Turn-Based Strategy | 1 | [turn-based-strategy.md](turn-based-strategy.md) |
-| Turn-Based Tactics | 1 | [turn-based-tactics.md](turn-based-tactics.md) |
+| Turn-Based Tactics | 3 | [turn-based-tactics.md](turn-based-tactics.md) |
 | Turn-based RPG | 5 | [turn-based-rpg.md](turn-based-rpg.md) |
 | Turn-based Strategy | 8 | [turn-based-strategy.md](turn-based-strategy.md) |
 | Turn-based Tactics | 3 | [turn-based-tactics.md](turn-based-tactics.md) |
-| Visual Novel | 63 | [visual-novel.md](visual-novel.md) |
+| Visual Novel | 65 | [visual-novel.md](visual-novel.md) |
 | Walking Simulator | 1 | [walking-simulator.md](walking-simulator.md) |
 
 ## 🏆 Leaderboard

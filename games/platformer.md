@@ -1,6 +1,6 @@
 # Platformer Games
 
-58 games · 2026-04-16 14:58 UTC
+59 games · 2026-04-16 15:50 UTC
 
 | # | Thumb | Game | Genre | Developer | Publisher | Released | Platforms | Languages | Reviews | Players | Anti-Cheat | Metacritic | Status | Description | Link | Notes |
 |---|-------|------|-------|-----------|-----------|----------|----------|-----------|---------|---------|------------|-----------|--------|-------------|------|-------|
@@ -62,3 +62,4 @@
 | 56 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/822550/header.jpg?t=1585756367' width='120'> | 2DGameManias Taken | Platformer | 2DGameMania | 2DGameMania | May 4, 2018 | Windows | English | 40% (Mostly Negative) | 0 |  | N/A | ✅ | 2DGameManias Taken is a 2. | [Steam](https://store.steampowered.com/app/822550/) | Not reviewed yet |
 | 57 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4111880/cc9e946372489331b86387679ce74c8849814448/header.jpg?t=1774744917' width='120'> | Räv Kafé | Platformer | Mr. Wincent Fox, KällRäven | FoxMask® | Mar 12, 2026 | Windows | Swedish | 25% (4 user reviews) | 0 |  | N/A | ✅ | Räv Kafé is a 2D action platformer where you wander around in the world and in order to survive you need to find materia... | [Steam](https://store.steampowered.com/app/4111880/) | Swedish language only. |
 | 58 | <img src='https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/4556900/b1fc96016cb57e0cf4c97e9bea8b0dddb1c15ee1/header.jpg?t=1776347977' width='120'> | Rescue Quest: Lexi's Mountain Adventure | Platformer | Victoria Arenas, Amy Woods, Pablo Arenas | Revved Mode Games | 16 Apr, 2026 | Windows | English | No reviews | 2 | - | N/A | ✅ | A 2D action platformer where you battle mountain wildlife, dodge dangerous obstacles, and rescue endangered animals acro... | [Steam](https://store.steampowered.com/app/4556900/) | Not reviewed yet |
+| 59 | <img src='https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/4551820/803d5ce5019f710720ad41a78be280efed64a800/header.jpg?t=1775838977' width='120'> | Yuki Jump | Platformer | YukiGames | YukiGames | 10 Apr, 2026 | Windows | English | 0% (1 user reviews) | 0 | - | N/A | ✅ | Climb the Forbidden Jungle Tower in this fast-paced 2D platformer! Jump higher, defeat creepy spiders, snakes, scorpions... | [Steam](https://store.steampowered.com/app/4551820/) | Not reviewed yet |
