@@ -1,7 +1,7 @@
 # Isometric Games
 
-1 games · 2026-04-17 00:29 UTC
+1 games · 2026-04-18 00:27 UTC
 
 | # | Thumb | Game | Genre | Developer | Publisher | Released | Platforms | Languages | Reviews | Players | Anti-Cheat | Metacritic | Status | Description | Link | Notes |
 |---|-------|------|-------|-----------|-----------|----------|----------|-----------|---------|---------|------------|-----------|--------|-------------|------|-------|
-| 1 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4209480/7e7f3ab004e18cde1d3841f67959e0639b5c01b7/header.jpg?t=1772827925' width='120'> | Two Rings: Vanquish and Bloom | Isometric | DREAmwIN | DigiPen Institute of Technology | Mar 6, 2026 | Windows | English | 89% (9 user reviews) | 0 |  | N/A | ✅ | An isometric action game where you wield the power of destruction and creation in your hands, literally. | [Steam](https://store.steampowered.com/app/4209480/) | Not reviewed yet |
+| 1 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4209480/7e7f3ab004e18cde1d3841f67959e0639b5c01b7/header.jpg?t=1772827925' width='120'> | Two Rings: Vanquish and Bloom | Isometric | DREAmwIN | DigiPen Institute of Technology | Mar 6, 2026 | Windows | English | 91% (Positive) | 0 |  | N/A | ✅ | An isometric action game where you wield the power of destruction and creation in your hands, literally. | [Steam](https://store.steampowered.com/app/4209480/) | Not reviewed yet |

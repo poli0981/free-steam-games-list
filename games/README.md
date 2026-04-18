@@ -1,6 +1,6 @@
 # 🎮 Steam F2P Tracker
 
-**803 games** · 2026-04-17 00:29 UTC
+**816 games** · 2026-04-18 00:27 UTC
 
 ## 📋 Full List
 
@@ -14,7 +14,7 @@
 
 | Genre | # | File |
 |-------|---|------|
-| 2D Fighter | 1 | [2d-fighter.md](2d-fighter.md) |
+| 2D Fighter | 2 | [2d-fighter.md](2d-fighter.md) |
 | Action | 22 | [action.md](action.md) |
 | Action RPG | 6 | [action-rpg.md](action-rpg.md) |
 | Action RPG, Gacha | 2 | [action-rpg-gacha.md](action-rpg-gacha.md) |
@@ -28,8 +28,9 @@
 | Board Game | 3 | [board-game.md](board-game.md) |
 | Building | 1 | [building.md](building.md) |
 | Bullet Hell | 13 | [bullet-hell.md](bullet-hell.md) |
+| Card Battler | 1 | [card-battler.md](card-battler.md) |
 | Card Game | 34 | [card-game.md](card-game.md) |
-| Casual | 3 | [casual.md](casual.md) |
+| Casual | 4 | [casual.md](casual.md) |
 | City Builder | 4 | [city-builder.md](city-builder.md) |
 | Clicker | 13 | [clicker.md](clicker.md) |
 | Cooking | 1 | [cooking.md](cooking.md) |
@@ -42,7 +43,7 @@
 | Exploration | 7 | [exploration.md](exploration.md) |
 | Extraction Shooter | 1 | [extraction-shooter.md](extraction-shooter.md) |
 | FMV | 2 | [fmv.md](fmv.md) |
-| FPS | 25 | [fps.md](fps.md) |
+| FPS | 26 | [fps.md](fps.md) |
 | Farming Sim | 2 | [farming-sim.md](farming-sim.md) |
 | Fighter | 1 | [fighter.md](fighter.md) |
 | Fighting | 6 | [fighting.md](fighting.md) |
@@ -54,15 +55,17 @@
 | Hacking | 1 | [hacking.md](hacking.md) |
 | Hero Shooter | 2 | [hero-shooter.md](hero-shooter.md) |
 | Hidden Object | 29 | [hidden-object.md](hidden-object.md) |
-| Horror | 74 | [horror.md](horror.md) |
+| Horror | 76 | [horror.md](horror.md) |
 | Idler | 14 | [idler.md](idler.md) |
 | Indie | 3 | [indie.md](indie.md) |
+| Interactive Fiction | 1 | [interactive-fiction.md](interactive-fiction.md) |
 | Isometric | 1 | [isometric.md](isometric.md) |
 | Life Sim | 2 | [life-sim.md](life-sim.md) |
 | Looter Shooter | 3 | [looter-shooter.md](looter-shooter.md) |
 | MMO | 12 | [mmo.md](mmo.md) |
-| MMORPG | 37 | [mmorpg.md](mmorpg.md) |
+| MMORPG | 38 | [mmorpg.md](mmorpg.md) |
 | MOBA | 8 | [moba.md](moba.md) |
+| Metroidvania | 1 | [metroidvania.md](metroidvania.md) |
 | Parkour | 1 | [parkour.md](parkour.md) |
 | Party Game | 7 | [party-game.md](party-game.md) |
 | Party-Based RPG | 2 | [party-based-rpg.md](party-based-rpg.md) |
@@ -80,7 +83,7 @@
 | Score Attack | 1 | [score-attack.md](score-attack.md) |
 | Shoot'em up | 1 | [shoot'em-up.md](shoot'em-up.md) |
 | Shooter | 1 | [shooter.md](shooter.md) |
-| Simulation | 44 | [simulation.md](simulation.md) |
+| Simulation | 47 | [simulation.md](simulation.md) |
 | Social Deduction | 1 | [social-deduction.md](social-deduction.md) |
 | Software | 1 | [software.md](software.md) |
 | Souls-like | 2 | [souls-like.md](souls-like.md) |
@@ -92,6 +95,7 @@
 | Third-Person Shooter | 4 | [third-person-shooter.md](third-person-shooter.md) |
 | Third-person Shooter | 1 | [third-person-shooter.md](third-person-shooter.md) |
 | Top-Down | 1 | [top-down.md](top-down.md) |
+| Top-Down Shooter | 1 | [top-down-shooter.md](top-down-shooter.md) |
 | Top-down Shooter | 11 | [top-down-shooter.md](top-down-shooter.md) |
 | Top-down Survival | 1 | [top-down-survival.md](top-down-survival.md) |
 | Tower Defense | 6 | [tower-defense.md](tower-defense.md) |
