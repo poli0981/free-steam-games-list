@@ -1,6 +1,6 @@
 # 🎮 Steam F2P Tracker
 
-**823 games** · 2026-04-18 02:59 UTC
+**826 games** · 2026-04-18 03:23 UTC
 
 ## 📋 Full List
 
@@ -55,7 +55,7 @@
 | Hacking | 1 | [hacking.md](hacking.md) |
 | Hero Shooter | 2 | [hero-shooter.md](hero-shooter.md) |
 | Hidden Object | 29 | [hidden-object.md](hidden-object.md) |
-| Horror | 76 | [horror.md](horror.md) |
+| Horror | 78 | [horror.md](horror.md) |
 | Idler | 15 | [idler.md](idler.md) |
 | Indie | 3 | [indie.md](indie.md) |
 | Interactive Fiction | 1 | [interactive-fiction.md](interactive-fiction.md) |
@@ -87,7 +87,7 @@
 | Social Deduction | 1 | [social-deduction.md](social-deduction.md) |
 | Software | 1 | [software.md](software.md) |
 | Souls-like | 2 | [souls-like.md](souls-like.md) |
-| Sports | 15 | [sports.md](sports.md) |
+| Sports | 16 | [sports.md](sports.md) |
 | Stealth | 3 | [stealth.md](stealth.md) |
 | Strategy | 28 | [strategy.md](strategy.md) |
 | Surreal | 1 | [surreal.md](surreal.md) |
