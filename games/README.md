@@ -1,6 +1,6 @@
 # 🎮 Steam F2P Tracker
 
-**819 games** · 2026-04-18 00:52 UTC
+**823 games** · 2026-04-18 02:59 UTC
 
 ## 📋 Full List
 
@@ -46,7 +46,7 @@
 | FPS | 26 | [fps.md](fps.md) |
 | Farming Sim | 2 | [farming-sim.md](farming-sim.md) |
 | Fighter | 1 | [fighter.md](fighter.md) |
-| Fighting | 6 | [fighting.md](fighting.md) |
+| Fighting | 7 | [fighting.md](fighting.md) |
 | Fishing | 1 | [fishing.md](fishing.md) |
 | Free To Play | 1 | [free-to-play.md](free-to-play.md) |
 | Gambling | 3 | [gambling.md](gambling.md) |
@@ -56,14 +56,14 @@
 | Hero Shooter | 2 | [hero-shooter.md](hero-shooter.md) |
 | Hidden Object | 29 | [hidden-object.md](hidden-object.md) |
 | Horror | 76 | [horror.md](horror.md) |
-| Idler | 14 | [idler.md](idler.md) |
+| Idler | 15 | [idler.md](idler.md) |
 | Indie | 3 | [indie.md](indie.md) |
 | Interactive Fiction | 1 | [interactive-fiction.md](interactive-fiction.md) |
 | Isometric | 1 | [isometric.md](isometric.md) |
 | Life Sim | 2 | [life-sim.md](life-sim.md) |
 | Looter Shooter | 3 | [looter-shooter.md](looter-shooter.md) |
 | MMO | 12 | [mmo.md](mmo.md) |
-| MMORPG | 40 | [mmorpg.md](mmorpg.md) |
+| MMORPG | 41 | [mmorpg.md](mmorpg.md) |
 | MOBA | 8 | [moba.md](moba.md) |
 | Metroidvania | 1 | [metroidvania.md](metroidvania.md) |
 | Parkour | 1 | [parkour.md](parkour.md) |
@@ -83,7 +83,7 @@
 | Score Attack | 1 | [score-attack.md](score-attack.md) |
 | Shoot'em up | 1 | [shoot'em-up.md](shoot'em-up.md) |
 | Shooter | 1 | [shooter.md](shooter.md) |
-| Simulation | 47 | [simulation.md](simulation.md) |
+| Simulation | 48 | [simulation.md](simulation.md) |
 | Social Deduction | 1 | [social-deduction.md](social-deduction.md) |
 | Software | 1 | [software.md](software.md) |
 | Souls-like | 2 | [souls-like.md](souls-like.md) |
