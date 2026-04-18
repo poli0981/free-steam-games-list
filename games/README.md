@@ -1,6 +1,6 @@
 # 🎮 Steam F2P Tracker
 
-**826 games** · 2026-04-18 03:23 UTC
+**832 games** · 2026-04-18 13:52 UTC
 
 ## 📋 Full List
 
@@ -19,7 +19,7 @@
 | Action RPG | 6 | [action-rpg.md](action-rpg.md) |
 | Action RPG, Gacha | 2 | [action-rpg-gacha.md](action-rpg-gacha.md) |
 | Action-Adventure | 1 | [action-adventure.md](action-adventure.md) |
-| Adventure | 31 | [adventure.md](adventure.md) |
+| Adventure | 32 | [adventure.md](adventure.md) |
 | Arcade | 12 | [arcade.md](arcade.md) |
 | Arena Shooter | 6 | [arena-shooter.md](arena-shooter.md) |
 | Auto Battler | 2 | [auto-battler.md](auto-battler.md) |
@@ -104,7 +104,7 @@
 | Turn-based RPG | 5 | [turn-based-rpg.md](turn-based-rpg.md) |
 | Turn-based Strategy | 8 | [turn-based-strategy.md](turn-based-strategy.md) |
 | Turn-based Tactics | 3 | [turn-based-tactics.md](turn-based-tactics.md) |
-| Visual Novel | 66 | [visual-novel.md](visual-novel.md) |
+| Visual Novel | 71 | [visual-novel.md](visual-novel.md) |
 | Walking Simulator | 1 | [walking-simulator.md](walking-simulator.md) |
 
 ## 🏆 Leaderboard
