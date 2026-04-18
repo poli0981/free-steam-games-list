@@ -1,6 +1,6 @@
 # Adventure Games
 
-32 games · 2026-04-18 13:52 UTC
+32 games · 2026-04-18 13:53 UTC
 
 | # | Thumb | Game | Genre | Developer | Publisher | Released | Platforms | Languages | Reviews | Players | Anti-Cheat | Metacritic | Status | Description | Link | Notes |
 |---|-------|------|-------|-----------|-----------|----------|----------|-----------|---------|---------|------------|-----------|--------|-------------|------|-------|
