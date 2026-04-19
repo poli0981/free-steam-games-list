@@ -1,9 +1,9 @@
 # Gambling Games
 
-3 games · 2026-04-19 00:28 UTC
+3 games · 2026-04-19 06:18 UTC
 
 | # | Thumb | Game | Genre | Developer | Publisher | Released | Platforms | Languages | Reviews | Players | Anti-Cheat | Metacritic | Status | Description | Link | Notes |
 |---|-------|------|-------|-----------|-----------|----------|----------|-----------|---------|---------|------------|-----------|--------|-------------|------|-------|
-| 1 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3224770/d7ddfe8985d7be8db7a0195d5c482c4438ed929d/header.jpg?t=1773306345' width='120'> | Umamusume: Pretty Derby | Gambling | Cygames, Inc. | Cygames, Inc. | Jun 24, 2025 | Windows | English | 94% (Very Positive) | 9,632 | CrackProof® | N/A | ✅ | Umamusume: Pretty Derby, winner of Best Mobile Game at The Game Awards 2025, is ready to race! Scout featured trainees a... | [Steam](https://store.steampowered.com/app/3224770/) | Not reviewed yet |
+| 1 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3224770/d7ddfe8985d7be8db7a0195d5c482c4438ed929d/header.jpg?t=1773306345' width='120'> | Umamusume: Pretty Derby | Gambling | Cygames, Inc. | Cygames, Inc. | Jun 24, 2025 | Windows | English | 94% (Very Positive) | 8,382 | CrackProof® | N/A | ✅ | Umamusume: Pretty Derby, winner of Best Mobile Game at The Game Awards 2025, is ready to race! Scout featured trainees a... | [Steam](https://store.steampowered.com/app/3224770/) | Not reviewed yet |
 | 2 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2542430/header.jpg?t=1764936885' width='120'> | 5050 | Gambling | Follow the fun | Follow the fun | Aug 20, 2023 | Windows | English | 88% (Very Positive) | 0 |  | N/A | ✅ | Each time you press the button, it will either double or lose all the points you’ve put in. | [Steam](https://store.steampowered.com/app/2542430/) | Not reviewed yet |
 | 3 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3608300/2dfa11d296ec5cd1c59edfa21393927fbcd50502/header.jpg?t=1764250323' width='120'> | Jackpot.de | Gambling | Whow Games GmbH | Whow Games GmbH | Nov 27, 2025 | Windows | 14 langs | 62% (8 user reviews) | 0 |  | N/A | ✅ | Play our prize-winning slots in the best free2play funtime casino out there. | [Steam](https://store.steampowered.com/app/3608300/) | Not reviewed yet |

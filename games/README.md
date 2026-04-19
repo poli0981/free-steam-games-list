@@ -1,6 +1,6 @@
 # 🎮 Steam F2P Tracker
 
-**832 games** · 2026-04-19 00:28 UTC
+**836 games** · 2026-04-19 06:18 UTC
 
 ## 📋 Full List
 
@@ -32,7 +32,7 @@
 | Card Game | 34 | [card-game.md](card-game.md) |
 | Casual | 4 | [casual.md](casual.md) |
 | City Builder | 4 | [city-builder.md](city-builder.md) |
-| Clicker | 13 | [clicker.md](clicker.md) |
+| Clicker | 14 | [clicker.md](clicker.md) |
 | Cooking | 1 | [cooking.md](cooking.md) |
 | Cozy | 3 | [cozy.md](cozy.md) |
 | Crafting | 1 | [crafting.md](crafting.md) |
@@ -104,7 +104,7 @@
 | Turn-based RPG | 5 | [turn-based-rpg.md](turn-based-rpg.md) |
 | Turn-based Strategy | 8 | [turn-based-strategy.md](turn-based-strategy.md) |
 | Turn-based Tactics | 3 | [turn-based-tactics.md](turn-based-tactics.md) |
-| Visual Novel | 71 | [visual-novel.md](visual-novel.md) |
+| Visual Novel | 74 | [visual-novel.md](visual-novel.md) |
 | Walking Simulator | 1 | [walking-simulator.md](walking-simulator.md) |
 
 ## 🏆 Leaderboard
