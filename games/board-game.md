@@ -1,6 +1,6 @@
 # Board Game Games
 
-4 games · 2026-04-19 12:32 UTC
+4 games · 2026-04-19 12:33 UTC
 
 | # | Thumb | Game | Genre | Developer | Publisher | Released | Platforms | Languages | Reviews | Players | Anti-Cheat | Metacritic | Status | Description | Link | Notes |
 |---|-------|------|-------|-----------|-----------|----------|----------|-----------|---------|---------|------------|-----------|--------|-------------|------|-------|
