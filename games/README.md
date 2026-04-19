@@ -1,6 +1,6 @@
 # 🎮 Steam F2P Tracker
 
-**980 games** · 2026-04-19 06:32 UTC
+**1031 games** · 2026-04-19 12:32 UTC
 
 ## 📋 Full List
 
@@ -9,17 +9,18 @@
 - [all-games_part3.md](all-games_part3.md)
 - [all-games_part4.md](all-games_part4.md)
 - [all-games_part5.md](all-games_part5.md)
+- [all-games_part6.md](all-games_part6.md)
 
 ## 🏷️ By Genre
 
 | Genre | # | File |
 |-------|---|------|
 | 2D Fighter | 2 | [2d-fighter.md](2d-fighter.md) |
-| Action | 23 | [action.md](action.md) |
+| Action | 24 | [action.md](action.md) |
 | Action RPG | 6 | [action-rpg.md](action-rpg.md) |
 | Action RPG, Gacha | 2 | [action-rpg-gacha.md](action-rpg-gacha.md) |
 | Action-Adventure | 1 | [action-adventure.md](action-adventure.md) |
-| Adventure | 37 | [adventure.md](adventure.md) |
+| Adventure | 39 | [adventure.md](adventure.md) |
 | Arcade | 12 | [arcade.md](arcade.md) |
 | Arena Shooter | 6 | [arena-shooter.md](arena-shooter.md) |
 | Auto Battler | 2 | [auto-battler.md](auto-battler.md) |
@@ -56,7 +57,7 @@
 | Hacking | 1 | [hacking.md](hacking.md) |
 | Hero Shooter | 2 | [hero-shooter.md](hero-shooter.md) |
 | Hidden Object | 30 | [hidden-object.md](hidden-object.md) |
-| Horror | 80 | [horror.md](horror.md) |
+| Horror | 81 | [horror.md](horror.md) |
 | Idler | 15 | [idler.md](idler.md) |
 | Indie | 3 | [indie.md](indie.md) |
 | Interactive Fiction | 1 | [interactive-fiction.md](interactive-fiction.md) |
@@ -72,12 +73,13 @@
 | Party-Based RPG | 2 | [party-based-rpg.md](party-based-rpg.md) |
 | Platformer | 61 | [platformer.md](platformer.md) |
 | Point-and-Click | 1 | [point-and-click.md](point-and-click.md) |
-| Puzzle | 57 | [puzzle.md](puzzle.md) |
+| Puzzle | 59 | [puzzle.md](puzzle.md) |
 | RPG | 1 | [rpg.md](rpg.md) |
 | Racing | 8 | [racing.md](racing.md) |
 | Real-Time Strategy | 1 | [real-time-strategy.md](real-time-strategy.md) |
+| Retro | 1 | [retro.md](retro.md) |
 | Rhythm | 11 | [rhythm.md](rhythm.md) |
-| Roguelike | 16 | [roguelike.md](roguelike.md) |
+| Roguelike | 17 | [roguelike.md](roguelike.md) |
 | Roguelite | 3 | [roguelite.md](roguelite.md) |
 | Rougelite | 2 | [rougelite.md](rougelite.md) |
 | Sandbox | 1 | [sandbox.md](sandbox.md) |
@@ -85,7 +87,7 @@
 | Shoot 'Em Up | 3 | [shoot-'em-up.md](shoot-'em-up.md) |
 | Shoot'em up | 1 | [shoot'em-up.md](shoot'em-up.md) |
 | Shooter | 1 | [shooter.md](shooter.md) |
-| Simulation | 52 | [simulation.md](simulation.md) |
+| Simulation | 55 | [simulation.md](simulation.md) |
 | Social Deduction | 1 | [social-deduction.md](social-deduction.md) |
 | Software | 1 | [software.md](software.md) |
 | Souls-like | 3 | [souls-like.md](souls-like.md) |
@@ -107,7 +109,7 @@
 | Turn-based RPG | 5 | [turn-based-rpg.md](turn-based-rpg.md) |
 | Turn-based Strategy | 8 | [turn-based-strategy.md](turn-based-strategy.md) |
 | Turn-based Tactics | 3 | [turn-based-tactics.md](turn-based-tactics.md) |
-| Visual Novel | 174 | [visual-novel.md](visual-novel.md) |
+| Visual Novel | 214 | [visual-novel.md](visual-novel.md) |
 | Walking Simulator | 1 | [walking-simulator.md](walking-simulator.md) |
 
 ## 🏆 Leaderboard
