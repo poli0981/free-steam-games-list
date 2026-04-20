@@ -1,6 +1,6 @@
 # 🎮 Steam F2P Tracker
 
-**1031 games** · 2026-04-20 00:28 UTC
+**1103 games** · 2026-04-20 05:17 UTC
 
 ## 📋 Full List
 
@@ -16,11 +16,11 @@
 | Genre | # | File |
 |-------|---|------|
 | 2D Fighter | 2 | [2d-fighter.md](2d-fighter.md) |
-| Action | 24 | [action.md](action.md) |
+| Action | 25 | [action.md](action.md) |
 | Action RPG | 6 | [action-rpg.md](action-rpg.md) |
 | Action RPG, Gacha | 2 | [action-rpg-gacha.md](action-rpg-gacha.md) |
 | Action-Adventure | 1 | [action-adventure.md](action-adventure.md) |
-| Adventure | 39 | [adventure.md](adventure.md) |
+| Adventure | 43 | [adventure.md](adventure.md) |
 | Arcade | 12 | [arcade.md](arcade.md) |
 | Arena Shooter | 6 | [arena-shooter.md](arena-shooter.md) |
 | Auto Battler | 2 | [auto-battler.md](auto-battler.md) |
@@ -28,13 +28,14 @@
 | Battle Royale | 14 | [battle-royale.md](battle-royale.md) |
 | Beat 'em up | 4 | [beat-'em-up.md](beat-'em-up.md) |
 | Board Game | 4 | [board-game.md](board-game.md) |
+| Boomer Shooter | 1 | [boomer-shooter.md](boomer-shooter.md) |
 | Building | 1 | [building.md](building.md) |
 | Bullet Hell | 14 | [bullet-hell.md](bullet-hell.md) |
 | Card Battler | 1 | [card-battler.md](card-battler.md) |
-| Card Game | 37 | [card-game.md](card-game.md) |
-| Casual | 4 | [casual.md](casual.md) |
+| Card Game | 38 | [card-game.md](card-game.md) |
+| Casual | 7 | [casual.md](casual.md) |
 | City Builder | 4 | [city-builder.md](city-builder.md) |
-| Clicker | 14 | [clicker.md](clicker.md) |
+| Clicker | 16 | [clicker.md](clicker.md) |
 | Cooking | 1 | [cooking.md](cooking.md) |
 | Cozy | 3 | [cozy.md](cozy.md) |
 | Crafting | 2 | [crafting.md](crafting.md) |
@@ -57,9 +58,9 @@
 | Hacking | 1 | [hacking.md](hacking.md) |
 | Hero Shooter | 2 | [hero-shooter.md](hero-shooter.md) |
 | Hidden Object | 30 | [hidden-object.md](hidden-object.md) |
-| Horror | 81 | [horror.md](horror.md) |
+| Horror | 83 | [horror.md](horror.md) |
 | Idler | 15 | [idler.md](idler.md) |
-| Indie | 3 | [indie.md](indie.md) |
+| Indie | 4 | [indie.md](indie.md) |
 | Interactive Fiction | 1 | [interactive-fiction.md](interactive-fiction.md) |
 | Isometric | 1 | [isometric.md](isometric.md) |
 | Life Sim | 2 | [life-sim.md](life-sim.md) |
@@ -71,10 +72,10 @@
 | Parkour | 1 | [parkour.md](parkour.md) |
 | Party Game | 7 | [party-game.md](party-game.md) |
 | Party-Based RPG | 2 | [party-based-rpg.md](party-based-rpg.md) |
-| Platformer | 61 | [platformer.md](platformer.md) |
+| Platformer | 62 | [platformer.md](platformer.md) |
 | Point-and-Click | 1 | [point-and-click.md](point-and-click.md) |
-| Puzzle | 59 | [puzzle.md](puzzle.md) |
-| RPG | 1 | [rpg.md](rpg.md) |
+| Puzzle | 61 | [puzzle.md](puzzle.md) |
+| RPG | 2 | [rpg.md](rpg.md) |
 | Racing | 8 | [racing.md](racing.md) |
 | Real-Time Strategy | 1 | [real-time-strategy.md](real-time-strategy.md) |
 | Retro | 1 | [retro.md](retro.md) |
@@ -87,7 +88,7 @@
 | Shoot 'Em Up | 3 | [shoot-'em-up.md](shoot-'em-up.md) |
 | Shoot'em up | 1 | [shoot'em-up.md](shoot'em-up.md) |
 | Shooter | 1 | [shooter.md](shooter.md) |
-| Simulation | 55 | [simulation.md](simulation.md) |
+| Simulation | 57 | [simulation.md](simulation.md) |
 | Social Deduction | 1 | [social-deduction.md](social-deduction.md) |
 | Software | 1 | [software.md](software.md) |
 | Souls-like | 3 | [souls-like.md](souls-like.md) |
@@ -109,7 +110,7 @@
 | Turn-based RPG | 5 | [turn-based-rpg.md](turn-based-rpg.md) |
 | Turn-based Strategy | 8 | [turn-based-strategy.md](turn-based-strategy.md) |
 | Turn-based Tactics | 3 | [turn-based-tactics.md](turn-based-tactics.md) |
-| Visual Novel | 214 | [visual-novel.md](visual-novel.md) |
+| Visual Novel | 265 | [visual-novel.md](visual-novel.md) |
 | Walking Simulator | 1 | [walking-simulator.md](walking-simulator.md) |
 
 ## 🏆 Leaderboard
