@@ -1,6 +1,6 @@
 # Visual Novel Games
 
-265 games · 2026-04-20 06:28 UTC
+265 games · 2026-04-21 00:29 UTC
 
 | # | Thumb | Game | Genre | Developer | Publisher | Released | Platforms | Languages | Reviews | Players | Anti-Cheat | Metacritic | Status | Description | Link | Notes |
 |---|-------|------|-------|-----------|-----------|----------|----------|-----------|---------|---------|------------|-----------|--------|-------------|------|-------|
