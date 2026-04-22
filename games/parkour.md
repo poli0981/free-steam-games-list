@@ -1,6 +1,6 @@
 # Parkour Games
 
-1 games · 2026-04-21 00:29 UTC
+1 games · 2026-04-22 00:26 UTC
 
 | # | Thumb | Game | Genre | Developer | Publisher | Released | Platforms | Languages | Reviews | Players | Anti-Cheat | Metacritic | Status | Description | Link | Notes |
 |---|-------|------|-------|-----------|-----------|----------|----------|-----------|---------|---------|------------|-----------|--------|-------------|------|-------|
