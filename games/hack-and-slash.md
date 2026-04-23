@@ -1,6 +1,6 @@
 # Hack and Slash Games
 
-2 games · 2026-04-22 00:26 UTC
+2 games · 2026-04-23 00:31 UTC
 
 | # | Thumb | Game | Genre | Developer | Publisher | Released | Platforms | Languages | Reviews | Players | Anti-Cheat | Metacritic | Status | Description | Link | Notes |
 |---|-------|------|-------|-----------|-----------|----------|----------|-----------|---------|---------|------------|-----------|--------|-------------|------|-------|
