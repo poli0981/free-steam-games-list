@@ -1,6 +1,6 @@
 # Shoot'em up Games
 
-1 games · 2026-04-23 00:31 UTC
+1 games · 2026-04-23 07:36 UTC
 
 | # | Thumb | Game | Genre | Developer | Publisher | Released | Platforms | Languages | Reviews | Players | Anti-Cheat | Metacritic | Status | Description | Link | Notes |
 |---|-------|------|-------|-----------|-----------|----------|----------|-----------|---------|---------|------------|-----------|--------|-------------|------|-------|

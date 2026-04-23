@@ -1,6 +1,6 @@
 # Strategy Games
 
-29 games · 2026-04-23 00:31 UTC
+30 games · 2026-04-23 07:36 UTC
 
 | # | Thumb | Game | Genre | Developer | Publisher | Released | Platforms | Languages | Reviews | Players | Anti-Cheat | Metacritic | Status | Description | Link | Notes |
 |---|-------|------|-------|-----------|-----------|----------|----------|-----------|---------|---------|------------|-----------|--------|-------------|------|-------|
@@ -33,3 +33,4 @@
 | 27 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4267820/ae68f7d3ccce15a18d27c24abf58c0de025458db/header.jpg?t=1772793059' width='120'> | Competitive TicTacToe | Strategy | MKB | MKB | Feb 23, 2026 | Windows, macOS | 10 langs | 50% (8 user reviews) | 0 |  | N/A | ✅ | Revolutionize the classic game. | [Steam](https://store.steampowered.com/app/4267820/) | Not reviewed yet |
 | 28 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1830480/header.jpg?t=1655563413' width='120'> | 50 | Strategy | XYZStudio | XYZStudio | Mar 11, 2022 | Windows | English | 44% (Mixed) | 0 |  | N/A | ✅ | COLLECT MEMBERS!ENFORCE YOUR MEMBER!MAKE YOUR OWN RAIDER!. | [Steam](https://store.steampowered.com/app/1830480/) | Not reviewed yet |
 | 29 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4195470/4176cf059d8c9303e3ea6f055df28a359013e5d5/header.jpg?t=1773282091' width='120'> | Taimanin Squad | Strategy | LiLith | Gremory Games inc. | Mar 4, 2026 | Windows | 6 langs | 38% (Mostly Negative) | 1,146 |  | N/A | ✅ | Lead your squad of captivating girls in this Strategic RPG!. | [Steam](https://store.steampowered.com/app/4195470/) | Not reviewed yet |
+| 30 | <img src='https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/4071040/5747a661d581c0671979649c69f220a9f62cf9e1/header.jpg?t=1776816584' width='120'> | 三国：百将牌 | Strategy | 七星工作室 | bilibili | 22 Apr, 2026 | Windows | Simplified Chinese | 35% (Mostly Negative) | 98 | - | N/A | ✅ | 《三国：百将牌》是一款由bilibili游戏发行的新一代休闲竞技打牌游戏，规则简单易上手，三分钟随时随地来一盘。你将通过你的牌技收集一位位三国名将，并运用手中名将技能改变传统牌局，与其他玩家展开一场简单刺激又充满变数的“桌面较量”。在这里“... | [Steam](https://store.steampowered.com/app/4071040/) | Not reviewed yet |
