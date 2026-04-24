@@ -1,6 +1,6 @@
 # Platformer Games
 
-63 games · 2026-04-24 00:31 UTC
+64 games · 2026-04-24 03:03 UTC
 
 | # | Thumb | Game | Genre | Developer | Publisher | Released | Platforms | Languages | Reviews | Players | Anti-Cheat | Metacritic | Status | Description | Link | Notes |
 |---|-------|------|-------|-----------|-----------|----------|----------|-----------|---------|---------|------------|-----------|--------|-------------|------|-------|
@@ -67,3 +67,4 @@
 | 61 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4234040/f3df16fbd605ec205f6beec958c1f8b6b658fceb/header.jpg?t=1774567097' width='120'> | UKNON Jones - Portal | Platformer | Guynelk ROSAMONT | Guynelk ROSAMONT | Mar 14, 2026 | Windows, macOS, Linux | 9 langs | 38% (8 user reviews) | 0 |  | N/A | ✅ | In this platform and puzzle game, Elsa LOVELUST is equipped with a gate gun. | [Steam](https://store.steampowered.com/app/4234040/) | Not reviewed yet |
 | 62 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4111880/cc9e946372489331b86387679ce74c8849814448/header.jpg?t=1774744917' width='120'> | Räv Kafé | Platformer | Mr. Wincent Fox, KällRäven | FoxMask® | Mar 12, 2026 | Windows | Swedish | 20% (5 user reviews) | 0 |  | N/A | ✅ | Räv Kafé is a 2D action platformer where you wander around in the world and in order to survive you need to find materia... | [Steam](https://store.steampowered.com/app/4111880/) | Swedish language only. |
 | 63 | <img src='https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/4551820/803d5ce5019f710720ad41a78be280efed64a800/header.jpg?t=1775838977' width='120'> | Yuki Jump | Platformer | YukiGames | YukiGames | 10 Apr, 2026 | Windows | English | 0% (1 user reviews) | 0 | - | N/A | ✅ | Climb the Forbidden Jungle Tower in this fast-paced 2D platformer! Jump higher, defeat creepy spiders, snakes, scorpions... | [Steam](https://store.steampowered.com/app/4551820/) | Not reviewed yet |
+| 64 | <img src='https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/4488380/9ed0d14ee1ffaa4dc6dd870bf832f37734c103b9/header.jpg?t=1776987121' width='120'> | Cat Adventure | Platformer | Shamaka | Shamaka | 24 Apr, 2026 | Windows | English | No reviews | 0 | - | N/A | ✅ | Cat Adventure is a fast-paced 2D endless rooftop platformer where you chain precise jumps, use power-ups, chase high sco... | [Steam](https://store.steampowered.com/app/4488380/) | Not reviewed yet |
