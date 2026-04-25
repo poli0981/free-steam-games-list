@@ -1,6 +1,6 @@
 # Indie Games
 
-5 games · 2026-04-25 10:23 UTC
+5 games · 2026-04-25 10:24 UTC
 
 | # | Thumb | Game | Genre | Developer | Publisher | Released | Platforms | Languages | Reviews | Players | Anti-Cheat | Metacritic | Status | Description | Link | Notes |
 |---|-------|------|-------|-----------|-----------|----------|----------|-----------|---------|---------|------------|-----------|--------|-------------|------|-------|
