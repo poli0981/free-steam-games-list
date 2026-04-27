@@ -1,6 +1,6 @@
 # 🎮 Steam F2P Tracker
 
-**1228 games** · 2026-04-27 00:30 UTC
+**1225 games** · 2026-04-27 06:40 UTC
 
 ## 📋 Full List
 
@@ -33,7 +33,7 @@
 | Building | 1 | [building.md](building.md) |
 | Bullet Hell | 15 | [bullet-hell.md](bullet-hell.md) |
 | Card Battler | 1 | [card-battler.md](card-battler.md) |
-| Card Game | 44 | [card-game.md](card-game.md) |
+| Card Game | 43 | [card-game.md](card-game.md) |
 | Casual | 7 | [casual.md](casual.md) |
 | City Builder | 4 | [city-builder.md](city-builder.md) |
 | Clicker | 24 | [clicker.md](clicker.md) |
@@ -67,7 +67,7 @@
 | Life Sim | 2 | [life-sim.md](life-sim.md) |
 | Looter Shooter | 4 | [looter-shooter.md](looter-shooter.md) |
 | MMO | 12 | [mmo.md](mmo.md) |
-| MMORPG | 46 | [mmorpg.md](mmorpg.md) |
+| MMORPG | 44 | [mmorpg.md](mmorpg.md) |
 | MOBA | 10 | [moba.md](moba.md) |
 | Metroidvania | 1 | [metroidvania.md](metroidvania.md) |
 | Parkour | 1 | [parkour.md](parkour.md) |

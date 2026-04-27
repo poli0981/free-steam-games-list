@@ -1,6 +1,6 @@
 # Casual Games
 
-7 games · 2026-04-27 00:30 UTC
+7 games · 2026-04-27 06:40 UTC
 
 | # | Thumb | Game | Genre | Developer | Publisher | Released | Platforms | Languages | Reviews | Players | Anti-Cheat | Metacritic | Status | Description | Link | Notes |
 |---|-------|------|-------|-----------|-----------|----------|----------|-----------|---------|---------|------------|-----------|--------|-------------|------|-------|
