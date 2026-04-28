@@ -1,9 +1,9 @@
 # Cozy Games
 
-3 games · 2026-04-27 06:40 UTC
+3 games · 2026-04-28 00:34 UTC
 
 | # | Thumb | Game | Genre | Developer | Publisher | Released | Platforms | Languages | Reviews | Players | Anti-Cheat | Metacritic | Status | Description | Link | Notes |
 |---|-------|------|-------|-----------|-----------|----------|----------|-----------|---------|---------|------------|-----------|--------|-------------|------|-------|
-| 1 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3476950/343547855baaefc94a93af9c4636b6d0146a4aa5/header.jpg?t=1772476285' width='120'> | Campoca | Cozy | Emma Fagerström, Elsa Ekberg, David Söderström | David Söderström | Dec 24, 2025 | Windows | English | 95% (Positive) | 0 |  | N/A | ✅ | Enter Campoca, where feel-good activities and delightful interactions are yours to enjoy completely for free! Collect jo... | [Steam](https://store.steampowered.com/app/3476950/) | Not reviewed yet |
+| 1 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3476950/343547855baaefc94a93af9c4636b6d0146a4aa5/header.jpg?t=1772476285' width='120'> | Campoca | Cozy | Emma Fagerström, Elsa Ekberg, David Söderström | David Söderström | Dec 24, 2025 | Windows | English | 96% (Positive) | 0 |  | N/A | ✅ | Enter Campoca, where feel-good activities and delightful interactions are yours to enjoy completely for free! Collect jo... | [Steam](https://store.steampowered.com/app/3476950/) | Not reviewed yet |
 | 2 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3342050/header.jpg?t=1748040638' width='120'> | #7-J5Z: The Driftwood Experiment | Cozy | Andrew "VAGRIENT" Bray | Andrew VAGRIENT Bray | Apr 30, 2025 | Windows | English | 87% (Positive) | 0 |  | N/A | ✅ | A simple and short cozy game where you play as an unusual robot, exploring an underwater cave system. | [Steam](https://store.steampowered.com/app/3342050/) | Not reviewed yet |
 | 3 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4396730/1dba7d45def784010d73690835d0845e0024f329/header.jpg?t=1773139679' width='120'> | Dark Ride: Sweet Dreams | Cozy | Paleozoic | Entermotion | Mar 10, 2026 | Windows | English | 86% (7 user reviews) | 0 |  | N/A | ✅ | Dark Ride: Sweet Dreams is a cozy VR dark ride. | [Steam](https://store.steampowered.com/app/4396730/) | VR only |
