@@ -1,6 +1,6 @@
 # Horror Games
 
-89 games · 2026-04-28 00:34 UTC
+89 games · 2026-04-29 00:35 UTC
 
 | # | Thumb | Game | Genre | Developer | Publisher | Released | Platforms | Languages | Reviews | Players | Anti-Cheat | Metacritic | Status | Description | Link | Notes |
 |---|-------|------|-------|-----------|-----------|----------|----------|-----------|---------|---------|------------|-----------|--------|-------------|------|-------|
