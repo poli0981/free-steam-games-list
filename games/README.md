@@ -1,6 +1,6 @@
 # 🎮 Steam F2P Tracker
 
-**1222 games** · 2026-05-04 06:42 UTC
+**1224 games** · 2026-05-04 23:54 UTC
 
 ## 📋 Full List
 
@@ -26,7 +26,7 @@
 | Arena Shooter | 7 | [arena-shooter.md](arena-shooter.md) |
 | Auto Battler | 2 | [auto-battler.md](auto-battler.md) |
 | Automation | 1 | [automation.md](automation.md) |
-| Battle Royale | 15 | [battle-royale.md](battle-royale.md) |
+| Battle Royale | 16 | [battle-royale.md](battle-royale.md) |
 | Beat 'em up | 6 | [beat-'em-up.md](beat-'em-up.md) |
 | Board Game | 4 | [board-game.md](board-game.md) |
 | Boomer Shooter | 1 | [boomer-shooter.md](boomer-shooter.md) |
@@ -73,7 +73,7 @@
 | Parkour | 1 | [parkour.md](parkour.md) |
 | Party Game | 7 | [party-game.md](party-game.md) |
 | Party-Based RPG | 2 | [party-based-rpg.md](party-based-rpg.md) |
-| Platformer | 65 | [platformer.md](platformer.md) |
+| Platformer | 66 | [platformer.md](platformer.md) |
 | Point & Click | 1 | [point-&-click.md](point-&-click.md) |
 | Point-and-Click | 1 | [point-and-click.md](point-and-click.md) |
 | Puzzle | 68 | [puzzle.md](puzzle.md) |

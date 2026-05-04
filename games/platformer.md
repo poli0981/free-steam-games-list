@@ -1,6 +1,6 @@
 # Platformer Games
 
-65 games · 2026-05-04 06:42 UTC
+66 games · 2026-05-04 23:54 UTC
 
 | # | Thumb | Game | Genre | Developer | Publisher | Released | Platforms | Languages | Reviews | Players | Anti-Cheat | Metacritic | Status | Description | Link | Notes |
 |---|-------|------|-------|-----------|-----------|----------|----------|-----------|---------|---------|------------|-----------|--------|-------------|------|-------|
@@ -69,3 +69,4 @@
 | 63 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4111880/cc9e946372489331b86387679ce74c8849814448/header.jpg?t=1774744917' width='120'> | Räv Kafé | Platformer | Mr. Wincent Fox, KällRäven | FoxMask® | Mar 12, 2026 | Windows | Swedish | 33% (6 user reviews) | 0 |  | N/A | ✅ | Räv Kafé is a 2D action platformer where you wander around in the world and in order to survive you need to find materia... | [Steam](https://store.steampowered.com/app/4111880/) | Swedish language only. |
 | 64 | <img src='https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/4530790/151de20bb03fdd0a55d65e15a966f1f72706bb5c/header.jpg?t=1777051186' width='120'> | False Flag | Platformer | Cyvana | Cyvana | 25 Apr, 2026 | Windows | 8 langs | 17% (6 user reviews) | 1 | - | N/A | ✅ | False Flag is a small platform game where the goal isn’t to reach the end. | [Steam](https://store.steampowered.com/app/4530790/) | Not reviewed yet |
 | 65 | <img src='https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/4551820/803d5ce5019f710720ad41a78be280efed64a800/header.jpg?t=1775838977' width='120'> | Yuki Jump | Platformer | YukiGames | YukiGames | 10 Apr, 2026 | Windows | English | 0% (1 user reviews) | 0 | - | N/A | ✅ | Climb the Forbidden Jungle Tower in this fast-paced 2D platformer! Jump higher, defeat creepy spiders, snakes, scorpions... | [Steam](https://store.steampowered.com/app/4551820/) | Not reviewed yet |
+| 66 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4587220/24802857b155bfd194181308b9312db6244f34fe/header.jpg?t=1777931116' width='120'> | Castle Defender | Platformer | zwbaum | zwbaum | May 4, 2026 | Windows, macOS | English | No reviews | 0 | - | N/A | ✅ | This is an action/adventure game where you are a dragonborn knight running through multiple levels in a castle. | [Steam](https://store.steampowered.com/app/4587220/) | Not reviewed yet |

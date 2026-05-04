@@ -1,6 +1,6 @@
 # Battle Royale Games
 
-15 games · 2026-05-04 06:42 UTC
+16 games · 2026-05-04 23:54 UTC
 
 | # | Thumb | Game | Genre | Developer | Publisher | Released | Platforms | Languages | Reviews | Players | Anti-Cheat | Metacritic | Status | Description | Link | Notes |
 |---|-------|------|-------|-----------|-----------|----------|----------|-----------|---------|---------|------------|-----------|--------|-------------|------|-------|
@@ -19,3 +19,4 @@
 | 13 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3461560/e7b83ba8b2503c3c36526b13f3173eee2bc58689/header.jpg?t=1766446754' width='120'> | Heist Royale | Battle Royale | Ballomizzy | Ballomizzy | Dec 22, 2025 | Windows | English | 50% (Mixed) | 0 |  | N/A | ✅ | Heist Royale is a chaotic multiplayer heist game where strategy, sabotage, and speed determine who escapes with the most... | [Steam](https://store.steampowered.com/app/3461560/) | Not reviewed yet |
 | 14 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3984630/ea0611fa373db0766036c522b2cc423729f9e246/header.jpg?t=1764307109' width='120'> | WhoIs | Battle Royale | TaxD | TaxD | Nov 27, 2025 | Windows | 10 langs | 50% (4 user reviews) | 0 |  | N/A | ✅ | A 4-8 player PvP game of deception and paranoia. | [Steam](https://store.steampowered.com/app/3984630/) | Not reviewed yet |
 | 15 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4254250/ab28d1dfc5b383c689b06119d1f2a9c574670752/header.jpg?t=1773683021' width='120'> | Notebook Battlegrounds | Battle Royale | Dragon Level | Dragon Level | Mar 16, 2026 | Windows | English | 50% (8 user reviews) | 0 |  | N/A | ✅ | Gather a few friends for this multiplayer game where your voice is the weapon. | [Steam](https://store.steampowered.com/app/4254250/) | Not reviewed yet |
+| 16 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4620190/e2990142bf79db705e06c50fd4b041f818bee0db/header.jpg?t=1777933467' width='120'> | Ebon Crucible | Battle Royale | Andrew Metcalf | Ebon Crucible | May 4, 2026 | Windows | - | No reviews | 0 | - | N/A | ✅ | The arena where excuses die. | [Steam](https://store.steampowered.com/app/4620190/) | Not reviewed yet |
