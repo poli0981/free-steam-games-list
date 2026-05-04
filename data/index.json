@@ -1,7 +1,7 @@
 {
   "max_per_file": 800,
-  "total": 1225,
-  "last_updated": "2026-05-04T00:34:05Z",
+  "total": 1222,
+  "last_updated": "2026-05-04T06:42:08Z",
   "files": [
     {
       "name": "data_001.jsonl",
@@ -9,7 +9,7 @@
     },
     {
       "name": "data_002.jsonl",
-      "count": 425
+      "count": 422
     }
   ]
 }
