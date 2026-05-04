@@ -1,6 +1,6 @@
 # Simulation Games
 
-64 games · 2026-05-04 00:34 UTC
+63 games · 2026-05-04 06:42 UTC
 
 | # | Thumb | Game | Genre | Developer | Publisher | Released | Platforms | Languages | Reviews | Players | Anti-Cheat | Metacritic | Status | Description | Link | Notes |
 |---|-------|------|-------|-----------|-----------|----------|----------|-----------|---------|---------|------------|-----------|--------|-------------|------|-------|
@@ -67,4 +67,3 @@
 | 61 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1360620/header.jpg?t=1596220559' width='120'> | 20,000 Miles Under the Sea | Simulation | CreaTeam | CreaTeam | Jul 27, 2020 | Windows | 16 langs | 39% (Mostly Negative) | 0 |  | N/A | ✅ | Become a fearless underwater explorer and reach the bottom of The Mariana Trench to win 20,000* REAL DOLLARS!. | [Steam](https://store.steampowered.com/app/1360620/) | Not reviewed yet |
 | 62 | <img src='https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/4154200/a2584322ecadd2ffdde3c0cd17e141aace44bba9/header.jpg?t=1776398533' width='120'> | Patent Tycoon | Simulation | Torasute | Torasute | 17 Apr, 2026 | Windows | English, Japanese | 33% (6 user reviews) | 2 | - | N/A | ✅ | You are the 100th challenger. | [Steam](https://store.steampowered.com/app/4154200/) | Not reviewed yet |
 | 63 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4362600/e8df5a6e0491c030ce545286bb925c913d268f40/header.jpg?t=1773377591' width='120'> | Astralyte | Simulation | Minvwiz | Minvwiz | Mar 12, 2026 | Windows | English | 25% (4 user reviews) | 1 |  | N/A | ✅ | Mine rocks, gather materials, and craft crystals in a calm, system-driven world. | [Steam](https://store.steampowered.com/app/4362600/) | Not reviewed yet |
-| 64 | <img src='https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/3562090/17756f61e453dc7518781f0d41b6d543499dd5e8/header.jpg?t=1776432621' width='120'> | Fremd Wagen: Mod Chaos | Simulation | alpware | alpware | 17 Apr, 2026 | Windows | 12 langs | 0% (1 user reviews) | 0 | - | N/A | ✅ | Fremd Wagen: Modding Mayhem. | [Steam](https://store.steampowered.com/app/3562090/) | Not reviewed yet |

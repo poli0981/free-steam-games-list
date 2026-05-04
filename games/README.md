@@ -1,6 +1,6 @@
 # 🎮 Steam F2P Tracker
 
-**1225 games** · 2026-05-04 00:34 UTC
+**1222 games** · 2026-05-04 06:42 UTC
 
 ## 📋 Full List
 
@@ -26,7 +26,7 @@
 | Arena Shooter | 7 | [arena-shooter.md](arena-shooter.md) |
 | Auto Battler | 2 | [auto-battler.md](auto-battler.md) |
 | Automation | 1 | [automation.md](automation.md) |
-| Battle Royale | 16 | [battle-royale.md](battle-royale.md) |
+| Battle Royale | 15 | [battle-royale.md](battle-royale.md) |
 | Beat 'em up | 6 | [beat-'em-up.md](beat-'em-up.md) |
 | Board Game | 4 | [board-game.md](board-game.md) |
 | Boomer Shooter | 1 | [boomer-shooter.md](boomer-shooter.md) |
@@ -71,7 +71,7 @@
 | MOBA | 10 | [moba.md](moba.md) |
 | Metroidvania | 1 | [metroidvania.md](metroidvania.md) |
 | Parkour | 1 | [parkour.md](parkour.md) |
-| Party Game | 8 | [party-game.md](party-game.md) |
+| Party Game | 7 | [party-game.md](party-game.md) |
 | Party-Based RPG | 2 | [party-based-rpg.md](party-based-rpg.md) |
 | Platformer | 65 | [platformer.md](platformer.md) |
 | Point & Click | 1 | [point-&-click.md](point-&-click.md) |
@@ -91,7 +91,7 @@
 | Shoot 'Em Up | 4 | [shoot-'em-up.md](shoot-'em-up.md) |
 | Shoot'em up | 1 | [shoot'em-up.md](shoot'em-up.md) |
 | Shooter | 4 | [shooter.md](shooter.md) |
-| Simulation | 64 | [simulation.md](simulation.md) |
+| Simulation | 63 | [simulation.md](simulation.md) |
 | Social Deduction | 1 | [social-deduction.md](social-deduction.md) |
 | Software | 1 | [software.md](software.md) |
 | Souls-like | 4 | [souls-like.md](souls-like.md) |
