@@ -1,0 +1,63 @@
+import * as echarts from "echarts/core";
+import {
+  BarChart,
+  PieChart,
+  LineChart,
+  TreemapChart,
+} from "echarts/charts";
+import {
+  GridComponent,
+  TooltipComponent,
+  LegendComponent,
+  TitleComponent,
+  DataZoomComponent,
+  DatasetComponent,
+} from "echarts/components";
+import { CanvasRenderer } from "echarts/renderers";
+import ReactEChartsCore from "echarts-for-react/lib/core";
+import { useMemo } from "react";
+import type { EChartsCoreOption } from "echarts/core";
+
+echarts.use([
+  BarChart,
+  PieChart,
+  LineChart,
+  TreemapChart,
+  GridComponent,
+  TooltipComponent,
+  LegendComponent,
+  TitleComponent,
+  DataZoomComponent,
+  DatasetComponent,
+  CanvasRenderer,
+]);
+
+interface Props {
+  option: EChartsCoreOption;
+  height?: number | string;
+  className?: string;
+}
+
+export function EChart({ option, height = 360, className }: Props) {
+  const opts = useMemo(
+    () => ({
+      ...option,
+      backgroundColor: "transparent",
+      textStyle: {
+        fontFamily: "Inter, system-ui, sans-serif",
+      },
+    }),
+    [option],
+  );
+  return (
+    <ReactEChartsCore
+      echarts={echarts}
+      option={opts}
+      style={{ height, width: "100%" }}
+      className={className}
+      theme="dark"
+      notMerge
+      lazyUpdate
+    />
+  );
+}

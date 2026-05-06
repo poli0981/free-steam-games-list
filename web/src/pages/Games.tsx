@@ -1,0 +1,124 @@
+import { useMemo } from "react";
+import { useGames } from "../hooks/useGames";
+import { GamesTable } from "../components/games/GamesTable";
+import { LoadingState, ErrorState } from "../components/common/QueryState";
+import { useFilters } from "../stores/filters";
+import { Button } from "../components/ui/button";
+import { Badge } from "../components/ui/badge";
+import { X } from "lucide-react";
+
+export function GamesPage() {
+  const q = useGames();
+  const genre = useFilters((s) => s.genre);
+  const setGenre = useFilters((s) => s.setGenre);
+  const typeGame = useFilters((s) => s.type_game);
+  const setTypeGame = useFilters((s) => s.setTypeGame);
+  const platform = useFilters((s) => s.platform);
+  const setPlatform = useFilters((s) => s.setPlatform);
+  const status = useFilters((s) => s.status);
+  const setStatus = useFilters((s) => s.setStatus);
+  const reset = useFilters((s) => s.reset);
+
+  const facets = useMemo(() => {
+    const records = q.data?.records ?? [];
+    const genres = new Map<string, number>();
+    const platforms = new Map<string, number>();
+    for (const r of records) {
+      if (r.genre) genres.set(r.genre, (genres.get(r.genre) ?? 0) + 1);
+      for (const p of r.platforms ?? []) {
+        platforms.set(p, (platforms.get(p) ?? 0) + 1);
+      }
+    }
+    return {
+      genres: Array.from(genres.entries()).sort((a, b) => b[1] - a[1]),
+      platforms: Array.from(platforms.entries()).sort((a, b) => b[1] - a[1]),
+    };
+  }, [q.data]);
+
+  if (q.isLoading) return <LoadingState />;
+  if (q.error) return <ErrorState error={q.error} />;
+  if (!q.data) return null;
+
+  const hasFilter = genre || typeGame || platform || status;
+
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight">Games</h1>
+          <p className="text-sm text-muted-foreground">
+            Browse, search, and filter the catalog. Click a row for full details.
+          </p>
+        </div>
+      </div>
+
+      {/* Filter bar */}
+      <div className="flex flex-wrap items-center gap-2 rounded-lg border bg-card p-3">
+        <select
+          value={genre ?? ""}
+          onChange={(e) => setGenre(e.target.value || null)}
+          className="h-8 rounded-md border bg-background px-2 text-sm"
+        >
+          <option value="">All genres</option>
+          {facets.genres.map(([g, n]) => (
+            <option key={g} value={g}>
+              {g} ({n})
+            </option>
+          ))}
+        </select>
+
+        <select
+          value={typeGame ?? ""}
+          onChange={(e) =>
+            setTypeGame((e.target.value as "online" | "offline") || null)
+          }
+          className="h-8 rounded-md border bg-background px-2 text-sm"
+        >
+          <option value="">All types</option>
+          <option value="online">Online</option>
+          <option value="offline">Offline</option>
+        </select>
+
+        <select
+          value={platform ?? ""}
+          onChange={(e) => setPlatform(e.target.value || null)}
+          className="h-8 rounded-md border bg-background px-2 text-sm"
+        >
+          <option value="">All platforms</option>
+          {facets.platforms.map(([p, n]) => (
+            <option key={p} value={p}>
+              {p} ({n})
+            </option>
+          ))}
+        </select>
+
+        <select
+          value={status ?? ""}
+          onChange={(e) =>
+            setStatus((e.target.value as "active" | "delisted") || null)
+          }
+          className="h-8 rounded-md border bg-background px-2 text-sm"
+        >
+          <option value="">All status</option>
+          <option value="active">Active</option>
+          <option value="delisted">Delisted</option>
+        </select>
+
+        {hasFilter && (
+          <Button variant="ghost" size="sm" onClick={reset}>
+            <X className="mr-1 h-3 w-3" /> Clear
+          </Button>
+        )}
+
+        <div className="ml-auto flex gap-1.5">
+          {genre && <Badge variant="default">genre: {genre}</Badge>}
+          {typeGame && <Badge variant="default">type: {typeGame}</Badge>}
+          {platform && <Badge variant="default">platform: {platform}</Badge>}
+          {status && <Badge variant="default">status: {status}</Badge>}
+        </div>
+      </div>
+
+      <GamesTable records={q.data.records} />
+    </div>
+  );
+}
