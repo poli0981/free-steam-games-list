@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { AuthPanel } from "../components/auth/AuthPanel";
+import { GpgPanel } from "../components/auth/GpgPanel";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
 import { useAuth } from "../stores/auth";
 import { getRateLimit, type RateLimit } from "../lib/github-api";
@@ -33,6 +34,8 @@ export function SettingsPage() {
       </div>
 
       <AuthPanel />
+
+      {auth.isAuthenticated && <GpgPanel />}
 
       {auth.isAuthenticated && rate && (
         <Card>

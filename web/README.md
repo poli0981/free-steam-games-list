@@ -67,19 +67,28 @@ web/
 
 ## Roadmap
 
-- **Phase 1** ✅ — read-only browse, search/filter, 4 MVP charts (KPI, Top Online bar, Genre treemap, Platforms donut), GitHub Pages deploy.
-- **Phase 2** ✅ — PAT-based GitHub auth (Classic PATs auto-sign as "Verified"), single-record edit drawer for the 8 manual fields, diff viewer, single + bulk Steam-link queue via `scripts/temp_info.jsonl`, conflict-retry on PUT, toast notifications.
-- **Phase 3** — bulk edit/delete, remaining 8 charts (heatmap, word cloud, stacked AC, histograms), PWA, i18n vi/en, command palette, activity feed, optional Tauri desktop wrap. Optional: OAuth Device Flow path (requires registering a GitHub OAuth App for the CLIENT_ID).
+- **Phase 1** ✅ — read-only browse, search/filter, 4 MVP charts, GitHub Pages deploy.
+- **Phase 2** ✅ — PAT-based GitHub auth, single-record edit drawer for the 8 manual fields, diff viewer, single + bulk Steam-link queue, conflict-retry, toast notifications.
+- **Phase 3** ✅ — **client-side OpenPGP signing** for verified commits, switched all writes from Contents API to the Git Data API (blob → tree → commit → ref), GPG settings panel with passphrase unlock, lock indicator in topbar, "will sign / unsigned" badge per commit. Earlier claim that PATs auto-sign was wrong — Contents API commits land as Unverified.
+- **Phase 4** — bulk edit/delete, remaining 8 charts (heatmap, word cloud, stacked AC, histograms), PWA, i18n vi/en, command palette, activity feed, optional Tauri desktop wrap.
 
-## Auth & editing
+## Auth + signing
 
-Editing requires a GitHub personal access token. Sign in via **Settings → Sign in**:
+Editing has two layers — both are configured under **Settings**:
 
-1. Create a [Classic PAT](https://github.com/settings/tokens/new?scopes=repo,workflow&description=F2P%20Tracker%20Web%20App) with scopes `repo` + `workflow`.
-2. Paste it into the sign-in form. The token is verified against `/user` and the repo's permissions, then stored in `localStorage`.
-3. Edits commit to `data/data_00X.jsonl` shards. Adds queue into `scripts/temp_info.jsonl`, which auto-triggers the existing `ingest-new.yml` workflow to fetch full Steam metadata.
+1. **GitHub auth (required)** — Classic [PAT](https://github.com/settings/tokens/new?scopes=repo,workflow&description=F2P%20Tracker%20Web%20App) with `repo` + `workflow` scopes. Verified against `/user` and stored in `localStorage`. Used to authenticate every Git Data API call.
+2. **GPG signing (optional but recommended)** — paste your armored OpenPGP private key. The encrypted block stays in `localStorage`; you unlock it once per session with your passphrase. The decrypted key lives in memory only and is wiped on lock or tab close. Each edit/add commit gets a detached binary signature and is sent to `POST /git/commits` with a `signature` field — GitHub then marks the commit **Verified** (provided the key's user-ID email is registered on your account).
 
-Classic PATs produce GitHub-signed "Verified" commits (because GitHub web-flow signs server-side). Fine-grained PATs work too, but commits won't have the Verified badge.
+Without an unlocked GPG key, edits and adds still land — but appear as Unverified on GitHub. The Add and Edit drawers show a `signed`/`unsigned` badge so you always know which path you're on.
+
+## Architecture: how a write happens
+
+Read-side and write-side are deliberately split:
+
+- **Read** — Contents API (`GET /repos/.../contents/{path}`) returns base64 + sha in one round trip. Cheap, used to fetch the latest shard or `temp_info.jsonl` content right before mutation. The sha is informational only; no write happens here.
+- **Write** — Git Data API. `commitFile(...)` orchestrates: `getHead` → `createBlob` (base64 of new content) → `createTree` (rebased on head's tree) → if a `signer` is provided, build the exact commit-object bytes and sign them OpenPGP-detached → `createCommit` (with optional `signature`) → `updateRef` (fast-forward, no force). On 422 ("ref advanced") the helper retries once.
+
+The signed commit-object bytes match Git's wire format exactly — `tree HEX\nparent HEX\nauthor NAME <EMAIL> UNIX_TS +0000\ncommitter ...\n\nMESSAGE\n` — so GitHub recomputes them server-side and the signature verifies.
 
 ## Schema sync
 
