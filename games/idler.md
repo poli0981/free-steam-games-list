@@ -1,6 +1,6 @@
 # Idler Games
 
-15 games · 2026-05-06 16:10 UTC
+15 games · 2026-05-06 16:35 UTC
 
 | # | Thumb | Game | Genre | Developer | Publisher | Released | Platforms | Languages | Reviews | Players | Anti-Cheat | Metacritic | Status | Description | Link | Notes |
 |---|-------|------|-------|-----------|-----------|----------|----------|-----------|---------|---------|------------|-----------|--------|-------------|------|-------|
