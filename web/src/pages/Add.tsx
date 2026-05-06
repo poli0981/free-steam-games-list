@@ -1,7 +1,15 @@
 import { useMemo, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Loader2, PlusCircle, Sparkles, ListPlus, ExternalLink } from "lucide-react";
+import {
+  Loader2,
+  PlusCircle,
+  Sparkles,
+  ListPlus,
+  ExternalLink,
+  ShieldCheck,
+  ShieldAlert,
+} from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "../components/ui/card";
 import { Input } from "../components/ui/input";
 import { Textarea } from "../components/ui/textarea";
@@ -11,12 +19,14 @@ import { Label } from "../components/ui/label";
 import { Separator } from "../components/ui/separator";
 import { useAuth } from "../stores/auth";
 import { useGames } from "../hooks/useGames";
+import { useCommitContext, type CommitContext } from "../hooks/useCommitContext";
 import { addLinks } from "../lib/edits";
 import { extractAppid, normalizeLink } from "../lib/data-store";
 import { LoadingState } from "../components/common/QueryState";
 
 export function AddPage() {
   const auth = useAuth();
+  const ctx = useCommitContext();
   const games = useGames();
   const queryClient = useQueryClient();
 
@@ -30,7 +40,7 @@ export function AddPage() {
   if (games.isLoading) return <LoadingState />;
   if (!games.data) return null;
 
-  if (!auth.isAuthenticated) {
+  if (!auth.isAuthenticated || !ctx) {
     return (
       <div className="max-w-2xl space-y-4">
         <div>
@@ -55,7 +65,7 @@ export function AddPage() {
 
   return (
     <div className="max-w-3xl space-y-6">
-      <div>
+      <div className="space-y-2">
         <h1 className="text-2xl font-semibold tracking-tight">Add games</h1>
         <p className="text-sm text-muted-foreground">
           Paste Steam links — they queue to <code>scripts/temp_info.jsonl</code>. The
@@ -63,16 +73,27 @@ export function AddPage() {
           (name, reviews, players, languages, anti-cheat) and merges it into the data
           shards. Refresh this page in ~3–5 minutes to see new rows.
         </p>
+        {ctx.willSign ? (
+          <Badge variant="success">
+            <ShieldCheck className="mr-1 h-3 w-3" /> commits will be signed
+          </Badge>
+        ) : (
+          <Badge variant="warning">
+            <ShieldAlert className="mr-1 h-3 w-3" /> commits will be unsigned · unlock GPG in Settings to sign
+          </Badge>
+        )}
       </div>
 
       <SingleAdd
         existingAppids={existingAppids}
+        ctx={ctx}
         token={auth.token!}
         onSuccess={() => queryClient.invalidateQueries({ queryKey: ["games"] })}
       />
 
       <BulkAdd
         existingAppids={existingAppids}
+        ctx={ctx}
         token={auth.token!}
         onSuccess={() => queryClient.invalidateQueries({ queryKey: ["games"] })}
       />
@@ -82,11 +103,12 @@ export function AddPage() {
 
 interface SubProps {
   existingAppids: Set<string>;
+  ctx: CommitContext;
   token: string;
   onSuccess: () => void;
 }
 
-function SingleAdd({ existingAppids, token, onSuccess }: SubProps) {
+function SingleAdd({ existingAppids, ctx, token, onSuccess }: SubProps) {
   const [link, setLink] = useState("");
   const [busy, setBusy] = useState(false);
 
@@ -100,9 +122,19 @@ function SingleAdd({ existingAppids, token, onSuccess }: SubProps) {
     if (!normalized) return;
     setBusy(true);
     try {
-      const result = await addLinks([normalized], existingAppids, token);
+      const result = await addLinks({
+        links: [normalized],
+        existingAppids,
+        author: ctx.author,
+        signer: ctx.signer,
+        token,
+      });
       toast.success(`Queued ${result.added.length} game`, {
-        description: `Commit ${result.commitSha.slice(0, 7)} — ingest workflow starting`,
+        description: `${result.commit.sha.slice(0, 7)} · ${result.commit.verified ? "Verified" : "Unverified"} · ingest starting`,
+        action: {
+          label: "View commit",
+          onClick: () => window.open(result.commit.htmlUrl, "_blank"),
+        },
       });
       setLink("");
       onSuccess();
@@ -167,7 +199,7 @@ function SingleAdd({ existingAppids, token, onSuccess }: SubProps) {
   );
 }
 
-function BulkAdd({ existingAppids, token, onSuccess }: SubProps) {
+function BulkAdd({ existingAppids, ctx, token, onSuccess }: SubProps) {
   const [text, setText] = useState("");
   const [busy, setBusy] = useState(false);
 
@@ -203,16 +235,18 @@ function BulkAdd({ existingAppids, token, onSuccess }: SubProps) {
     if (preview.valid.length === 0) return;
     setBusy(true);
     try {
-      const result = await addLinks(preview.valid, existingAppids, token);
+      const result = await addLinks({
+        links: preview.valid,
+        existingAppids,
+        author: ctx.author,
+        signer: ctx.signer,
+        token,
+      });
       toast.success(`Queued ${result.added.length} games`, {
-        description: `Commit ${result.commitSha.slice(0, 7)} — ingest workflow starting`,
+        description: `${result.commit.sha.slice(0, 7)} · ${result.commit.verified ? "Verified" : "Unverified"} · ingest starting`,
         action: {
-          label: "View runs",
-          onClick: () =>
-            window.open(
-              "https://github.com/poli0981/free-steam-games-list/actions/workflows/ingest-new.yml",
-              "_blank",
-            ),
+          label: "View commit",
+          onClick: () => window.open(result.commit.htmlUrl, "_blank"),
         },
       });
       setText("");

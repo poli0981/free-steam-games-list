@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Save, AlertCircle, ExternalLink } from "lucide-react";
+import { Save, AlertCircle, ExternalLink, ShieldCheck, ShieldAlert } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -18,9 +18,9 @@ import { Badge } from "../ui/badge";
 import { DiffViewer } from "./DiffViewer";
 import { useAuth } from "../../stores/auth";
 import { useGames } from "../../hooks/useGames";
+import { useCommitContext } from "../../hooks/useCommitContext";
 import { extractAppid } from "../../lib/data-store";
-import { updateGameWithRetry, type EditPatch } from "../../lib/edits";
-import { ConflictError } from "../../lib/github-api";
+import { updateGame, RefAdvancedError, type EditPatch } from "../../lib/edits";
 import type { GameRecord } from "../../lib/schema";
 
 interface Props {
@@ -73,6 +73,7 @@ function formToPatch(g: GameRecord, form: FormState): EditPatch {
 
 export function EditGameDrawer({ game, onClose }: Props) {
   const auth = useAuth();
+  const ctx = useCommitContext();
   const games = useGames();
   const queryClient = useQueryClient();
   const [form, setForm] = useState<FormState | null>(null);
@@ -117,31 +118,36 @@ export function EditGameDrawer({ game, onClose }: Props) {
   }
 
   async function save() {
-    if (!auth.token || !game || !games.data || flatIndex === -1) return;
+    if (!auth.token || !ctx || !game || !games.data || flatIndex === -1) return;
     setSaving(true);
     try {
-      const result = await updateGameWithRetry({
+      const { commit, shard } = await updateGame({
         record: game,
         patch,
         flatIndex,
         index: games.data.index,
+        author: ctx.author,
+        signer: ctx.signer,
         token: auth.token,
         triggerMarkdownRebuild: true,
       });
-      toast.success("Saved · " + result.commitSha.slice(0, 7), {
-        description: result.shard,
+      const sevenSha = commit.sha.slice(0, 7);
+      const verifiedNote = commit.verified
+        ? "Verified · " + commit.reason
+        : "Unverified · " + commit.reason;
+      toast.success(`Saved ${sevenSha}`, {
+        description: `${shard} · ${verifiedNote}`,
         action: {
           label: "View commit",
-          onClick: () => window.open(result.htmlUrl, "_blank"),
+          onClick: () => window.open(commit.htmlUrl, "_blank"),
         },
       });
-      // Invalidate cache so next refetch pulls fresh data
       await queryClient.invalidateQueries({ queryKey: ["games"] });
       onClose();
     } catch (err) {
-      if (err instanceof ConflictError) {
-        toast.error("Conflict — data changed remotely", {
-          description: "Refetch and re-apply your edits.",
+      if (err instanceof RefAdvancedError) {
+        toast.error("Branch advanced — refetch and retry", {
+          description: "The daily pipeline committed while you were editing.",
         });
         await queryClient.invalidateQueries({ queryKey: ["games"] });
         onClose();
@@ -293,12 +299,36 @@ export function EditGameDrawer({ game, onClose }: Props) {
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <Label>Diff preview</Label>
-                  <Badge variant="secondary">
-                    {Object.keys(patch).length} field
-                    {Object.keys(patch).length === 1 ? "" : "s"}
-                  </Badge>
+                  <div className="flex items-center gap-1.5">
+                    <Badge variant="secondary">
+                      {Object.keys(patch).length} field
+                      {Object.keys(patch).length === 1 ? "" : "s"}
+                    </Badge>
+                    {ctx?.willSign ? (
+                      <Badge variant="success">
+                        <ShieldCheck className="mr-1 h-3 w-3" /> will sign
+                      </Badge>
+                    ) : (
+                      <Badge variant="warning">
+                        <ShieldAlert className="mr-1 h-3 w-3" /> unsigned
+                      </Badge>
+                    )}
+                  </div>
                 </div>
                 <DiffViewer before={game} patch={patch} />
+                {!ctx?.willSign && (
+                  <p className="text-xs text-muted-foreground">
+                    GPG key not unlocked — this commit will land but show as
+                    Unverified on GitHub.{" "}
+                    <a
+                      href="#/settings"
+                      className="text-primary hover:underline"
+                    >
+                      Unlock in Settings
+                    </a>{" "}
+                    to sign.
+                  </p>
+                )}
               </div>
             </>
           )}

@@ -26,6 +26,7 @@ export default defineConfig(({ command }) => ({
           query: ["@tanstack/react-query"],
           table: ["@tanstack/react-table", "@tanstack/react-virtual"],
           echarts: ["echarts", "echarts-for-react"],
+          openpgp: ["openpgp"],
         },
       },
     },
