@@ -1,6 +1,6 @@
 # Strategy Games
 
-35 games · 2026-05-06 16:35 UTC
+36 games · 2026-05-06 16:38 UTC
 
 | # | Thumb | Game | Genre | Developer | Publisher | Released | Platforms | Languages | Reviews | Players | Anti-Cheat | Metacritic | Status | Description | Link | Notes |
 |---|-------|------|-------|-----------|-----------|----------|----------|-----------|---------|---------|------------|-----------|--------|-------------|------|-------|
@@ -39,3 +39,4 @@
 | 33 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4195470/4176cf059d8c9303e3ea6f055df28a359013e5d5/header.jpg?t=1773282091' width='120'> | Taimanin Squad | Strategy | LiLith | Gremory Games inc. | Mar 4, 2026 | Windows | 6 langs | 38% (Mostly Negative) | 1,146 |  | N/A | ✅ | Lead your squad of captivating girls in this Strategic RPG!. | [Steam](https://store.steampowered.com/app/4195470/) | Not reviewed yet |
 | 34 | <img src='https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/4563570/15cf7f4c906c560842c3c40a519b7f823af0ca56/header.jpg?t=1776977359' width='120'> | Battle 3D - Strategy game | Strategy | MobileGamesPro | MobileGamesPro | 24 Apr, 2026 | Windows | 13 langs | 33% (3 user reviews) | 0 | - | N/A | ✅ | Control the military units from above or handle whichever one you want. | [Steam](https://store.steampowered.com/app/4563570/) | Có DLC trả phí |
 | 35 | <img src='https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/4071040/5747a661d581c0671979649c69f220a9f62cf9e1/header.jpg?t=1776816584' width='120'> | 三国：百将牌 | Strategy | 七星工作室 | bilibili | 22 Apr, 2026 | Windows | Simplified Chinese | 32% (Mostly Negative) | 61 | - | N/A | ✅ | 《三国：百将牌》是一款由bilibili游戏发行的新一代休闲竞技打牌游戏，规则简单易上手，三分钟随时随地来一盘。你将通过你的牌技收集一位位三国名将，并运用手中名将技能改变传统牌局，与其他玩家展开一场简单刺激又充满变数的“桌面较量”。在这里“... | [Steam](https://store.steampowered.com/app/4071040/) | Not reviewed yet |
+| 36 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4135990/4b3678c563e169b74b50fe6270d64570e48655db/header.jpg?t=1777996169' width='120'> | Landover | Strategy | VexHex Games | VexHexGames | May 5, 2026 | Windows | English | No reviews | 2 | - | N/A | ✅ | An all time classic strategy game reimagined! Play daily games, or real time classics, 1v1 or 4 player games. | [Steam](https://store.steampowered.com/app/4135990/) | Not reviewed yet |
