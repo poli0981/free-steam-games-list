@@ -68,9 +68,10 @@ web/
 ## Roadmap
 
 - **Phase 1** ✅ — read-only browse, search/filter, 4 MVP charts, GitHub Pages deploy.
-- **Phase 2** ✅ — PAT-based GitHub auth, single-record edit drawer for the 8 manual fields, diff viewer, single + bulk Steam-link queue, conflict-retry, toast notifications.
-- **Phase 3** ✅ — **client-side OpenPGP signing** for verified commits, switched all writes from Contents API to the Git Data API (blob → tree → commit → ref), GPG settings panel with passphrase unlock, lock indicator in topbar, "will sign / unsigned" badge per commit. Earlier claim that PATs auto-sign was wrong — Contents API commits land as Unverified.
-- **Phase 4** — bulk edit/delete, remaining 8 charts (heatmap, word cloud, stacked AC, histograms), PWA, i18n vi/en, command palette, activity feed, optional Tauri desktop wrap.
+- **Phase 2** ✅ — PAT-based GitHub auth, single-record edit drawer, diff viewer, single + bulk Steam-link queue, conflict-retry, toast notifications.
+- **Phase 3** ✅ — client-side OpenPGP signing via Git Data API, GPG settings panel + passphrase unlock + lock indicator. Phase 3's signatures landed as Unverified because OpenPGP.js v6 attaches a `salt@notations.openpgpjs.org` notation by default; GitHub rejects it.
+- **Phase 4** ✅ — **GPG signature verification fix** (`config.nonDeterministicSignaturesViaNotation: false` produces RFC4880 signatures GitHub accepts). Bulk edit + bulk delete (multi-shard, single signed commit). 8 new charts: tags word cloud, languages heatmap, anti-cheat stacked-by-genre, release-year histogram, catalog-growth cumulative line, reviews histogram, online player tiers pie, DRM/DLC bars. Health page with validation badges + workflow triggers. ⌘K command palette (cmdk) for jumping to pages, charts, GPG lock/unlock, and games-by-name.
+- **Phase 5** (later) — PWA, i18n vi/en, activity feed, optional Tauri desktop wrap, optional OAuth Device Flow.
 
 ## Auth + signing
 

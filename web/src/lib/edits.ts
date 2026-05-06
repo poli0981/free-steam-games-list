@@ -10,6 +10,7 @@
 import { getContents, dispatchWorkflow } from "./github-api";
 import {
   commitFileWithRetry,
+  commitFilesWithRetry,
   RefAdvancedError,
   type CommitResult,
 } from "./git-data";
@@ -114,6 +115,164 @@ export async function updateGame(input: UpdateGameInput): Promise<EditResult> {
 }
 
 export { RefAdvancedError };
+
+/* ──────────── Bulk edit (cross-shard, single commit) ──────────── */
+
+export interface BulkEditInput {
+  appids: string[];
+  patch: EditPatch;
+  appidIndex: Map<string, number>;
+  index: DataIndex;
+  author: CommitAuthor;
+  signer?: CommitSigner;
+  token: string;
+  triggerMarkdownRebuild?: boolean;
+}
+
+export interface BulkEditResult {
+  modified: number;
+  shardsTouched: string[];
+  commit: CommitResult;
+}
+
+/**
+ * Apply the same patch to multiple records, possibly spanning multiple shards,
+ * in a SINGLE git commit. Refetches each affected shard's current contents
+ * (so concurrent daily-pipeline edits to non-selected records survive).
+ */
+export async function bulkEditGames(
+  input: BulkEditInput,
+): Promise<BulkEditResult> {
+  // 1. Group target appids by shard.
+  const byShard = new Map<string, string[]>();
+  for (const appid of input.appids) {
+    const flatIdx = input.appidIndex.get(appid);
+    if (flatIdx === undefined) continue;
+    const shard = shardForFlatIndex(flatIdx, input.index);
+    const arr = byShard.get(shard) ?? [];
+    arr.push(appid);
+    byShard.set(shard, arr);
+  }
+  if (byShard.size === 0) {
+    throw new Error("None of the selected records mapped to a shard.");
+  }
+
+  // 2. Fetch + mutate each affected shard in parallel.
+  const files: { path: string; content: string }[] = [];
+  let modified = 0;
+  await Promise.all(
+    Array.from(byShard.entries()).map(async ([shard, appids]) => {
+      const path = `${DATA_DIR}/${shard}`;
+      const current = await getContents(path, input.token);
+      if (!current) throw new Error(`Shard ${shard} not found`);
+      const records = parseShardJsonl(decodeBase64Utf8(current.content));
+      for (const appid of appids) {
+        const idx = findRecordIndexByAppid(records, appid);
+        if (idx === -1) continue;
+        records[idx] = applyPatch(records[idx], input.patch);
+        modified++;
+      }
+      files.push({ path, content: serializeShardJsonl(records) });
+    }),
+  );
+
+  // 3. One signed commit covers all touched shards.
+  const commit = await commitFilesWithRetry({
+    files,
+    message: `Bulk edit ${modified} game${modified === 1 ? "" : "s"} (${byShard.size} shard${byShard.size === 1 ? "" : "s"})`,
+    author: input.author,
+    signer: input.signer,
+    token: input.token,
+  });
+
+  if (input.triggerMarkdownRebuild) {
+    try {
+      await dispatchWorkflow("update-daily.yml", input.token);
+    } catch {
+      /* non-fatal */
+    }
+  }
+
+  return { modified, shardsTouched: files.map((f) => f.path), commit };
+}
+
+/* ──────────── Bulk delete (hard) ──────────── */
+
+export interface BulkDeleteInput {
+  appids: string[];
+  appidIndex: Map<string, number>;
+  index: DataIndex;
+  author: CommitAuthor;
+  signer?: CommitSigner;
+  token: string;
+}
+
+export async function bulkDeleteGames(
+  input: BulkDeleteInput,
+): Promise<{ removed: number; commit: CommitResult }> {
+  const targetSet = new Set(input.appids);
+  if (targetSet.size === 0) throw new Error("No appids to delete.");
+
+  // Group appids per affected shard via in-memory index.
+  const shardsTouched = new Set<string>();
+  for (const appid of targetSet) {
+    const flatIdx = input.appidIndex.get(appid);
+    if (flatIdx === undefined) continue;
+    const shard = shardForFlatIndex(flatIdx, input.index);
+    shardsTouched.add(shard);
+  }
+  if (shardsTouched.size === 0) {
+    throw new Error("Selected records did not match any shard.");
+  }
+
+  // Refetch the entire `removed_games.jsonl` log so we can append.
+  const removedLogPath = "scripts/removed_games.jsonl";
+  const removedLog = await getContents(removedLogPath, input.token);
+  const removedLogText = removedLog ? decodeBase64Utf8(removedLog.content) : "";
+
+  // Refetch + filter each affected shard.
+  const files: { path: string; content: string }[] = [];
+  let removed = 0;
+  const removedRecords: GameRecord[] = [];
+
+  await Promise.all(
+    Array.from(shardsTouched).map(async (shard) => {
+      const path = `${DATA_DIR}/${shard}`;
+      const current = await getContents(path, input.token);
+      if (!current) return;
+      const records = parseShardJsonl(decodeBase64Utf8(current.content));
+      const kept: GameRecord[] = [];
+      for (const r of records) {
+        const aid = extractAppid(r.link);
+        if (aid && targetSet.has(aid)) {
+          removed++;
+          removedRecords.push(r);
+        } else {
+          kept.push(r);
+        }
+      }
+      files.push({ path, content: serializeShardJsonl(kept) });
+    }),
+  );
+
+  // Append removed records to the log.
+  const newLogLines = removedRecords.map((r) => JSON.stringify({ ...r, removed_at: new Date().toISOString() }));
+  const mergedLog =
+    (removedLogText.endsWith("\n") || removedLogText === ""
+      ? removedLogText
+      : removedLogText + "\n") + newLogLines.join("\n") + "\n";
+  files.push({ path: removedLogPath, content: mergedLog });
+
+  const commit = await commitFilesWithRetry({
+    files,
+    message: `Bulk delete ${removed} game${removed === 1 ? "" : "s"}`,
+    author: input.author,
+    signer: input.signer,
+    token: input.token,
+  });
+
+  return { removed, commit };
+}
 
 /* ──────────── Add (queue to temp_info.jsonl) ──────────── */
 
