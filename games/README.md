@@ -1,6 +1,6 @@
 # 🎮 Steam F2P Tracker
 
-**1229 games** · 2026-05-06 17:10 UTC
+**1230 games** · 2026-05-06 18:15 UTC
 
 ## 📋 Full List
 
@@ -47,7 +47,7 @@
 | Exploration | 7 | [exploration.md](exploration.md) |
 | Extraction Shooter | 2 | [extraction-shooter.md](extraction-shooter.md) |
 | FMV | 4 | [fmv.md](fmv.md) |
-| FPS | 26 | [fps.md](fps.md) |
+| FPS | 27 | [fps.md](fps.md) |
 | Farming Sim | 2 | [farming-sim.md](farming-sim.md) |
 | Fighter | 1 | [fighter.md](fighter.md) |
 | Fighting | 7 | [fighting.md](fighting.md) |
