@@ -1,6 +1,6 @@
 # 🎮 Steam F2P Tracker
 
-**1224 games** · 2026-05-06 00:33 UTC
+**1225 games** · 2026-05-06 15:24 UTC
 
 ## 📋 Full List
 
@@ -17,7 +17,7 @@
 | Genre | # | File |
 |-------|---|------|
 | 2D Fighter | 2 | [2d-fighter.md](2d-fighter.md) |
-| Action | 30 | [action.md](action.md) |
+| Action | 31 | [action.md](action.md) |
 | Action RPG | 6 | [action-rpg.md](action-rpg.md) |
 | Action RPG, Gacha | 2 | [action-rpg-gacha.md](action-rpg-gacha.md) |
 | Action-Adventure | 1 | [action-adventure.md](action-adventure.md) |

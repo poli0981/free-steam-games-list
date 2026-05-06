@@ -1,6 +1,6 @@
 # Crafting Games
 
-2 games · 2026-05-06 00:33 UTC
+2 games · 2026-05-06 15:24 UTC
 
 | # | Thumb | Game | Genre | Developer | Publisher | Released | Platforms | Languages | Reviews | Players | Anti-Cheat | Metacritic | Status | Description | Link | Notes |
 |---|-------|------|-------|-----------|-----------|----------|----------|-----------|---------|---------|------------|-----------|--------|-------------|------|-------|
