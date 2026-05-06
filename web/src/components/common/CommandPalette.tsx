@@ -20,6 +20,7 @@ import {
   Unlock,
   ExternalLink,
   Search,
+  History,
 } from "lucide-react";
 import { useGames } from "../../hooks/useGames";
 import { useGpg } from "../../stores/gpg";
@@ -38,6 +39,7 @@ const NAV: NavCmd[] = [
   { label: "Games", to: "/games", icon: Gamepad2, group: "Pages" },
   { label: "Top Online", to: "/top-online", icon: Trophy, group: "Pages" },
   { label: "Health", to: "/health", icon: HeartPulse, group: "Pages" },
+  { label: "Activity", to: "/activity", icon: History, group: "Pages" },
   { label: "Add games", to: "/add", icon: PlusCircle, group: "Pages" },
   { label: "Settings", to: "/settings", icon: SettingsIcon, group: "Pages" },
   { label: "Genres treemap", to: "/charts/genres", icon: PieChart, group: "Charts" },

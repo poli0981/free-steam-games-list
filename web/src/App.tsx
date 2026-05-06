@@ -13,6 +13,7 @@ import { TimePage } from "./pages/charts/Time";
 import { PlayersPage } from "./pages/charts/Players";
 import { DrmPage } from "./pages/charts/Drm";
 import { HealthPage } from "./pages/Health";
+import { ActivityPage } from "./pages/Activity";
 import { AddPage } from "./pages/Add";
 import { SettingsPage } from "./pages/Settings";
 
@@ -36,6 +37,7 @@ export default function App() {
           <Route path="drm" element={<DrmPage />} />
         </Route>
         <Route path="health" element={<HealthPage />} />
+        <Route path="activity" element={<ActivityPage />} />
         <Route path="add" element={<AddPage />} />
         <Route path="settings" element={<SettingsPage />} />
         <Route path="*" element={<Navigate to="/" replace />} />

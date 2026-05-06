@@ -15,6 +15,7 @@ import {
   Clock,
   Users,
   Lock,
+  History,
 } from "lucide-react";
 import { cn } from "../../lib/utils";
 
@@ -45,6 +46,7 @@ const CHARTS: NavItem[] = [
 
 const SECONDARY: NavItem[] = [
   { to: "/health", label: "Health", icon: HeartPulse },
+  { to: "/activity", label: "Activity", icon: History },
   { to: "/add", label: "Add", icon: PlusCircle },
   { to: "/settings", label: "Settings", icon: Settings },
 ];

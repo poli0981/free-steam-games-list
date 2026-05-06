@@ -2,8 +2,10 @@ import { Outlet } from "react-router-dom";
 import { Sidebar } from "./Sidebar";
 import { Topbar } from "./Topbar";
 import { CommandPalette } from "../common/CommandPalette";
+import { useGpgAutolock } from "../../hooks/useGpgAutolock";
 
 export function Layout() {
+  useGpgAutolock();
   return (
     <div className="flex h-screen overflow-hidden">
       <Sidebar />
