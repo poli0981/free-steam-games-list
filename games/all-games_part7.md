@@ -1,6 +1,6 @@
 # All Free-to-Play Games (Part 7/7)
 
-Games 1201–1225 of 1225 · Generated: 2026-05-06 15:24 UTC
+Games 1201–1226 of 1226 · Generated: 2026-05-06 16:09 UTC
 
 | # | Thumb | Game | Genre | Developer | Publisher | Released | Platforms | Languages | Reviews | Players | Anti-Cheat | Metacritic | Status | Description | Link | Notes |
 |---|-------|------|-------|-----------|-----------|----------|----------|-----------|---------|---------|------------|-----------|--------|-------------|------|-------|
@@ -29,3 +29,4 @@ Games 1201–1225 of 1225 · Generated: 2026-05-06 15:24 UTC
 | 1223 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4620190/e2990142bf79db705e06c50fd4b041f818bee0db/header.jpg?t=1777933467' width='120'> | Ebon Crucible | Battle Royale | Andrew Metcalf | Ebon Crucible | May 4, 2026 | Windows | - | No reviews | 0 | - | N/A | ✅ | The arena where excuses die. | [Steam](https://store.steampowered.com/app/4620190/) | Not reviewed yet |
 | 1224 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4587220/24802857b155bfd194181308b9312db6244f34fe/header.jpg?t=1777931116' width='120'> | Castle Defender | Platformer | zwbaum | zwbaum | May 4, 2026 | Windows, macOS | English | 0% (2 user reviews) | 0 | - | N/A | ✅ | This is an action/adventure game where you are a dragonborn knight running through multiple levels in a castle. | [Steam](https://store.steampowered.com/app/4587220/) | Not reviewed yet |
 | 1225 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4398810/03c1c5ebb069c5926a545055fbccc4148aee1142/header.jpg?t=1778065871' width='120'> | Atomix | Action | T.M.Ngulo | T.M.Ngulo | May 6, 2026 | Windows | English | No reviews | 1 | - | N/A | ✅ | Atomix is a single player Arcade style First Person Shooter where you get to pilot mechanical suits across a unique Sci-... | [Steam](https://store.steampowered.com/app/4398810/) | Not reviewed yet |
+| 1226 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4609830/ebeb509083a30b00d4aa10d13e02e0e20e066a0f/header.jpg?t=1777995039' width='120'> | Allelon | Action | Driftwood Studios | Driftwood Studios | May 5, 2026 | Windows | English | No reviews | 0 | - | N/A | ✅ | Play as Ollie and Spade, a rebel and detective, on both sides of a high-profile murder case, in a dual-character investi... | [Steam](https://store.steampowered.com/app/4609830/) | Not reviewed yet |

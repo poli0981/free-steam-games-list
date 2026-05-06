@@ -1,6 +1,6 @@
 # Battle Royale Games
 
-16 games · 2026-05-06 15:24 UTC
+16 games · 2026-05-06 16:09 UTC
 
 | # | Thumb | Game | Genre | Developer | Publisher | Released | Platforms | Languages | Reviews | Players | Anti-Cheat | Metacritic | Status | Description | Link | Notes |
 |---|-------|------|-------|-----------|-----------|----------|----------|-----------|---------|---------|------------|-----------|--------|-------------|------|-------|

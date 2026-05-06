@@ -1,6 +1,6 @@
 # Action Games
 
-31 games · 2026-05-06 15:24 UTC
+32 games · 2026-05-06 16:09 UTC
 
 | # | Thumb | Game | Genre | Developer | Publisher | Released | Platforms | Languages | Reviews | Players | Anti-Cheat | Metacritic | Status | Description | Link | Notes |
 |---|-------|------|-------|-----------|-----------|----------|----------|-----------|---------|---------|------------|-----------|--------|-------------|------|-------|
@@ -35,3 +35,4 @@
 | 29 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4370650/93e103f76ba31745dc165803d48dd6c409cbff61/header.jpg?t=1774277662' width='120'> | Mini UP | Action | Procursator Studio | Procursator Studio | Mar 20, 2026 | Windows | English | 40% (5 user reviews) | 0 |  | N/A | ✅ | Mini UP is a free parkour game where every second counts. | [Steam](https://store.steampowered.com/app/4370650/) | Not reviewed yet |
 | 30 | <img src='https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/4579730/a53010832b2fa7a6b6083d5de0815650b158e7e0/header.jpg?t=1776884407' width='120'> | Exonie Online | Action | Xenie Gaming | Xenie Gaming | 20 Apr, 2026 | Windows | English | 38% (Mostly Negative) | 4 | - | N/A | ✅ | Master the ranks in Exonie Online, a 2D pixel-art MMORPG. | [Steam](https://store.steampowered.com/app/4579730/) | Not reviewed yet |
 | 31 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4398810/03c1c5ebb069c5926a545055fbccc4148aee1142/header.jpg?t=1778065871' width='120'> | Atomix | Action | T.M.Ngulo | T.M.Ngulo | May 6, 2026 | Windows | English | No reviews | 1 | - | N/A | ✅ | Atomix is a single player Arcade style First Person Shooter where you get to pilot mechanical suits across a unique Sci-... | [Steam](https://store.steampowered.com/app/4398810/) | Not reviewed yet |
+| 32 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4609830/ebeb509083a30b00d4aa10d13e02e0e20e066a0f/header.jpg?t=1777995039' width='120'> | Allelon | Action | Driftwood Studios | Driftwood Studios | May 5, 2026 | Windows | English | No reviews | 0 | - | N/A | ✅ | Play as Ollie and Spade, a rebel and detective, on both sides of a high-profile murder case, in a dual-character investi... | [Steam](https://store.steampowered.com/app/4609830/) | Not reviewed yet |
