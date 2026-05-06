@@ -7,6 +7,13 @@ export const REPO_OWNER = "poli0981";
 export const REPO_NAME = "free-steam-games-list";
 export const DEFAULT_BRANCH = "main";
 
+/**
+ * Only this GitHub login sees the edit/add/delete UI. Visitors signed in
+ * with their own PATs would fail at API write anyway, but we hide the UI
+ * to keep the experience unambiguous for non-owners.
+ */
+export const OWNER_LOGIN = "poli0981";
+
 export const DATA_DIR = "data";
 export const SHARD_PREFIX = "data_";
 export const MAX_RECORDS_PER_FILE = 800;

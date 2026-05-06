@@ -1,6 +1,8 @@
 import { create } from "zustand";
 
 export type SortDir = "asc" | "desc" | null;
+export type PageSize = 50 | 100 | 200 | 500 | -1;
+export const PAGE_SIZES: PageSize[] = [50, 100, 200, 500, -1];
 
 export interface FilterState {
   search: string;
@@ -12,6 +14,7 @@ export interface FilterState {
   hasAntiCheat: boolean | null;
   sortKey: string | null;
   sortDir: SortDir;
+  pageSize: PageSize;
   selected: Set<string>;
   setSearch: (s: string) => void;
   setGenre: (g: string | null) => void;
@@ -21,6 +24,7 @@ export interface FilterState {
   setStatus: (s: "active" | "delisted" | null) => void;
   setHasAntiCheat: (b: boolean | null) => void;
   setSort: (key: string | null, dir: SortDir) => void;
+  setPageSize: (size: PageSize) => void;
   toggleSelect: (appid: string) => void;
   selectAll: (appids: string[]) => void;
   clearSelection: () => void;
@@ -37,6 +41,7 @@ const initial = {
   hasAntiCheat: null,
   sortKey: null,
   sortDir: null as SortDir,
+  pageSize: 100 as PageSize,
   selected: new Set<string>(),
 };
 
@@ -50,6 +55,7 @@ export const useFilters = create<FilterState>((set) => ({
   setStatus: (status) => set({ status }),
   setHasAntiCheat: (hasAntiCheat) => set({ hasAntiCheat }),
   setSort: (sortKey, sortDir) => set({ sortKey, sortDir }),
+  setPageSize: (pageSize) => set({ pageSize }),
   toggleSelect: (appid) =>
     set((s) => {
       const next = new Set(s.selected);

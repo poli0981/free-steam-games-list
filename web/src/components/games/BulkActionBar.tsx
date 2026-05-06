@@ -16,7 +16,9 @@ import { useFilters } from "../../stores/filters";
 import { useGames } from "../../hooks/useGames";
 import { useAuth } from "../../stores/auth";
 import { useCommitContext } from "../../hooks/useCommitContext";
+import { useIsOwner } from "../../hooks/useIsOwner";
 import { bulkDeleteGames } from "../../lib/edits";
+import { pollCommitVerification } from "../../lib/verify-commit";
 import { BulkEditDrawer } from "./BulkEditDrawer";
 
 interface Props {
@@ -29,10 +31,14 @@ export function BulkActionBar({ visibleAppids }: Props) {
   const clearSelection = useFilters((s) => s.clearSelection);
   const auth = useAuth();
   const ctx = useCommitContext();
+  const isOwner = useIsOwner();
   const games = useGames();
   const qc = useQueryClient();
   const [editing, setEditing] = useState(false);
   const [deleting, setDeleting] = useState(false);
+
+  // Hide bulk affordances entirely for non-owners — they can't push anyway.
+  if (!isOwner) return null;
 
   if (selected.size === 0) {
     if (visibleAppids.length === 0) return null;
@@ -62,6 +68,7 @@ export function BulkActionBar({ visibleAppids }: Props) {
     )
       return;
     setDeleting(true);
+    const toastId = `delete-${Date.now()}`;
     try {
       const result = await bulkDeleteGames({
         appids: Array.from(selected),
@@ -71,19 +78,36 @@ export function BulkActionBar({ visibleAppids }: Props) {
         signer: ctx.signer,
         token: auth.token,
       });
+      const sevenSha = result.commit.sha.slice(0, 7);
       toast.success(`Deleted ${result.removed} games`, {
-        description: `${result.commit.sha.slice(0, 7)} · ${
-          result.commit.verified ? "Verified" : "Unverified"
-        }`,
+        id: toastId,
+        description: ctx.willSign
+          ? `${sevenSha} · verifying…`
+          : `${sevenSha} · unsigned`,
         action: {
           label: "View commit",
           onClick: () => window.open(result.commit.htmlUrl, "_blank"),
         },
       });
+      if (ctx.willSign) {
+        void pollCommitVerification(result.commit.sha, auth.token).then((v) => {
+          toast.success(`Deleted ${result.removed} games`, {
+            id: toastId,
+            description: v.verified
+              ? `${sevenSha} · Verified ✓`
+              : `${sevenSha} · Unverified · ${v.reason}`,
+            action: {
+              label: "View commit",
+              onClick: () => window.open(result.commit.htmlUrl, "_blank"),
+            },
+          });
+        });
+      }
       clearSelection();
       await qc.invalidateQueries({ queryKey: ["games"] });
     } catch (err) {
       toast.error("Bulk delete failed", {
+        id: toastId,
         description: err instanceof Error ? err.message : String(err),
       });
     } finally {

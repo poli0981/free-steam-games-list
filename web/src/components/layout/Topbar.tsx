@@ -1,10 +1,11 @@
-import { Search, Sun, Moon, Monitor, ShieldCheck, Lock, Unlock } from "lucide-react";
+import { Search, Sun, Moon, Monitor, ShieldCheck, Unlock } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { Badge } from "../ui/badge";
 import { PwaIndicator } from "../common/PwaIndicator";
+import { GpgQuickUnlock } from "../auth/GpgQuickUnlock";
 import { useFilters } from "../../stores/filters";
 import { useGames } from "../../hooks/useGames";
 import { useAuth } from "../../stores/auth";
@@ -96,14 +97,7 @@ export function Topbar() {
                 <span>signed</span>
               </button>
             ) : (
-              <Link
-                to="/settings"
-                title="GPG locked · unlock to sign commits"
-                className="inline-flex items-center gap-1 rounded-md border border-amber-500/30 bg-amber-500/10 px-2 py-1 text-xs text-amber-300 hover:bg-amber-500/15"
-              >
-                <Lock className="h-3 w-3" />
-                <span>locked</span>
-              </Link>
+              <GpgQuickUnlock />
             ))}
           <Link
             to="/settings"

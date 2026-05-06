@@ -28,11 +28,13 @@ import {
 import { extractAppid } from "../../lib/data-store";
 import type { GameRecord } from "../../lib/schema";
 import { EditGameDrawer } from "./EditGameDrawer";
-import { useAuth } from "../../stores/auth";
+import { useIsOwner } from "../../hooks/useIsOwner";
 
 interface Props {
   game: GameRecord | null;
   onClose: () => void;
+  /** Set when the deep-link URL pointed at an appid that doesn't exist. */
+  missing?: string;
 }
 
 function Field({
@@ -55,13 +57,38 @@ function Field({
   );
 }
 
-export function GameDetailDrawer({ game, onClose }: Props) {
-  const auth = useAuth();
+export function GameDetailDrawer({ game, onClose, missing }: Props) {
+  const isOwner = useIsOwner();
   const [editing, setEditing] = useState(false);
 
   return (
-    <Dialog open={!!game} onOpenChange={(o) => !o && onClose()}>
+    <Dialog open={!!game || !!missing} onOpenChange={(o) => !o && onClose()}>
       <DialogContent>
+        {!game && missing && (
+          <div className="space-y-3">
+            <DialogHeader>
+              <DialogTitle>Game not found</DialogTitle>
+              <DialogDescription>
+                appid <code>{missing}</code> isn't in the current dataset. It may
+                have been delisted, removed, or queued for the next ingest run.
+                Check{" "}
+                <a
+                  href={`https://store.steampowered.com/app/${missing}/`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-primary hover:underline"
+                >
+                  the Steam page
+                </a>{" "}
+                or{" "}
+                <a href="#/health" className="text-primary hover:underline">
+                  Health
+                </a>
+                .
+              </DialogDescription>
+            </DialogHeader>
+          </div>
+        )}
         {game && (
           <div className="space-y-6">
             <DialogHeader>
@@ -74,7 +101,7 @@ export function GameDetailDrawer({ game, onClose }: Props) {
               )}
               <div className="flex items-start justify-between gap-3">
                 <DialogTitle className="text-xl">{game.name || "—"}</DialogTitle>
-                {auth.isAuthenticated && (
+                {isOwner && (
                   <Button
                     size="sm"
                     variant="outline"

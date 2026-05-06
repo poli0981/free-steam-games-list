@@ -1,18 +1,33 @@
 import { useMemo, useRef, useState, useEffect } from "react";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import Fuse from "fuse.js";
-import { ArrowUp, ArrowDown, ExternalLink } from "lucide-react";
+import {
+  ArrowUp,
+  ArrowDown,
+  ExternalLink,
+  AlertTriangle,
+  ChevronLeft,
+  ChevronRight,
+  Download,
+  FileJson,
+  FileSpreadsheet,
+} from "lucide-react";
 import { Badge } from "../ui/badge";
-import { useFilters } from "../../stores/filters";
+import { Button } from "../ui/button";
+import { useFilters, PAGE_SIZES, type PageSize } from "../../stores/filters";
 import { formatNumber, parseIntSafe, parseReviewPercent } from "../../lib/utils";
 import { extractAppid } from "../../lib/data-store";
 import type { GameRecord } from "../../lib/schema";
 import { cn } from "../../lib/utils";
 import { GameDetailDrawer } from "./GameDetailDrawer";
 import { BulkActionBar } from "./BulkActionBar";
+import { exportCsv, exportJson } from "../../lib/export";
+import { recordIssues } from "../../lib/validation";
 
 interface Props {
   records: GameRecord[];
+  /** Called when a row's body is clicked; if omitted, falls back to internal drawer. */
+  onRowOpen?: (game: GameRecord) => void;
 }
 
 interface ColDef {
@@ -41,6 +56,23 @@ const COLS: ColDef[] = [
       ) : (
         <div className="h-8 w-16 rounded bg-muted" />
       ),
+  },
+  {
+    key: "issues",
+    label: "",
+    width: 28,
+    render: (g) => {
+      const issues = recordIssues(g);
+      if (issues.length === 0) return null;
+      return (
+        <div
+          className="grid h-5 w-5 place-items-center rounded text-amber-400"
+          title={issues.map((i) => i.label).join(" · ")}
+        >
+          <AlertTriangle className="h-3 w-3" />
+        </div>
+      );
+    },
   },
   {
     key: "name",
@@ -183,7 +215,7 @@ const COLS: ColDef[] = [
 
 const TOTAL_WIDTH = COLS.reduce((s, c) => s + c.width, 0);
 
-export function GamesTable({ records }: Props) {
+export function GamesTable({ records, onRowOpen }: Props) {
   const search = useFilters((s) => s.search);
   const genre = useFilters((s) => s.genre);
   const typeGame = useFilters((s) => s.type_game);
@@ -192,13 +224,21 @@ export function GamesTable({ records }: Props) {
   const sortKey = useFilters((s) => s.sortKey);
   const sortDir = useFilters((s) => s.sortDir);
   const setSort = useFilters((s) => s.setSort);
+  const pageSize = useFilters((s) => s.pageSize);
+  const setPageSize = useFilters((s) => s.setPageSize);
   const selected = useFilters((s) => s.selected);
   const toggleSelect = useFilters((s) => s.toggleSelect);
   const [detail, setDetail] = useState<GameRecord | null>(null);
+  const [page, setPage] = useState(1);
 
   // Clear selection on unmount.
   const clearSelection = useFilters((s) => s.clearSelection);
   useEffect(() => clearSelection, [clearSelection]);
+
+  // Reset page when filters or page size change.
+  useEffect(() => {
+    setPage(1);
+  }, [search, genre, typeGame, platform, status, pageSize]);
 
   const fuse = useMemo(
     () =>
@@ -239,22 +279,37 @@ export function GamesTable({ records }: Props) {
     return arr;
   }, [filtered, sortKey, sortDir]);
 
+  const totalPages =
+    pageSize === -1 ? 1 : Math.max(1, Math.ceil(sorted.length / pageSize));
+  const safePage = Math.min(page, totalPages);
+
+  const paged = useMemo(() => {
+    if (pageSize === -1) return sorted;
+    const start = (safePage - 1) * pageSize;
+    return sorted.slice(start, start + pageSize);
+  }, [sorted, pageSize, safePage]);
+
   const containerRef = useRef<HTMLDivElement>(null);
   const rowVirtualizer = useVirtualizer({
-    count: sorted.length,
+    count: paged.length,
     getScrollElement: () => containerRef.current,
     estimateSize: () => 44,
     overscan: 12,
   });
 
+  // Reset scroll to top whenever the page slice changes.
+  useEffect(() => {
+    containerRef.current?.scrollTo({ top: 0 });
+  }, [safePage, pageSize, sortKey, sortDir]);
+
   const visibleAppids = useMemo(() => {
     const out: string[] = [];
-    for (const g of sorted) {
+    for (const g of paged) {
       const aid = extractAppid(g.link);
       if (aid) out.push(aid);
     }
     return out;
-  }, [sorted]);
+  }, [paged]);
 
   function toggleSort(key: string) {
     if (sortKey !== key) return setSort(key, "desc");
@@ -270,7 +325,7 @@ export function GamesTable({ records }: Props) {
       <BulkActionBar visibleAppids={visibleAppids} />
 
       <div className="rounded-lg border bg-card">
-        <div className="flex items-center justify-between border-b px-3 py-2 text-xs text-muted-foreground">
+        <div className="flex flex-wrap items-center justify-between gap-2 border-b px-3 py-2 text-xs text-muted-foreground">
           <span>
             <strong className="text-foreground">{formatNumber(sorted.length)}</strong>{" "}
             of {formatNumber(records.length)} games
@@ -280,11 +335,54 @@ export function GamesTable({ records }: Props) {
               </span>
             )}
           </span>
+
+          <div className="flex flex-wrap items-center gap-1.5">
+            <ExportMenu records={sorted} />
+            <select
+              value={pageSize}
+              onChange={(e) => setPageSize(Number(e.target.value) as PageSize)}
+              className="h-7 rounded-md border bg-background px-1.5 text-xs"
+              title="Rows per page"
+            >
+              {PAGE_SIZES.map((n) => (
+                <option key={n} value={n}>
+                  {n === -1 ? "All" : `${n}/page`}
+                </option>
+              ))}
+            </select>
+            {pageSize !== -1 && (
+              <>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-7 w-7 p-0"
+                  onClick={() => setPage((p) => Math.max(1, p - 1))}
+                  disabled={safePage <= 1}
+                  title="Previous page"
+                >
+                  <ChevronLeft className="h-3.5 w-3.5" />
+                </Button>
+                <span className="px-1 font-mono">
+                  {safePage}/{totalPages}
+                </span>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-7 w-7 p-0"
+                  onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                  disabled={safePage >= totalPages}
+                  title="Next page"
+                >
+                  <ChevronRight className="h-3.5 w-3.5" />
+                </Button>
+              </>
+            )}
+          </div>
         </div>
 
         <div
           ref={containerRef}
-          className="relative h-[calc(100vh-300px)] overflow-auto scrollbar-thin"
+          className="relative h-[calc(100vh-300px)] overflow-auto [&::-webkit-scrollbar]:hidden [scrollbar-width:none]"
         >
           <div style={{ width: totalWidth, minWidth: "100%" }}>
             {/* Header */}
@@ -331,7 +429,7 @@ export function GamesTable({ records }: Props) {
               }}
             >
               {rowVirtualizer.getVirtualItems().map((vrow) => {
-                const g = sorted[vrow.index];
+                const g = paged[vrow.index];
                 const aid = extractAppid(g.link) ?? "";
                 const isSelected = selected.has(aid);
                 return (
@@ -345,7 +443,7 @@ export function GamesTable({ records }: Props) {
                       transform: `translateY(${vrow.start}px)`,
                       height: vrow.size,
                     }}
-                    onClick={() => setDetail(g)}
+                    onClick={() => (onRowOpen ? onRowOpen(g) : setDetail(g))}
                     data-appid={aid}
                   >
                     <div
@@ -383,8 +481,58 @@ export function GamesTable({ records }: Props) {
           </div>
         </div>
 
-        <GameDetailDrawer game={detail} onClose={() => setDetail(null)} />
+        {!onRowOpen && (
+          <GameDetailDrawer game={detail} onClose={() => setDetail(null)} />
+        )}
       </div>
+    </div>
+  );
+}
+
+function ExportMenu({ records }: { records: GameRecord[] }) {
+  const [open, setOpen] = useState(false);
+  const ts = new Date().toISOString().slice(0, 10);
+  return (
+    <div className="relative">
+      <Button
+        variant="ghost"
+        size="sm"
+        className="h-7 px-2 text-xs"
+        onClick={() => setOpen((o) => !o)}
+        title={`Export ${records.length} filtered rows`}
+      >
+        <Download className="mr-1 h-3 w-3" />
+        Export
+      </Button>
+      {open && (
+        <>
+          <div className="fixed inset-0 z-10" onClick={() => setOpen(false)} />
+          <div className="absolute right-0 top-full z-20 mt-1 w-44 rounded-md border bg-card p-1 shadow-lg">
+            <button
+              type="button"
+              onClick={() => {
+                exportCsv(records, `f2p-games-${ts}.csv`);
+                setOpen(false);
+              }}
+              className="flex w-full items-center gap-2 rounded px-2 py-1.5 text-left text-xs hover:bg-accent"
+            >
+              <FileSpreadsheet className="h-3 w-3" /> CSV
+              <span className="ml-auto text-muted-foreground">{records.length} rows</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                exportJson(records, `f2p-games-${ts}.json`);
+                setOpen(false);
+              }}
+              className="flex w-full items-center gap-2 rounded px-2 py-1.5 text-left text-xs hover:bg-accent"
+            >
+              <FileJson className="h-3 w-3" /> JSON
+              <span className="ml-auto text-muted-foreground">{records.length} rows</span>
+            </button>
+          </div>
+        </>
+      )}
     </div>
   );
 }
