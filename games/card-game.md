@@ -1,6 +1,6 @@
 # Card Game Games
 
-43 games · 2026-05-06 18:40 UTC
+43 games · 2026-05-06 18:42 UTC
 
 | # | Thumb | Game | Genre | Developer | Publisher | Released | Platforms | Languages | Reviews | Players | Anti-Cheat | Metacritic | Status | Description | Link | Notes |
 |---|-------|------|-------|-----------|-----------|----------|----------|-----------|---------|---------|------------|-----------|--------|-------------|------|-------|
