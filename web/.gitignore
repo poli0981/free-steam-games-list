@@ -1,0 +1,11 @@
+node_modules
+dist
+dist-ssr
+.vite
+*.local
+.env
+.env.local
+.DS_Store
+
+# TS incremental build info
+*.tsbuildinfo

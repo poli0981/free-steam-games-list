@@ -44,3 +44,6 @@ cache/ export-ignore
 
 .DS_Store export-ignore
 
+# Web app build artifacts — exclude from GitHub language stats
+web/dist/** linguist-generated=true
+web/node_modules/** linguist-vendored=true
