@@ -158,7 +158,8 @@ export interface CommitResult {
 
 /**
  * Build the exact bytes of a Git commit object so OpenPGP.js can sign them.
- * GitHub recomputes this server-side; if our bytes diverge, signature fails.
+ * GitHub recomputes this server-side; if our bytes diverge, signature fails
+ * with verification.reason="invalid".
  *
  * Format (each \n is literal):
  *   tree HEX\n
@@ -166,7 +167,13 @@ export interface CommitResult {
  *   author NAME <EMAIL> UNIX_TS +0000\n
  *   committer NAME <EMAIL> UNIX_TS +0000\n
  *   \n
- *   MESSAGE\n
+ *   MESSAGE              ← NO trailing newline
+ *
+ * Empirical: GitHub's verification.payload (the bytes it actually verifies
+ * the signature against) does NOT include a trailing \n after the message.
+ * Earlier we appended one and the signature came back as `reason: "invalid"`
+ * because the bytes were 1 byte longer than GitHub's. See
+ * GET /repos/{o}/{r}/commits/{sha}.commit.verification.payload to inspect.
  */
 export function buildCommitContent(input: CreateCommitInput): string {
   const fmt = (id: IdentityInput) =>
@@ -177,7 +184,7 @@ export function buildCommitContent(input: CreateCommitInput): string {
     `author ${fmt(input.author)}\n` +
     `committer ${fmt(input.committer)}\n`;
   const message = input.message.replace(/\n+$/, "");
-  return `${headers}\n${message}\n`;
+  return `${headers}\n${message}`;
 }
 
 export async function createCommit(
