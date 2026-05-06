@@ -7,16 +7,16 @@
  *   • After each successful edit commit, dispatches update-daily.yml so the
  *     markdown tables in games/ stay in sync with the data shards.
  */
-import { getContents, dispatchWorkflow } from "./github-api";
+import { dispatchWorkflow } from "./github-api";
 import {
   commitFileWithRetry,
   commitFilesWithRetry,
+  getRepoFileText,
   RefAdvancedError,
   type CommitResult,
 } from "./git-data";
 import {
   shardForFlatIndex,
-  decodeBase64Utf8,
   parseShardJsonl,
   serializeShardJsonl,
   findRecordIndexByAppid,
@@ -80,15 +80,14 @@ export async function updateGame(input: UpdateGameInput): Promise<EditResult> {
   const shard = shardForFlatIndex(input.flatIndex, input.index);
   const shardPath = `${DATA_DIR}/${shard}`;
 
-  const current = await getContents(shardPath, input.token);
+  const current = await getRepoFileText(shardPath, input.token);
   if (!current) throw new Error(`Shard not found: ${shardPath}`);
 
-  const text = decodeBase64Utf8(current.content);
-  const records = parseShardJsonl(text);
+  const records = parseShardJsonl(current.text);
   const idx = findRecordIndexByAppid(records, appid);
   if (idx === -1) {
     throw new Error(
-      `Record ${appid} not found in ${shard} — shard may have been re-balanced.`,
+      `Record ${appid} not found in ${shard} (${records.length} rows in shard) — shard may have been re-balanced.`,
     );
   }
   records[idx] = applyPatch(records[idx], input.patch);
@@ -141,12 +140,15 @@ export async function replaceGame(input: ReplaceGameInput): Promise<EditResult> 
 
   const shard = shardForFlatIndex(input.flatIndex, input.index);
   const shardPath = `${DATA_DIR}/${shard}`;
-  const current = await getContents(shardPath, input.token);
+  const current = await getRepoFileText(shardPath, input.token);
   if (!current) throw new Error(`Shard not found: ${shardPath}`);
 
-  const records = parseShardJsonl(decodeBase64Utf8(current.content));
+  const records = parseShardJsonl(current.text);
   const idx = findRecordIndexByAppid(records, appid);
-  if (idx === -1) throw new Error(`Record ${appid} not in ${shard}`);
+  if (idx === -1)
+    throw new Error(
+      `Record ${appid} not in ${shard} (${records.length} rows in shard)`,
+    );
 
   // Preserve added_at from the original — it's a "creation time" the user
   // shouldn't be able to retroactively rewrite via the JSON editor.
@@ -222,9 +224,9 @@ export async function bulkEditGames(
   await Promise.all(
     Array.from(byShard.entries()).map(async ([shard, appids]) => {
       const path = `${DATA_DIR}/${shard}`;
-      const current = await getContents(path, input.token);
+      const current = await getRepoFileText(path, input.token);
       if (!current) throw new Error(`Shard ${shard} not found`);
-      const records = parseShardJsonl(decodeBase64Utf8(current.content));
+      const records = parseShardJsonl(current.text);
       for (const appid of appids) {
         const idx = findRecordIndexByAppid(records, appid);
         if (idx === -1) continue;
@@ -286,8 +288,8 @@ export async function bulkDeleteGames(
 
   // Refetch the entire `removed_games.jsonl` log so we can append.
   const removedLogPath = "scripts/removed_games.jsonl";
-  const removedLog = await getContents(removedLogPath, input.token);
-  const removedLogText = removedLog ? decodeBase64Utf8(removedLog.content) : "";
+  const removedLog = await getRepoFileText(removedLogPath, input.token);
+  const removedLogText = removedLog?.text ?? "";
 
   // Refetch + filter each affected shard.
   const files: { path: string; content: string }[] = [];
@@ -297,9 +299,9 @@ export async function bulkDeleteGames(
   await Promise.all(
     Array.from(shardsTouched).map(async (shard) => {
       const path = `${DATA_DIR}/${shard}`;
-      const current = await getContents(path, input.token);
+      const current = await getRepoFileText(path, input.token);
       if (!current) return;
-      const records = parseShardJsonl(decodeBase64Utf8(current.content));
+      const records = parseShardJsonl(current.text);
       const kept: GameRecord[] = [];
       for (const r of records) {
         const aid = extractAppid(r.link);
@@ -410,8 +412,8 @@ export async function addLinks(input: AddLinksInput): Promise<AddLinksResult> {
     throw new Error("No new links to add. " + skipped.map((s) => s.reason).join(", "));
   }
 
-  const current = await getContents(TEMP_JSONL, input.token);
-  const existingText = current ? decodeBase64Utf8(current.content) : "";
+  const current = await getRepoFileText(TEMP_JSONL, input.token);
+  const existingText = current?.text ?? "";
   const existingLines = existingText.split("\n").filter((l) => l.trim());
 
   const queuedAppids = new Set<string>();

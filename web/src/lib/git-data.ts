@@ -60,17 +60,71 @@ export async function getHead(token: string): Promise<RefHead> {
 /** Fetch a blob's UTF-8 text content by sha. */
 export async function getBlobText(
   sha: string,
-  token: string,
+  token: string | null,
 ): Promise<string> {
-  const blob = await ghJson<{ content: string; encoding: "base64" }>(
+  const headers: Record<string, string> = {
+    Accept: "application/vnd.github+json",
+    "X-GitHub-Api-Version": "2022-11-28",
+  };
+  if (token) headers.Authorization = `Bearer ${token}`;
+  const res = await fetch(
     `${API}/repos/${REPO_OWNER}/${REPO_NAME}/git/blobs/${sha}`,
-    { headers: authHeaders(token) },
+    { headers },
   );
+  if (!res.ok) throw new Error(`GET blob ${sha}: ${res.status}`);
+  const blob = (await res.json()) as { content: string; encoding: "base64" };
   const cleaned = blob.content.replace(/\s/g, "");
   const bin = atob(cleaned);
   const bytes = new Uint8Array(bin.length);
   for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
   return new TextDecoder("utf-8").decode(bytes);
+}
+
+/**
+ * Fetch a repo file as UTF-8 text, transparently falling back from the
+ * Contents API to the Git blob endpoint for files over GitHub's 1 MB
+ * Contents-API limit.
+ *
+ * The Contents API is one round trip and gives us the file SHA + base64
+ * content for files ≤ 1 MB. For oversize files it returns the SHA but
+ * `encoding: "none"` and an empty `content` — at which point we re-fetch
+ * via `/git/blobs/{sha}` (no size limit).
+ *
+ * Returns the same `{ sha, text }` shape regardless of which path was used.
+ * `sha` is the BLOB sha, suitable for PUT-on-Contents-API conflict checks
+ * if the caller still wants that path.
+ */
+export async function getRepoFileText(
+  pathInRepo: string,
+  token: string | null,
+): Promise<{ text: string; sha: string } | null> {
+  const headers: Record<string, string> = {
+    Accept: "application/vnd.github+json",
+    "X-GitHub-Api-Version": "2022-11-28",
+  };
+  if (token) headers.Authorization = `Bearer ${token}`;
+  const res = await fetch(
+    `${API}/repos/${REPO_OWNER}/${REPO_NAME}/contents/${pathInRepo}?ref=${DEFAULT_BRANCH}`,
+    { headers },
+  );
+  if (res.status === 404) return null;
+  if (!res.ok) throw new Error(`GET contents ${pathInRepo}: ${res.status}`);
+  const data = (await res.json()) as {
+    sha: string;
+    content?: string;
+    encoding?: string;
+    size?: number;
+  };
+  if (data.encoding === "base64" && data.content) {
+    const cleaned = data.content.replace(/\s/g, "");
+    const bin = atob(cleaned);
+    const bytes = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+    return { text: new TextDecoder("utf-8").decode(bytes), sha: data.sha };
+  }
+  // Oversize file → fetch via blob endpoint. Same blob SHA from Contents API.
+  const text = await getBlobText(data.sha, token);
+  return { text, sha: data.sha };
 }
 
 /** Look up a single file's blob sha within the head tree, returning null if absent. */
