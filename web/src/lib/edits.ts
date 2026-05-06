@@ -116,6 +116,65 @@ export async function updateGame(input: UpdateGameInput): Promise<EditResult> {
 
 export { RefAdvancedError };
 
+/* ──────────── Replace whole record (JSON editor) ──────────── */
+
+export interface ReplaceGameInput {
+  original: GameRecord;
+  replacement: GameRecord;
+  flatIndex: number;
+  index: DataIndex;
+  author: CommitAuthor;
+  signer?: CommitSigner;
+  token: string;
+  triggerMarkdownRebuild?: boolean;
+}
+
+export async function replaceGame(input: ReplaceGameInput): Promise<EditResult> {
+  const appid = extractAppid(input.original.link);
+  const replacementAppid = extractAppid(input.replacement.link);
+  if (!appid) throw new Error("Original record has no appid");
+  if (replacementAppid !== appid) {
+    throw new Error(
+      "Replacement link's appid must match the original. Edit the right record or create a new one.",
+    );
+  }
+
+  const shard = shardForFlatIndex(input.flatIndex, input.index);
+  const shardPath = `${DATA_DIR}/${shard}`;
+  const current = await getContents(shardPath, input.token);
+  if (!current) throw new Error(`Shard not found: ${shardPath}`);
+
+  const records = parseShardJsonl(decodeBase64Utf8(current.content));
+  const idx = findRecordIndexByAppid(records, appid);
+  if (idx === -1) throw new Error(`Record ${appid} not in ${shard}`);
+
+  // Preserve added_at from the original — it's a "creation time" the user
+  // shouldn't be able to retroactively rewrite via the JSON editor.
+  records[idx] = {
+    ...input.replacement,
+    added_at: input.original.added_at || input.replacement.added_at,
+  };
+
+  const commit = await commitFileWithRetry({
+    path: shardPath,
+    content: serializeShardJsonl(records),
+    message: `Replace ${input.replacement.name || appid} (${shard}) — full JSON edit`,
+    author: input.author,
+    signer: input.signer,
+    token: input.token,
+  });
+
+  if (input.triggerMarkdownRebuild) {
+    try {
+      await dispatchWorkflow("update-daily.yml", input.token);
+    } catch {
+      /* non-fatal */
+    }
+  }
+
+  return { shard, commit };
+}
+
 /* ──────────── Bulk edit (cross-shard, single commit) ──────────── */
 
 export interface BulkEditInput {
@@ -276,8 +335,25 @@ export async function bulkDeleteGames(
 
 /* ──────────── Add (queue to temp_info.jsonl) ──────────── */
 
+/**
+ * One entry destined for `scripts/temp_info.jsonl`. Pipeline's
+ * `parse_entries` accepts a dict with `link` plus any MANUAL_FIELDS overrides
+ * (genre / type_game / anti_cheat / anti_cheat_note / is_kernel_ac / notes /
+ * safe). Manual values survive the daily refetch.
+ */
+export interface AddEntry {
+  link: string;
+  genre?: string;
+  type_game?: "online" | "offline" | "";
+  anti_cheat?: string;
+  anti_cheat_note?: string;
+  is_kernel_ac?: boolean | null;
+  notes?: string;
+  safe?: "y" | "n" | "?" | "";
+}
+
 export interface AddLinksInput {
-  links: string[];
+  entries: AddEntry[];
   existingAppids: Set<string>;
   author: CommitAuthor;
   signer?: CommitSigner;
@@ -285,18 +361,28 @@ export interface AddLinksInput {
 }
 
 export interface AddLinksResult {
-  added: string[];
+  added: AddEntry[];
   skipped: { link: string; reason: string }[];
   commit: CommitResult;
 }
 
+function pruneEmpty(e: AddEntry): AddEntry {
+  const out: Record<string, unknown> = { link: e.link };
+  for (const [k, v] of Object.entries(e)) {
+    if (k === "link") continue;
+    if (v === undefined || v === null || v === "") continue;
+    out[k] = v;
+  }
+  return out as unknown as AddEntry;
+}
+
 export async function addLinks(input: AddLinksInput): Promise<AddLinksResult> {
-  const added: string[] = [];
+  const added: AddEntry[] = [];
   const skipped: { link: string; reason: string }[] = [];
   const seenInBatch = new Set<string>();
 
-  for (const raw of input.links) {
-    const trimmed = raw.trim();
+  for (const raw of input.entries) {
+    const trimmed = (raw.link ?? "").trim();
     if (!trimmed) continue;
     const normalized = normalizeLink(trimmed);
     if (!normalized) {
@@ -317,7 +403,7 @@ export async function addLinks(input: AddLinksInput): Promise<AddLinksResult> {
       continue;
     }
     seenInBatch.add(appid);
-    added.push(normalized);
+    added.push(pruneEmpty({ ...raw, link: normalized }));
   }
 
   if (added.length === 0) {
@@ -339,20 +425,20 @@ export async function addLinks(input: AddLinksInput): Promise<AddLinksResult> {
     }
   }
 
-  const trulyNew: string[] = [];
-  for (const link of added) {
-    const aid = extractAppid(link);
+  const trulyNew: AddEntry[] = [];
+  for (const e of added) {
+    const aid = extractAppid(e.link);
     if (aid && queuedAppids.has(aid)) {
-      skipped.push({ link, reason: "already queued" });
+      skipped.push({ link: e.link, reason: "already queued" });
     } else {
-      trulyNew.push(link);
+      trulyNew.push(e);
     }
   }
   if (trulyNew.length === 0) {
     throw new Error("All links are already queued.");
   }
 
-  const newLines = trulyNew.map((l) => JSON.stringify({ link: l }));
+  const newLines = trulyNew.map((e) => JSON.stringify(e));
   const merged = [...existingLines, ...newLines].join("\n") + "\n";
 
   const commit = await commitFileWithRetry({

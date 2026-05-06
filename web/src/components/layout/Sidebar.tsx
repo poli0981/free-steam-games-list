@@ -1,4 +1,5 @@
 import { NavLink } from "react-router-dom";
+import { useIsOwner } from "../../hooks/useIsOwner";
 import {
   LayoutDashboard,
   Gamepad2,
@@ -16,6 +17,7 @@ import {
   Users,
   Lock,
   History,
+  Info,
 } from "lucide-react";
 import { cn } from "../../lib/utils";
 
@@ -44,10 +46,15 @@ const CHARTS: NavItem[] = [
   { to: "/charts/drm", label: "DRM/DLC", icon: Lock },
 ];
 
-const SECONDARY: NavItem[] = [
+interface NavItemWithOwner extends NavItem {
+  ownerOnly?: boolean;
+}
+
+const SECONDARY: NavItemWithOwner[] = [
   { to: "/health", label: "Health", icon: HeartPulse },
   { to: "/activity", label: "Activity", icon: History },
-  { to: "/add", label: "Add", icon: PlusCircle },
+  { to: "/add", label: "Add", icon: PlusCircle, ownerOnly: true },
+  { to: "/about", label: "About", icon: Info },
   { to: "/settings", label: "Settings", icon: Settings },
 ];
 
@@ -72,6 +79,8 @@ function Item({ item }: { item: NavItem }) {
 }
 
 export function Sidebar() {
+  const isOwner = useIsOwner();
+  const visibleSecondary = SECONDARY.filter((i) => !i.ownerOnly || isOwner);
   return (
     <aside className="hidden w-60 shrink-0 border-r bg-card/40 lg:flex lg:flex-col">
       <div className="flex h-14 items-center gap-2 border-b px-4">
@@ -107,7 +116,7 @@ export function Sidebar() {
             Manage
           </div>
           <div className="space-y-1">
-            {SECONDARY.map((i) => (
+            {visibleSecondary.map((i) => (
               <Item key={i.to} item={i} />
             ))}
           </div>

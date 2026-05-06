@@ -19,6 +19,14 @@ import { useAuth } from "../../stores/auth";
 import { useGames } from "../../hooks/useGames";
 import { useCommitContext } from "../../hooks/useCommitContext";
 import { bulkEditGames, type EditPatch } from "../../lib/edits";
+import { pollCommitVerification } from "../../lib/verify-commit";
+import {
+  ANTI_CHEAT_ENUM,
+  GENRE_ENUM,
+  TYPE_GAME_ENUM,
+  SAFE_ENUM,
+  STATUS_ENUM,
+} from "../../lib/enums";
 
 interface Props {
   appids: string[];
@@ -111,6 +119,7 @@ export function BulkEditDrawer({ appids, onClose, onCommitted }: Props) {
       return;
     }
     setSaving(true);
+    const toastId = `bulk-${Date.now()}`;
     try {
       const result = await bulkEditGames({
         appids,
@@ -122,17 +131,37 @@ export function BulkEditDrawer({ appids, onClose, onCommitted }: Props) {
         token: auth.token,
         triggerMarkdownRebuild: true,
       });
+      const sevenSha = result.commit.sha.slice(0, 7);
+      const shardsLabel = `${result.shardsTouched.length} shard${result.shardsTouched.length === 1 ? "" : "s"}`;
       toast.success(`Bulk edited ${result.modified} games`, {
-        description: `${result.commit.sha.slice(0, 7)} · ${result.commit.verified ? "Verified" : "Unverified"} · ${result.shardsTouched.length} shard${result.shardsTouched.length === 1 ? "" : "s"}`,
+        id: toastId,
+        description: ctx.willSign
+          ? `${sevenSha} · ${shardsLabel} · verifying…`
+          : `${sevenSha} · ${shardsLabel} · unsigned`,
         action: {
           label: "View commit",
           onClick: () => window.open(result.commit.htmlUrl, "_blank"),
         },
       });
+      if (ctx.willSign) {
+        void pollCommitVerification(result.commit.sha, auth.token).then((v) => {
+          toast.success(`Bulk edited ${result.modified} games`, {
+            id: toastId,
+            description: v.verified
+              ? `${sevenSha} · ${shardsLabel} · Verified ✓`
+              : `${sevenSha} · ${shardsLabel} · Unverified · ${v.reason}`,
+            action: {
+              label: "View commit",
+              onClick: () => window.open(result.commit.htmlUrl, "_blank"),
+            },
+          });
+        });
+      }
       await qc.invalidateQueries({ queryKey: ["games"] });
       onCommitted();
     } catch (err) {
       toast.error("Bulk edit failed", {
+        id: toastId,
         description: err instanceof Error ? err.message : String(err),
       });
     } finally {
@@ -159,11 +188,17 @@ export function BulkEditDrawer({ appids, onClose, onCommitted }: Props) {
             onToggle={(v) => set("genre", { enabled: v })}
           >
             <Input
+              list="bulk-genre-list"
               value={form.genre.value}
               onChange={(e) => set("genre", { value: e.target.value })}
               disabled={!form.genre.enabled}
-              placeholder="FPS, MOBA, …"
+              placeholder="Pick or type…"
             />
+            <datalist id="bulk-genre-list">
+              {GENRE_ENUM.map((g) => (
+                <option key={g} value={g} />
+              ))}
+            </datalist>
           </BulkField>
 
           <BulkField
@@ -179,9 +214,11 @@ export function BulkEditDrawer({ appids, onClose, onCommitted }: Props) {
               disabled={!form.type_game.enabled}
               className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm disabled:opacity-50"
             >
-              <option value="">— unknown —</option>
-              <option value="online">online</option>
-              <option value="offline">offline</option>
+              {TYPE_GAME_ENUM.map((t) => (
+                <option key={t || "u"} value={t}>
+                  {t || "— unknown —"}
+                </option>
+              ))}
             </select>
           </BulkField>
 
@@ -190,12 +227,36 @@ export function BulkEditDrawer({ appids, onClose, onCommitted }: Props) {
             enabled={form.anti_cheat.enabled}
             onToggle={(v) => set("anti_cheat", { enabled: v })}
           >
-            <Input
-              value={form.anti_cheat.value}
-              onChange={(e) => set("anti_cheat", { value: e.target.value })}
+            <select
+              value={
+                (ANTI_CHEAT_ENUM as readonly string[]).includes(form.anti_cheat.value)
+                  ? form.anti_cheat.value
+                  : "__custom__"
+              }
+              onChange={(e) => {
+                const v = e.target.value;
+                if (v === "__custom__") set("anti_cheat", { value: "" });
+                else set("anti_cheat", { value: v });
+              }}
               disabled={!form.anti_cheat.enabled}
-              placeholder="VAC, EAC, BattlEye, … or - if none"
-            />
+              className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm disabled:opacity-50"
+            >
+              {ANTI_CHEAT_ENUM.map((a) => (
+                <option key={a} value={a}>
+                  {a === "-" ? "— none —" : a}
+                </option>
+              ))}
+              <option value="__custom__">Custom…</option>
+            </select>
+            {!(ANTI_CHEAT_ENUM as readonly string[]).includes(form.anti_cheat.value) && (
+              <Input
+                value={form.anti_cheat.value}
+                onChange={(e) => set("anti_cheat", { value: e.target.value })}
+                disabled={!form.anti_cheat.enabled}
+                placeholder="Custom AC name"
+                className="mt-1"
+              />
+            )}
           </BulkField>
 
           <BulkField
@@ -245,9 +306,11 @@ export function BulkEditDrawer({ appids, onClose, onCommitted }: Props) {
               disabled={!form.safe.enabled}
               className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm disabled:opacity-50"
             >
-              <option value="?">unknown</option>
-              <option value="y">yes</option>
-              <option value="n">no</option>
+              {SAFE_ENUM.map((s) => (
+                <option key={s} value={s}>
+                  {s === "?" ? "unknown" : s === "y" ? "yes" : "no"}
+                </option>
+              ))}
             </select>
           </BulkField>
 
@@ -264,8 +327,11 @@ export function BulkEditDrawer({ appids, onClose, onCommitted }: Props) {
               disabled={!form.status.enabled}
               className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm disabled:opacity-50"
             >
-              <option value="active">active</option>
-              <option value="delisted">delisted</option>
+              {STATUS_ENUM.map((s) => (
+                <option key={s} value={s}>
+                  {s}
+                </option>
+              ))}
             </select>
           </BulkField>
 

@@ -15,6 +15,7 @@ import { DrmPage } from "./pages/charts/Drm";
 import { HealthPage } from "./pages/Health";
 import { ActivityPage } from "./pages/Activity";
 import { AddPage } from "./pages/Add";
+import { AboutPage } from "./pages/About";
 import { SettingsPage } from "./pages/Settings";
 
 export default function App() {
@@ -23,6 +24,7 @@ export default function App() {
       <Route element={<Layout />}>
         <Route index element={<Dashboard />} />
         <Route path="games" element={<GamesPage />} />
+        <Route path="games/:appid" element={<GamesPage />} />
         <Route path="top-online" element={<TopOnlinePage />} />
         <Route path="charts">
           <Route index element={<Navigate to="/charts/genres" replace />} />
@@ -39,6 +41,7 @@ export default function App() {
         <Route path="health" element={<HealthPage />} />
         <Route path="activity" element={<ActivityPage />} />
         <Route path="add" element={<AddPage />} />
+        <Route path="about" element={<AboutPage />} />
         <Route path="settings" element={<SettingsPage />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Route>

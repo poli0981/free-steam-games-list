@@ -1,57 +1,112 @@
 name: 🐛 Bug Report
-description: Report a bug or error (wrong name, broken thumbnail, etc.)
+description: Report a bug or wrong data (broken thumbnail, wrong genre, web app issue, etc.)
 title: "[Bug] "
-labels: [ "bug" ]
+labels: ["bug"]
 body:
   - type: markdown
     attributes:
       value: |
         Thanks for reporting! This broke unemployed dev will check when caffeine kicks in :))
+        For things that aren't bugs (just a missing game / wrong genre), the **Add games** or
+        **Delete game** templates are usually faster.
+
+  - type: dropdown
+    id: surface
+    attributes:
+      label: Where did you see it?
+      description: Helps me figure out which layer to look at first.
+      options:
+        - "Web app — https://poli0981.github.io/free-steam-games-list/"
+        - "GitHub markdown — games/*.md"
+        - "Top online — games/top-online.md"
+        - "Raw data — data/data_*.jsonl"
+        - "API / direct fetch"
+        - "Other (describe below)"
+    validations:
+      required: true
 
   - type: checkboxes
     id: bug-type
     attributes:
       label: What kind of bug?
-      description: Check all that apply (multiple OK)
+      description: Check all that apply (multiple OK).
       options:
-        - label: Wrong game name
-        - label: Broken/dead link
+        - label: Wrong game name / genre / metadata
+        - label: Broken or dead link
         - label: Thumbnail not showing
-        - label: Missing column in table
-        - label: Wrong game count/total
-        - label: Reviews/players not updating
-        - label: Table layout broken (mobile?)
+        - label: Reviews / players not updating
+        - label: Wrong game count / total
+        - label: Table / chart layout broken
+        - label: Edit / Add / Delete failed (web app)
+        - label: GPG signature unverified (web app)
+        - label: Service worker / offline cache issue
+        - label: Dropdown / form validation issue
+        - label: Mobile-specific
         - label: Other (describe below)
 
   - type: textarea
     id: description
     attributes:
       label: Describe the bug
-      description: What happened? Which game(s)? How many game(s) affected?
+      description: |
+        What happened? Which game(s) or page(s)? How many records affected?
+        If it's a web-app bug, include the URL after the hash (e.g.
+        `#/games/730` or `#/charts/anti-cheat`).
     validations:
       required: true
 
   - type: textarea
     id: steps
     attributes:
-      label: Steps to reproduce (optional)
-      description: How can I see the bug?
+      label: Steps to reproduce
+      description: How can I see the bug? Numbered list works great.
+      placeholder: |
+        1. Open #/games
+        2. Filter genre = FPS
+        3. Click row "Counter-Strike 2"
+        4. Edit drawer fails to open
 
   - type: textarea
     id: screenshots
     attributes:
-      label: Screenshots/Links (optional)
-      description: Paste links or describe
+      label: Screenshots / links
+      description: |
+        Paste image URLs (drag-drop into this field works) or links to the
+        affected commit / row / chart. The web app supports per-game
+        permalinks — `https://poli0981.github.io/free-steam-games-list/#/games/{appid}`.
+
+  - type: input
+    id: env-browser
+    attributes:
+      label: Browser & OS (for web app bugs)
+      description: e.g. Chrome 142 on Windows 11, Safari 17.4 on iPad, Firefox 134 on Ubuntu.
+      placeholder: Chrome 142 on Windows 11
+
+  - type: input
+    id: env-version
+    attributes:
+      label: Web app version (for web app bugs)
+      description: Hover the F2P Tracker title in the sidebar — it shows the version.
+      placeholder: v0.1
+
+  - type: textarea
+    id: console
+    attributes:
+      label: Console / network errors (optional)
+      description: |
+        DevTools → Console for JS errors, Network for failed requests. Paste
+        full stack traces. PII-safe; no PATs / secrets please.
+      render: text
 
   - type: checkboxes
     id: priority
     attributes:
-      label: Priority level to fix (choose one only)
+      label: Priority level (choose one)
       options:
         - label: Not urgent (nice to have)
         - label: Could be useful
         - label: Very needed
-        - label: Urgent af
+        - label: Urgent — blocking real use
     validations:
       required: true
 
@@ -59,7 +114,7 @@ body:
     id: terms
     attributes:
       label: Final check
-      description: I understand off-topic/spam will be ignored by default. Good luck :))
+      description: I understand off-topic / spam will be ignored by default. Good luck :))
       options:
-        - label: I agree – this is a real bug report
+        - label: I agree — this is a real bug report
           required: true

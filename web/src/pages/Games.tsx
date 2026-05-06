@@ -1,6 +1,8 @@
 import { useMemo } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { useGames } from "../hooks/useGames";
 import { GamesTable } from "../components/games/GamesTable";
+import { GameDetailDrawer } from "../components/games/GameDetailDrawer";
 import { LoadingState, ErrorState } from "../components/common/QueryState";
 import { useFilters } from "../stores/filters";
 import { Button } from "../components/ui/button";
@@ -9,6 +11,8 @@ import { X } from "lucide-react";
 
 export function GamesPage() {
   const q = useGames();
+  const navigate = useNavigate();
+  const { appid } = useParams<{ appid: string }>();
   const genre = useFilters((s) => s.genre);
   const setGenre = useFilters((s) => s.setGenre);
   const typeGame = useFilters((s) => s.type_game);
@@ -40,6 +44,12 @@ export function GamesPage() {
   if (!q.data) return null;
 
   const hasFilter = genre || typeGame || platform || status;
+  const linkedGame = appid
+    ? (() => {
+        const idx = q.data.appidIndex.get(appid);
+        return idx === undefined ? null : q.data.records[idx];
+      })()
+    : null;
 
   return (
     <div className="space-y-4">
@@ -118,7 +128,18 @@ export function GamesPage() {
         </div>
       </div>
 
-      <GamesTable records={q.data.records} />
+      <GamesTable
+        records={q.data.records}
+        onRowOpen={(g) => navigate(`/games/${g.link.match(/\/app\/(\d+)/)?.[1] ?? ""}`)}
+      />
+
+      {appid && (
+        <GameDetailDrawer
+          game={linkedGame}
+          onClose={() => navigate("/games")}
+          missing={!linkedGame ? appid : undefined}
+        />
+      )}
     </div>
   );
 }
