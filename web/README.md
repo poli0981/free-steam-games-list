@@ -70,8 +70,20 @@ web/
 - **Phase 1** ✅ — read-only browse, search/filter, 4 MVP charts, GitHub Pages deploy.
 - **Phase 2** ✅ — PAT-based GitHub auth, single-record edit drawer, diff viewer, single + bulk Steam-link queue, conflict-retry, toast notifications.
 - **Phase 3** ✅ — client-side OpenPGP signing via Git Data API, GPG settings panel + passphrase unlock + lock indicator. Phase 3's signatures landed as Unverified because OpenPGP.js v6 attaches a `salt@notations.openpgpjs.org` notation by default; GitHub rejects it.
-- **Phase 4** ✅ — **GPG signature verification fix** (`config.nonDeterministicSignaturesViaNotation: false` produces RFC4880 signatures GitHub accepts). Bulk edit + bulk delete (multi-shard, single signed commit). 8 new charts: tags word cloud, languages heatmap, anti-cheat stacked-by-genre, release-year histogram, catalog-growth cumulative line, reviews histogram, online player tiers pie, DRM/DLC bars. Health page with validation badges + workflow triggers. ⌘K command palette (cmdk) for jumping to pages, charts, GPG lock/unlock, and games-by-name.
-- **Phase 5** (later) — PWA, i18n vi/en, activity feed, optional Tauri desktop wrap, optional OAuth Device Flow.
+- **Phase 4** ✅ — GPG salt-notation fix, bulk edit + bulk delete (multi-shard single signed commit), 8 remaining charts, Health page with workflow triggers, ⌘K command palette.
+- **Phase 4.1** ✅ — GPG signature payload fix: dropped trailing `\n` after the commit message so our signed bytes match `verification.payload` byte-for-byte. Verified via `gh api .../commits/{sha}.commit.verification.reason` → `valid`.
+- **Phase 5** ✅ — **PWA** (installable, offline shell precache, stale-while-revalidate cache for raw JSONL data + Steam header images), **GPG identity override** (dropdown when key has multiple user IDs; commit author switches accordingly), **GPG auto-lock** (idle timer wipes the decrypted key after 5–60 min of inactivity), **Activity feed** at `/activity` (recent commits with verified badges, filter by Me / Bots / All).
+- **Phase 6** (later) — i18n vi/en, optional Tauri desktop wrap, optional OAuth Device Flow.
+
+## PWA
+
+`vite-plugin-pwa` registers a Workbox service worker on every load. After the first visit the app shell loads from cache (offline-capable), and:
+
+- `data/data_*.jsonl` from `raw.githubusercontent.com` is **stale-while-revalidate** — offline users see the last-known catalog; online users get fresh data shortly after.
+- Steam header images (`shared.akamai.steamstatic.com/.../header.jpg`) are **cache-first** for 30 days.
+- GitHub avatars are stale-while-revalidate for 7 days.
+
+A small chip in the topbar shows **offline** / **Install** / **Update** when relevant. The browser's address-bar install button works too. On install the app launches as a standalone window.
 
 ## Auth + signing
 

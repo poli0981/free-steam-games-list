@@ -8,6 +8,8 @@ import {
   AlertCircle,
   ShieldCheck,
   ExternalLink,
+  Timer,
+  UserCircle2,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Button } from "../ui/button";
@@ -96,6 +98,9 @@ export function GpgPanel() {
         </CardHeader>
         <CardContent className="space-y-4">
           <KeyInfo />
+          <UidPicker />
+          <AutolockPicker />
+          <Separator />
           <div className="flex gap-2">
             <Button variant="outline" onClick={gpg.lock}>
               <Lock className="mr-1 h-3 w-3" /> Lock
@@ -122,6 +127,8 @@ export function GpgPanel() {
       </CardHeader>
       <CardContent className="space-y-4">
         <KeyInfo />
+        <UidPicker />
+        <AutolockPicker />
 
         <Separator />
 
@@ -244,6 +251,63 @@ function ImportKeyForm({ armored, setArmored, error, busy, onSave }: ImportProps
         {busy ? "Parsing…" : "Save key"}
       </Button>
     </form>
+  );
+}
+
+function UidPicker() {
+  const parsed = useGpg((s) => s.parsed);
+  const idx = useGpg((s) => s.preferredUidIndex);
+  const setIdx = useGpg((s) => s.setPreferredUidIndex);
+  if (!parsed || parsed.userIds.length <= 1) return null;
+  return (
+    <div className="space-y-1.5">
+      <Label className="flex items-center gap-1.5">
+        <UserCircle2 className="h-3 w-3" /> Commit identity
+      </Label>
+      <select
+        value={Math.min(idx, parsed.userIds.length - 1)}
+        onChange={(e) => setIdx(parseInt(e.target.value, 10))}
+        className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm"
+      >
+        {parsed.userIds.map((u, i) => (
+          <option key={u + i} value={i}>
+            {u}
+          </option>
+        ))}
+      </select>
+      <p className="text-xs text-muted-foreground">
+        Email of the chosen user ID is used as the commit author. Must be a
+        verified email on your GitHub account for the badge to show as Verified.
+      </p>
+    </div>
+  );
+}
+
+function AutolockPicker() {
+  const mins = useGpg((s) => s.autolockMinutes);
+  const setMins = useGpg((s) => s.setAutolockMinutes);
+  return (
+    <div className="space-y-1.5">
+      <Label className="flex items-center gap-1.5">
+        <Timer className="h-3 w-3" /> Auto-lock after idle
+      </Label>
+      <select
+        value={mins}
+        onChange={(e) => setMins(parseInt(e.target.value, 10))}
+        className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm"
+      >
+        <option value="0">Never</option>
+        <option value="5">5 minutes</option>
+        <option value="15">15 minutes</option>
+        <option value="30">30 minutes</option>
+        <option value="60">1 hour</option>
+      </select>
+      <p className="text-xs text-muted-foreground">
+        While unlocked, the decrypted key sits in memory. Auto-lock wipes it
+        after the chosen idle window so a forgotten tab can't be used to sign
+        commits.
+      </p>
+    </div>
   );
 }
 

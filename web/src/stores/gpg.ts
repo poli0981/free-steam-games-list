@@ -12,6 +12,7 @@ import {
 
 const KEY_ARMORED = "f2p:gpg_armored";
 const KEY_AUTOLOCK_MIN = "f2p:gpg_autolock_min";
+const KEY_PREFERRED_UID = "f2p:gpg_preferred_uid";
 
 interface GpgStore {
   /** Parsed metadata of the saved key (no secret material). */
@@ -20,21 +21,41 @@ interface GpgStore {
   unlocked: UnlockedKey | null;
   isVerifying: boolean;
   error: string | null;
+  /** Index into parsed.userIds (or null = use index 0). Persisted. */
+  preferredUidIndex: number;
+  /** Auto-lock idle minutes (0 = never). Persisted. */
+  autolockMinutes: number;
 
   hydrate: () => Promise<void>;
   saveKey: (armored: string) => Promise<void>;
   unlock: (passphrase: string) => Promise<void>;
   lock: () => void;
   clearKey: () => void;
+  setPreferredUidIndex: (idx: number) => void;
+  setAutolockMinutes: (mins: number) => void;
 }
 
 const armoredFromStorage = localStorage.getItem(KEY_ARMORED);
+
+function loadPreferredUid(): number {
+  const raw = localStorage.getItem(KEY_PREFERRED_UID);
+  const n = raw ? parseInt(raw, 10) : 0;
+  return Number.isNaN(n) || n < 0 ? 0 : n;
+}
+
+function loadAutolock(): number {
+  const raw = localStorage.getItem(KEY_AUTOLOCK_MIN);
+  const n = raw ? parseInt(raw, 10) : 0;
+  return Number.isNaN(n) || n < 0 ? 0 : n;
+}
 
 export const useGpg = create<GpgStore>((set, get) => ({
   parsed: null,
   unlocked: null,
   isVerifying: false,
   error: null,
+  preferredUidIndex: loadPreferredUid(),
+  autolockMinutes: loadAutolock(),
 
   hydrate: async () => {
     if (!armoredFromStorage || get().parsed) return;
@@ -55,7 +76,14 @@ export const useGpg = create<GpgStore>((set, get) => ({
     try {
       const parsed = await parsePrivateKey(armored);
       localStorage.setItem(KEY_ARMORED, armored);
-      set({ parsed, unlocked: null, isVerifying: false });
+      // Reset preferred UID — different key, different IDs.
+      localStorage.removeItem(KEY_PREFERRED_UID);
+      set({
+        parsed,
+        unlocked: null,
+        isVerifying: false,
+        preferredUidIndex: 0,
+      });
     } catch (err) {
       set({
         error:
@@ -95,17 +123,18 @@ export const useGpg = create<GpgStore>((set, get) => ({
 
   clearKey: () => {
     localStorage.removeItem(KEY_ARMORED);
-    set({ parsed: null, unlocked: null, error: null });
+    localStorage.removeItem(KEY_PREFERRED_UID);
+    set({ parsed: null, unlocked: null, error: null, preferredUidIndex: 0 });
+  },
+
+  setPreferredUidIndex: (idx: number) => {
+    localStorage.setItem(KEY_PREFERRED_UID, String(idx));
+    set({ preferredUidIndex: idx });
+  },
+
+  setAutolockMinutes: (mins: number) => {
+    if (mins <= 0) localStorage.removeItem(KEY_AUTOLOCK_MIN);
+    else localStorage.setItem(KEY_AUTOLOCK_MIN, String(mins));
+    set({ autolockMinutes: mins });
   },
 }));
-
-export function getAutolockMinutes(): number {
-  const raw = localStorage.getItem(KEY_AUTOLOCK_MIN);
-  const n = raw ? parseInt(raw, 10) : 0;
-  return Number.isNaN(n) || n < 0 ? 0 : n;
-}
-
-export function setAutolockMinutes(n: number): void {
-  if (n <= 0) localStorage.removeItem(KEY_AUTOLOCK_MIN);
-  else localStorage.setItem(KEY_AUTOLOCK_MIN, String(n));
-}

@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { Badge } from "../ui/badge";
+import { PwaIndicator } from "../common/PwaIndicator";
 import { useFilters } from "../../stores/filters";
 import { useGames } from "../../hooks/useGames";
 import { useAuth } from "../../stores/auth";
@@ -79,6 +80,8 @@ export function Topbar() {
           </span>
         )}
       </div>
+
+      <PwaIndicator />
 
       {auth.isAuthenticated && auth.user ? (
         <div className="hidden items-center gap-2 md:flex">
