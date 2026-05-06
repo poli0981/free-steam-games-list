@@ -62,8 +62,11 @@ export function Topbar() {
           placeholder="Search by name, tag, description…"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="pl-8"
+          className="pl-8 pr-14"
         />
+        <kbd className="pointer-events-none absolute right-2 top-1/2 hidden h-5 -translate-y-1/2 select-none items-center rounded border bg-muted px-1.5 font-mono text-[10px] text-muted-foreground md:inline-flex">
+          ⌘K
+        </kbd>
       </div>
 
       <div className="hidden items-center gap-3 text-xs text-muted-foreground md:flex">

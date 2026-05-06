@@ -1,6 +1,7 @@
 import { Outlet } from "react-router-dom";
 import { Sidebar } from "./Sidebar";
 import { Topbar } from "./Topbar";
+import { CommandPalette } from "../common/CommandPalette";
 
 export function Layout() {
   return (
@@ -14,6 +15,7 @@ export function Layout() {
           </div>
         </main>
       </div>
+      <CommandPalette />
     </div>
   );
 }

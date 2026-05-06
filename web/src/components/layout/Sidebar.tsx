@@ -11,6 +11,10 @@ import {
   Globe,
   Tags as TagsIcon,
   Shield,
+  Languages as LanguagesIcon,
+  Clock,
+  Users,
+  Lock,
 } from "lucide-react";
 import { cn } from "../../lib/utils";
 
@@ -30,9 +34,13 @@ const PRIMARY: NavItem[] = [
 const CHARTS: NavItem[] = [
   { to: "/charts/genres", label: "Genres", icon: PieChart },
   { to: "/charts/platforms", label: "Platforms", icon: Globe },
+  { to: "/charts/languages", label: "Languages", icon: LanguagesIcon },
   { to: "/charts/tags", label: "Tags", icon: TagsIcon },
   { to: "/charts/anti-cheat", label: "Anti-Cheat", icon: Shield },
   { to: "/charts/reviews", label: "Reviews", icon: BarChart3 },
+  { to: "/charts/players", label: "Players", icon: Users },
+  { to: "/charts/time", label: "Time", icon: Clock },
+  { to: "/charts/drm", label: "DRM/DLC", icon: Lock },
 ];
 
 const SECONDARY: NavItem[] = [

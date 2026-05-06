@@ -1,9 +1,9 @@
 import { useGames } from "../../hooks/useGames";
-import { TagsWordCloud } from "../../components/charts/TagsWordCloud";
+import { PlayerTiersPie } from "../../components/charts/PlayerTiersPie";
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
 import { LoadingState, ErrorState } from "../../components/common/QueryState";
 
-export function TagsPage() {
+export function PlayersPage() {
   const q = useGames();
   if (q.isLoading) return <LoadingState />;
   if (q.error) return <ErrorState error={q.error} />;
@@ -12,17 +12,17 @@ export function TagsPage() {
   return (
     <div className="space-y-4">
       <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Tags</h1>
+        <h1 className="text-2xl font-semibold tracking-tight">Player tiers</h1>
         <p className="text-sm text-muted-foreground">
-          Top 100 community tags. Generic tags (Free to Play, Indie, etc.) are filtered out.
+          Online F2P games bucketed by current concurrent players.
         </p>
       </div>
       <Card>
         <CardHeader>
-          <CardTitle>Tag cloud</CardTitle>
+          <CardTitle>Online concurrent player tiers</CardTitle>
         </CardHeader>
         <CardContent>
-          <TagsWordCloud records={q.data.records} height={560} />
+          <PlayerTiersPie records={q.data.records} height={420} />
         </CardContent>
       </Card>
     </div>

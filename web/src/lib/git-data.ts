@@ -245,10 +245,9 @@ export class RefAdvancedError extends Error {
   }
 }
 
-export interface CommitFileInput {
-  path: string;
-  /** Full new file content (UTF-8 text). */
-  content: string;
+export interface CommitFilesInput {
+  /** One or more files to land in a single commit. */
+  files: { path: string; content: string }[];
   message: string;
   author: { name: string; email: string };
   /** If provided, called with exact commit bytes; must return armored detached sig. */
@@ -257,22 +256,31 @@ export interface CommitFileInput {
 }
 
 /**
- * Commit a single file via Git Data API. With `signer`, produces a Verified commit.
+ * Commit any number of files in a single Git commit. With `signer`, produces
+ * a Verified commit.
  *
- * Flow: head → blob → tree → (sign) → commit → update ref.
+ * Flow: head → blobs (parallel) → tree → (sign) → commit → update ref.
  */
-export async function commitFile(
-  input: CommitFileInput,
+export async function commitFiles(
+  input: CommitFilesInput,
 ): Promise<CommitResult> {
+  if (input.files.length === 0) throw new Error("commitFiles: no files");
   const head = await getHead(input.token);
-  const blobSha = await createBlob(input.content, input.token);
-  const treeSha = await createTree(
-    head.treeSha,
-    [{ path: input.path, blobSha }],
-    input.token,
+  const blobShas = await Promise.all(
+    input.files.map((f) => createBlob(f.content, input.token)),
   );
+  const treeFiles: TreeFile[] = input.files.map((f, i) => ({
+    path: f.path,
+    blobSha: blobShas[i],
+  }));
+  const treeSha = await createTree(head.treeSha, treeFiles, input.token);
 
+  // Zero out milliseconds so the ISO timestamp we send to GitHub matches
+  // (when truncated to whole seconds) the unix-second value we baked into
+  // the signed commit content. Otherwise rounding can flip the timestamp by
+  // a second and invalidate the signature.
   const now = new Date();
+  now.setMilliseconds(0);
   const author: IdentityInput = { ...input.author, date: now };
   const committer: IdentityInput = { ...author };
 
@@ -304,6 +312,26 @@ export async function commitFile(
   return result;
 }
 
+/** Convenience for the common single-file case. */
+export interface CommitFileInput {
+  path: string;
+  content: string;
+  message: string;
+  author: { name: string; email: string };
+  signer?: (commitContent: string) => Promise<string>;
+  token: string;
+}
+
+export function commitFile(input: CommitFileInput): Promise<CommitResult> {
+  return commitFiles({
+    files: [{ path: input.path, content: input.content }],
+    message: input.message,
+    author: input.author,
+    signer: input.signer,
+    token: input.token,
+  });
+}
+
 /** 1 retry on RefAdvancedError (race vs daily pipeline). */
 export async function commitFileWithRetry(
   input: CommitFileInput,
@@ -311,9 +339,18 @@ export async function commitFileWithRetry(
   try {
     return await commitFile(input);
   } catch (err) {
-    if (err instanceof RefAdvancedError) {
-      return await commitFile(input);
-    }
+    if (err instanceof RefAdvancedError) return await commitFile(input);
+    throw err;
+  }
+}
+
+export async function commitFilesWithRetry(
+  input: CommitFilesInput,
+): Promise<CommitResult> {
+  try {
+    return await commitFiles(input);
+  } catch (err) {
+    if (err instanceof RefAdvancedError) return await commitFiles(input);
     throw err;
   }
 }

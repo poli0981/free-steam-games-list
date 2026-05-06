@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from "react";
+import { useMemo, useRef, useState, useEffect } from "react";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import Fuse from "fuse.js";
 import { ArrowUp, ArrowDown, ExternalLink } from "lucide-react";
@@ -9,6 +9,7 @@ import { extractAppid } from "../../lib/data-store";
 import type { GameRecord } from "../../lib/schema";
 import { cn } from "../../lib/utils";
 import { GameDetailDrawer } from "./GameDetailDrawer";
+import { BulkActionBar } from "./BulkActionBar";
 
 interface Props {
   records: GameRecord[];
@@ -191,7 +192,13 @@ export function GamesTable({ records }: Props) {
   const sortKey = useFilters((s) => s.sortKey);
   const sortDir = useFilters((s) => s.sortDir);
   const setSort = useFilters((s) => s.setSort);
-  const [selected, setSelected] = useState<GameRecord | null>(null);
+  const selected = useFilters((s) => s.selected);
+  const toggleSelect = useFilters((s) => s.toggleSelect);
+  const [detail, setDetail] = useState<GameRecord | null>(null);
+
+  // Clear selection on unmount.
+  const clearSelection = useFilters((s) => s.clearSelection);
+  useEffect(() => clearSelection, [clearSelection]);
 
   const fuse = useMemo(
     () =>
@@ -240,99 +247,144 @@ export function GamesTable({ records }: Props) {
     overscan: 12,
   });
 
+  const visibleAppids = useMemo(() => {
+    const out: string[] = [];
+    for (const g of sorted) {
+      const aid = extractAppid(g.link);
+      if (aid) out.push(aid);
+    }
+    return out;
+  }, [sorted]);
+
   function toggleSort(key: string) {
     if (sortKey !== key) return setSort(key, "desc");
     if (sortDir === "desc") return setSort(key, "asc");
     return setSort(null, null);
   }
 
+  const SELECT_COL_WIDTH = 36;
+  const totalWidth = TOTAL_WIDTH + SELECT_COL_WIDTH;
+
   return (
-    <div className="rounded-lg border bg-card">
-      <div className="flex items-center justify-between border-b px-3 py-2 text-xs text-muted-foreground">
-        <span>
-          <strong className="text-foreground">{formatNumber(sorted.length)}</strong>{" "}
-          of {formatNumber(records.length)} games
-        </span>
-      </div>
+    <div className="space-y-3">
+      <BulkActionBar visibleAppids={visibleAppids} />
 
-      <div
-        ref={containerRef}
-        className="relative h-[calc(100vh-260px)] overflow-auto scrollbar-thin"
-      >
-        <div style={{ width: TOTAL_WIDTH, minWidth: "100%" }}>
-          {/* Header */}
-          <div className="sticky top-0 z-10 flex border-b bg-card/95 backdrop-blur">
-            {COLS.map((c) => {
-              const active = sortKey === c.key;
-              return (
-                <div
-                  key={c.key}
-                  className={cn(
-                    "flex h-10 items-center px-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground",
-                    c.align === "right" && "justify-end",
-                    c.align === "center" && "justify-center",
-                    c.sortable && "cursor-pointer select-none hover:text-foreground",
-                  )}
-                  style={{ width: c.width, minWidth: c.width }}
-                  onClick={() => c.sortable && toggleSort(c.key)}
-                >
-                  <span>{c.label}</span>
-                  {c.sortable && active && (
-                    <span className="ml-1 inline-flex">
-                      {sortDir === "asc" ? (
-                        <ArrowUp className="h-3 w-3" />
-                      ) : (
-                        <ArrowDown className="h-3 w-3" />
-                      )}
-                    </span>
-                  )}
-                </div>
-              );
-            })}
-          </div>
+      <div className="rounded-lg border bg-card">
+        <div className="flex items-center justify-between border-b px-3 py-2 text-xs text-muted-foreground">
+          <span>
+            <strong className="text-foreground">{formatNumber(sorted.length)}</strong>{" "}
+            of {formatNumber(records.length)} games
+            {selected.size > 0 && (
+              <span className="ml-2 text-primary">
+                · {formatNumber(selected.size)} selected
+              </span>
+            )}
+          </span>
+        </div>
 
-          {/* Virtual rows */}
-          <div
-            style={{
-              height: rowVirtualizer.getTotalSize(),
-              width: "100%",
-              position: "relative",
-            }}
-          >
-            {rowVirtualizer.getVirtualItems().map((vrow) => {
-              const g = sorted[vrow.index];
-              return (
-                <div
-                  key={vrow.key}
-                  className="absolute left-0 top-0 flex w-full cursor-pointer items-center border-b border-border/50 hover:bg-accent/40"
-                  style={{
-                    transform: `translateY(${vrow.start}px)`,
-                    height: vrow.size,
-                  }}
-                  onClick={() => setSelected(g)}
-                  data-appid={extractAppid(g.link)}
-                >
-                  {COLS.map((c) => (
+        <div
+          ref={containerRef}
+          className="relative h-[calc(100vh-300px)] overflow-auto scrollbar-thin"
+        >
+          <div style={{ width: totalWidth, minWidth: "100%" }}>
+            {/* Header */}
+            <div className="sticky top-0 z-10 flex border-b bg-card/95 backdrop-blur">
+              <div
+                className="flex h-10 items-center justify-center"
+                style={{ width: SELECT_COL_WIDTH, minWidth: SELECT_COL_WIDTH }}
+              />
+              {COLS.map((c) => {
+                const active = sortKey === c.key;
+                return (
+                  <div
+                    key={c.key}
+                    className={cn(
+                      "flex h-10 items-center px-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground",
+                      c.align === "right" && "justify-end",
+                      c.align === "center" && "justify-center",
+                      c.sortable && "cursor-pointer select-none hover:text-foreground",
+                    )}
+                    style={{ width: c.width, minWidth: c.width }}
+                    onClick={() => c.sortable && toggleSort(c.key)}
+                  >
+                    <span>{c.label}</span>
+                    {c.sortable && active && (
+                      <span className="ml-1 inline-flex">
+                        {sortDir === "asc" ? (
+                          <ArrowUp className="h-3 w-3" />
+                        ) : (
+                          <ArrowDown className="h-3 w-3" />
+                        )}
+                      </span>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Virtual rows */}
+            <div
+              style={{
+                height: rowVirtualizer.getTotalSize(),
+                width: "100%",
+                position: "relative",
+              }}
+            >
+              {rowVirtualizer.getVirtualItems().map((vrow) => {
+                const g = sorted[vrow.index];
+                const aid = extractAppid(g.link) ?? "";
+                const isSelected = selected.has(aid);
+                return (
+                  <div
+                    key={vrow.key}
+                    className={cn(
+                      "absolute left-0 top-0 flex w-full cursor-pointer items-center border-b border-border/50 hover:bg-accent/40",
+                      isSelected && "bg-primary/10 hover:bg-primary/15",
+                    )}
+                    style={{
+                      transform: `translateY(${vrow.start}px)`,
+                      height: vrow.size,
+                    }}
+                    onClick={() => setDetail(g)}
+                    data-appid={aid}
+                  >
                     <div
-                      key={c.key}
-                      className={cn(
-                        "flex items-center px-3 py-2 text-sm",
-                        c.align === "right" && "justify-end",
-                        c.align === "center" && "justify-center",
-                      )}
-                      style={{ width: c.width, minWidth: c.width }}
+                      className="flex items-center justify-center"
+                      style={{ width: SELECT_COL_WIDTH, minWidth: SELECT_COL_WIDTH }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (aid) toggleSelect(aid);
+                      }}
                     >
-                      {c.render(g)}
+                      <input
+                        type="checkbox"
+                        checked={isSelected}
+                        onChange={() => {}}
+                        className="h-3.5 w-3.5 rounded border-input bg-transparent accent-primary"
+                      />
                     </div>
-                  ))}
-                </div>
-              );
-            })}
+                    {COLS.map((c) => (
+                      <div
+                        key={c.key}
+                        className={cn(
+                          "flex items-center px-3 py-2 text-sm",
+                          c.align === "right" && "justify-end",
+                          c.align === "center" && "justify-center",
+                        )}
+                        style={{ width: c.width, minWidth: c.width }}
+                      >
+                        {c.render(g)}
+                      </div>
+                    ))}
+                  </div>
+                );
+              })}
+            </div>
           </div>
         </div>
-      </div>
 
-      <GameDetailDrawer game={selected} onClose={() => setSelected(null)} />
+        <GameDetailDrawer game={detail} onClose={() => setDetail(null)} />
+      </div>
     </div>
   );
 }

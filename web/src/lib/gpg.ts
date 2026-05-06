@@ -78,6 +78,16 @@ export async function unlockPrivateKey(
  * exact byte content of a Git commit object. Returns the armored signature.
  *
  * Binary mode (signature type 0x00) is required — Git refuses 0x01 (text).
+ *
+ * `nonDeterministicSignaturesViaNotation: false` is critical for GitHub
+ * compatibility. OpenPGP.js v6 defaults to embedding a per-signature random
+ * `salt@notations.openpgpjs.org` notation as a hash-collision mitigation
+ * (RFC4880bis draft). GitHub's verifier does not accept signatures carrying
+ * unknown notation subpackets and surfaces them as
+ *   "The signature in this commit could not be verified.
+ *    Someone may be trying to trick you."
+ * Disabling the salt produces an RFC4880-compliant signature that GitHub
+ * accepts, at the cost of (theoretical) collision-attack resistance.
  */
 export async function signCommitContent(
   unlocked: UnlockedKey,
@@ -85,11 +95,18 @@ export async function signCommitContent(
 ): Promise<string> {
   const bytes = new TextEncoder().encode(commitContent);
   const message = await openpgp.createMessage({ binary: bytes });
+  // The OpenPGP.js v6.1.1 d.ts is missing this option, but it exists at
+  // runtime (see node_modules/openpgp/dist/openpgp.mjs:1746). Cast through
+  // unknown to satisfy TS without disabling strict mode.
+  const signConfig = {
+    nonDeterministicSignaturesViaNotation: false,
+  } as unknown as openpgp.PartialConfig;
   const armored = await openpgp.sign({
     message,
     signingKeys: unlocked.key,
     detached: true,
     format: "armored",
+    config: signConfig,
   });
   return armored;
 }

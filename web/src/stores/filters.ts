@@ -12,6 +12,7 @@ export interface FilterState {
   hasAntiCheat: boolean | null;
   sortKey: string | null;
   sortDir: SortDir;
+  selected: Set<string>;
   setSearch: (s: string) => void;
   setGenre: (g: string | null) => void;
   setTypeGame: (t: "online" | "offline" | null) => void;
@@ -20,6 +21,9 @@ export interface FilterState {
   setStatus: (s: "active" | "delisted" | null) => void;
   setHasAntiCheat: (b: boolean | null) => void;
   setSort: (key: string | null, dir: SortDir) => void;
+  toggleSelect: (appid: string) => void;
+  selectAll: (appids: string[]) => void;
+  clearSelection: () => void;
   reset: () => void;
 }
 
@@ -33,6 +37,7 @@ const initial = {
   hasAntiCheat: null,
   sortKey: null,
   sortDir: null as SortDir,
+  selected: new Set<string>(),
 };
 
 export const useFilters = create<FilterState>((set) => ({
@@ -45,5 +50,14 @@ export const useFilters = create<FilterState>((set) => ({
   setStatus: (status) => set({ status }),
   setHasAntiCheat: (hasAntiCheat) => set({ hasAntiCheat }),
   setSort: (sortKey, sortDir) => set({ sortKey, sortDir }),
-  reset: () => set(initial),
+  toggleSelect: (appid) =>
+    set((s) => {
+      const next = new Set(s.selected);
+      if (next.has(appid)) next.delete(appid);
+      else next.add(appid);
+      return { selected: next };
+    }),
+  selectAll: (appids) => set({ selected: new Set(appids) }),
+  clearSelection: () => set({ selected: new Set() }),
+  reset: () => set({ ...initial, selected: new Set() }),
 }));

@@ -4,6 +4,7 @@ import {
   PieChart,
   LineChart,
   TreemapChart,
+  HeatmapChart,
 } from "echarts/charts";
 import {
   GridComponent,
@@ -12,23 +13,27 @@ import {
   TitleComponent,
   DataZoomComponent,
   DatasetComponent,
+  VisualMapComponent,
 } from "echarts/components";
 import { CanvasRenderer } from "echarts/renderers";
 import ReactEChartsCore from "echarts-for-react/lib/core";
 import { useMemo } from "react";
 import type { EChartsCoreOption } from "echarts/core";
+import "echarts-wordcloud";
 
 echarts.use([
   BarChart,
   PieChart,
   LineChart,
   TreemapChart,
+  HeatmapChart,
   GridComponent,
   TooltipComponent,
   LegendComponent,
   TitleComponent,
   DataZoomComponent,
   DatasetComponent,
+  VisualMapComponent,
   CanvasRenderer,
 ]);
 
