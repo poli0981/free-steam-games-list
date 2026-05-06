@@ -1,18 +1,19 @@
 /**
- * GitHub Contents API + workflow_dispatch helpers.
- * Used by Phase 2 (edit/add/delete). Stub-safe: read-side works without auth.
+ * GitHub Contents API + workflow_dispatch helpers + auth.
+ * Uses fine-grained or classic PAT stored in localStorage.
+ * Classic PATs auto-sign commits via GitHub web-flow → "Verified" badge.
  */
 import { REPO_OWNER, REPO_NAME, DEFAULT_BRANCH } from "./schema";
 
 const API_BASE = "https://api.github.com";
 
+const TOKEN_KEY = "f2p:gh_token";
+const USER_KEY = "f2p:gh_user";
+
 export interface AuthState {
   token: string | null;
   user: string | null;
 }
-
-const TOKEN_KEY = "f2p:gh_token";
-const USER_KEY = "f2p:gh_user";
 
 export function loadAuth(): AuthState {
   return {
@@ -40,11 +41,48 @@ function authHeaders(token: string | null): HeadersInit {
   return h;
 }
 
+export interface GitHubUser {
+  login: string;
+  avatar_url: string;
+  name: string | null;
+  html_url: string;
+}
+
+export async function fetchUser(token: string): Promise<GitHubUser> {
+  const res = await fetch(`${API_BASE}/user`, { headers: authHeaders(token) });
+  if (!res.ok) {
+    throw new Error(`Token invalid (${res.status}). Check scopes & expiry.`);
+  }
+  return (await res.json()) as GitHubUser;
+}
+
+/**
+ * Sanity check that the token can read+write the target repo.
+ * Returns the user's permission level on the repo.
+ */
+export async function checkRepoAccess(
+  token: string,
+): Promise<{ ok: boolean; permission?: string; error?: string }> {
+  const res = await fetch(
+    `${API_BASE}/repos/${REPO_OWNER}/${REPO_NAME}`,
+    { headers: authHeaders(token) },
+  );
+  if (!res.ok) return { ok: false, error: `${res.status} ${res.statusText}` };
+  const data = await res.json();
+  const perm = data?.permissions;
+  if (!perm) return { ok: false, error: "no permissions field on response" };
+  if (!perm.push) {
+    return { ok: false, error: "Token lacks push permission on this repo" };
+  }
+  return { ok: true, permission: perm.admin ? "admin" : "write" };
+}
+
 export interface ContentsResponse {
   sha: string;
   content: string;
   encoding: "base64";
   path: string;
+  size: number;
 }
 
 export async function getContents(
@@ -68,10 +106,28 @@ export interface PutContentsInput {
   token: string;
 }
 
-export async function putContents(input: PutContentsInput): Promise<void> {
+export interface PutContentsResult {
+  sha: string;
+  commitSha: string;
+  htmlUrl: string;
+}
+
+/**
+ * Encodes UTF-8 string to base64 safely (handles non-ASCII).
+ */
+function utf8ToBase64(text: string): string {
+  const bytes = new TextEncoder().encode(text);
+  let binary = "";
+  for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
+  return btoa(binary);
+}
+
+export async function putContents(
+  input: PutContentsInput,
+): Promise<PutContentsResult> {
   const body = {
     message: input.message,
-    content: btoa(unescape(encodeURIComponent(input.content))),
+    content: utf8ToBase64(input.content),
     branch: DEFAULT_BRANCH,
     sha: input.sha,
   };
@@ -83,9 +139,25 @@ export async function putContents(input: PutContentsInput): Promise<void> {
       body: JSON.stringify(body),
     },
   );
+  if (res.status === 409) {
+    throw new ConflictError(input.pathInRepo);
+  }
   if (!res.ok) {
     const text = await res.text();
     throw new Error(`PUT contents ${input.pathInRepo}: ${res.status} ${text}`);
+  }
+  const data = await res.json();
+  return {
+    sha: data.content.sha,
+    commitSha: data.commit.sha,
+    htmlUrl: data.commit.html_url,
+  };
+}
+
+export class ConflictError extends Error {
+  constructor(public path: string) {
+    super(`Conflict on ${path} — file changed remotely. Refetch and retry.`);
+    this.name = "ConflictError";
   }
 }
 
@@ -102,13 +174,17 @@ export async function dispatchWorkflow(
       body: JSON.stringify({ ref: DEFAULT_BRANCH, inputs: inputs ?? {} }),
     },
   );
-  if (!res.ok) throw new Error(`workflow_dispatch ${workflowFile}: ${res.status}`);
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`workflow_dispatch ${workflowFile}: ${res.status} ${text}`);
+  }
 }
 
 export interface RateLimit {
   limit: number;
   remaining: number;
   reset: number;
+  used: number;
 }
 
 export async function getRateLimit(token: string | null): Promise<RateLimit | null> {
@@ -120,4 +196,27 @@ export async function getRateLimit(token: string | null): Promise<RateLimit | nu
   } catch {
     return null;
   }
+}
+
+export interface WorkflowRun {
+  id: number;
+  status: string;
+  conclusion: string | null;
+  html_url: string;
+  created_at: string;
+  head_sha: string;
+}
+
+export async function getRecentWorkflowRuns(
+  workflowFile: string,
+  token: string | null,
+  limit = 5,
+): Promise<WorkflowRun[]> {
+  const res = await fetch(
+    `${API_BASE}/repos/${REPO_OWNER}/${REPO_NAME}/actions/workflows/${workflowFile}/runs?per_page=${limit}`,
+    { headers: authHeaders(token) },
+  );
+  if (!res.ok) return [];
+  const data = await res.json();
+  return (data.workflow_runs ?? []) as WorkflowRun[];
 }
