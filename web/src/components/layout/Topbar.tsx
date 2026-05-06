@@ -1,9 +1,12 @@
-import { Search, Sun, Moon, Monitor } from "lucide-react";
+import { Search, Sun, Moon, Monitor, ShieldCheck } from "lucide-react";
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
+import { Badge } from "../ui/badge";
 import { useFilters } from "../../stores/filters";
 import { useGames } from "../../hooks/useGames";
+import { useAuth } from "../../stores/auth";
 import { formatNumber } from "../../lib/utils";
 
 type Theme = "light" | "dark" | "system";
@@ -23,6 +26,7 @@ export function Topbar() {
   const search = useFilters((s) => s.search);
   const setSearch = useFilters((s) => s.setSearch);
   const games = useGames();
+  const auth = useAuth();
   const [theme, setTheme] = useState<Theme>(
     (localStorage.getItem("f2p:theme") as Theme) ?? "dark",
   );
@@ -31,6 +35,12 @@ export function Topbar() {
     applyTheme(theme);
     localStorage.setItem("f2p:theme", theme);
   }, [theme]);
+
+  useEffect(() => {
+    if (auth.token && !auth.user && !auth.isVerifying) {
+      void auth.hydrate();
+    }
+  }, [auth.token, auth.user, auth.isVerifying, auth]);
 
   const total = games.data?.records.length ?? 0;
   const lastUpdated = games.data?.index.last_updated ?? "";
@@ -57,6 +67,30 @@ export function Topbar() {
           </span>
         )}
       </div>
+
+      {auth.isAuthenticated && auth.user ? (
+        <Link
+          to="/settings"
+          className="hidden items-center gap-2 rounded-md border bg-card px-2 py-1 text-xs hover:bg-accent md:flex"
+          title={`Signed in as @${auth.user.login}`}
+        >
+          <img
+            src={auth.user.avatar_url}
+            alt=""
+            className="h-5 w-5 rounded-full"
+          />
+          <span className="font-medium">@{auth.user.login}</span>
+          <Badge variant="success" className="px-1.5 py-0">
+            <ShieldCheck className="h-3 w-3" />
+          </Badge>
+        </Link>
+      ) : (
+        <Link to="/settings">
+          <Button variant="outline" size="sm" className="hidden md:inline-flex">
+            Sign in
+          </Button>
+        </Link>
+      )}
 
       <div className="flex items-center gap-1">
         <Button

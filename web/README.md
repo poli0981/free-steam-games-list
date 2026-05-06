@@ -67,9 +67,19 @@ web/
 
 ## Roadmap
 
-- **Phase 1 (this commit)** — read-only browse, search/filter, 4 MVP charts (KPI, Top Online bar, Genre treemap, Platforms donut), GitHub Pages deploy.
-- **Phase 2** — OAuth Device Flow login, single-record edit (manual fields), single Steam-link add via `scripts/temp_info.jsonl` queue, diff viewer, conflict resolution.
-- **Phase 3** — bulk add/edit/delete, remaining 8 charts (heatmap, word cloud, stacked AC, etc.), PWA, i18n vi/en, command palette, activity feed, optional Tauri desktop wrap.
+- **Phase 1** ✅ — read-only browse, search/filter, 4 MVP charts (KPI, Top Online bar, Genre treemap, Platforms donut), GitHub Pages deploy.
+- **Phase 2** ✅ — PAT-based GitHub auth (Classic PATs auto-sign as "Verified"), single-record edit drawer for the 8 manual fields, diff viewer, single + bulk Steam-link queue via `scripts/temp_info.jsonl`, conflict-retry on PUT, toast notifications.
+- **Phase 3** — bulk edit/delete, remaining 8 charts (heatmap, word cloud, stacked AC, histograms), PWA, i18n vi/en, command palette, activity feed, optional Tauri desktop wrap. Optional: OAuth Device Flow path (requires registering a GitHub OAuth App for the CLIENT_ID).
+
+## Auth & editing
+
+Editing requires a GitHub personal access token. Sign in via **Settings → Sign in**:
+
+1. Create a [Classic PAT](https://github.com/settings/tokens/new?scopes=repo,workflow&description=F2P%20Tracker%20Web%20App) with scopes `repo` + `workflow`.
+2. Paste it into the sign-in form. The token is verified against `/user` and the repo's permissions, then stored in `localStorage`.
+3. Edits commit to `data/data_00X.jsonl` shards. Adds queue into `scripts/temp_info.jsonl`, which auto-triggers the existing `ingest-new.yml` workflow to fetch full Steam metadata.
+
+Classic PATs produce GitHub-signed "Verified" commits (because GitHub web-flow signs server-side). Fine-grained PATs work too, but commits won't have the Verified badge.
 
 ## Schema sync
 

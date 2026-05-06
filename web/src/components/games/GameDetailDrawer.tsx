@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -7,6 +8,7 @@ import {
 } from "../ui/dialog";
 import { Badge } from "../ui/badge";
 import { Separator } from "../ui/separator";
+import { Button } from "../ui/button";
 import {
   ExternalLink,
   Calendar,
@@ -15,6 +17,7 @@ import {
   Shield,
   Globe,
   Tag,
+  Pencil,
 } from "lucide-react";
 import {
   formatNumber,
@@ -24,6 +27,8 @@ import {
 } from "../../lib/utils";
 import { extractAppid } from "../../lib/data-store";
 import type { GameRecord } from "../../lib/schema";
+import { EditGameDrawer } from "./EditGameDrawer";
+import { useAuth } from "../../stores/auth";
 
 interface Props {
   game: GameRecord | null;
@@ -51,6 +56,9 @@ function Field({
 }
 
 export function GameDetailDrawer({ game, onClose }: Props) {
+  const auth = useAuth();
+  const [editing, setEditing] = useState(false);
+
   return (
     <Dialog open={!!game} onOpenChange={(o) => !o && onClose()}>
       <DialogContent>
@@ -64,7 +72,18 @@ export function GameDetailDrawer({ game, onClose }: Props) {
                   className="h-44 w-full rounded-md object-cover"
                 />
               )}
-              <DialogTitle className="text-xl">{game.name || "—"}</DialogTitle>
+              <div className="flex items-start justify-between gap-3">
+                <DialogTitle className="text-xl">{game.name || "—"}</DialogTitle>
+                {auth.isAuthenticated && (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => setEditing(true)}
+                  >
+                    <Pencil className="mr-1 h-3 w-3" /> Edit
+                  </Button>
+                )}
+              </div>
               <DialogDescription>
                 <a
                   href={game.link}
@@ -202,6 +221,9 @@ export function GameDetailDrawer({ game, onClose }: Props) {
           </div>
         )}
       </DialogContent>
+      {editing && (
+        <EditGameDrawer game={game} onClose={() => setEditing(false)} />
+      )}
     </Dialog>
   );
 }
