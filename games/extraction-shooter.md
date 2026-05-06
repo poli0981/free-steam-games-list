@@ -1,6 +1,6 @@
 # Extraction Shooter Games
 
-2 games · 2026-05-06 16:38 UTC
+2 games · 2026-05-06 17:05 UTC
 
 | # | Thumb | Game | Genre | Developer | Publisher | Released | Platforms | Languages | Reviews | Players | Anti-Cheat | Metacritic | Status | Description | Link | Notes |
 |---|-------|------|-------|-----------|-----------|----------|----------|-----------|---------|---------|------------|-----------|--------|-------------|------|-------|
