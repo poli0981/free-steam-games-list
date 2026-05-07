@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Lock, Unlock, AlertCircle, Settings as SettingsIcon } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
@@ -12,6 +13,7 @@ import { useGpg } from "../../stores/gpg";
  * confirmation. Only visible when a key is saved + currently locked.
  */
 export function GpgQuickUnlock() {
+  const { t } = useTranslation();
   const parsed = useGpg((s) => s.parsed);
   const isVerifying = useGpg((s) => s.isVerifying);
   const error = useGpg((s) => s.error);
@@ -38,18 +40,18 @@ export function GpgQuickUnlock() {
       <PopoverTrigger asChild>
         <button
           type="button"
-          title={`GPG locked · ${parsed.primaryEmail || parsed.keyId} · click to unlock`}
+          title={t("system.gpgLockedTooltip", { id: parsed.primaryEmail || parsed.keyId })}
           className="inline-flex items-center gap-1 rounded-md border border-amber-500/30 bg-amber-500/10 px-2 py-1 text-xs text-amber-300 hover:bg-amber-500/15"
         >
           <Lock className="h-3 w-3" />
-          <span>locked</span>
+          <span>{t("topbar.locked")}</span>
         </button>
       </PopoverTrigger>
       <PopoverContent className="w-80">
         <form onSubmit={submit} className="space-y-3">
           <div>
             <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-              Unlock GPG
+              {t("system.gpgUnlockTitle")}
             </div>
             <div className="mt-1 truncate text-sm" title={parsed.userIds.join(" · ")}>
               {parsed.primaryName}
@@ -64,7 +66,7 @@ export function GpgQuickUnlock() {
 
           <Input
             type="password"
-            placeholder="Passphrase"
+            placeholder={t("system.gpgPassphrasePlaceholder")}
             value={passphrase}
             onChange={(e) => setPassphrase(e.target.value)}
             disabled={isVerifying}
@@ -85,11 +87,11 @@ export function GpgQuickUnlock() {
               onClick={() => setOpen(false)}
               className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground"
             >
-              <SettingsIcon className="h-3 w-3" /> Settings
+              <SettingsIcon className="h-3 w-3" /> {t("system.gpgSettingsLink")}
             </Link>
             <Button type="submit" size="sm" disabled={!passphrase || isVerifying}>
               <Unlock className="mr-1 h-3 w-3" />
-              {isVerifying ? "Unlocking…" : "Unlock"}
+              {isVerifying ? t("system.gpgUnlocking") : t("system.gpgUnlock")}
             </Button>
           </div>
         </form>

@@ -112,7 +112,7 @@ export function Topbar({ onMenuToggle }: TopbarProps = {}) {
             (gpgUnlocked ? (
               <button
                 onClick={gpgLock}
-                title={`GPG unlocked · ${gpgParsed.primaryEmail || gpgParsed.keyId} · click to lock`}
+                title={t("system.gpgUnlockedTooltip", { id: gpgParsed.primaryEmail || gpgParsed.keyId })}
                 className="inline-flex items-center gap-1 rounded-md border border-emerald-500/30 bg-emerald-500/10 px-2 py-1 text-xs text-emerald-300 hover:bg-emerald-500/15"
               >
                 <Unlock className="h-3 w-3" />
@@ -124,7 +124,7 @@ export function Topbar({ onMenuToggle }: TopbarProps = {}) {
           <Link
             to="/settings"
             className="flex items-center gap-2 rounded-md border bg-card px-2 py-1 text-xs hover:bg-accent"
-            title={`Signed in as @${auth.user.login}`}
+            title={t("system.signedInAsTooltip", { login: auth.user.login })}
           >
             <img
               src={auth.user.avatar_url}
@@ -149,7 +149,7 @@ export function Topbar({ onMenuToggle }: TopbarProps = {}) {
         <Button
           variant="ghost"
           size="icon"
-          aria-label="Light"
+          aria-label={t("system.themeLight")}
           onClick={() => setTheme("light")}
           className={theme === "light" ? "text-foreground" : "text-muted-foreground"}
         >
@@ -158,7 +158,7 @@ export function Topbar({ onMenuToggle }: TopbarProps = {}) {
         <Button
           variant="ghost"
           size="icon"
-          aria-label="Dark"
+          aria-label={t("system.themeDark")}
           onClick={() => setTheme("dark")}
           className={theme === "dark" ? "text-foreground" : "text-muted-foreground"}
         >
@@ -167,7 +167,7 @@ export function Topbar({ onMenuToggle }: TopbarProps = {}) {
         <Button
           variant="ghost"
           size="icon"
-          aria-label="System"
+          aria-label={t("system.themeSystem")}
           onClick={() => setTheme("system")}
           className={theme === "system" ? "text-foreground" : "text-muted-foreground"}
         >

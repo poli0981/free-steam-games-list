@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 import { Save, AlertCircle, ShieldCheck, ShieldAlert } from "lucide-react";
 import {
   Dialog,
@@ -80,6 +81,7 @@ function formToPatch(form: BulkForm): EditPatch {
 }
 
 export function BulkEditDrawer({ appids, onClose, onCommitted }: Props) {
+  const { t } = useTranslation();
   const auth = useAuth();
   const ctx = useCommitContext();
   const games = useGames();
@@ -116,7 +118,7 @@ export function BulkEditDrawer({ appids, onClose, onCommitted }: Props) {
   async function save() {
     if (!auth.token || !ctx || !games.data) return;
     if (enabledCount === 0) {
-      toast.error("No fields enabled");
+      toast.error(t("bulk.noFieldsEnabled"));
       return;
     }
     setSaving(true);
@@ -133,26 +135,26 @@ export function BulkEditDrawer({ appids, onClose, onCommitted }: Props) {
         triggerMarkdownRebuild: true,
       });
       const sevenSha = result.commit.sha.slice(0, 7);
-      const shardsLabel = `${result.shardsTouched.length} shard${result.shardsTouched.length === 1 ? "" : "s"}`;
-      toast.success(`Bulk edited ${result.modified} games`, {
+      const shardsLabel = t("bulk.shardsLabel", { count: result.shardsTouched.length });
+      toast.success(t("bulk.bulkEditedToast", { count: result.modified }), {
         id: toastId,
         description: ctx.willSign
-          ? `${sevenSha} · ${shardsLabel} · verifying…`
-          : `${sevenSha} · ${shardsLabel} · unsigned`,
+          ? `${sevenSha} · ${shardsLabel} · ${t("common.verifying")}`
+          : `${sevenSha} · ${shardsLabel} · ${t("games.unsigned")}`,
         action: {
-          label: "View commit",
+          label: t("verify.viewCommit"),
           onClick: () => window.open(result.commit.htmlUrl, "_blank"),
         },
       });
       if (ctx.willSign) {
         void pollCommitVerification(result.commit.sha, auth.token).then((v) => {
-          toast.success(`Bulk edited ${result.modified} games`, {
+          toast.success(t("bulk.bulkEditedToast", { count: result.modified }), {
             id: toastId,
             description: v.verified
-              ? `${sevenSha} · ${shardsLabel} · Verified ✓`
-              : `${sevenSha} · ${shardsLabel} · Unverified · ${v.reason}`,
+              ? `${sevenSha} · ${shardsLabel} · ${t("verify.verified")}`
+              : `${sevenSha} · ${shardsLabel} · ${t("verify.unverifiedReason", { reason: v.reason })}`,
             action: {
-              label: "View commit",
+              label: t("verify.viewCommit"),
               onClick: () => window.open(result.commit.htmlUrl, "_blank"),
             },
           });
@@ -163,7 +165,7 @@ export function BulkEditDrawer({ appids, onClose, onCommitted }: Props) {
       optimisticBulkEdit(qc, appids, patch);
       onCommitted();
     } catch (err) {
-      toast.error("Bulk edit failed", {
+      toast.error(t("bulk.bulkEditFailedToast"), {
         id: toastId,
         description: err instanceof Error ? err.message : String(err),
       });
@@ -176,17 +178,15 @@ export function BulkEditDrawer({ appids, onClose, onCommitted }: Props) {
     <Dialog open onOpenChange={(o) => !o && onClose()}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Bulk edit · {appids.length} games</DialogTitle>
+          <DialogTitle>{t("bulk.title", { count: appids.length })}</DialogTitle>
           <DialogDescription>
-            Toggle fields you want to update. Disabled fields stay as-is on each
-            record. Edit lands in <strong>{shardsAffected}</strong> shard
-            {shardsAffected === 1 ? "" : "s"} as one commit.
+            {t("bulk.description", { count: shardsAffected, shards: shardsAffected })}
           </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-3 py-2">
           <BulkField
-            label="Genre"
+            label={t("edit.genre")}
             enabled={form.genre.enabled}
             onToggle={(v) => set("genre", { enabled: v })}
           >
@@ -195,7 +195,7 @@ export function BulkEditDrawer({ appids, onClose, onCommitted }: Props) {
               value={form.genre.value}
               onChange={(e) => set("genre", { value: e.target.value })}
               disabled={!form.genre.enabled}
-              placeholder="Pick or type…"
+              placeholder={t("add.pickOrType")}
             />
             <datalist id="bulk-genre-list">
               {GENRE_ENUM.map((g) => (
@@ -205,7 +205,7 @@ export function BulkEditDrawer({ appids, onClose, onCommitted }: Props) {
           </BulkField>
 
           <BulkField
-            label="Type"
+            label={t("edit.type")}
             enabled={form.type_game.enabled}
             onToggle={(v) => set("type_game", { enabled: v })}
           >
@@ -217,16 +217,16 @@ export function BulkEditDrawer({ appids, onClose, onCommitted }: Props) {
               disabled={!form.type_game.enabled}
               className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm disabled:opacity-50"
             >
-              {TYPE_GAME_ENUM.map((t) => (
-                <option key={t || "u"} value={t}>
-                  {t || "— unknown —"}
+              {TYPE_GAME_ENUM.map((tg) => (
+                <option key={tg || "u"} value={tg}>
+                  {tg || `— ${t("common.unknown")} —`}
                 </option>
               ))}
             </select>
           </BulkField>
 
           <BulkField
-            label="Anti-cheat"
+            label={t("edit.antiCheat")}
             enabled={form.anti_cheat.enabled}
             onToggle={(v) => set("anti_cheat", { enabled: v })}
           >
@@ -246,24 +246,24 @@ export function BulkEditDrawer({ appids, onClose, onCommitted }: Props) {
             >
               {ANTI_CHEAT_ENUM.map((a) => (
                 <option key={a} value={a}>
-                  {a === "-" ? "— none —" : a}
+                  {a === "-" ? t("add.noneOption") : a}
                 </option>
               ))}
-              <option value="__custom__">Custom…</option>
+              <option value="__custom__">{t("add.customOption")}</option>
             </select>
             {!(ANTI_CHEAT_ENUM as readonly string[]).includes(form.anti_cheat.value) && (
               <Input
                 value={form.anti_cheat.value}
                 onChange={(e) => set("anti_cheat", { value: e.target.value })}
                 disabled={!form.anti_cheat.enabled}
-                placeholder="Custom AC name"
+                placeholder={t("add.customAcName")}
                 className="mt-1"
               />
             )}
           </BulkField>
 
           <BulkField
-            label="Kernel-level AC?"
+            label={t("edit.kernelAc")}
             enabled={form.is_kernel_ac.enabled}
             onToggle={(v) => set("is_kernel_ac", { enabled: v })}
           >
@@ -277,14 +277,14 @@ export function BulkEditDrawer({ appids, onClose, onCommitted }: Props) {
                   onClick={() => set("is_kernel_ac", { value: v })}
                   disabled={!form.is_kernel_ac.enabled}
                 >
-                  {v}
+                  {t(`common.${v}`)}
                 </Button>
               ))}
             </div>
           </BulkField>
 
           <BulkField
-            label="Notes (replaces existing)"
+            label={t("bulk.notesReplaces")}
             enabled={form.notes.enabled}
             onToggle={(v) => set("notes", { enabled: v })}
           >
@@ -297,7 +297,7 @@ export function BulkEditDrawer({ appids, onClose, onCommitted }: Props) {
           </BulkField>
 
           <BulkField
-            label="Safe?"
+            label={t("edit.safe")}
             enabled={form.safe.enabled}
             onToggle={(v) => set("safe", { enabled: v })}
           >
@@ -311,14 +311,14 @@ export function BulkEditDrawer({ appids, onClose, onCommitted }: Props) {
             >
               {SAFE_ENUM.map((s) => (
                 <option key={s} value={s}>
-                  {s === "?" ? "unknown" : s === "y" ? "yes" : "no"}
+                  {s === "?" ? t("common.unknown") : s === "y" ? t("common.yes") : t("common.no")}
                 </option>
               ))}
             </select>
           </BulkField>
 
           <BulkField
-            label="Status"
+            label={t("edit.status")}
             enabled={form.status.enabled}
             onToggle={(v) => set("status", { enabled: v })}
           >
@@ -342,16 +342,15 @@ export function BulkEditDrawer({ appids, onClose, onCommitted }: Props) {
 
           <div className="flex items-center justify-between rounded-md border bg-muted/30 p-3 text-xs">
             <span className="text-muted-foreground">
-              Will commit <strong>{enabledCount}</strong> field
-              {enabledCount === 1 ? "" : "s"} across {appids.length} games.
+              {t("bulk.willCommit", { count: enabledCount, games: appids.length })}
             </span>
             {ctx?.willSign ? (
               <Badge variant="success">
-                <ShieldCheck className="mr-1 h-3 w-3" /> will sign
+                <ShieldCheck className="mr-1 h-3 w-3" /> {t("games.willSign")}
               </Badge>
             ) : (
               <Badge variant="warning">
-                <ShieldAlert className="mr-1 h-3 w-3" /> unsigned
+                <ShieldAlert className="mr-1 h-3 w-3" /> {t("games.unsigned")}
               </Badge>
             )}
           </div>
@@ -359,17 +358,19 @@ export function BulkEditDrawer({ appids, onClose, onCommitted }: Props) {
           {enabledCount === 0 && (
             <div className="flex items-start gap-2 rounded-md border bg-muted/30 p-2 text-xs text-muted-foreground">
               <AlertCircle className="mt-0.5 h-3 w-3 shrink-0" />
-              Enable at least one field to apply a bulk edit.
+              {t("bulk.enableAtLeastOne")}
             </div>
           )}
 
           <div className="flex justify-end gap-2 pt-2">
             <Button variant="ghost" onClick={onClose} disabled={saving}>
-              Cancel
+              {t("common.cancel")}
             </Button>
             <Button onClick={save} disabled={saving || enabledCount === 0}>
               <Save className="mr-1 h-3 w-3" />
-              {saving ? "Saving…" : `Commit & save · ${appids.length} games`}
+              {saving
+                ? t("common.saving")
+                : t("bulk.commitAndSaveCount", { count: appids.length })}
             </Button>
           </div>
         </div>

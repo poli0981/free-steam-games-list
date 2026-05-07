@@ -248,11 +248,13 @@ export function EditGameDrawer({ game, onClose }: Props) {
 
       const { commit, shard } = result;
       const sevenSha = commit.sha.slice(0, 7);
-      toast.success(`Saved ${sevenSha}`, {
+      toast.success(t("edit.savedToast", { sha: sevenSha }), {
         id: toastId,
-        description: ctx.willSign ? `${shard} · verifying…` : `${shard} · unsigned`,
+        description: ctx.willSign
+          ? `${shard} · ${t("common.verifying")}`
+          : `${shard} · ${t("games.unsigned")}`,
         action: {
-          label: "View commit",
+          label: t("verify.viewCommit"),
           onClick: () => window.open(commit.htmlUrl, "_blank"),
         },
       });
@@ -260,13 +262,13 @@ export function EditGameDrawer({ game, onClose }: Props) {
       if (ctx.willSign) {
         // Background poll — toast updates by id when done.
         void pollCommitVerification(commit.sha, auth.token).then((v) => {
-          toast.success(`Saved ${sevenSha}`, {
+          toast.success(t("edit.savedToast", { sha: sevenSha }), {
             id: toastId,
             description: v.verified
-              ? `${shard} · Verified ✓`
-              : `${shard} · Unverified · ${v.reason}`,
+              ? `${shard} · ${t("verify.verified")}`
+              : `${shard} · ${t("verify.unverifiedReason", { reason: v.reason })}`,
             action: {
-              label: "View commit",
+              label: t("verify.viewCommit"),
               onClick: () => window.open(commit.htmlUrl, "_blank"),
             },
           });
@@ -336,21 +338,20 @@ export function EditGameDrawer({ game, onClose }: Props) {
               <Separator />
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <Label>Diff preview</Label>
+                  <Label>{t("edit.diffPreview")}</Label>
                   <div className="flex items-center gap-1.5">
                     {view === "form" && (
                       <Badge variant="secondary">
-                        {Object.keys(patch).length} field
-                        {Object.keys(patch).length === 1 ? "" : "s"}
+                        {t("edit.fields", { count: Object.keys(patch).length })}
                       </Badge>
                     )}
                     {ctx?.willSign ? (
                       <Badge variant="success">
-                        <ShieldCheck className="mr-1 h-3 w-3" /> will sign
+                        <ShieldCheck className="mr-1 h-3 w-3" /> {t("games.willSign")}
                       </Badge>
                     ) : (
                       <Badge variant="warning">
-                        <ShieldAlert className="mr-1 h-3 w-3" /> unsigned
+                        <ShieldAlert className="mr-1 h-3 w-3" /> {t("games.unsigned")}
                       </Badge>
                     )}
                   </div>
@@ -362,12 +363,7 @@ export function EditGameDrawer({ game, onClose }: Props) {
                 )}
                 {!ctx?.willSign && (
                   <p className="text-xs text-muted-foreground">
-                    GPG key not unlocked — this commit will land but show as
-                    Unverified on GitHub.{" "}
-                    <a href="#/settings" className="text-primary hover:underline">
-                      Unlock in Settings
-                    </a>{" "}
-                    to sign.
+                    {t("edit.unsignedHint")}
                   </p>
                 )}
               </div>
@@ -379,10 +375,10 @@ export function EditGameDrawer({ game, onClose }: Props) {
               <AlertCircle className="mt-0.5 h-3 w-3 shrink-0" />
               <span>
                 {view === "form"
-                  ? "No changes yet — adjust a field above to enable Save."
+                  ? t("edit.noChanges")
                   : jsonError
-                    ? `Fix JSON errors before saving: ${jsonError}`
-                    : "JSON unchanged."}
+                    ? t("edit.fixJsonErrors", { error: jsonError })
+                    : t("edit.jsonUnchanged")}
               </span>
             </div>
           )}
@@ -418,6 +414,7 @@ export function EditGameDrawer({ game, onClose }: Props) {
 }
 
 function ViewToggle({ view, setView }: { view: View; setView: (v: View) => void }) {
+  const { t } = useTranslation();
   return (
     <div className="inline-flex rounded-md border p-0.5 text-xs">
       <button
@@ -430,7 +427,7 @@ function ViewToggle({ view, setView }: { view: View; setView: (v: View) => void 
             : "text-muted-foreground hover:text-foreground")
         }
       >
-        <FileText className="h-3 w-3" /> Form
+        <FileText className="h-3 w-3" /> {t("edit.viewForm")}
       </button>
       <button
         type="button"
@@ -442,7 +439,7 @@ function ViewToggle({ view, setView }: { view: View; setView: (v: View) => void 
             : "text-muted-foreground hover:text-foreground")
         }
       >
-        <Code className="h-3 w-3" /> JSON
+        <Code className="h-3 w-3" /> {t("edit.viewJson")}
       </button>
     </div>
   );
@@ -454,18 +451,19 @@ interface FormFieldsProps {
 }
 
 function FormFields({ form, update }: FormFieldsProps) {
+  const { t } = useTranslation();
   const isCustomAC = !(ANTI_CHEAT_ENUM as readonly string[]).includes(form.anti_cheat);
   return (
     <>
       <div className="grid gap-3 sm:grid-cols-2">
         <div className="space-y-1.5">
-          <Label htmlFor="genre">Genre</Label>
+          <Label htmlFor="genre">{t("edit.genre")}</Label>
           <Input
             id="genre"
             list="genre-list"
             value={form.genre}
             onChange={(e) => update("genre", e.target.value)}
-            placeholder="Pick or type a genre…"
+            placeholder={t("edit.genrePlaceholder")}
           />
           <datalist id="genre-list">
             {GENRE_ENUM.map((g) => (
@@ -475,7 +473,7 @@ function FormFields({ form, update }: FormFieldsProps) {
         </div>
 
         <div className="space-y-1.5">
-          <Label htmlFor="type_game">Type</Label>
+          <Label htmlFor="type_game">{t("edit.type")}</Label>
           <select
             id="type_game"
             value={form.type_game}
@@ -484,16 +482,16 @@ function FormFields({ form, update }: FormFieldsProps) {
             }
             className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm"
           >
-            {TYPE_GAME_ENUM.map((t) => (
-              <option key={t || "unknown"} value={t}>
-                {t || "— unknown —"}
+            {TYPE_GAME_ENUM.map((tg) => (
+              <option key={tg || "unknown"} value={tg}>
+                {tg || `— ${t("common.unknown")} —`}
               </option>
             ))}
           </select>
         </div>
 
         <div className="space-y-1.5">
-          <Label htmlFor="anti_cheat">Anti-cheat</Label>
+          <Label htmlFor="anti_cheat">{t("edit.antiCheat")}</Label>
           <select
             id="anti_cheat"
             value={isCustomAC ? "__custom__" : form.anti_cheat}
@@ -505,23 +503,23 @@ function FormFields({ form, update }: FormFieldsProps) {
           >
             {ANTI_CHEAT_ENUM.map((a) => (
               <option key={a} value={a}>
-                {a === "-" ? "— none —" : a}
+                {a === "-" ? t("add.noneOption") : a}
               </option>
             ))}
-            <option value="__custom__">Custom…</option>
+            <option value="__custom__">{t("add.customOption")}</option>
           </select>
           {isCustomAC && (
             <Input
               value={form.anti_cheat}
               onChange={(e) => update("anti_cheat", e.target.value)}
-              placeholder="Custom AC name"
+              placeholder={t("add.customAcName")}
               className="mt-1"
             />
           )}
         </div>
 
         <div className="space-y-1.5">
-          <Label>Kernel-level AC?</Label>
+          <Label>{t("edit.kernelAc")}</Label>
           <div className="flex gap-1.5">
             {(["unknown", "no", "yes"] as const).map((v) => (
               <Button
@@ -531,7 +529,7 @@ function FormFields({ form, update }: FormFieldsProps) {
                 variant={form.is_kernel_ac === v ? "default" : "outline"}
                 onClick={() => update("is_kernel_ac", v)}
               >
-                {v}
+                {t(`common.${v}`)}
               </Button>
             ))}
           </div>
@@ -539,30 +537,30 @@ function FormFields({ form, update }: FormFieldsProps) {
       </div>
 
       <div className="space-y-1.5">
-        <Label htmlFor="anti_cheat_note">Anti-cheat note</Label>
+        <Label htmlFor="anti_cheat_note">{t("edit.antiCheatNote")}</Label>
         <Textarea
           id="anti_cheat_note"
           value={form.anti_cheat_note}
           onChange={(e) => update("anti_cheat_note", e.target.value)}
-          placeholder="Notes on AC behavior, kernel driver, etc."
+          placeholder={t("edit.antiCheatNotePlaceholder")}
           rows={2}
         />
       </div>
 
       <div className="space-y-1.5">
-        <Label htmlFor="notes">Notes</Label>
+        <Label htmlFor="notes">{t("edit.notes")}</Label>
         <Textarea
           id="notes"
           value={form.notes}
           onChange={(e) => update("notes", e.target.value)}
-          placeholder="Personal review or comment"
+          placeholder={t("edit.notesPlaceholder")}
           rows={3}
         />
       </div>
 
       <div className="grid gap-3 sm:grid-cols-2">
         <div className="space-y-1.5">
-          <Label htmlFor="safe">Safe?</Label>
+          <Label htmlFor="safe">{t("edit.safe")}</Label>
           <select
             id="safe"
             value={form.safe}
@@ -571,14 +569,14 @@ function FormFields({ form, update }: FormFieldsProps) {
           >
             {SAFE_ENUM.map((s) => (
               <option key={s} value={s}>
-                {s === "?" ? "unknown" : s === "y" ? "yes" : "no"}
+                {s === "?" ? t("common.unknown") : s === "y" ? t("common.yes") : t("common.no")}
               </option>
             ))}
           </select>
         </div>
 
         <div className="space-y-1.5">
-          <Label htmlFor="status">Status</Label>
+          <Label htmlFor="status">{t("edit.status")}</Label>
           <select
             id="status"
             value={form.status}
@@ -608,6 +606,7 @@ function JsonEditor({
   setJson: (s: string) => void;
   error: string | null;
 }) {
+  const { t } = useTranslation();
   return (
     <div className="space-y-2">
       <Textarea
@@ -624,8 +623,7 @@ function JsonEditor({
         </div>
       ) : (
         <div className="text-xs text-muted-foreground">
-          Power-user mode: replaces the entire record. <code>added_at</code> is
-          preserved from the original; everything else is committed verbatim.
+          {t("edit.jsonPowerMode", { addedAt: "added_at" })}
         </div>
       )}
     </div>
@@ -639,10 +637,11 @@ function JsonDiff({
   before: GameRecord;
   after: GameRecord | null;
 }) {
+  const { t } = useTranslation();
   if (!after)
     return (
       <div className="rounded-md border bg-muted/30 p-3 text-sm text-muted-foreground">
-        No valid JSON to diff.
+        {t("edit.noValidJsonDiff")}
       </div>
     );
   const changed: { field: string; old: unknown; new: unknown }[] = [];
@@ -657,7 +656,7 @@ function JsonDiff({
   if (changed.length === 0)
     return (
       <div className="rounded-md border bg-muted/30 p-3 text-sm text-muted-foreground">
-        No changes.
+        {t("diff.noChanges")}
       </div>
     );
   return (
@@ -665,9 +664,9 @@ function JsonDiff({
       <table className="w-full text-sm">
         <thead className="bg-muted/40 text-xs uppercase tracking-wider text-muted-foreground">
           <tr>
-            <th className="px-3 py-2 text-left">Field</th>
-            <th className="px-3 py-2 text-left">Before</th>
-            <th className="px-3 py-2 text-left">After</th>
+            <th className="px-3 py-2 text-left">{t("diff.field")}</th>
+            <th className="px-3 py-2 text-left">{t("diff.before")}</th>
+            <th className="px-3 py-2 text-left">{t("diff.after")}</th>
           </tr>
         </thead>
         <tbody>

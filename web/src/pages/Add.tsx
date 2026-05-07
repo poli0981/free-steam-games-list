@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 import {
   Loader2,
   PlusCircle,
@@ -43,6 +44,7 @@ import {
 } from "../lib/enums";
 
 export function AddPage() {
+  const { t } = useTranslation();
   const auth = useAuth();
   const ctx = useCommitContext();
   const isOwner = useIsOwner();
@@ -63,20 +65,16 @@ export function AddPage() {
     return (
       <div className="max-w-2xl space-y-4">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Add games</h1>
-          <p className="text-sm text-muted-foreground">
-            Paste a Steam link → it gets queued for the daily ingest pipeline.
-          </p>
+          <h1 className="text-2xl font-semibold tracking-tight">{t("add.title")}</h1>
+          <p className="text-sm text-muted-foreground">{t("add.subtitleVisitor")}</p>
         </div>
         <Card>
           <CardContent className="space-y-2 p-6 text-center">
             <p className="text-sm text-muted-foreground">
-              {auth.isAuthenticated
-                ? "Only the repo owner can add or edit. Visitors browse read-only."
-                : "Sign in to GitHub as the repo owner to add games. Read-only browse works without sign-in."}
+              {auth.isAuthenticated ? t("add.ownerOnly") : t("add.signInRequired")}
             </p>
             <Button onClick={() => (window.location.hash = "#/settings")}>
-              Go to Settings
+              {t("add.goToSettings")}
             </Button>
           </CardContent>
         </Card>
@@ -87,20 +85,20 @@ export function AddPage() {
   return (
     <div className="max-w-3xl space-y-6">
       <div className="space-y-2">
-        <h1 className="text-2xl font-semibold tracking-tight">Add games</h1>
+        <h1 className="text-2xl font-semibold tracking-tight">{t("add.title")}</h1>
         <p className="text-sm text-muted-foreground">
-          Paste Steam links → queues to <code>scripts/temp_info.jsonl</code>. The
-          existing <code>ingest-new.yml</code> workflow fetches Steam metadata
-          (name, reviews, players, languages, anti-cheat) and merges your
-          manual overrides on top. Refresh in ~3–5 minutes to see new rows.
+          {t("add.subtitleOwner", {
+            tempInfo: "scripts/temp_info.jsonl",
+            ingestNew: "ingest-new.yml",
+          })}
         </p>
         {ctx.willSign ? (
           <Badge variant="success">
-            <ShieldCheck className="mr-1 h-3 w-3" /> commits will be signed
+            <ShieldCheck className="mr-1 h-3 w-3" /> {t("add.commitsWillSign")}
           </Badge>
         ) : (
           <Badge variant="warning">
-            <ShieldAlert className="mr-1 h-3 w-3" /> commits will be unsigned · unlock GPG in Settings to sign
+            <ShieldAlert className="mr-1 h-3 w-3" /> {t("add.commitsUnsigned")}
           </Badge>
         )}
       </div>
@@ -168,15 +166,17 @@ function reportToast(
   result: { added: AddEntry[]; commit: { sha: string; htmlUrl: string } },
   token: string,
   label: string,
+  t: (key: string, options?: Record<string, unknown>) => string,
 ) {
   const sevenSha = result.commit.sha.slice(0, 7);
+  const ingestStarting = "ingest starting";
   toast.success(label, {
     id: toastId,
     description: ctx.willSign
-      ? `${sevenSha} · verifying… · ingest starting`
-      : `${sevenSha} · unsigned · ingest starting`,
+      ? `${sevenSha} · ${t("common.verifying")} · ${ingestStarting}`
+      : `${sevenSha} · ${t("games.unsigned")} · ${ingestStarting}`,
     action: {
-      label: "View commit",
+      label: t("verify.viewCommit"),
       onClick: () => window.open(result.commit.htmlUrl, "_blank"),
     },
   });
@@ -185,10 +185,10 @@ function reportToast(
       toast.success(label, {
         id: toastId,
         description: v.verified
-          ? `${sevenSha} · Verified ✓ · ingest starting`
-          : `${sevenSha} · Unverified · ${v.reason}`,
+          ? `${sevenSha} · ${t("verify.verified")} · ${ingestStarting}`
+          : `${sevenSha} · ${t("verify.unverifiedReason", { reason: v.reason })}`,
         action: {
-          label: "View commit",
+          label: t("verify.viewCommit"),
           onClick: () => window.open(result.commit.htmlUrl, "_blank"),
         },
       });
@@ -197,6 +197,7 @@ function reportToast(
 }
 
 function SingleAdd({ existingAppids, ctx, token, onSuccess }: SubProps) {
+  const { t } = useTranslation();
   const [link, setLink] = useState("");
   const [busy, setBusy] = useState(false);
   const [showOverrides, setShowOverrides] = useState(false);
@@ -221,13 +222,20 @@ function SingleAdd({ existingAppids, ctx, token, onSuccess }: SubProps) {
         signer: ctx.signer,
         token,
       });
-      reportToast(toastId, ctx, result, token, `Queued ${result.added.length} game`);
+      reportToast(
+        toastId,
+        ctx,
+        result,
+        token,
+        t("add.queuedToast", { count: result.added.length }),
+        t,
+      );
       setLink("");
       setOverride(emptyOverride);
       setShowOverrides(false);
       onSuccess();
     } catch (err) {
-      toast.error("Add failed", {
+      toast.error(t("add.addFailedToast"), {
         id: toastId,
         description: err instanceof Error ? err.message : String(err),
       });
@@ -248,20 +256,17 @@ function SingleAdd({ existingAppids, ctx, token, onSuccess }: SubProps) {
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <PlusCircle className="h-4 w-4" /> Single add
+          <PlusCircle className="h-4 w-4" /> {t("add.singleAddTitle")}
         </CardTitle>
-        <CardDescription>
-          Paste a Steam URL or appid. Optional: pre-fill manual fields so the
-          ingest pipeline preserves them.
-        </CardDescription>
+        <CardDescription>{t("add.singleAddDesc")}</CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={submit} className="space-y-3">
           <div className="space-y-1.5">
-            <Label htmlFor="link">Steam link or appid</Label>
+            <Label htmlFor="link">{t("add.linkLabel")}</Label>
             <Input
               id="link"
-              placeholder="https://store.steampowered.com/app/730/  or just  730"
+              placeholder={t("add.linkPlaceholder")}
               value={link}
               onChange={(e) => setLink(e.target.value)}
               disabled={busy}
@@ -274,13 +279,13 @@ function SingleAdd({ existingAppids, ctx, token, onSuccess }: SubProps) {
                 <div className="flex items-center justify-between gap-2">
                   <span className="font-mono text-muted-foreground">{normalized}</span>
                   {dup ? (
-                    <Badge variant="warning">already in dataset</Badge>
+                    <Badge variant="warning">{t("add.alreadyInDataset")}</Badge>
                   ) : (
-                    <Badge variant="success">new · appid {appid}</Badge>
+                    <Badge variant="success">{t("add.newAppid", { appid })}</Badge>
                   )}
                 </div>
               ) : (
-                <span className="text-destructive">Not a valid Steam link.</span>
+                <span className="text-destructive">{t("add.notValidLink")}</span>
               )}
             </div>
           )}
@@ -295,10 +300,10 @@ function SingleAdd({ existingAppids, ctx, token, onSuccess }: SubProps) {
             ) : (
               <ChevronRight className="h-3 w-3" />
             )}
-            Manual overrides
+            {t("add.manualOverrides")}
             {overrideFieldsCount > 0 && (
               <Badge variant="secondary" className="ml-1">
-                {overrideFieldsCount} set
+                {overrideFieldsCount} {t("add.setSuffix")}
               </Badge>
             )}
           </button>
@@ -306,10 +311,7 @@ function SingleAdd({ existingAppids, ctx, token, onSuccess }: SubProps) {
           {showOverrides && (
             <div className="space-y-3 rounded-md border bg-muted/20 p-3">
               <OverrideFields ov={override} setOv={setOv} disabled={busy} />
-              <p className="text-xs text-muted-foreground">
-                Empty values are skipped — the daily pipeline will fetch defaults from
-                Steam. Anything you set here is preserved across refetches.
-              </p>
+              <p className="text-xs text-muted-foreground">{t("add.emptyValuesSkipped")}</p>
             </div>
           )}
 
@@ -319,7 +321,7 @@ function SingleAdd({ existingAppids, ctx, token, onSuccess }: SubProps) {
             ) : (
               <Sparkles className="mr-1 h-3 w-3" />
             )}
-            {busy ? "Queueing…" : "Queue for ingest"}
+            {busy ? t("add.queueing") : t("add.queueForIngest")}
           </Button>
         </form>
       </CardContent>
@@ -411,6 +413,7 @@ function previewJsonl(text: string, existing: Set<string>): BulkPreview {
 type BulkMode = "links" | "json";
 
 function BulkAdd({ existingAppids, ctx, token, onSuccess }: SubProps) {
+  const { t } = useTranslation();
   const [mode, setMode] = useState<BulkMode>("links");
   const [text, setText] = useState("");
   const [busy, setBusy] = useState(false);
@@ -440,12 +443,13 @@ function BulkAdd({ existingAppids, ctx, token, onSuccess }: SubProps) {
         ctx,
         result,
         token,
-        `Queued ${result.added.length} games`,
+        t("add.queuedToast", { count: result.added.length }),
+        t,
       );
       setText("");
       onSuccess();
     } catch (err) {
-      toast.error("Bulk add failed", {
+      toast.error(t("add.bulkAddFailedToast"), {
         id: toastId,
         description: err instanceof Error ? err.message : String(err),
       });
@@ -465,12 +469,10 @@ function BulkAdd({ existingAppids, ctx, token, onSuccess }: SubProps) {
         <div className="flex items-start justify-between gap-2">
           <div>
             <CardTitle className="flex items-center gap-2">
-              <ListPlus className="h-4 w-4" /> Bulk add
+              <ListPlus className="h-4 w-4" /> {t("add.bulkAddTitle")}
             </CardTitle>
             <CardDescription>
-              {mode === "links"
-                ? "One Steam URL or appid per line."
-                : "One JSON object per line with link + optional manual fields."}
+              {mode === "links" ? t("add.bulkAddDescLinks") : t("add.bulkAddDescJson")}
             </CardDescription>
           </div>
           <div className="inline-flex rounded-md border p-0.5 text-xs">
@@ -484,7 +486,7 @@ function BulkAdd({ existingAppids, ctx, token, onSuccess }: SubProps) {
                   : "text-muted-foreground hover:text-foreground")
               }
             >
-              <FileText className="h-3 w-3" /> Links
+              <FileText className="h-3 w-3" /> {t("add.linksToggle")}
             </button>
             <button
               type="button"
@@ -496,7 +498,7 @@ function BulkAdd({ existingAppids, ctx, token, onSuccess }: SubProps) {
                   : "text-muted-foreground hover:text-foreground")
               }
             >
-              <Code className="h-3 w-3" /> JSON
+              <Code className="h-3 w-3" /> {t("add.jsonToggle")}
             </button>
           </div>
         </div>
@@ -516,14 +518,14 @@ function BulkAdd({ existingAppids, ctx, token, onSuccess }: SubProps) {
           <>
             <Separator />
             <div className="grid grid-cols-3 gap-3 text-sm">
-              <Stat label="Valid new" value={preview.valid.length} variant="success" />
-              <Stat label="Already in dataset" value={preview.dup} variant="warning" />
-              <Stat label="Invalid" value={preview.bad.length} variant="destructive" />
+              <Stat label={t("add.validNew")} value={preview.valid.length} variant="success" />
+              <Stat label={t("add.alreadyDup")} value={preview.dup} variant="warning" />
+              <Stat label={t("add.invalid")} value={preview.bad.length} variant="destructive" />
             </div>
 
             {preview.bad.length > 0 && (
               <div className="rounded-md border border-destructive/30 bg-destructive/5 p-2 text-xs">
-                <div className="mb-1 font-semibold">Invalid lines (skipped):</div>
+                <div className="mb-1 font-semibold">{t("add.invalidLines")}</div>
                 <ul className="space-y-0.5 font-mono text-destructive/90">
                   {preview.bad.slice(0, 5).map((b, i) => (
                     <li key={i} className="truncate">
@@ -531,7 +533,7 @@ function BulkAdd({ existingAppids, ctx, token, onSuccess }: SubProps) {
                     </li>
                   ))}
                   {preview.bad.length > 5 && (
-                    <li>+{preview.bad.length - 5} more…</li>
+                    <li>{t("add.moreItems", { count: preview.bad.length - 5 })}</li>
                   )}
                 </ul>
               </div>
@@ -547,8 +549,8 @@ function BulkAdd({ existingAppids, ctx, token, onSuccess }: SubProps) {
               <Sparkles className="mr-1 h-3 w-3" />
             )}
             {busy
-              ? "Queueing…"
-              : `Queue ${preview.valid.length} game${preview.valid.length === 1 ? "" : "s"}`}
+              ? t("add.queueing")
+              : t("add.queueGames", { count: preview.valid.length })}
           </Button>
           <a
             href="https://github.com/poli0981/free-steam-games-list/actions/workflows/ingest-new.yml"
@@ -556,7 +558,7 @@ function BulkAdd({ existingAppids, ctx, token, onSuccess }: SubProps) {
             rel="noreferrer"
             className="ml-auto inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground"
           >
-            View ingest runs <ExternalLink className="h-3 w-3" />
+            {t("add.viewIngestRuns")} <ExternalLink className="h-3 w-3" />
           </a>
         </div>
       </CardContent>
@@ -571,19 +573,20 @@ interface OverrideFieldsProps {
 }
 
 function OverrideFields({ ov, setOv, disabled }: OverrideFieldsProps) {
+  const { t } = useTranslation();
   const isCustomAC = !(ANTI_CHEAT_ENUM as readonly string[]).includes(ov.anti_cheat);
   return (
     <>
       <div className="grid gap-3 sm:grid-cols-2">
         <div className="space-y-1.5">
-          <Label htmlFor="ov-genre">Genre</Label>
+          <Label htmlFor="ov-genre">{t("edit.genre")}</Label>
           <Input
             id="ov-genre"
             list="ov-genre-list"
             value={ov.genre}
             onChange={(e) => setOv("genre", e.target.value)}
             disabled={disabled}
-            placeholder="Pick or type…"
+            placeholder={t("add.pickOrType")}
           />
           <datalist id="ov-genre-list">
             {GENRE_ENUM.map((g) => (
@@ -593,7 +596,7 @@ function OverrideFields({ ov, setOv, disabled }: OverrideFieldsProps) {
         </div>
 
         <div className="space-y-1.5">
-          <Label htmlFor="ov-type">Type</Label>
+          <Label htmlFor="ov-type">{t("edit.type")}</Label>
           <select
             id="ov-type"
             value={ov.type_game}
@@ -603,16 +606,16 @@ function OverrideFields({ ov, setOv, disabled }: OverrideFieldsProps) {
             disabled={disabled}
             className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm"
           >
-            {TYPE_GAME_ENUM.map((t) => (
-              <option key={t || "u"} value={t}>
-                {t || "— skip —"}
+            {TYPE_GAME_ENUM.map((tg) => (
+              <option key={tg || "u"} value={tg}>
+                {tg || t("add.skipOption")}
               </option>
             ))}
           </select>
         </div>
 
         <div className="space-y-1.5">
-          <Label htmlFor="ov-ac">Anti-cheat</Label>
+          <Label htmlFor="ov-ac">{t("edit.antiCheat")}</Label>
           <select
             id="ov-ac"
             value={isCustomAC && ov.anti_cheat ? "__custom__" : ov.anti_cheat || ""}
@@ -623,27 +626,27 @@ function OverrideFields({ ov, setOv, disabled }: OverrideFieldsProps) {
             disabled={disabled}
             className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm"
           >
-            <option value="">— skip —</option>
+            <option value="">{t("add.skipOption")}</option>
             {ANTI_CHEAT_ENUM.map((a) => (
               <option key={a} value={a}>
-                {a === "-" ? "— none —" : a}
+                {a === "-" ? t("add.noneOption") : a}
               </option>
             ))}
-            <option value="__custom__">Custom…</option>
+            <option value="__custom__">{t("add.customOption")}</option>
           </select>
           {isCustomAC && ov.anti_cheat && (
             <Input
               value={ov.anti_cheat}
               onChange={(e) => setOv("anti_cheat", e.target.value)}
               disabled={disabled}
-              placeholder="Custom AC name"
+              placeholder={t("add.customAcName")}
               className="mt-1"
             />
           )}
         </div>
 
         <div className="space-y-1.5">
-          <Label>Kernel-level AC?</Label>
+          <Label>{t("edit.kernelAc")}</Label>
           <div className="flex gap-1.5">
             {(["unknown", "no", "yes"] as const).map((v) => (
               <Button
@@ -654,14 +657,14 @@ function OverrideFields({ ov, setOv, disabled }: OverrideFieldsProps) {
                 onClick={() => setOv("is_kernel_ac", v)}
                 disabled={disabled}
               >
-                {v}
+                {t(`common.${v}`)}
               </Button>
             ))}
           </div>
         </div>
 
         <div className="space-y-1.5">
-          <Label htmlFor="ov-safe">Safe?</Label>
+          <Label htmlFor="ov-safe">{t("edit.safe")}</Label>
           <select
             id="ov-safe"
             value={ov.safe}
@@ -671,7 +674,7 @@ function OverrideFields({ ov, setOv, disabled }: OverrideFieldsProps) {
           >
             {SAFE_ENUM.map((s) => (
               <option key={s} value={s}>
-                {s === "?" ? "— skip —" : s === "y" ? "yes" : "no"}
+                {s === "?" ? t("add.skipOption") : s === "y" ? t("common.yes") : t("common.no")}
               </option>
             ))}
           </select>
@@ -679,7 +682,7 @@ function OverrideFields({ ov, setOv, disabled }: OverrideFieldsProps) {
       </div>
 
       <div className="space-y-1.5">
-        <Label htmlFor="ov-acn">Anti-cheat note</Label>
+        <Label htmlFor="ov-acn">{t("edit.antiCheatNote")}</Label>
         <Textarea
           id="ov-acn"
           value={ov.anti_cheat_note}
@@ -690,7 +693,7 @@ function OverrideFields({ ov, setOv, disabled }: OverrideFieldsProps) {
       </div>
 
       <div className="space-y-1.5">
-        <Label htmlFor="ov-notes">Notes</Label>
+        <Label htmlFor="ov-notes">{t("edit.notes")}</Label>
         <Textarea
           id="ov-notes"
           value={ov.notes}

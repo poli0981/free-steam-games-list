@@ -28,16 +28,55 @@ The Python pipeline relies on two libraries:
 - [`requests`](https://github.com/psf/requests) — Apache-2.0
 - [`urllib3`](https://github.com/urllib3/urllib3) — MIT
 
-The web app + desktop wrapper depend on a longer list, all linked with their licences in the in-app **About → Stack & third-party** section. The headline ones:
+The web app + desktop wrapper depend on a longer list, all linked with their licences in the in-app **About → Stack & third-party** section. Grouped by what they do:
 
-- React, Vite, TypeScript, Tailwind CSS, shadcn/ui (Radix) — UI runtime, build, types, styling.
-- TanStack Query / Table / Virtual — data fetching + 1.2k-row virtualised table.
-- Apache ECharts + `echarts-wordcloud` — charts.
-- OpenPGP.js — client-side commit signing.
-- Workbox + `vite-plugin-pwa` — PWA service worker + offline cache.
-- Tauri 2 + `tauri-plugin-shell` — native desktop wrapper.
-- `react-i18next` + `i18next-browser-languagedetector` — translations.
-- Zustand, Fuse.js, cmdk, lucide-react, sonner, idb-keyval — small but everywhere.
+**Runtime & build**
+- [React 18](https://react.dev/) + [react-dom](https://react.dev/) — UI runtime (MIT).
+- [TypeScript 5](https://www.typescriptlang.org/) — type system (Apache-2.0).
+- [Vite 7](https://vitejs.dev/) + [`@vitejs/plugin-react`](https://github.com/vitejs/vite-plugin-react) — build + dev server (MIT).
+- [PostCSS](https://postcss.org/) + [autoprefixer](https://github.com/postcss/autoprefixer) — CSS post-processing (MIT).
+
+**Styling**
+- [Tailwind CSS 3](https://tailwindcss.com/) (MIT).
+- [tailwindcss-animate](https://github.com/jamiebuilds/tailwindcss-animate) — animation utilities (MIT).
+- [tailwind-merge](https://github.com/dcastil/tailwind-merge) — class merging (MIT).
+- [clsx](https://github.com/lukeed/clsx) — conditional className join (MIT).
+- [class-variance-authority](https://cva.style/) — variant API (Apache-2.0).
+
+**UI primitives & components**
+- [Radix UI](https://www.radix-ui.com/) — headless dialog/popover/tooltip/select/scroll-area/separator/slot/switch/tabs/toast/dropdown-menu/label primitives (MIT).
+- [shadcn/ui](https://ui.shadcn.com/) — copy-and-paste component patterns layered on top of Radix (MIT).
+- [lucide-react](https://lucide.dev/) — icons (ISC).
+- [sonner](https://sonner.emilkowal.ski/) — toasts (MIT).
+- [cmdk](https://cmdk.paco.me/) — command palette (MIT).
+
+**Routing & i18n**
+- [react-router-dom](https://reactrouter.com/) — client-side routing (MIT).
+- [i18next](https://www.i18next.com/) + [react-i18next](https://react.i18next.com/) + [i18next-browser-languagedetector](https://github.com/i18next/i18next-browser-languageDetector) — translation engine (all MIT).
+
+**Data & state**
+- [TanStack Query](https://tanstack.com/query) — fetching + caching (MIT).
+- [TanStack Table + Virtual](https://tanstack.com/table) — 1.2k-row virtualised table (MIT).
+- [Zustand](https://zustand-demo.pmnd.rs/) — UI state store (MIT).
+- [idb-keyval](https://github.com/jakearchibald/idb-keyval) — IndexedDB wrapper (Apache-2.0).
+- [Fuse.js](https://www.fusejs.io/) — fuzzy search (Apache-2.0).
+
+**Charts**
+- [Apache ECharts](https://echarts.apache.org/) (Apache-2.0).
+- [echarts-for-react](https://github.com/hustcc/echarts-for-react) — React binding (MIT).
+- [echarts-wordcloud](https://github.com/ecomfe/echarts-wordcloud) — wordcloud plugin (BSD-3-Clause).
+
+**Crypto & PWA**
+- [OpenPGP.js](https://openpgpjs.org/) — client-side commit signing (LGPL-3.0).
+- [Workbox](https://developer.chrome.com/docs/workbox) + [vite-plugin-pwa](https://vite-pwa-org.netlify.app/) — service worker + offline cache (MIT).
+
+**Desktop (Tauri 2)**
+- [Tauri 2](https://v2.tauri.app/) — Rust shell that wraps the same web build into a native desktop app; dual-licensed MIT/Apache-2.0.
+- [`@tauri-apps/api`](https://github.com/tauri-apps/tauri/tree/dev/packages/api) — JS bindings.
+- [`tauri-plugin-shell`](https://github.com/tauri-apps/plugins-workspace/tree/v2/plugins/shell) — open external links.
+- [`tauri-plugin-updater`](https://github.com/tauri-apps/plugins-workspace/tree/v2/plugins/updater) — auto-update.
+- [`tauri-plugin-process`](https://github.com/tauri-apps/plugins-workspace/tree/v2/plugins/process) — process control.
+- Rust crates pulled in by the desktop binary: `serde`, `serde_json`, `tauri-build` (all MIT/Apache-2.0).
 
 Full SPDX list with deep links to each project's `LICENSE` file lives at `/about` inside the web app, kept up-to-date alongside the dep list itself.
 

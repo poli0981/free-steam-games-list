@@ -88,7 +88,7 @@ export function SettingsPage() {
               );
             })}
             <span className="ml-1 inline-flex items-center gap-1 text-xs text-muted-foreground">
-              <Globe2 className="h-3 w-3" /> auto-detected from your browser on first load
+              <Globe2 className="h-3 w-3" /> {t("system.autoDetectedLanguage")}
             </span>
           </div>
         </CardContent>
@@ -103,25 +103,25 @@ export function SettingsPage() {
       {auth.isAuthenticated && rate && (
         <Card>
           <CardHeader>
-            <CardTitle>API rate limit</CardTitle>
+            <CardTitle>{t("system.apiRateLimitTitle")}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-3 gap-4 text-sm">
               <div>
                 <div className="text-xs uppercase tracking-wider text-muted-foreground">
-                  Remaining
+                  {t("system.apiRateLimitRemaining")}
                 </div>
                 <div className="text-xl font-semibold">{formatNumber(rate.remaining)}</div>
               </div>
               <div>
                 <div className="text-xs uppercase tracking-wider text-muted-foreground">
-                  Limit
+                  {t("system.apiRateLimitLimit")}
                 </div>
                 <div className="text-xl font-semibold">{formatNumber(rate.limit)}</div>
               </div>
               <div>
                 <div className="text-xs uppercase tracking-wider text-muted-foreground">
-                  Resets
+                  {t("system.apiRateLimitResets")}
                 </div>
                 <div className="text-xl font-semibold">
                   {new Date(rate.reset * 1000).toLocaleTimeString()}

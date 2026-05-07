@@ -15,6 +15,7 @@ import {
   Sparkles,
   AlertTriangle,
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
 import { Badge } from "../components/ui/badge";
 import { Button } from "../components/ui/button";
@@ -56,21 +57,32 @@ interface Dep {
 const DEPS: Dep[] = [
   { name: "React 18", role: "UI runtime", href: "https://react.dev/", license: "MIT", licenseHref: "https://github.com/facebook/react/blob/main/LICENSE" },
   { name: "TypeScript 5", role: "type system", href: "https://www.typescriptlang.org/", license: "Apache-2.0", licenseHref: "https://github.com/microsoft/TypeScript/blob/main/LICENSE.txt" },
-  { name: "Vite 5", role: "build + dev server", href: "https://vitejs.dev/", license: "MIT", licenseHref: "https://github.com/vitejs/vite/blob/main/LICENSE" },
+  { name: "Vite 7", role: "build + dev server", href: "https://vitejs.dev/", license: "MIT", licenseHref: "https://github.com/vitejs/vite/blob/main/LICENSE" },
   { name: "Tailwind CSS 3", role: "styling", href: "https://tailwindcss.com/", license: "MIT", licenseHref: "https://github.com/tailwindlabs/tailwindcss/blob/main/LICENSE" },
   { name: "Radix UI", role: "headless UI primitives", href: "https://www.radix-ui.com/", license: "MIT", licenseHref: "https://github.com/radix-ui/primitives/blob/main/LICENSE" },
+  { name: "react-router-dom", role: "client-side routing", href: "https://reactrouter.com/", license: "MIT", licenseHref: "https://github.com/remix-run/react-router/blob/main/LICENSE.md" },
   { name: "TanStack Query", role: "data fetching + caching", href: "https://tanstack.com/query", license: "MIT", licenseHref: "https://github.com/TanStack/query/blob/main/LICENSE" },
   { name: "TanStack Table + Virtual", role: "1.2k-row virtualised table", href: "https://tanstack.com/table", license: "MIT", licenseHref: "https://github.com/TanStack/table/blob/main/LICENSE" },
   { name: "Apache ECharts", role: "treemap / heatmap / wordcloud / …", href: "https://echarts.apache.org/", license: "Apache-2.0", licenseHref: "https://github.com/apache/echarts/blob/master/LICENSE" },
+  { name: "echarts-for-react", role: "React binding for ECharts", href: "https://github.com/hustcc/echarts-for-react", license: "MIT", licenseHref: "https://github.com/hustcc/echarts-for-react/blob/master/LICENSE" },
   { name: "echarts-wordcloud", role: "ECharts wordcloud plugin", href: "https://github.com/ecomfe/echarts-wordcloud", license: "BSD-3-Clause", licenseHref: "https://github.com/ecomfe/echarts-wordcloud/blob/master/LICENSE" },
   { name: "OpenPGP.js", role: "client-side commit signing", href: "https://openpgpjs.org/", license: "LGPL-3.0", licenseHref: "https://github.com/openpgpjs/openpgpjs/blob/main/LICENSE" },
   { name: "Workbox + vite-plugin-pwa", role: "service worker + offline cache", href: "https://vite-pwa-org.netlify.app/", license: "MIT", licenseHref: "https://github.com/vite-pwa/vite-plugin-pwa/blob/main/LICENSE" },
+  { name: "Tauri 2", role: "native desktop wrapper (shell, updater, process)", href: "https://v2.tauri.app/", license: "MIT or Apache-2.0", licenseHref: "https://github.com/tauri-apps/tauri/blob/dev/LICENSE_APACHE-2.0" },
+  { name: "i18next", role: "i18n core engine", href: "https://www.i18next.com/", license: "MIT", licenseHref: "https://github.com/i18next/i18next/blob/master/LICENSE" },
+  { name: "react-i18next", role: "React bindings for i18next", href: "https://react.i18next.com/", license: "MIT", licenseHref: "https://github.com/i18next/react-i18next/blob/master/LICENSE" },
+  { name: "i18next-browser-languagedetector", role: "auto-detect locale", href: "https://github.com/i18next/i18next-browser-languageDetector", license: "MIT", licenseHref: "https://github.com/i18next/i18next-browser-languageDetector/blob/master/LICENSE" },
   { name: "Zustand", role: "UI/state store", href: "https://zustand-demo.pmnd.rs/", license: "MIT", licenseHref: "https://github.com/pmndrs/zustand/blob/main/LICENSE" },
   { name: "Fuse.js", role: "fuzzy search", href: "https://www.fusejs.io/", license: "Apache-2.0", licenseHref: "https://github.com/krisk/Fuse/blob/main/LICENSE" },
   { name: "cmdk", role: "command palette", href: "https://cmdk.paco.me/", license: "MIT", licenseHref: "https://github.com/pacocoursey/cmdk/blob/main/LICENSE" },
   { name: "lucide-react", role: "icons", href: "https://lucide.dev/", license: "ISC", licenseHref: "https://github.com/lucide-icons/lucide/blob/main/LICENSE" },
   { name: "sonner", role: "toasts", href: "https://sonner.emilkowal.ski/", license: "MIT", licenseHref: "https://github.com/emilkowalski/sonner/blob/main/LICENSE.md" },
   { name: "idb-keyval", role: "IndexedDB wrapper", href: "https://github.com/jakearchibald/idb-keyval", license: "Apache-2.0", licenseHref: "https://github.com/jakearchibald/idb-keyval/blob/main/LICENSE" },
+  { name: "class-variance-authority", role: "component variant API", href: "https://cva.style/", license: "Apache-2.0", licenseHref: "https://github.com/joe-bell/cva/blob/main/LICENSE" },
+  { name: "clsx", role: "conditional className join", href: "https://github.com/lukeed/clsx", license: "MIT", licenseHref: "https://github.com/lukeed/clsx/blob/master/license" },
+  { name: "tailwind-merge", role: "Tailwind class merging", href: "https://github.com/dcastil/tailwind-merge", license: "MIT", licenseHref: "https://github.com/dcastil/tailwind-merge/blob/main/LICENSE.md" },
+  { name: "tailwindcss-animate", role: "animation utilities for Tailwind", href: "https://github.com/jamiebuilds/tailwindcss-animate", license: "MIT", licenseHref: "https://github.com/jamiebuilds/tailwindcss-animate/blob/main/LICENSE" },
+  { name: "PostCSS + autoprefixer", role: "CSS post-processing (build-only)", href: "https://postcss.org/", license: "MIT", licenseHref: "https://github.com/postcss/postcss/blob/main/LICENSE" },
 ];
 
 const ISSUE_TEMPLATES = [
@@ -98,6 +110,7 @@ const LEGAL_DOCS: LegalDoc[] = [
 ];
 
 export function AboutPage() {
+  const { t } = useTranslation();
   const games = useGames();
   const total = games.data?.records.length ?? 0;
   const lastUpdated = games.data?.index.last_updated ?? "";
@@ -105,24 +118,21 @@ export function AboutPage() {
   return (
     <div className="max-w-3xl space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold tracking-tight">About</h1>
-        <p className="text-sm text-muted-foreground">
-          The repo, the dev, the stack, the legal stuff, and the fine print on
-          accuracy.
-        </p>
+        <h1 className="text-2xl font-semibold tracking-tight">{t("about.title")}</h1>
+        <p className="text-sm text-muted-foreground">{t("about.subtitle")}</p>
       </div>
 
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Github className="h-4 w-4" /> Repository
+            <Github className="h-4 w-4" /> {t("about.repositoryTitle")}
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
           <div className="grid gap-3 sm:grid-cols-2">
-            <Stat label="Tracked games" value={formatNumber(total)} />
+            <Stat label={t("about.trackedGamesLabel")} value={formatNumber(total)} />
             <Stat
-              label="Data last updated"
+              label={t("about.dataLastUpdatedLabel")}
               value={lastUpdated ? lastUpdated.slice(0, 16).replace("T", " ") + "Z" : "—"}
             />
           </div>
@@ -164,8 +174,7 @@ export function AboutPage() {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <AlertTriangle className="h-4 w-4 text-amber-400" /> Heads-up before
-            you trust this
+            <AlertTriangle className="h-4 w-4 text-amber-400" /> {t("about.headsUpTitle")}
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-2 text-sm text-muted-foreground">
@@ -207,7 +216,7 @@ export function AboutPage() {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Sparkles className="h-4 w-4 text-violet-400" /> AI disclosure
+            <Sparkles className="h-4 w-4 text-violet-400" /> {t("about.aiDisclosureTitle")}
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-2 text-sm text-muted-foreground">
@@ -243,7 +252,7 @@ export function AboutPage() {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Heart className="h-4 w-4 text-rose-400" /> Maintained by SkullMute
+            <Heart className="h-4 w-4 text-rose-400" /> {t("about.maintainerTitle")}
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
@@ -278,7 +287,7 @@ export function AboutPage() {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Bug className="h-4 w-4" /> Report something
+            <Bug className="h-4 w-4" /> {t("about.reportTitle")}
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
@@ -307,7 +316,7 @@ export function AboutPage() {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Scale className="h-4 w-4" /> Legal &amp; license
+            <Scale className="h-4 w-4" /> {t("about.legalTitle")}
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
@@ -349,7 +358,7 @@ export function AboutPage() {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <FileText className="h-4 w-4" /> Stack &amp; third-party
+            <FileText className="h-4 w-4" /> {t("about.stackTitle")}
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">

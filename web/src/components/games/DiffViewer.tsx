@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import type { EditPatch } from "../../lib/edits";
 import type { GameRecord } from "../../lib/schema";
 import { cn } from "../../lib/utils";
@@ -15,6 +16,7 @@ function fmt(v: unknown): string {
 }
 
 export function DiffViewer({ before, patch }: Props) {
+  const { t } = useTranslation();
   const changes: { field: string; old: unknown; new: unknown }[] = [];
   for (const [key, value] of Object.entries(patch)) {
     if (value === undefined) continue;
@@ -26,7 +28,7 @@ export function DiffViewer({ before, patch }: Props) {
   if (changes.length === 0) {
     return (
       <div className="rounded-md border bg-muted/30 p-3 text-sm text-muted-foreground">
-        No changes.
+        {t("diff.noChanges")}
       </div>
     );
   }
@@ -36,9 +38,9 @@ export function DiffViewer({ before, patch }: Props) {
       <table className="w-full text-sm">
         <thead className="bg-muted/40 text-xs uppercase tracking-wider text-muted-foreground">
           <tr>
-            <th className="px-3 py-2 text-left">Field</th>
-            <th className="px-3 py-2 text-left">Before</th>
-            <th className="px-3 py-2 text-left">After</th>
+            <th className="px-3 py-2 text-left">{t("diff.field")}</th>
+            <th className="px-3 py-2 text-left">{t("diff.before")}</th>
+            <th className="px-3 py-2 text-left">{t("diff.after")}</th>
           </tr>
         </thead>
         <tbody>

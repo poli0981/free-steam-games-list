@@ -8,6 +8,17 @@ repository = "https://github.com/poli0981/free-steam-games-list"
 edition = "2021"
 rust-version = "1.77"
 
+# Library crate that both desktop main.rs and the mobile entry point in
+# lib.rs link against. Tauri 2 expects the `_lib` suffix to keep the
+# library crate name distinct from the binary crate name (otherwise Cargo
+# refuses to emit both with the same identifier). The three crate-types
+# cover desktop (rlib), iOS (staticlib), and Android (cdylib) — only rlib
+# is exercised today, but lib.rs already gates a mobile_entry_point so we
+# keep the door open without a second migration.
+[lib]
+name = "f2p_tracker_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
 # https://doc.rust-lang.org/cargo/reference/profiles.html#profile-settings
 [profile.release]
 panic = "abort"
