@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Dialog,
   DialogContent,
@@ -58,6 +59,7 @@ function Field({
 }
 
 export function GameDetailDrawer({ game, onClose, missing }: Props) {
+  const { t } = useTranslation();
   const isOwner = useIsOwner();
   const [editing, setEditing] = useState(false);
 
@@ -67,24 +69,21 @@ export function GameDetailDrawer({ game, onClose, missing }: Props) {
         {!game && missing && (
           <div className="space-y-3">
             <DialogHeader>
-              <DialogTitle>Game not found</DialogTitle>
+              <DialogTitle>{t("dialogs.gameNotFound")}</DialogTitle>
               <DialogDescription>
-                appid <code>{missing}</code> isn't in the current dataset. It may
-                have been delisted, removed, or queued for the next ingest run.
-                Check{" "}
+                {t("dialogs.gameNotFoundBody", { appid: missing })}{" "}
                 <a
                   href={`https://store.steampowered.com/app/${missing}/`}
                   target="_blank"
                   rel="noreferrer"
                   className="text-primary hover:underline"
                 >
-                  the Steam page
+                  {t("detail.viewSteamPage")}
                 </a>{" "}
-                or{" "}
+                ·{" "}
                 <a href="#/health" className="text-primary hover:underline">
-                  Health
+                  {t("detail.viewHealth")}
                 </a>
-                .
               </DialogDescription>
             </DialogHeader>
           </div>
@@ -107,7 +106,7 @@ export function GameDetailDrawer({ game, onClose, missing }: Props) {
                     variant="outline"
                     onClick={() => setEditing(true)}
                   >
-                    <Pencil className="mr-1 h-3 w-3" /> Edit
+                    <Pencil className="mr-1 h-3 w-3" /> {t("common.edit")}
                   </Button>
                 )}
               </div>
@@ -118,7 +117,7 @@ export function GameDetailDrawer({ game, onClose, missing }: Props) {
                   rel="noreferrer"
                   className="inline-flex items-center gap-1 text-primary hover:underline"
                 >
-                  appid {extractAppid(game.link)} · open on Steam{" "}
+                  {t("detail.openOnSteam", { appid: extractAppid(game.link) })}{" "}
                   <ExternalLink className="h-3 w-3" />
                 </a>
               </DialogDescription>
@@ -133,10 +132,10 @@ export function GameDetailDrawer({ game, onClose, missing }: Props) {
             <Separator />
 
             <div className="grid grid-cols-2 gap-x-6 gap-y-4">
-              <Field label="Genre" icon={Tag}>
+              <Field label={t("detail.labelGenre")} icon={Tag}>
                 {game.genre || "—"}
               </Field>
-              <Field label="Type">
+              <Field label={t("detail.labelType")}>
                 {game.type_game ? (
                   <Badge variant={game.type_game === "online" ? "success" : "secondary"}>
                     {game.type_game}
@@ -145,19 +144,19 @@ export function GameDetailDrawer({ game, onClose, missing }: Props) {
                   "—"
                 )}
               </Field>
-              <Field label="Developer">
+              <Field label={t("detail.labelDeveloper")}>
                 {(game.developer ?? []).join(", ") || "—"}
               </Field>
-              <Field label="Publisher">
+              <Field label={t("detail.labelPublisher")}>
                 {(game.publisher ?? []).join(", ") || "—"}
               </Field>
-              <Field label="Released" icon={Calendar}>
+              <Field label={t("detail.labelReleased")} icon={Calendar}>
                 {game.release_date || "—"}
               </Field>
-              <Field label="Platforms" icon={Globe}>
+              <Field label={t("detail.labelPlatforms")} icon={Globe}>
                 {(game.platforms ?? []).join(" · ") || "—"}
               </Field>
-              <Field label="Reviews" icon={Star}>
+              <Field label={t("detail.labelReviews")} icon={Star}>
                 {parseReviewPercent(game.reviews) !== null ? (
                   <span>
                     <span className="font-mono">
@@ -171,31 +170,35 @@ export function GameDetailDrawer({ game, onClose, missing }: Props) {
                   "—"
                 )}
               </Field>
-              <Field label="Players" icon={Users}>
+              <Field label={t("detail.labelPlayers")} icon={Users}>
                 {formatNumber(game.current_players)}{" "}
                 <span className="text-muted-foreground">
-                  (peak {formatNumber(game.peak_today)})
+                  {t("detail.playersPeak", { peak: formatNumber(game.peak_today) })}
                 </span>
               </Field>
-              <Field label="Anti-cheat" icon={Shield}>
+              <Field label={t("detail.labelAntiCheat")} icon={Shield}>
                 {game.anti_cheat && game.anti_cheat !== "-" ? (
                   <span className="space-x-2">
                     <Badge variant={game.is_kernel_ac ? "destructive" : "warning"}>
                       {game.anti_cheat}
                     </Badge>
                     {game.is_kernel_ac && (
-                      <span className="text-xs text-rose-400">kernel-level</span>
+                      <span className="text-xs text-rose-400">{t("detail.kernelLevel")}</span>
                     )}
                   </span>
                 ) : (
                   "—"
                 )}
               </Field>
-              <Field label="Metacritic">{game.metacritic || "—"}</Field>
-              <Field label="DRM">{game.drm_notes || "—"}</Field>
-              <Field label="Has paid DLC">{game.has_paid_dlc ? "Yes" : "No"}</Field>
-              <Field label="Status">{game.status}</Field>
-              <Field label="Last updated">{formatRelativeDate(game.last_updated)}</Field>
+              <Field label={t("detail.labelMetacritic")}>{game.metacritic || "—"}</Field>
+              <Field label={t("detail.labelDrm")}>{game.drm_notes || "—"}</Field>
+              <Field label={t("detail.labelHasPaidDlc")}>
+                {game.has_paid_dlc ? t("common.yes") : t("common.no")}
+              </Field>
+              <Field label={t("detail.labelStatus")}>{game.status}</Field>
+              <Field label={t("detail.labelLastUpdated")}>
+                {formatRelativeDate(game.last_updated)}
+              </Field>
             </div>
 
             {game.tags?.length > 0 && (
@@ -203,12 +206,12 @@ export function GameDetailDrawer({ game, onClose, missing }: Props) {
                 <Separator />
                 <div>
                   <div className="mb-2 text-xs font-medium uppercase tracking-wider text-muted-foreground">
-                    Tags
+                    {t("detail.labelTags")}
                   </div>
                   <div className="flex flex-wrap gap-1.5">
-                    {game.tags.map((t) => (
-                      <Badge key={t} variant="outline" className="font-normal">
-                        {t}
+                    {game.tags.map((tg) => (
+                      <Badge key={tg} variant="outline" className="font-normal">
+                        {tg}
                       </Badge>
                     ))}
                   </div>
@@ -221,7 +224,7 @@ export function GameDetailDrawer({ game, onClose, missing }: Props) {
                 <Separator />
                 <div>
                   <div className="mb-2 text-xs font-medium uppercase tracking-wider text-muted-foreground">
-                    Languages ({game.languages.length})
+                    {t("detail.labelLanguages", { count: game.languages.length })}
                   </div>
                   <div className="flex flex-wrap gap-1.5 text-xs text-muted-foreground">
                     {game.languages.slice(0, 30).map((l) => (
@@ -242,7 +245,7 @@ export function GameDetailDrawer({ game, onClose, missing }: Props) {
             {game.notes && (
               <>
                 <Separator />
-                <Field label="Notes">{game.notes}</Field>
+                <Field label={t("detail.labelNotes")}>{game.notes}</Field>
               </>
             )}
           </div>

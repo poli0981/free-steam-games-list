@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Command } from "cmdk";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import {
   LayoutDashboard,
   Gamepad2,
@@ -56,6 +57,7 @@ const NAV: NavCmd[] = [
 ];
 
 export function CommandPalette() {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
   const navigate = useNavigate();
@@ -104,7 +106,7 @@ export function CommandPalette() {
             <Search className="h-4 w-4 text-muted-foreground" />
             <Command.Input
               autoFocus
-              placeholder="Type a page, game name, or command…"
+              placeholder={t("cmdk.placeholder")}
               value={search}
               onValueChange={setSearch}
               className="cmdk-input"
@@ -113,9 +115,9 @@ export function CommandPalette() {
           </div>
 
           <Command.List className="cmdk-list">
-            <Command.Empty className="cmdk-empty">No matches.</Command.Empty>
+            <Command.Empty className="cmdk-empty">{t("cmdk.noMatches")}</Command.Empty>
 
-            <Command.Group heading="Pages" className="cmdk-group">
+            <Command.Group heading={t("cmdk.groupPages")} className="cmdk-group">
               {NAV.filter((n) => n.group === "Pages").map((n) => (
                 <Command.Item
                   key={n.to}
@@ -130,7 +132,7 @@ export function CommandPalette() {
               ))}
             </Command.Group>
 
-            <Command.Group heading="Charts" className="cmdk-group">
+            <Command.Group heading={t("cmdk.groupCharts")} className="cmdk-group">
               {NAV.filter((n) => n.group === "Charts").map((n) => (
                 <Command.Item
                   key={n.to}
@@ -145,7 +147,7 @@ export function CommandPalette() {
             </Command.Group>
 
             {gpg.parsed && (
-              <Command.Group heading="GPG" className="cmdk-group">
+              <Command.Group heading={t("cmdk.groupGpg")} className="cmdk-group">
                 {gpg.unlocked ? (
                   <Command.Item
                     onSelect={() => {
@@ -153,26 +155,26 @@ export function CommandPalette() {
                       setOpen(false);
                     }}
                     className="cmdk-item"
-                    value="Lock GPG key"
+                    value={t("cmdk.lockGpgKey")}
                   >
                     <Lock className="h-3.5 w-3.5" />
-                    Lock GPG key
+                    {t("cmdk.lockGpgKey")}
                   </Command.Item>
                 ) : (
                   <Command.Item
                     onSelect={() => go("/settings")}
                     className="cmdk-item"
-                    value="Unlock GPG key"
+                    value={t("cmdk.unlockGpgSettings")}
                   >
                     <Unlock className="h-3.5 w-3.5" />
-                    Unlock GPG key (Settings)
+                    {t("cmdk.unlockGpgSettings")}
                   </Command.Item>
                 )}
               </Command.Group>
             )}
 
             {gameMatches.length > 0 && (
-              <Command.Group heading="Games" className="cmdk-group">
+              <Command.Group heading={t("cmdk.groupGames")} className="cmdk-group">
                 {gameMatches.map((r) => (
                   <Command.Item
                     key={r.link}
@@ -204,9 +206,9 @@ export function CommandPalette() {
           <div className="cmdk-footer">
             <kbd className="cmdk-kbd">↑</kbd>
             <kbd className="cmdk-kbd">↓</kbd>
-            <span className="text-xs text-muted-foreground">to navigate</span>
+            <span className="text-xs text-muted-foreground">{t("cmdk.kbdNavigate")}</span>
             <kbd className="cmdk-kbd ml-auto">↵</kbd>
-            <span className="text-xs text-muted-foreground">to select</span>
+            <span className="text-xs text-muted-foreground">{t("cmdk.kbdSelect")}</span>
           </div>
         </Command>
       </div>

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 import {
   Pencil,
   Trash2,
@@ -27,6 +28,7 @@ interface Props {
 }
 
 export function BulkActionBar({ visibleAppids }: Props) {
+  const { t } = useTranslation();
   const selected = useFilters((s) => s.selected);
   const selectAll = useFilters((s) => s.selectAll);
   const clearSelection = useFilters((s) => s.clearSelection);
@@ -52,7 +54,7 @@ export function BulkActionBar({ visibleAppids }: Props) {
           className="h-7 text-xs"
         >
           <CheckSquare className="mr-1 h-3 w-3" />
-          Select all visible ({visibleAppids.length})
+          {t("games.selectAllVisible", { count: visibleAppids.length })}
         </Button>
       </div>
     );
@@ -62,12 +64,7 @@ export function BulkActionBar({ visibleAppids }: Props) {
 
   async function handleDelete() {
     if (!auth.token || !ctx || !games.data) return;
-    if (
-      !window.confirm(
-        `Delete ${selected.size} game${selected.size === 1 ? "" : "s"} from data shards?\nThe records also get appended to scripts/removed_games.jsonl.\n\nThis is destructive — cannot be undone via the UI.`,
-      )
-    )
-      return;
+    if (!window.confirm(t("games.bulkDeleteConfirm", { count: selected.size }))) return;
     setDeleting(true);
     const toastId = `delete-${Date.now()}`;
     try {
@@ -80,25 +77,25 @@ export function BulkActionBar({ visibleAppids }: Props) {
         token: auth.token,
       });
       const sevenSha = result.commit.sha.slice(0, 7);
-      toast.success(`Deleted ${result.removed} games`, {
+      toast.success(t("games.deletedToast", { count: result.removed }), {
         id: toastId,
         description: ctx.willSign
-          ? `${sevenSha} · verifying…`
-          : `${sevenSha} · unsigned`,
+          ? `${sevenSha} · ${t("common.verifying")}`
+          : `${sevenSha} · ${t("games.unsigned")}`,
         action: {
-          label: "View commit",
+          label: t("verify.viewCommit"),
           onClick: () => window.open(result.commit.htmlUrl, "_blank"),
         },
       });
       if (ctx.willSign) {
         void pollCommitVerification(result.commit.sha, auth.token).then((v) => {
-          toast.success(`Deleted ${result.removed} games`, {
+          toast.success(t("games.deletedToast", { count: result.removed }), {
             id: toastId,
             description: v.verified
-              ? `${sevenSha} · Verified ✓`
-              : `${sevenSha} · Unverified · ${v.reason}`,
+              ? `${sevenSha} · ${t("verify.verified")}`
+              : `${sevenSha} · ${t("verify.unverifiedReason", { reason: v.reason })}`,
             action: {
-              label: "View commit",
+              label: t("verify.viewCommit"),
               onClick: () => window.open(result.commit.htmlUrl, "_blank"),
             },
           });
@@ -109,7 +106,7 @@ export function BulkActionBar({ visibleAppids }: Props) {
       optimisticBulkDelete(qc, Array.from(selected));
       clearSelection();
     } catch (err) {
-      toast.error("Bulk delete failed", {
+      toast.error(t("games.bulkDeleteFailedToast"), {
         id: toastId,
         description: err instanceof Error ? err.message : String(err),
       });
@@ -121,16 +118,16 @@ export function BulkActionBar({ visibleAppids }: Props) {
   return (
     <div className="flex flex-wrap items-center gap-2 rounded-lg border bg-primary/10 p-2">
       <Badge variant="default" className="text-sm">
-        {selected.size} selected
+        {selected.size} {t("common.selected")}
       </Badge>
 
       {ctx?.willSign ? (
         <Badge variant="success" className="text-xs">
-          <ShieldCheck className="mr-1 h-3 w-3" /> will sign
+          <ShieldCheck className="mr-1 h-3 w-3" /> {t("games.willSign")}
         </Badge>
       ) : (
         <Badge variant="warning" className="text-xs">
-          <ShieldAlert className="mr-1 h-3 w-3" /> unsigned
+          <ShieldAlert className="mr-1 h-3 w-3" /> {t("games.unsigned")}
         </Badge>
       )}
 
@@ -141,7 +138,7 @@ export function BulkActionBar({ visibleAppids }: Props) {
           disabled={!canEdit || deleting}
           onClick={() => setEditing(true)}
         >
-          <Pencil className="mr-1 h-3 w-3" /> Bulk edit
+          <Pencil className="mr-1 h-3 w-3" /> {t("games.bulkEdit")}
         </Button>
         <Button
           size="sm"
@@ -154,10 +151,10 @@ export function BulkActionBar({ visibleAppids }: Props) {
           ) : (
             <Trash2 className="mr-1 h-3 w-3" />
           )}
-          Delete
+          {t("games.bulkDelete")}
         </Button>
         <Button size="sm" variant="ghost" onClick={clearSelection}>
-          <X className="mr-1 h-3 w-3" /> Clear
+          <X className="mr-1 h-3 w-3" /> {t("games.clearSelection")}
         </Button>
       </div>
 

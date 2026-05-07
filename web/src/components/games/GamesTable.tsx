@@ -1,5 +1,6 @@
 import { useMemo, useRef, useState, useEffect } from "react";
 import { useVirtualizer } from "@tanstack/react-virtual";
+import { useTranslation } from "react-i18next";
 import Fuse from "fuse.js";
 import {
   ArrowUp,
@@ -14,6 +15,7 @@ import {
 } from "lucide-react";
 import { Badge } from "../ui/badge";
 import { Button } from "../ui/button";
+import i18nDefault from "../../i18n";
 import { useFilters, PAGE_SIZES, type PageSize } from "../../stores/filters";
 import {
   formatNumber,
@@ -213,7 +215,7 @@ const COLS: ColDef[] = [
         rel="noreferrer"
         onClick={(e) => e.stopPropagation()}
         className="text-muted-foreground hover:text-primary"
-        title="Open on Steam"
+        title={i18nDefault.t("edit.openOnSteam")}
       >
         <ExternalLink className="h-3.5 w-3.5" />
       </a>
@@ -224,6 +226,7 @@ const COLS: ColDef[] = [
 const TOTAL_WIDTH = COLS.reduce((s, c) => s + c.width, 0);
 
 export function GamesTable({ records, onRowOpen }: Props) {
+  const { t } = useTranslation();
   const search = useFilters((s) => s.search);
   const genre = useFilters((s) => s.genre);
   const typeGame = useFilters((s) => s.type_game);
@@ -336,10 +339,10 @@ export function GamesTable({ records, onRowOpen }: Props) {
         <div className="flex flex-wrap items-center justify-between gap-2 border-b px-3 py-2 text-xs text-muted-foreground">
           <span>
             <strong className="text-foreground">{formatNumber(sorted.length)}</strong>{" "}
-            of {formatNumber(records.length)} games
+            {t("games.ofTotalGames", { total: formatNumber(records.length) })}
             {selected.size > 0 && (
               <span className="ml-2 text-primary">
-                · {formatNumber(selected.size)} selected
+                · {formatNumber(selected.size)} {t("common.selected")}
               </span>
             )}
           </span>
@@ -350,11 +353,11 @@ export function GamesTable({ records, onRowOpen }: Props) {
               value={pageSize}
               onChange={(e) => setPageSize(Number(e.target.value) as PageSize)}
               className="h-7 rounded-md border bg-background px-1.5 text-xs"
-              title="Rows per page"
+              title={t("system.rowsPerPageTitle")}
             >
               {PAGE_SIZES.map((n) => (
                 <option key={n} value={n}>
-                  {n === -1 ? "All" : `${n}/page`}
+                  {n === -1 ? t("common.all") : t("common.rowsPerPage", { n })}
                 </option>
               ))}
             </select>
@@ -366,7 +369,7 @@ export function GamesTable({ records, onRowOpen }: Props) {
                   className="h-7 w-7 p-0"
                   onClick={() => setPage((p) => Math.max(1, p - 1))}
                   disabled={safePage <= 1}
-                  title="Previous page"
+                  title={t("system.previousPage")}
                 >
                   <ChevronLeft className="h-3.5 w-3.5" />
                 </Button>
@@ -379,7 +382,7 @@ export function GamesTable({ records, onRowOpen }: Props) {
                   className="h-7 w-7 p-0"
                   onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                   disabled={safePage >= totalPages}
-                  title="Next page"
+                  title={t("system.nextPage")}
                 >
                   <ChevronRight className="h-3.5 w-3.5" />
                 </Button>
@@ -498,6 +501,7 @@ export function GamesTable({ records, onRowOpen }: Props) {
 }
 
 function ExportMenu({ records }: { records: GameRecord[] }) {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const ts = new Date().toISOString().slice(0, 10);
   return (
@@ -507,10 +511,10 @@ function ExportMenu({ records }: { records: GameRecord[] }) {
         size="sm"
         className="h-7 px-2 text-xs"
         onClick={() => setOpen((o) => !o)}
-        title={`Export ${records.length} filtered rows`}
+        title={t("games.exportTitle", { count: records.length })}
       >
         <Download className="mr-1 h-3 w-3" />
-        Export
+        {t("games.exportLabel")}
       </Button>
       {open && (
         <>
@@ -525,7 +529,9 @@ function ExportMenu({ records }: { records: GameRecord[] }) {
               className="flex w-full items-center gap-2 rounded px-2 py-1.5 text-left text-xs hover:bg-accent"
             >
               <FileSpreadsheet className="h-3 w-3" /> CSV
-              <span className="ml-auto text-muted-foreground">{records.length} rows</span>
+              <span className="ml-auto text-muted-foreground">
+                {t("games.exportRowsCount", { count: records.length })}
+              </span>
             </button>
             <button
               type="button"
@@ -536,7 +542,9 @@ function ExportMenu({ records }: { records: GameRecord[] }) {
               className="flex w-full items-center gap-2 rounded px-2 py-1.5 text-left text-xs hover:bg-accent"
             >
               <FileJson className="h-3 w-3" /> JSON
-              <span className="ml-auto text-muted-foreground">{records.length} rows</span>
+              <span className="ml-auto text-muted-foreground">
+                {t("games.exportRowsCount", { count: records.length })}
+              </span>
             </button>
           </div>
         </>

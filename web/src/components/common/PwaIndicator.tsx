@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useRegisterSW } from "virtual:pwa-register/react";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 import { Download, RotateCw, WifiOff } from "lucide-react";
 import { Button } from "../ui/button";
 
@@ -10,6 +11,7 @@ interface BeforeInstallPromptEvent extends Event {
 }
 
 export function PwaIndicator() {
+  const { t } = useTranslation();
   const {
     needRefresh: [needRefresh, setNeedRefresh],
     updateServiceWorker,
@@ -32,17 +34,17 @@ export function PwaIndicator() {
     }
     function onInstalled() {
       setInstallEvent(null);
-      toast.success("Installed", {
-        description: "F2P Tracker is now available as a standalone app.",
+      toast.success(t("pwa.installed"), {
+        description: t("pwa.installedBody"),
       });
     }
     function onOnline() {
       setOffline(false);
-      toast.success("Back online");
+      toast.success(t("pwa.backOnline"));
     }
     function onOffline() {
       setOffline(true);
-      toast.warning("Offline — using cached data");
+      toast.warning(t("pwa.wentOffline"));
     }
     window.addEventListener("beforeinstallprompt", onBefore);
     window.addEventListener("appinstalled", onInstalled);
@@ -54,15 +56,15 @@ export function PwaIndicator() {
       window.removeEventListener("online", onOnline);
       window.removeEventListener("offline", onOffline);
     };
-  }, []);
+  }, [t]);
 
   useEffect(() => {
     if (needRefresh) {
-      toast.info("Update available", {
-        description: "A new version of the app is ready.",
+      toast.info(t("pwa.updateAvailable"), {
+        description: t("pwa.updateBody"),
         duration: Infinity,
         action: {
-          label: "Reload",
+          label: t("pwa.reload"),
           onClick: () => {
             void updateServiceWorker(true);
             setNeedRefresh(false);
@@ -70,7 +72,7 @@ export function PwaIndicator() {
         },
       });
     }
-  }, [needRefresh, setNeedRefresh, updateServiceWorker]);
+  }, [needRefresh, setNeedRefresh, updateServiceWorker, t]);
 
   async function install() {
     if (!installEvent) return;
@@ -84,14 +86,14 @@ export function PwaIndicator() {
       {offline && (
         <span
           className="inline-flex items-center gap-1 rounded-md border border-amber-500/30 bg-amber-500/10 px-2 py-1 text-xs text-amber-300"
-          title="No network — reads served from cache"
+          title={t("system.noNetworkTooltip")}
         >
-          <WifiOff className="h-3 w-3" /> offline
+          <WifiOff className="h-3 w-3" /> {t("pwa.offline")}
         </span>
       )}
       {installEvent && (
-        <Button variant="outline" size="sm" onClick={install} title="Install as app">
-          <Download className="mr-1 h-3 w-3" /> Install
+        <Button variant="outline" size="sm" onClick={install} title={t("system.installAsApp")}>
+          <Download className="mr-1 h-3 w-3" /> {t("pwa.install")}
         </Button>
       )}
       {needRefresh && (
@@ -102,9 +104,9 @@ export function PwaIndicator() {
             void updateServiceWorker(true);
             setNeedRefresh(false);
           }}
-          title="A new version is ready — click to reload"
+          title={t("system.updateReadyTooltip")}
         >
-          <RotateCw className="mr-1 h-3 w-3" /> Update
+          <RotateCw className="mr-1 h-3 w-3" /> {t("pwa.update")}
         </Button>
       )}
     </div>

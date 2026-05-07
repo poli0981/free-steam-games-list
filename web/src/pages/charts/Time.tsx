@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { useGames } from "../../hooks/useGames";
 import { ReleaseYearHistogram } from "../../components/charts/ReleaseYearHistogram";
 import { AddedCumulativeLine } from "../../components/charts/AddedCumulativeLine";
@@ -5,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/ca
 import { LoadingState, ErrorState } from "../../components/common/QueryState";
 
 export function TimePage() {
+  const { t } = useTranslation();
   const q = useGames();
   if (q.isLoading) return <LoadingState />;
   if (q.error) return <ErrorState error={q.error} />;
@@ -13,14 +15,12 @@ export function TimePage() {
   return (
     <div className="space-y-4">
       <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Time</h1>
-        <p className="text-sm text-muted-foreground">
-          Release-year histogram of the catalog, plus a cumulative timeline of how the dataset grew.
-        </p>
+        <h1 className="text-2xl font-semibold tracking-tight">{t("charts.time.title")}</h1>
+        <p className="text-sm text-muted-foreground">{t("charts.time.subtitle")}</p>
       </div>
       <Card>
         <CardHeader>
-          <CardTitle>Releases by year</CardTitle>
+          <CardTitle>{t("charts.time.releasesByYear")}</CardTitle>
         </CardHeader>
         <CardContent>
           <ReleaseYearHistogram records={q.data.records} height={400} />
@@ -28,7 +28,7 @@ export function TimePage() {
       </Card>
       <Card>
         <CardHeader>
-          <CardTitle>Catalog growth (added_at)</CardTitle>
+          <CardTitle>{t("charts.time.catalogGrowth")}</CardTitle>
         </CardHeader>
         <CardContent>
           <AddedCumulativeLine records={q.data.records} height={400} />

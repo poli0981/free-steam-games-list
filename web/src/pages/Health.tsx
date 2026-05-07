@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 import {
   Loader2,
   AlertTriangle,
@@ -23,8 +24,8 @@ import type { GameRecord } from "../lib/schema";
 import { formatNumber, formatRelativeDate } from "../lib/utils";
 
 interface IssueGroup {
-  label: string;
-  description: string;
+  /** i18n key suffix under `health.group{Suffix}` for label, `Desc` for description. */
+  key: "Delisted" | "Stale" | "Missing" | "Kernel";
   records: GameRecord[];
   icon: React.ComponentType<{ className?: string }>;
   variant: "warning" | "destructive" | "secondary";
@@ -59,38 +60,15 @@ function gatherIssues(records: GameRecord[]): IssueGroup[] {
   }
 
   return [
-    {
-      label: "Delisted",
-      description: "Marked status=delisted (Steam page returned 404 / not free / blocked).",
-      records: delisted,
-      icon: Trash2,
-      variant: "destructive",
-    },
-    {
-      label: "Stale (> 30 days)",
-      description: "last_updated is older than 30 days — daily pipeline may have skipped these.",
-      records: stale,
-      icon: Calendar,
-      variant: "warning",
-    },
-    {
-      label: "Missing manual fields",
-      description: "Missing one or more of: genre / type_game / safe.",
-      records: missingManual,
-      icon: AlertTriangle,
-      variant: "warning",
-    },
-    {
-      label: "Online + AC + kernel unknown",
-      description: "type_game=online with an anti-cheat name set but is_kernel_ac is null.",
-      records: onlineNoKernelInfo,
-      icon: HeartPulse,
-      variant: "secondary",
-    },
+    { key: "Delisted", records: delisted, icon: Trash2, variant: "destructive" },
+    { key: "Stale", records: stale, icon: Calendar, variant: "warning" },
+    { key: "Missing", records: missingManual, icon: AlertTriangle, variant: "warning" },
+    { key: "Kernel", records: onlineNoKernelInfo, icon: HeartPulse, variant: "secondary" },
   ];
 }
 
 export function HealthPage() {
+  const { t } = useTranslation();
   const q = useGames();
   const auth = useAuth();
   const [busy, setBusy] = useState<string | null>(null);
@@ -103,18 +81,19 @@ export function HealthPage() {
 
   const totalIssues = issues.reduce((sum, g) => sum + g.records.length, 0);
 
-  async function trigger(name: string, file: string) {
+  async function trigger(nameKey: string, file: string) {
+    const localizedName = t(nameKey);
     if (!auth.token) {
-      toast.error("Sign in first");
+      toast.error(t("health.signInFirst"));
       return;
     }
     setBusy(file);
     try {
       await dispatchWorkflow(file, auth.token);
-      toast.success(`Triggered ${name}`, {
+      toast.success(t("health.triggeredToast", { name: localizedName }), {
         description: file,
         action: {
-          label: "View runs",
+          label: t("health.viewRuns"),
           onClick: () =>
             window.open(
               `https://github.com/poli0981/free-steam-games-list/actions/workflows/${file}`,
@@ -123,7 +102,7 @@ export function HealthPage() {
         },
       });
     } catch (err) {
-      toast.error(`${name} failed`, {
+      toast.error(t("health.failedToast", { name: localizedName }), {
         description: err instanceof Error ? err.message : String(err),
       });
     } finally {
@@ -135,26 +114,29 @@ export function HealthPage() {
     <div className="space-y-6">
       <div className="flex items-end justify-between">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Health</h1>
+          <h1 className="text-2xl font-semibold tracking-tight">{t("health.title")}</h1>
           <p className="text-sm text-muted-foreground">
-            Validation badges + maintenance triggers. Issues add up to{" "}
-            <strong>{formatNumber(totalIssues)}</strong> records flagged across{" "}
-            {issues.length} categories.
+            {t("health.subtitle", {
+              total: formatNumber(totalIssues),
+              categories: issues.length,
+            })}
           </p>
         </div>
       </div>
 
       <div className="grid gap-3 sm:grid-cols-2">
         {issues.map((g) => (
-          <Card key={g.label}>
+          <Card key={g.key}>
             <CardHeader>
               <CardTitle className="flex items-center justify-between text-base">
                 <span className="flex items-center gap-2">
-                  <g.icon className="h-4 w-4" /> {g.label}
+                  <g.icon className="h-4 w-4" /> {t(`health.group${g.key}`)}
                 </span>
                 <Badge variant={g.variant}>{formatNumber(g.records.length)}</Badge>
               </CardTitle>
-              <CardDescription className="text-xs">{g.description}</CardDescription>
+              <CardDescription className="text-xs">
+                {t(`health.group${g.key}Desc`)}
+              </CardDescription>
             </CardHeader>
             {g.records.length > 0 && (
               <CardContent>
@@ -173,7 +155,7 @@ export function HealthPage() {
                   ))}
                   {g.records.length > 30 && (
                     <div className="px-2 text-xs text-muted-foreground">
-                      +{g.records.length - 30} more…
+                      {t("health.moreItems", { count: g.records.length - 30 })}
                     </div>
                   )}
                 </div>
@@ -186,67 +168,66 @@ export function HealthPage() {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Sparkles className="h-4 w-4" /> Maintenance triggers
+            <Sparkles className="h-4 w-4" /> {t("health.maintenanceTriggers")}
           </CardTitle>
           <CardDescription>
-            Manually fire the existing GitHub Actions workflows. Requires sign-in with
-            <code className="mx-1 rounded bg-muted px-1">workflow</code> scope.
+            {t("health.maintenanceDesc", { scope: "workflow" })}
           </CardDescription>
         </CardHeader>
         <CardContent className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
           <TriggerButton
-            label="Update JSON"
-            description="Full metadata refresh"
+            label={t("health.triggerUpdateJson")}
+            description={t("health.triggerUpdateJsonDesc")}
             file="update-json.yml"
             icon={RefreshCcw}
             busy={busy}
             disabled={!auth.isAuthenticated}
-            onClick={() => trigger("Update JSON", "update-json.yml")}
+            onClick={() => trigger("health.triggerUpdateJson", "update-json.yml")}
           />
           <TriggerButton
-            label="Update reviews"
-            description="Reviews-only refresh"
+            label={t("health.triggerUpdateReviews")}
+            description={t("health.triggerUpdateReviewsDesc")}
             file="update-reviews.yml"
             icon={RefreshCcw}
             busy={busy}
             disabled={!auth.isAuthenticated}
-            onClick={() => trigger("Update reviews", "update-reviews.yml")}
+            onClick={() => trigger("health.triggerUpdateReviews", "update-reviews.yml")}
           />
           <TriggerButton
-            label="Top online"
-            description="Player leaderboard"
+            label={t("health.triggerTopOnline")}
+            description={t("health.triggerTopOnlineDesc")}
             file="top-online.yml"
             icon={Trophy}
             busy={busy}
             disabled={!auth.isAuthenticated}
-            onClick={() => trigger("Top online", "top-online.yml")}
+            onClick={() => trigger("health.triggerTopOnline", "top-online.yml")}
           />
           <TriggerButton
-            label="Check dead links"
-            description="HEAD scan all app pages"
+            label={t("health.triggerCheckLinks")}
+            description={t("health.triggerCheckLinksDesc")}
             file="check-dead-links.yml"
             icon={LinkIcon}
             busy={busy}
             disabled={!auth.isAuthenticated}
-            onClick={() => trigger("Check dead links", "check-dead-links.yml")}
+            onClick={() => trigger("health.triggerCheckLinks", "check-dead-links.yml")}
           />
           <TriggerButton
-            label="Purge unhealthy"
-            description="Remove delisted/blocked"
+            label={t("health.triggerPurge")}
+            description={t("health.triggerPurgeDesc")}
             file="purge-unhealthy.yml"
             icon={Trash2}
             busy={busy}
             disabled={!auth.isAuthenticated}
-            onClick={() => trigger("Purge unhealthy", "purge-unhealthy.yml")}
+            onClick={() => trigger("health.triggerPurge", "purge-unhealthy.yml")}
           />
           <TriggerButton
-            label="Generate tables"
-            description="Regenerate markdown"
+            label={t("health.triggerGenerate")}
+            description={t("health.triggerGenerateDesc")}
             file="update-daily.yml"
             icon={Sparkles}
             busy={busy}
             disabled={!auth.isAuthenticated}
-            onClick={() => trigger("Generate tables", "update-daily.yml")}
+            onClick={() => trigger("health.triggerGenerate", "update-daily.yml")}
           />
         </CardContent>
       </Card>

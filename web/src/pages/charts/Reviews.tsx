@@ -1,9 +1,11 @@
+import { useTranslation } from "react-i18next";
 import { useGames } from "../../hooks/useGames";
 import { ReviewsHistogram } from "../../components/charts/ReviewsHistogram";
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
 import { LoadingState, ErrorState } from "../../components/common/QueryState";
 
 export function ReviewsPage() {
+  const { t } = useTranslation();
   const q = useGames();
   if (q.isLoading) return <LoadingState />;
   if (q.error) return <ErrorState error={q.error} />;
@@ -12,14 +14,12 @@ export function ReviewsPage() {
   return (
     <div className="space-y-4">
       <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Reviews</h1>
-        <p className="text-sm text-muted-foreground">
-          Distribution of user-review percentages, binned by 10%.
-        </p>
+        <h1 className="text-2xl font-semibold tracking-tight">{t("charts.reviews.title")}</h1>
+        <p className="text-sm text-muted-foreground">{t("charts.reviews.subtitle")}</p>
       </div>
       <Card>
         <CardHeader>
-          <CardTitle>Review % distribution</CardTitle>
+          <CardTitle>{t("charts.reviews.reviewDistribution")}</CardTitle>
         </CardHeader>
         <CardContent>
           <ReviewsHistogram records={q.data.records} height={420} />

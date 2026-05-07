@@ -1,9 +1,11 @@
+import { useTranslation } from "react-i18next";
 import { useGames } from "../../hooks/useGames";
 import { PlatformsDonut } from "../../components/charts/PlatformsDonut";
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
 import { LoadingState, ErrorState } from "../../components/common/QueryState";
 
 export function PlatformsPage() {
+  const { t } = useTranslation();
   const q = useGames();
   if (q.isLoading) return <LoadingState />;
   if (q.error) return <ErrorState error={q.error} />;
@@ -11,10 +13,10 @@ export function PlatformsPage() {
 
   return (
     <div className="space-y-4">
-      <h1 className="text-2xl font-semibold tracking-tight">Platforms</h1>
+      <h1 className="text-2xl font-semibold tracking-tight">{t("charts.platforms.title")}</h1>
       <Card>
         <CardHeader>
-          <CardTitle>Platform support</CardTitle>
+          <CardTitle>{t("charts.platforms.platformSupport")}</CardTitle>
         </CardHeader>
         <CardContent>
           <PlatformsDonut records={q.data.records} height={520} />

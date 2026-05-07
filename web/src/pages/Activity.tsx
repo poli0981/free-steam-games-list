@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import {
   ShieldCheck,
   ShieldAlert,
@@ -47,6 +48,7 @@ async function fetchCommits(token: string | null): Promise<Commit[]> {
 }
 
 export function ActivityPage() {
+  const { t } = useTranslation();
   const auth = useAuth();
   const [filter, setFilter] = useState<Filter>("all");
 
@@ -69,18 +71,16 @@ export function ActivityPage() {
     });
   }, [q.data, filter, auth.user?.login]);
 
-  if (q.isLoading) return <LoadingState label="Loading recent commits…" />;
+  if (q.isLoading) return <LoadingState />;
   if (q.error) return <ErrorState error={q.error as Error} />;
 
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Activity</h1>
+          <h1 className="text-2xl font-semibold tracking-tight">{t("activity.title")}</h1>
           <p className="text-sm text-muted-foreground">
-            Recent {q.data?.length ?? 0} commits on{" "}
-            <code className="rounded bg-muted px-1">{DEFAULT_BRANCH}</code>. Verified
-            commits are signed by the author's registered GPG key.
+            {t("activity.subtitle", { count: q.data?.length ?? 0, branch: DEFAULT_BRANCH })}
           </p>
         </div>
         <div className="flex items-center gap-1.5 rounded-md border bg-card p-1 text-xs">
@@ -90,10 +90,14 @@ export function ActivityPage() {
               key={f}
               size="sm"
               variant={filter === f ? "default" : "ghost"}
-              className="h-6 text-xs capitalize"
+              className="h-6 text-xs"
               onClick={() => setFilter(f)}
             >
-              {f === "mine" ? "Me" : f === "bot" ? "Bots" : "All"}
+              {f === "mine"
+                ? t("activity.filterMe")
+                : f === "bot"
+                  ? t("activity.filterBots")
+                  : t("activity.filterAll")}
             </Button>
           ))}
         </div>
@@ -102,7 +106,7 @@ export function ActivityPage() {
       <Card>
         <CardHeader className="pb-2">
           <CardTitle className="text-sm font-normal text-muted-foreground">
-            Showing {filtered.length} commits
+            {t("activity.showingCount", { count: filtered.length })}
           </CardTitle>
         </CardHeader>
         <CardContent className="p-0">
@@ -112,7 +116,7 @@ export function ActivityPage() {
             ))}
             {filtered.length === 0 && (
               <li className="p-6 text-center text-sm text-muted-foreground">
-                No commits match this filter.
+                {t("activity.noMatches")}
               </li>
             )}
           </ul>
@@ -123,6 +127,7 @@ export function ActivityPage() {
 }
 
 function CommitRow({ commit }: { commit: Commit }) {
+  const { t } = useTranslation();
   const verified = commit.commit.verification?.verified;
   const reason = commit.commit.verification?.reason ?? "unsigned";
   const subject = (commit.commit.message ?? "").split("\n")[0];
@@ -155,7 +160,7 @@ function CommitRow({ commit }: { commit: Commit }) {
             rel="noreferrer"
             className="truncate font-medium hover:text-primary"
           >
-            {subject || "(no message)"}
+            {subject || t("activity.noMessage")}
           </a>
           <ExternalLink className="h-3 w-3 shrink-0 text-muted-foreground opacity-50" />
         </div>
@@ -185,17 +190,17 @@ function CommitRow({ commit }: { commit: Commit }) {
       <div className="shrink-0">
         {verified ? (
           <Badge variant="success" className="font-normal">
-            <ShieldCheck className="mr-1 h-3 w-3" /> Verified
+            <ShieldCheck className="mr-1 h-3 w-3" /> {t("activity.verifiedBadge")}
           </Badge>
         ) : reason === "unsigned" ? (
           <Badge variant="secondary" className="font-normal">
-            unsigned
+            {t("activity.unsignedBadge")}
           </Badge>
         ) : (
           <Badge
             variant="warning"
             className="font-normal"
-            title={`reason: ${reason}`}
+            title={t("activity.reasonPrefix", { reason })}
           >
             <ShieldAlert className="mr-1 h-3 w-3" /> {reason}
           </Badge>
