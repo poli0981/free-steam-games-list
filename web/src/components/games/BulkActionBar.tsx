@@ -18,6 +18,7 @@ import { useAuth } from "../../stores/auth";
 import { useCommitContext } from "../../hooks/useCommitContext";
 import { useIsOwner } from "../../hooks/useIsOwner";
 import { bulkDeleteGames } from "../../lib/edits";
+import { optimisticBulkDelete } from "../../lib/optimistic";
 import { pollCommitVerification } from "../../lib/verify-commit";
 import { BulkEditDrawer } from "./BulkEditDrawer";
 
@@ -103,8 +104,10 @@ export function BulkActionBar({ visibleAppids }: Props) {
           });
         });
       }
+      // Patch local cache instead of invalidating; raw.github CDN is stale
+      // for ~5 min after our commit. See lib/optimistic.ts.
+      optimisticBulkDelete(qc, Array.from(selected));
       clearSelection();
-      await qc.invalidateQueries({ queryKey: ["games"] });
     } catch (err) {
       toast.error("Bulk delete failed", {
         id: toastId,

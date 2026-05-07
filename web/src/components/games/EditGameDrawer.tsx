@@ -34,6 +34,7 @@ import {
   RefAdvancedError,
   type EditPatch,
 } from "../../lib/edits";
+import { optimisticEdit, optimisticReplace } from "../../lib/optimistic";
 import { pollCommitVerification } from "../../lib/verify-commit";
 import {
   ANTI_CHEAT_ENUM,
@@ -202,6 +203,12 @@ export function EditGameDrawer({ game, onClose }: Props) {
     setSaving(true);
     const toastId = `commit-${Date.now()}`;
     try {
+      let replacementRecord: GameRecord | null = null;
+      if (view === "json") {
+        replacementRecord = validateJson(json);
+        if (!replacementRecord) throw new Error(jsonError ?? "Invalid JSON");
+      }
+
       const result =
         view === "form"
           ? await updateGame({
@@ -214,20 +221,30 @@ export function EditGameDrawer({ game, onClose }: Props) {
               token: auth.token,
               triggerMarkdownRebuild: true,
             })
-          : await (async () => {
-              const rep = validateJson(json);
-              if (!rep) throw new Error(jsonError ?? "Invalid JSON");
-              return replaceGame({
-                original: game,
-                replacement: rep,
-                flatIndex,
-                index: games.data!.index,
-                author: ctx.author,
-                signer: ctx.signer,
-                token: auth.token!,
-                triggerMarkdownRebuild: true,
-              });
-            })();
+          : await replaceGame({
+              original: game,
+              replacement: replacementRecord!,
+              flatIndex,
+              index: games.data.index,
+              author: ctx.author,
+              signer: ctx.signer,
+              token: auth.token,
+              triggerMarkdownRebuild: true,
+            });
+
+      // Patch the local cache directly — raw.githubusercontent.com is
+      // Fastly-cached for up to 5 minutes, so a refetch right now would
+      // most likely return the pre-edit shard. We already have the new
+      // data in hand, so write it straight to TanStack + IndexedDB.
+      if (view === "form") {
+        optimisticEdit(qc, flatIndex, patch);
+      } else if (replacementRecord) {
+        optimisticReplace(qc, flatIndex, {
+          ...replacementRecord,
+          // Preserve added_at to match what we wrote on disk.
+          added_at: game.added_at || replacementRecord.added_at,
+        });
+      }
 
       const { commit, shard } = result;
       const sevenSha = commit.sha.slice(0, 7);
@@ -256,7 +273,6 @@ export function EditGameDrawer({ game, onClose }: Props) {
         });
       }
 
-      await qc.invalidateQueries({ queryKey: ["games"] });
       onClose();
     } catch (err) {
       if (err instanceof RefAdvancedError) {
@@ -264,6 +280,7 @@ export function EditGameDrawer({ game, onClose }: Props) {
           id: toastId,
           description: "The daily pipeline committed while you were editing.",
         });
+        // Real refetch is fine here — we lost the race and need fresh state.
         await qc.invalidateQueries({ queryKey: ["games"] });
         onClose();
       } else {
