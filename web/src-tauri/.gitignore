@@ -2,3 +2,10 @@
 target/
 gen/
 WixTools/
+
+# Minisign signing keys — stored under ~/.tauri/, never in repo. This guard
+# catches accidental drops into src-tauri/ during development.
+*.key
+*.key.pub
+f2p-tracker
+f2p-tracker.pub
