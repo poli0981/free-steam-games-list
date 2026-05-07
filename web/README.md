@@ -73,18 +73,39 @@ web/
 - **Phase 4** ✅ — GPG salt-notation fix, bulk edit + bulk delete (multi-shard single signed commit), 8 remaining charts, Health page with workflow triggers, ⌘K command palette.
 - **Phase 4.1** ✅ — GPG signature payload fix: dropped trailing `\n` after the commit message so our signed bytes match `verification.payload` byte-for-byte. Verified via `gh api .../commits/{sha}.commit.verification.reason` → `valid`.
 - **Phase 5** ✅ — **PWA** (installable, offline shell precache, stale-while-revalidate cache for raw JSONL data + Steam header images), **GPG identity override** (dropdown when key has multiple user IDs; commit author switches accordingly), **GPG auto-lock** (idle timer wipes the decrypted key after 5–60 min of inactivity), **Activity feed** at `/activity` (recent commits with verified badges, filter by Me / Bots / All).
-- **Phase 6** ✅ — **Genre/AC dropdowns** (curated enums in `src/lib/enums.ts`), **JSON editor toggle** in EditGameDrawer (full-record replace via `replaceGame`), **manual-field overrides on Add** (single + bulk JSON mode propagate `genre/type_game/anti_cheat/notes/safe` straight into `temp_info.jsonl` so the ingest pipeline preserves them), **GamesTable pagination** (50/100/200/500/all + hidden scrollbar + reset on filter change), **per-row validation badge**, **Export** filtered subset to CSV / JSON, **per-game permalinks** `/games/:appid` with friendly 404 drawer, **verify-after-commit poll** (toast updates with `verification.reason` once GitHub confirms), **About** page (repo + dev info from `username.txt` + 3rd-party stack + issue templates), **Topbar GPG quick-unlock popover**, **owner gate** (`useIsOwner` + `OWNER_LOGIN`) hides edit/add/delete UI from non-owners, refreshed `bug_report.yml` issue template.
-- **Phase 7** (later) — i18n vi/en, doc/legal rewrite, optional Tauri desktop wrap, optional OAuth Device Flow.
+- **Phase 6** ✅ — Genre/AC dropdowns (curated enums in `src/lib/enums.ts`), JSON editor toggle in EditGameDrawer, manual-field overrides on Add, GamesTable pagination + hidden scrollbar + per-row validation badge, CSV/JSON export, per-game permalinks `/games/:appid`, verify-after-commit poll, About page with dev info + 3rd-party stack, Topbar GPG quick-unlock popover, owner gate.
+- **Phase 6.1** ✅ — Edit failing on shard 1 fix: Contents API caps `content` at 1 MB; new `getRepoFileText()` falls back to `/git/blobs/{sha}` for oversize files.
+- **Phase 6.2** ✅ — stale-after-edit fix: bump `data/index.json.last_updated` in every shard-modifying commit, switched SW data cache from `StaleWhileRevalidate` → `NetworkFirst` (raw.github CDN is Fastly-cached for 5 min), and optimistic-update helpers (`optimisticEdit/Replace/BulkEdit/BulkDelete`) write straight to TanStack + IndexedDB so editors see their own change instantly without waiting for the CDN.
+- **Phase 7** ✅ — date-column sort fix (`parseReleaseDate`), hamburger mobile nav (Sheet drawer, auto-close on route change), About expansion (Heads-up caveats + AI disclosure + legal links + per-third-party SPDX licence badges), legal docs rewritten (DISCLAIMER + EULA + ToS + PRIVACY) with the four caveats from `notes.txt`, refreshed `bug_report.yml`, workflow Node 20 → 24 + actions versions bumped.
+- **Phase 8** ✅ — **i18n** (`react-i18next` with vi + en resource files, auto-detect from browser, switchable in Settings, sidebar/topbar/dashboard/settings/common UI translated, long-form legal copy stays English by design), **Tauri 2 desktop scaffold** under `src-tauri/` (fixed 1400 × 900 window, no resize, no maximise, dark theme, `tauri-plugin-shell` for Steam/GitHub external links), **release workflow** (`.github/workflows/release-desktop.yml`, matrix Win/Mac/Linux via `tauri-apps/tauri-action`, triggered by `desktop-v*` tags), version bumps (web app `1.0.0`, repo `3.0.0`), README + CHANGELOG + ACKNOWLEDGEMENTs refreshed.
+
+## Desktop builds
+
+```bash
+cd web
+npm run tauri:dev          # local dev with hot reload
+npm run tauri:build        # release binary into src-tauri/target/release/bundle
+```
+
+Requires Rust toolchain locally (the GitHub release workflow installs it via `dtolnay/rust-toolchain@stable`). Window is fixed 1400 × 900 — see `src-tauri/tauri.conf.json` `app.windows[0]`.
+
+To cut a release: tag `desktop-v1.0.0` and push. The matrix build creates a draft Release with `.msi` / `.dmg` / `.AppImage` / `.deb` assets attached. Edit and publish once you've smoke-tested the binaries.
 
 ## PWA
 
 `vite-plugin-pwa` registers a Workbox service worker on every load. After the first visit the app shell loads from cache (offline-capable), and:
 
-- `data/data_*.jsonl` from `raw.githubusercontent.com` is **stale-while-revalidate** — offline users see the last-known catalog; online users get fresh data shortly after.
+- `data/data_*.jsonl` from `raw.githubusercontent.com` is **NetworkFirst** with a 5-second timeout — online users always get the freshest shard, offline users fall back to the last-known cached copy. (The earlier `StaleWhileRevalidate` strategy required two reloads to see your own edits because of Fastly's 5-minute CDN cache; switched in Phase 6.2.)
 - Steam header images (`shared.akamai.steamstatic.com/.../header.jpg`) are **cache-first** for 30 days.
 - GitHub avatars are stale-while-revalidate for 7 days.
 
 A small chip in the topbar shows **offline** / **Install** / **Update** when relevant. The browser's address-bar install button works too. On install the app launches as a standalone window.
+
+## i18n
+
+`react-i18next` + `i18next-browser-languagedetector` with two bundles in `src/i18n/locales/{en,vi}.json`. On first load the language is auto-detected from `navigator.language` (English fallback). Override anytime in **Settings → Language** — the choice persists in `localStorage` under `f2p:lang`.
+
+Translations cover the high-traffic UI: sidebar nav, topbar, common buttons (Save / Cancel / Edit / Delete), dashboard, top-online, settings, edit drawer titles, common toasts. Long-form legal copy in `/about` and the static `docs/*.md` files stays in English on purpose — keeping the legal text byte-identical across languages avoids accidentally weakening the wording in translation.
 
 ## Auth + signing
 

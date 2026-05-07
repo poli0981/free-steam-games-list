@@ -2,6 +2,57 @@
 
 All notable changes to this awesome noob repo will be documented here.
 
+## [v3.0.0] – 2026-05-07 (The "It Has a Website Now" Edition)
+
+The repo is no longer just a list. It is a **list + a React/Vite web app + a Tauri desktop app**, all reading the same Python-pipeline-maintained data.
+
+### 🌐 Web app — `web/` + GitHub Pages
+
+Built across phases 1 → 7. Live at <https://poli0981.github.io/free-steam-games-list/>.
+
+- **Phase 1** — read-only browse: virtualised 1.2k-row TanStack table, faceted filters, Fuse.js fuzzy search, 4 ECharts MVP charts (KPI, top-online, genre treemap, platform donut), GitHub Pages deploy via `actions/deploy-pages`.
+- **Phase 2** — PAT-based GitHub auth, single-record edit drawer for the 8 manual fields, diff viewer, single + bulk Steam-link queue into `scripts/temp_info.jsonl`, conflict-retry, sonner toasts.
+- **Phase 3** — client-side OpenPGP signing via Git Data API: switched all writes from Contents API to `commitFile(getHead → createBlob → createTree → buildCommitContent → openpgp.sign → createCommit → updateRef)`. Settings panel with passphrase unlock + lock indicator. Earlier claim that PATs auto-sign was wrong — Contents API commits land Unverified.
+- **Phase 4** — fixed GPG salt-notation incompatibility (`config.nonDeterministicSignaturesViaNotation: false`) so OpenPGP.js v6 signatures parse on GitHub. Bulk edit + bulk delete in one signed multi-shard commit. 8 remaining charts (tags wordcloud, AC stacked, languages heatmap, release-year histogram, catalog-growth cumulative line, reviews histogram, online player tiers pie, DRM/DLC bars). Health page with workflow_dispatch buttons. ⌘K command palette (cmdk).
+- **Phase 4.1** — GPG signature payload fix: dropped trailing `\n` after the commit message so our signed bytes match `verification.payload` byte-for-byte. Verified via `gh api .../commits/{sha}.commit.verification.reason → valid`.
+- **Phase 5** — PWA (installable, offline shell + last-known data via Workbox), GPG identity override (multi-UID picker), GPG idle auto-lock 5/15/30/60 min, Activity feed page (`/activity`) with Verified-status badges + Me/Bots/All filters.
+- **Phase 6** — curated enums (`ANTI_CHEAT_ENUM`, `GENRE_ENUM`) + dropdowns, JSON-editor toggle in the edit drawer (full-record replace), manual-field overrides on Add (single + bulk JSON mode propagates `genre/type_game/anti_cheat/notes/safe` straight into `temp_info.jsonl`), GamesTable pagination 50/100/200/500/all + hidden scrollbar + per-row validation badge, per-game permalinks `/games/:appid` with friendly 404 drawer, verify-after-commit polling (toast updates with `verification.reason` once GitHub confirms), CSV/JSON export of the filtered subset, About page (repo + dev info from `username.txt` + 3rd-party stack + issue templates), topbar GPG quick-unlock popover, owner-gate (`useIsOwner` + `OWNER_LOGIN`) hides edit/add/delete UI from non-owners.
+- **Phase 6.1** — Edit Always Failing fix: Contents API caps `content` at 1 MB; `data/data_001.jsonl` is 1.49 MB so the read came back empty and every edit threw "Record not found". New `getRepoFileText()` helper falls back to the `/git/blobs/{sha}` endpoint for oversize files.
+- **Phase 6.2** — stale-after-edit fix: bumped `data/index.json.last_updated` in every shard-modifying commit AND switched the SW cache to `NetworkFirst` (raw.github CDN is Fastly-cached for 5 min). Plus optimistic-update helpers (`optimisticEdit/Replace/BulkEdit/BulkDelete`) write straight to TanStack + IndexedDB so the editor sees their own change instantly without waiting for the CDN.
+- **Phase 7** — date-column sort fix (`parseReleaseDate`), hamburger mobile nav (Sheet drawer, auto-close on route change), About expansion (Heads-up caveats + AI disclosure + legal links + per-third-party SPDX licence badges), legal docs rewritten (DISCLAIMER + EULA + ToS + PRIVACY) with the four caveats from `notes.txt` (genre best-effort, English-only, test-data leakage, unsigned-commit dev artefacts), refreshed `bug_report.yml`, workflow Node 20 → 24 + actions versions bumped.
+
+### 🌍 i18n — vi / en (Phase 8, this release)
+
+- `react-i18next` + `i18next-browser-languagedetector`. Resource files `src/i18n/locales/{en,vi}.json`.
+- Auto-detect from `navigator.language` on first load; persistent override via Settings → Language.
+- Sidebar nav, Topbar, Settings, Dashboard, Top Online, common buttons, common toast strings translated. Long-form legal copy stays English by design (legal review hard to mirror exactly across two languages).
+
+### 🖥️ Desktop app — Tauri 2 (Phase 8, this release)
+
+- `web/src-tauri/` Rust scaffold targeting Tauri 2. Single `main` window, fixed 1400 × 900, no resize, no maximise, dark theme, centred at startup.
+- `tauri-plugin-shell` for opening external links to Steam / GitHub from the embedded UI.
+- New `release-desktop.yml` workflow: matrix `ubuntu-latest` / `windows-latest` / `macos-latest`, Apple Silicon + Intel universal binaries, `tauri-apps/tauri-action`. Triggered by `desktop-v*` tags or manual workflow run. Each run creates a draft GitHub Release with `.msi` / `.dmg` / `.AppImage` / `.deb` assets.
+- `npm run tauri:dev` and `npm run tauri:build` from `web/` for local builds.
+
+### 📦 Versioning
+
+- Repo version badge **2.1.0 → 3.0.0**.
+- `web/package.json` **0.1.0 → 1.0.0** (web app considered first-stable).
+- `web/src-tauri/Cargo.toml` and `tauri.conf.json` ship at `1.0.0`.
+
+### 📝 Docs (this release)
+
+- `README.md` — rewrite: web app + desktop sections, updated Quick Links table, new architecture diagram, refreshed contribute paths, refreshed docs index.
+- `CHANGELOG.md` — this entry consolidating phases 1 → 8.
+- `docs/ACKNOWLEDGEMENTs.md` — refreshed with phase-by-phase AI assistance breakdown (Grok v1; Claude for v2 + the entire web/desktop layer + this changelog).
+- `web/README.md` — phase 8 status appended.
+
+### 🛠️ Pipelines unchanged
+
+- All 9 v2.x Python pipeline workflows (update-json, generate-tables, top-online, update-reviews, dead-link-check, purge-unhealthy, ingest-new, ingest-from-issue, refetch-all) keep their schedules and behaviour. Two new workflows added: `deploy-pages.yml` (Phase 1) and `release-desktop.yml` (Phase 8).
+
+---
+
 ## [v2.1.0] - 2026-03-28 (The "Extension-Ready + Performance" Edition)
 
 ### 💥 Breaking Changes

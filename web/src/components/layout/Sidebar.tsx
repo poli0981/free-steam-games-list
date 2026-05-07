@@ -1,5 +1,6 @@
 import { NavLink, useLocation } from "react-router-dom";
 import { useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { useIsOwner } from "../../hooks/useIsOwner";
 import {
   LayoutDashboard,
@@ -25,27 +26,28 @@ import { Sheet, SheetContent } from "../ui/sheet";
 
 interface NavItem {
   to: string;
-  label: string;
+  /** i18n key under "nav.*". */
+  i18n: string;
   icon: React.ComponentType<{ className?: string }>;
   end?: boolean;
 }
 
 const PRIMARY: NavItem[] = [
-  { to: "/", label: "Dashboard", icon: LayoutDashboard, end: true },
-  { to: "/games", label: "Games", icon: Gamepad2 },
-  { to: "/top-online", label: "Top Online", icon: Trophy },
+  { to: "/", i18n: "nav.dashboard", icon: LayoutDashboard, end: true },
+  { to: "/games", i18n: "nav.games", icon: Gamepad2 },
+  { to: "/top-online", i18n: "nav.topOnline", icon: Trophy },
 ];
 
 const CHARTS: NavItem[] = [
-  { to: "/charts/genres", label: "Genres", icon: PieChart },
-  { to: "/charts/platforms", label: "Platforms", icon: Globe },
-  { to: "/charts/languages", label: "Languages", icon: LanguagesIcon },
-  { to: "/charts/tags", label: "Tags", icon: TagsIcon },
-  { to: "/charts/anti-cheat", label: "Anti-Cheat", icon: Shield },
-  { to: "/charts/reviews", label: "Reviews", icon: BarChart3 },
-  { to: "/charts/players", label: "Players", icon: Users },
-  { to: "/charts/time", label: "Time", icon: Clock },
-  { to: "/charts/drm", label: "DRM/DLC", icon: Lock },
+  { to: "/charts/genres", i18n: "nav.genres", icon: PieChart },
+  { to: "/charts/platforms", i18n: "nav.platforms", icon: Globe },
+  { to: "/charts/languages", i18n: "nav.languages", icon: LanguagesIcon },
+  { to: "/charts/tags", i18n: "nav.tags", icon: TagsIcon },
+  { to: "/charts/anti-cheat", i18n: "nav.antiCheat", icon: Shield },
+  { to: "/charts/reviews", i18n: "nav.reviews", icon: BarChart3 },
+  { to: "/charts/players", i18n: "nav.players", icon: Users },
+  { to: "/charts/time", i18n: "nav.time", icon: Clock },
+  { to: "/charts/drm", i18n: "nav.drmDlc", icon: Lock },
 ];
 
 interface NavItemWithOwner extends NavItem {
@@ -53,11 +55,11 @@ interface NavItemWithOwner extends NavItem {
 }
 
 const SECONDARY: NavItemWithOwner[] = [
-  { to: "/health", label: "Health", icon: HeartPulse },
-  { to: "/activity", label: "Activity", icon: History },
-  { to: "/add", label: "Add", icon: PlusCircle, ownerOnly: true },
-  { to: "/about", label: "About", icon: Info },
-  { to: "/settings", label: "Settings", icon: Settings },
+  { to: "/health", i18n: "nav.health", icon: HeartPulse },
+  { to: "/activity", i18n: "nav.activity", icon: History },
+  { to: "/add", i18n: "nav.add", icon: PlusCircle, ownerOnly: true },
+  { to: "/about", i18n: "nav.about", icon: Info },
+  { to: "/settings", i18n: "nav.settings", icon: Settings },
 ];
 
 interface ItemProps {
@@ -66,6 +68,7 @@ interface ItemProps {
 }
 
 function Item({ item, onSelect }: ItemProps) {
+  const { t } = useTranslation();
   return (
     <NavLink
       to={item.to}
@@ -81,7 +84,7 @@ function Item({ item, onSelect }: ItemProps) {
       }
     >
       <item.icon className="h-4 w-4" />
-      {item.label}
+      {t(item.i18n)}
     </NavLink>
   );
 }
@@ -92,6 +95,7 @@ interface SidebarBodyProps {
 
 /** Inner content shared between desktop sidebar + mobile drawer. */
 function SidebarBody({ onSelect }: SidebarBodyProps) {
+  const { t } = useTranslation();
   const isOwner = useIsOwner();
   const visibleSecondary = SECONDARY.filter((i) => !i.ownerOnly || isOwner);
   return (
@@ -102,7 +106,7 @@ function SidebarBody({ onSelect }: SidebarBodyProps) {
         </div>
         <div className="flex flex-col leading-tight">
           <span className="text-sm font-semibold">F2P Tracker</span>
-          <span className="text-xs text-muted-foreground">Steam · v0.1</span>
+          <span className="text-xs text-muted-foreground">Steam · v1.0</span>
         </div>
       </div>
 
@@ -115,7 +119,7 @@ function SidebarBody({ onSelect }: SidebarBodyProps) {
 
         <div>
           <div className="px-3 pb-1 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
-            Charts
+            {t("nav.charts")}
           </div>
           <div className="space-y-1">
             {CHARTS.map((i) => (
@@ -126,7 +130,7 @@ function SidebarBody({ onSelect }: SidebarBodyProps) {
 
         <div>
           <div className="px-3 pb-1 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
-            Manage
+            {t("nav.manage")}
           </div>
           <div className="space-y-1">
             {visibleSecondary.map((i) => (

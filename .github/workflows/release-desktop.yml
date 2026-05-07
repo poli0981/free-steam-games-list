@@ -1,0 +1,88 @@
+name: Release Desktop App
+
+on:
+  push:
+    tags:
+      - 'desktop-v*'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag name (e.g. desktop-v1.0.0). Created if missing.'
+        required: true
+        default: 'desktop-v1.0.0'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: 'macos-latest'
+            args: '--target universal-apple-darwin'
+          - platform: 'ubuntu-latest'
+            args: ''
+          - platform: 'windows-latest'
+            args: ''
+    runs-on: ${{ matrix.platform }}
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Install Linux build deps
+        if: matrix.platform == 'ubuntu-latest'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libwebkit2gtk-4.1-dev \
+            libappindicator3-dev \
+            librsvg2-dev \
+            patchelf \
+            libssl-dev \
+            build-essential \
+            curl \
+            wget \
+            file
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '24'
+          cache: 'npm'
+          cache-dependency-path: web/package-lock.json
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: 'web/src-tauri -> target'
+
+      - name: Install web dependencies
+        working-directory: web
+        run: npm ci || npm install
+
+      - name: Build Tauri app
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          projectPath: web
+          tagName: ${{ github.event.inputs.tag || github.ref_name }}
+          releaseName: 'F2P Tracker ${{ github.event.inputs.tag || github.ref_name }}'
+          releaseBody: |
+            Desktop builds of the F2P Tracker — a fixed-size 1400×900 window wrapping the same web UI deployed at https://poli0981.github.io/free-steam-games-list/.
+
+            **Installation**
+            - Windows: download the `.msi` and run.
+            - macOS: download the `.dmg`, drag to Applications. Universal binary (Intel + Apple Silicon).
+            - Linux: `.AppImage` (run directly) or `.deb` (Debian/Ubuntu).
+
+            See `docs/DISCLAIMER.md` for accuracy caveats. The desktop app reads data live from `raw.githubusercontent.com`; offline functionality matches the PWA.
+
+            Compiled from commit `${{ github.sha }}`.
+          releaseDraft: true
+          prerelease: false
+          args: ${{ matrix.args }}
