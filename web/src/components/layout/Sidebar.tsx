@@ -1,4 +1,5 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
+import { useEffect } from "react";
 import { useIsOwner } from "../../hooks/useIsOwner";
 import {
   LayoutDashboard,
@@ -20,6 +21,7 @@ import {
   Info,
 } from "lucide-react";
 import { cn } from "../../lib/utils";
+import { Sheet, SheetContent } from "../ui/sheet";
 
 interface NavItem {
   to: string;
@@ -58,11 +60,17 @@ const SECONDARY: NavItemWithOwner[] = [
   { to: "/settings", label: "Settings", icon: Settings },
 ];
 
-function Item({ item }: { item: NavItem }) {
+interface ItemProps {
+  item: NavItem;
+  onSelect?: () => void;
+}
+
+function Item({ item, onSelect }: ItemProps) {
   return (
     <NavLink
       to={item.to}
       end={item.end}
+      onClick={onSelect}
       className={({ isActive }) =>
         cn(
           "flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors",
@@ -78,11 +86,16 @@ function Item({ item }: { item: NavItem }) {
   );
 }
 
-export function Sidebar() {
+interface SidebarBodyProps {
+  onSelect?: () => void;
+}
+
+/** Inner content shared between desktop sidebar + mobile drawer. */
+function SidebarBody({ onSelect }: SidebarBodyProps) {
   const isOwner = useIsOwner();
   const visibleSecondary = SECONDARY.filter((i) => !i.ownerOnly || isOwner);
   return (
-    <aside className="hidden w-60 shrink-0 border-r bg-card/40 lg:flex lg:flex-col">
+    <>
       <div className="flex h-14 items-center gap-2 border-b px-4">
         <div className="grid h-8 w-8 place-items-center rounded-md bg-primary/15 text-primary">
           <Gamepad2 className="h-4 w-4" />
@@ -96,7 +109,7 @@ export function Sidebar() {
       <nav className="flex-1 space-y-6 overflow-y-auto px-2 py-4">
         <div className="space-y-1">
           {PRIMARY.map((i) => (
-            <Item key={i.to} item={i} />
+            <Item key={i.to} item={i} onSelect={onSelect} />
           ))}
         </div>
 
@@ -106,7 +119,7 @@ export function Sidebar() {
           </div>
           <div className="space-y-1">
             {CHARTS.map((i) => (
-              <Item key={i.to} item={i} />
+              <Item key={i.to} item={i} onSelect={onSelect} />
             ))}
           </div>
         </div>
@@ -117,7 +130,7 @@ export function Sidebar() {
           </div>
           <div className="space-y-1">
             {visibleSecondary.map((i) => (
-              <Item key={i.to} item={i} />
+              <Item key={i.to} item={i} onSelect={onSelect} />
             ))}
           </div>
         </div>
@@ -129,10 +142,45 @@ export function Sidebar() {
           target="_blank"
           rel="noreferrer"
           className="hover:text-foreground"
+          onClick={onSelect}
         >
           poli0981 / free-steam-games-list
         </a>
       </div>
+    </>
+  );
+}
+
+export function Sidebar() {
+  return (
+    <aside className="hidden w-60 shrink-0 border-r bg-card/40 lg:flex lg:flex-col">
+      <SidebarBody />
     </aside>
+  );
+}
+
+interface MobileSidebarProps {
+  open: boolean;
+  onOpenChange: (o: boolean) => void;
+}
+
+/**
+ * Mobile-only sheet that mirrors the desktop sidebar. Auto-closes on route
+ * change so tapping a nav item works as expected without an extra X click.
+ */
+export function MobileSidebar({ open, onOpenChange }: MobileSidebarProps) {
+  const location = useLocation();
+  useEffect(() => {
+    if (open) onOpenChange(false);
+    // We only want to react to the location pathname change.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location.pathname]);
+
+  return (
+    <Sheet open={open} onOpenChange={onOpenChange}>
+      <SheetContent side="left" className="flex w-72 flex-col p-0">
+        <SidebarBody onSelect={() => onOpenChange(false)} />
+      </SheetContent>
+    </Sheet>
   );
 }

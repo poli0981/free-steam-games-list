@@ -15,7 +15,12 @@ import {
 import { Badge } from "../ui/badge";
 import { Button } from "../ui/button";
 import { useFilters, PAGE_SIZES, type PageSize } from "../../stores/filters";
-import { formatNumber, parseIntSafe, parseReviewPercent } from "../../lib/utils";
+import {
+  formatNumber,
+  parseIntSafe,
+  parseReleaseDate,
+  parseReviewPercent,
+} from "../../lib/utils";
 import { extractAppid } from "../../lib/data-store";
 import type { GameRecord } from "../../lib/schema";
 import { cn } from "../../lib/utils";
@@ -174,7 +179,10 @@ const COLS: ColDef[] = [
     label: "Released",
     width: 120,
     sortable: true,
-    sortValue: (g) => g.release_date ?? "",
+    // Parse Steam-style date strings ("22 Aug, 2012") to timestamps —
+    // string-compare sorts "22 Aug, 2012" < "3 Jan, 2025" alphabetically
+    // and would scramble years entirely.
+    sortValue: (g) => parseReleaseDate(g.release_date),
     render: (g) => (
       <span className="text-xs text-muted-foreground">{g.release_date || "—"}</span>
     ),
