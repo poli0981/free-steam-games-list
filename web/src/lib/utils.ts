@@ -32,6 +32,26 @@ export function reviewLabel(reviews: string | undefined | null): string | null {
   return m ? m[1].trim() : null;
 }
 
+/**
+ * Convert a Steam-style release_date ("22 Aug, 2012", "Dec 19, 2025",
+ * "Coming Soon", "TBA", "" ...) to a comparable timestamp for sorting.
+ * Unparseable / future-unknown values get -Infinity so they cluster at the
+ * "asc" end (oldest first) and the "desc" end (newest first) regardless of
+ * direction — sliding them out of the way of the real data.
+ */
+export function parseReleaseDate(s: string | undefined | null): number {
+  if (!s) return -Infinity;
+  const trimmed = s.trim();
+  if (!trimmed) return -Infinity;
+  // Year-only ("2025") is also valid; Date.parse handles "1 Jan, 2025" etc.
+  const t = Date.parse(trimmed);
+  if (Number.isFinite(t)) return t;
+  // "2025" alone: try as year start.
+  const yearOnly = /^\d{4}$/.exec(trimmed);
+  if (yearOnly) return Date.UTC(parseInt(yearOnly[0], 10), 0, 1);
+  return -Infinity;
+}
+
 export function formatRelativeDate(iso: string | undefined): string {
   if (!iso) return "—";
   const d = new Date(iso);

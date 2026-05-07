@@ -1,4 +1,4 @@
-import { Search, Sun, Moon, Monitor, ShieldCheck, Unlock } from "lucide-react";
+import { Search, Sun, Moon, Monitor, ShieldCheck, Unlock, Menu } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Input } from "../ui/input";
@@ -25,7 +25,12 @@ function applyTheme(t: Theme) {
   }
 }
 
-export function Topbar() {
+interface TopbarProps {
+  /** Hamburger handler — only shown on viewports without the desktop sidebar. */
+  onMenuToggle?: () => void;
+}
+
+export function Topbar({ onMenuToggle }: TopbarProps = {}) {
   const search = useFilters((s) => s.search);
   const setSearch = useFilters((s) => s.setSearch);
   const games = useGames();
@@ -58,6 +63,16 @@ export function Topbar() {
 
   return (
     <header className="sticky top-0 z-30 flex h-14 items-center gap-3 border-b bg-background/95 px-4 backdrop-blur supports-[backdrop-filter]:bg-background/70">
+      <Button
+        variant="ghost"
+        size="icon"
+        aria-label="Open menu"
+        className="-ml-2 lg:hidden"
+        onClick={onMenuToggle}
+      >
+        <Menu className="h-4 w-4" />
+      </Button>
+
       <div className="relative flex-1 max-w-xl">
         <Search className="pointer-events-none absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
         <Input

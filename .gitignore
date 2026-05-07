@@ -168,6 +168,8 @@ artifacts/
 # Add any project-specific files or directories to ignore below
 [Nn]ote.txt
 [Nn]ote.md
+[Nn]otes.txt
+[Nn]otes.md
 temp_data/
 debug_info/
 countdata.py
