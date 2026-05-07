@@ -45,14 +45,23 @@ export default defineConfig(({ command }) => ({
         globPatterns: ["**/*.{js,css,html,svg,woff2}"],
         navigateFallback: command === "build" ? `/${repoName}/index.html` : "/index.html",
         runtimeCaching: [
-          // Raw shard data — stale-while-revalidate so offline users see the
-          // last-known catalog and online users get fresh data shortly after.
+          // Raw shard data — NetworkFirst so an edit lands on disk → next page
+          // load fetches the fresh shard, with cache fallback when offline.
+          // Old StaleWhileRevalidate strategy made edits appear only after TWO
+          // reloads (cached on first, refreshed in background, returned on
+          // second). Using NetworkFirst with a short timeout keeps offline UX
+          // intact while making edits visible on the next reload.
+          //
+          // The cache name is bumped to `f2p-data-v2` so users with a stale
+          // SW automatically discard the old entries on activation rather
+          // than serving them from the legacy `f2p-data` cache.
           {
             urlPattern:
               /^https:\/\/raw\.githubusercontent\.com\/poli0981\/free-steam-games-list\/main\/data\/.*/,
-            handler: "StaleWhileRevalidate",
+            handler: "NetworkFirst",
             options: {
-              cacheName: "f2p-data",
+              cacheName: "f2p-data-v2",
+              networkTimeoutSeconds: 5,
               expiration: { maxEntries: 30, maxAgeSeconds: 60 * 60 * 24 * 7 },
               cacheableResponse: { statuses: [0, 200] },
             },
