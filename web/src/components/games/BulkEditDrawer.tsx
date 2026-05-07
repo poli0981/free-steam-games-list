@@ -19,6 +19,7 @@ import { useAuth } from "../../stores/auth";
 import { useGames } from "../../hooks/useGames";
 import { useCommitContext } from "../../hooks/useCommitContext";
 import { bulkEditGames, type EditPatch } from "../../lib/edits";
+import { optimisticBulkEdit } from "../../lib/optimistic";
 import { pollCommitVerification } from "../../lib/verify-commit";
 import {
   ANTI_CHEAT_ENUM,
@@ -157,7 +158,9 @@ export function BulkEditDrawer({ appids, onClose, onCommitted }: Props) {
           });
         });
       }
-      await qc.invalidateQueries({ queryKey: ["games"] });
+      // Patch local cache instead of invalidating — see lib/optimistic.ts
+      // for the CDN-cache rationale.
+      optimisticBulkEdit(qc, appids, patch);
       onCommitted();
     } catch (err) {
       toast.error("Bulk edit failed", {
