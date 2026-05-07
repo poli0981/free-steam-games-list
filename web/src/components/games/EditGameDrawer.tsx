@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import {
@@ -96,6 +97,7 @@ function formToPatch(g: GameRecord, form: FormState): EditPatch {
 }
 
 export function EditGameDrawer({ game, onClose }: Props) {
+  const { t } = useTranslation();
   const auth = useAuth();
   const ctx = useCommitContext();
   const games = useGames();
@@ -159,10 +161,8 @@ export function EditGameDrawer({ game, onClose }: Props) {
       <Dialog open onOpenChange={(o) => !o && onClose()}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Sign in required</DialogTitle>
-            <DialogDescription>
-              Editing requires GitHub authentication. Go to Settings → Sign in.
-            </DialogDescription>
+            <DialogTitle>{t("edit.signInRequired")}</DialogTitle>
+            <DialogDescription>{t("edit.signInDescription")}</DialogDescription>
           </DialogHeader>
         </DialogContent>
       </Dialog>
@@ -276,15 +276,15 @@ export function EditGameDrawer({ game, onClose }: Props) {
       onClose();
     } catch (err) {
       if (err instanceof RefAdvancedError) {
-        toast.error("Branch advanced — refetch and retry", {
+        toast.error(t("edit.branchAdvanced"), {
           id: toastId,
-          description: "The daily pipeline committed while you were editing.",
+          description: t("edit.branchAdvancedBody"),
         });
         // Real refetch is fine here — we lost the race and need fresh state.
         await qc.invalidateQueries({ queryKey: ["games"] });
         onClose();
       } else {
-        toast.error("Save failed", {
+        toast.error(t("edit.saveFailed"), {
           id: toastId,
           description: err instanceof Error ? err.message : String(err),
         });
@@ -299,28 +299,20 @@ export function EditGameDrawer({ game, onClose }: Props) {
       <DialogContent>
         <DialogHeader>
           <div className="flex items-start justify-between gap-2">
-            <DialogTitle>Edit · {game.name || extractAppid(game.link)}</DialogTitle>
+            <DialogTitle>
+              {t("edit.title", { name: game.name || extractAppid(game.link) })}
+            </DialogTitle>
             <ViewToggle view={view} setView={setView} />
           </div>
           <DialogDescription>
-            {view === "form" ? (
-              <>
-                Manual fields only. Auto-fetched data (name, reviews, players, etc.)
-                is updated by the daily pipeline.{" "}
-              </>
-            ) : (
-              <>
-                Full record JSON. Editing auto-fetched fields will be overwritten on
-                next daily refetch unless you also disable the pipeline.{" "}
-              </>
-            )}
+            {view === "form" ? t("edit.subtitleForm") : t("edit.subtitleJson")}{" "}
             <a
               href={game.link}
               target="_blank"
               rel="noreferrer"
               className="inline-flex items-center gap-1 text-primary hover:underline"
             >
-              Open on Steam <ExternalLink className="h-3 w-3" />
+              {t("edit.openOnSteam")} <ExternalLink className="h-3 w-3" />
             </a>
           </DialogDescription>
         </DialogHeader>
@@ -397,11 +389,11 @@ export function EditGameDrawer({ game, onClose }: Props) {
 
           <div className="flex items-center justify-end gap-2 pt-2">
             <Button variant="ghost" onClick={onClose} disabled={saving}>
-              Cancel
+              {t("common.cancel")}
             </Button>
             {!showConfirm ? (
               <Button onClick={() => setShowConfirm(true)} disabled={!hasChanges}>
-                <Save className="mr-1 h-3 w-3" /> Review changes
+                <Save className="mr-1 h-3 w-3" /> {t("edit.reviewChanges")}
               </Button>
             ) : (
               <>
@@ -410,11 +402,11 @@ export function EditGameDrawer({ game, onClose }: Props) {
                   onClick={() => setShowConfirm(false)}
                   disabled={saving}
                 >
-                  Back
+                  {t("common.back")}
                 </Button>
                 <Button onClick={save} disabled={saving || !hasChanges}>
                   <Save className="mr-1 h-3 w-3" />
-                  {saving ? "Saving…" : "Commit & save"}
+                  {saving ? t("common.saving") : t("edit.commitAndSave")}
                 </Button>
               </>
             )}

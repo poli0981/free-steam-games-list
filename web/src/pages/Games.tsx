@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router-dom";
 import { useGames } from "../hooks/useGames";
 import { GamesTable } from "../components/games/GamesTable";
@@ -10,6 +11,7 @@ import { Badge } from "../components/ui/badge";
 import { X } from "lucide-react";
 
 export function GamesPage() {
+  const { t } = useTranslation();
   const q = useGames();
   const navigate = useNavigate();
   const { appid } = useParams<{ appid: string }>();
@@ -55,10 +57,8 @@ export function GamesPage() {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Games</h1>
-          <p className="text-sm text-muted-foreground">
-            Browse, search, and filter the catalog. Click a row for full details.
-          </p>
+          <h1 className="text-2xl font-semibold tracking-tight">{t("games.title")}</h1>
+          <p className="text-sm text-muted-foreground">{t("games.subtitle")}</p>
         </div>
       </div>
 
@@ -69,7 +69,7 @@ export function GamesPage() {
           onChange={(e) => setGenre(e.target.value || null)}
           className="h-8 rounded-md border bg-background px-2 text-sm"
         >
-          <option value="">All genres</option>
+          <option value="">{t("games.filterAllGenres")}</option>
           {facets.genres.map(([g, n]) => (
             <option key={g} value={g}>
               {g} ({n})
@@ -84,9 +84,9 @@ export function GamesPage() {
           }
           className="h-8 rounded-md border bg-background px-2 text-sm"
         >
-          <option value="">All types</option>
-          <option value="online">Online</option>
-          <option value="offline">Offline</option>
+          <option value="">{t("games.filterAllTypes")}</option>
+          <option value="online">{t("common.online")}</option>
+          <option value="offline">{t("common.offline")}</option>
         </select>
 
         <select
@@ -94,7 +94,7 @@ export function GamesPage() {
           onChange={(e) => setPlatform(e.target.value || null)}
           className="h-8 rounded-md border bg-background px-2 text-sm"
         >
-          <option value="">All platforms</option>
+          <option value="">{t("games.filterAllPlatforms")}</option>
           {facets.platforms.map(([p, n]) => (
             <option key={p} value={p}>
               {p} ({n})
@@ -109,14 +109,14 @@ export function GamesPage() {
           }
           className="h-8 rounded-md border bg-background px-2 text-sm"
         >
-          <option value="">All status</option>
-          <option value="active">Active</option>
-          <option value="delisted">Delisted</option>
+          <option value="">{t("games.filterAllStatus")}</option>
+          <option value="active">{t("common.active")}</option>
+          <option value="delisted">{t("common.delisted")}</option>
         </select>
 
         {hasFilter && (
           <Button variant="ghost" size="sm" onClick={reset}>
-            <X className="mr-1 h-3 w-3" /> Clear
+            <X className="mr-1 h-3 w-3" /> {t("common.clear")}
           </Button>
         )}
 

@@ -68,6 +68,14 @@ jobs:
         uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Inject the updater minisign private key so artefacts are signed
+          # at build time. Public key is baked into tauri.conf.json. Set
+          # `TAURI_SIGNING_PRIVATE_KEY` (and password if used) under
+          # repo Settings → Secrets and variables → Actions. Empty value
+          # → builds still succeed but updater clients will reject the
+          # unsigned binaries.
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
         with:
           projectPath: web
           tagName: ${{ github.event.inputs.tag || github.ref_name }}
@@ -80,9 +88,12 @@ jobs:
             - macOS: download the `.dmg`, drag to Applications. Universal binary (Intel + Apple Silicon).
             - Linux: `.AppImage` (run directly) or `.deb` (Debian/Ubuntu).
 
+            **Auto-update**: from v1.0 onwards the desktop app polls this Releases page on launch and offers to download + verify (minisign) the next signed build. To take updates, install via the official binaries — sideloaded copies won't see the prompt.
+
             See `docs/DISCLAIMER.md` for accuracy caveats. The desktop app reads data live from `raw.githubusercontent.com`; offline functionality matches the PWA.
 
             Compiled from commit `${{ github.sha }}`.
           releaseDraft: true
           prerelease: false
+          includeUpdaterJson: true
           args: ${{ matrix.args }}
