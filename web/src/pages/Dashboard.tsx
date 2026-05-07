@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { useGames } from "../hooks/useGames";
 import { KpiCards } from "../components/charts/KpiCards";
 import { GenreTreemap } from "../components/charts/GenreTreemap";
@@ -7,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card"
 import { LoadingState, ErrorState } from "../components/common/QueryState";
 
 export function Dashboard() {
+  const { t } = useTranslation();
   const q = useGames();
   if (q.isLoading) return <LoadingState />;
   if (q.error) return <ErrorState error={q.error} />;
@@ -17,10 +19,9 @@ export function Dashboard() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Dashboard</h1>
+        <h1 className="text-2xl font-semibold tracking-tight">{t("dashboard.title")}</h1>
         <p className="text-sm text-muted-foreground">
-          Overview of {records.length.toLocaleString()} F2P Steam games tracked in this
-          repository.
+          {t("dashboard.subtitle", { count: records.length })}
         </p>
       </div>
 
@@ -29,7 +30,7 @@ export function Dashboard() {
       <div className="grid gap-4 lg:grid-cols-3">
         <Card className="lg:col-span-2">
           <CardHeader>
-            <CardTitle>Top online (current players)</CardTitle>
+            <CardTitle>{t("dashboard.topOnlineTitle")}</CardTitle>
           </CardHeader>
           <CardContent>
             <TopOnlineBar records={records} limit={20} height={520} />
@@ -38,7 +39,7 @@ export function Dashboard() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Platforms</CardTitle>
+            <CardTitle>{t("dashboard.platformsTitle")}</CardTitle>
           </CardHeader>
           <CardContent>
             <PlatformsDonut records={records} height={520} />
@@ -48,7 +49,7 @@ export function Dashboard() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Genre distribution</CardTitle>
+          <CardTitle>{t("dashboard.genreTitle")}</CardTitle>
         </CardHeader>
         <CardContent>
           <GenreTreemap records={records} height={460} />

@@ -1,13 +1,17 @@
 {
   "name": "free-steam-games-web",
   "private": true,
-  "version": "0.1.0",
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "build:desktop": "tsc -b && vite build --base /",
     "preview": "vite preview",
-    "typecheck": "tsc -b --noEmit"
+    "typecheck": "tsc -b --noEmit",
+    "tauri": "tauri",
+    "tauri:dev": "tauri dev",
+    "tauri:build": "tauri build"
   },
   "dependencies": {
     "@radix-ui/react-dialog": "^1.1.2",
@@ -25,6 +29,8 @@
     "@tanstack/react-query": "^5.59.0",
     "@tanstack/react-table": "^8.20.5",
     "@tanstack/react-virtual": "^3.10.8",
+    "@tauri-apps/api": "^2.1.1",
+    "@tauri-apps/plugin-shell": "^2.0.1",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "cmdk": "^1.0.0",
@@ -32,11 +38,14 @@
     "echarts-for-react": "^3.0.2",
     "echarts-wordcloud": "^2.1.0",
     "fuse.js": "^7.0.0",
+    "i18next": "^23.15.2",
+    "i18next-browser-languagedetector": "^8.0.0",
     "idb-keyval": "^6.2.1",
     "lucide-react": "^0.452.0",
     "openpgp": "^6.1.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "react-i18next": "^15.0.3",
     "react-router-dom": "^6.27.0",
     "sonner": "^1.5.0",
     "tailwind-merge": "^2.5.4",
@@ -44,6 +53,7 @@
     "zustand": "^4.5.5"
   },
   "devDependencies": {
+    "@tauri-apps/cli": "^2.1.0",
     "@types/node": "^22.7.5",
     "@types/react": "^18.3.11",
     "@types/react-dom": "^18.3.0",

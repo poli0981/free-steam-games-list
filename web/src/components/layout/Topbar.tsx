@@ -1,5 +1,6 @@
 import { Search, Sun, Moon, Monitor, ShieldCheck, Unlock, Menu } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
@@ -31,6 +32,7 @@ interface TopbarProps {
 }
 
 export function Topbar({ onMenuToggle }: TopbarProps = {}) {
+  const { t } = useTranslation();
   const search = useFilters((s) => s.search);
   const setSearch = useFilters((s) => s.setSearch);
   const games = useGames();
@@ -66,7 +68,7 @@ export function Topbar({ onMenuToggle }: TopbarProps = {}) {
       <Button
         variant="ghost"
         size="icon"
-        aria-label="Open menu"
+        aria-label={t("topbar.menuOpen")}
         className="-ml-2 lg:hidden"
         onClick={onMenuToggle}
       >
@@ -76,7 +78,7 @@ export function Topbar({ onMenuToggle }: TopbarProps = {}) {
       <div className="relative flex-1 max-w-xl">
         <Search className="pointer-events-none absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
         <Input
-          placeholder="Search by name, tag, description…"
+          placeholder={t("topbar.searchPlaceholder")}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="pl-8 pr-14"
@@ -87,12 +89,17 @@ export function Topbar({ onMenuToggle }: TopbarProps = {}) {
       </div>
 
       <div className="hidden items-center gap-3 text-xs text-muted-foreground md:flex">
-        <span>
-          <strong className="text-foreground">{formatNumber(total)}</strong> games
-        </span>
+        <span
+          dangerouslySetInnerHTML={{
+            __html: t("topbar.gamesCount", { count: total }).replace(
+              String(total),
+              `<strong class="text-foreground">${formatNumber(total)}</strong>`,
+            ),
+          }}
+        />
         {lastUpdated && (
           <span title={lastUpdated}>
-            updated {lastUpdated.slice(0, 10)}
+            {t("topbar.updated", { date: lastUpdated.slice(0, 10) })}
           </span>
         )}
       </div>
@@ -109,7 +116,7 @@ export function Topbar({ onMenuToggle }: TopbarProps = {}) {
                 className="inline-flex items-center gap-1 rounded-md border border-emerald-500/30 bg-emerald-500/10 px-2 py-1 text-xs text-emerald-300 hover:bg-emerald-500/15"
               >
                 <Unlock className="h-3 w-3" />
-                <span>signed</span>
+                <span>{t("topbar.signed")}</span>
               </button>
             ) : (
               <GpgQuickUnlock />
@@ -133,7 +140,7 @@ export function Topbar({ onMenuToggle }: TopbarProps = {}) {
       ) : (
         <Link to="/settings">
           <Button variant="outline" size="sm" className="hidden md:inline-flex">
-            Sign in
+            {t("topbar.signIn")}
           </Button>
         </Link>
       )}
