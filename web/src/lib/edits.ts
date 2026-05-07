@@ -24,6 +24,47 @@ import {
 import { extractAppid, normalizeLink } from "./data-store";
 import { TEMP_JSONL, DATA_DIR, type DataIndex, type GameRecord } from "./schema";
 
+const INDEX_PATH = `${DATA_DIR}/index.json`;
+
+function nowIsoSeconds(): string {
+  return new Date().toISOString().replace(/\.\d{3}Z$/, "Z");
+}
+
+/**
+ * Read the current data/index.json, bump its last_updated, and return the
+ * file entry to include in a commit. Optional deltas adjust total + per-shard
+ * counts (used for bulk delete). Other fields stay as the pipeline left them.
+ *
+ * Why this matters:
+ *   useGames keys its IndexedDB cache on `last_updated`. If we commit a shard
+ *   without bumping it, every browser tab on the site will keep serving the
+ *   pre-edit cached records on next reload — even when the SW serves a fresh
+ *   shard fetch — because isCacheFresh() returns true. Bumping the manifest
+ *   is the canonical signal that "data changed".
+ */
+async function bumpedIndexFile(
+  token: string | null,
+  deltas: { totalDelta?: number; shardCountDeltas?: Record<string, number> } = {},
+): Promise<{ path: string; content: string }> {
+  const cur = await getRepoFileText(INDEX_PATH, token);
+  if (!cur) throw new Error(`${INDEX_PATH} not found`);
+  const obj = JSON.parse(cur.text) as DataIndex & {
+    max_per_file?: number;
+  };
+  const newTotal = (obj.total ?? 0) + (deltas.totalDelta ?? 0);
+  const newFiles = (obj.files ?? []).map((f) => ({
+    name: f.name,
+    count: f.count + (deltas.shardCountDeltas?.[f.name] ?? 0),
+  }));
+  const next = {
+    max_per_file: obj.max_per_file ?? 800,
+    total: newTotal,
+    last_updated: nowIsoSeconds(),
+    files: newFiles,
+  };
+  return { path: INDEX_PATH, content: JSON.stringify(next, null, 2) + "\n" };
+}
+
 export type CommitSigner = (commitContent: string) => Promise<string>;
 
 export interface CommitAuthor {
@@ -93,9 +134,9 @@ export async function updateGame(input: UpdateGameInput): Promise<EditResult> {
   records[idx] = applyPatch(records[idx], input.patch);
   const newText = serializeShardJsonl(records);
 
-  const commit = await commitFileWithRetry({
-    path: shardPath,
-    content: newText,
+  const indexFile = await bumpedIndexFile(input.token);
+  const commit = await commitFilesWithRetry({
+    files: [{ path: shardPath, content: newText }, indexFile],
     message: `Edit ${input.record.name || appid} (${shard})`,
     author: input.author,
     signer: input.signer,
@@ -157,9 +198,12 @@ export async function replaceGame(input: ReplaceGameInput): Promise<EditResult> 
     added_at: input.original.added_at || input.replacement.added_at,
   };
 
-  const commit = await commitFileWithRetry({
-    path: shardPath,
-    content: serializeShardJsonl(records),
+  const indexFile = await bumpedIndexFile(input.token);
+  const commit = await commitFilesWithRetry({
+    files: [
+      { path: shardPath, content: serializeShardJsonl(records) },
+      indexFile,
+    ],
     message: `Replace ${input.replacement.name || appid} (${shard}) — full JSON edit`,
     author: input.author,
     signer: input.signer,
@@ -237,6 +281,9 @@ export async function bulkEditGames(
     }),
   );
 
+  // Always bump index.json so cache consumers know data changed.
+  files.push(await bumpedIndexFile(input.token));
+
   // 3. One signed commit covers all touched shards.
   const commit = await commitFilesWithRetry({
     files,
@@ -295,6 +342,7 @@ export async function bulkDeleteGames(
   const files: { path: string; content: string }[] = [];
   let removed = 0;
   const removedRecords: GameRecord[] = [];
+  const shardCountDeltas: Record<string, number> = {};
 
   await Promise.all(
     Array.from(shardsTouched).map(async (shard) => {
@@ -303,15 +351,18 @@ export async function bulkDeleteGames(
       if (!current) return;
       const records = parseShardJsonl(current.text);
       const kept: GameRecord[] = [];
+      let removedHere = 0;
       for (const r of records) {
         const aid = extractAppid(r.link);
         if (aid && targetSet.has(aid)) {
           removed++;
+          removedHere++;
           removedRecords.push(r);
         } else {
           kept.push(r);
         }
       }
+      shardCountDeltas[shard] = -removedHere;
       files.push({ path, content: serializeShardJsonl(kept) });
     }),
   );
@@ -323,6 +374,14 @@ export async function bulkDeleteGames(
       ? removedLogText
       : removedLogText + "\n") + newLogLines.join("\n") + "\n";
   files.push({ path: removedLogPath, content: mergedLog });
+
+  // Bump index.json with corrected total + per-shard counts.
+  files.push(
+    await bumpedIndexFile(input.token, {
+      totalDelta: -removed,
+      shardCountDeltas,
+    }),
+  );
 
   const commit = await commitFilesWithRetry({
     files,
