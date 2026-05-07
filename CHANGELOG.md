@@ -2,6 +2,55 @@
 
 All notable changes to this awesome noob repo will be documented here.
 
+## [v3.0.1] – 2026-05-07 (The "Desktop Actually Ships This Time" Edition)
+
+Same-day post-v3.0.0 maintenance covering Phase 9 (auto-update foundations + CVE bumps + Device Flow scaffold), Phase 10 (Tauri build break + i18n full coverage + deps audit), and Phase 10.1 (minisign keypair rotation). The desktop release pipeline is now end-to-end green — `desktop-v1.0.0` finally produces signed `.msi` / `.exe` / `.dmg` / `.AppImage` / `.deb` / `.rpm` artefacts with a valid `latest.json` for auto-update.
+
+### 🖥️ Phase 9 — auto-update foundations (#56)
+
+- `tauri-plugin-updater` wired into `web/src-tauri/`. Endpoint pinned to the Releases page so installed clients fetch `latest.json` on launch.
+- Updater pubkey embedded in `tauri.conf.json` (gated behind a no-op for mobile builds via `#[cfg(not(any(target_os="android", target_os="ios")))]`).
+- GitHub Device Flow scaffold added to Settings: signed-in users no longer have to paste a long-lived PAT — they kick off `https://github.com/login/device`, type the user_code, and the app polls until token issuance. Falls back to PAT for the offline path.
+- Dependency CVE bumps (vite 5 → 7, vite-plugin-pwa 0.20 → 1.x). Path-traversal fix in source-map handling. No source changes required for the bumps.
+- More i18n: a chunk of edit-drawer / activity / dashboard chrome got proper translation keys.
+
+### 🛠️ Phase 10 — Tauri build break + full i18n + deps audit (#57)
+
+- **Tauri lib-name regression fixed.** Phase 9's auto-updater work introduced a `f2p_tracker_lib::run()` call in `main.rs` without declaring `[lib]` in `Cargo.toml`. Cargo's implicit lib name is `f2p_tracker` (hyphens → underscores from the package name) so the call failed to resolve and `cargo build` blew up. Added the explicit Tauri-2-template-style block:
+  ```toml
+  [lib]
+  name = "f2p_tracker_lib"
+  crate-type = ["staticlib", "cdylib", "rlib"]
+  ```
+  The triple crate-type keeps the door open for future `tauri ios init` / `tauri android init` work that `lib.rs`'s `#[cfg_attr(mobile, tauri::mobile_entry_point)]` already implies.
+- **i18n now reaches every chrome surface** (~150 new keys across new namespaces `charts`, `activity`, `add`, `system`, `cmdk`, `about`, `bulk`, `detail`, `diff`, `dialogs`, `health`). All 9 chart pages, Activity, Add, Health, Top Online, About headings, drawers (Edit / BulkEdit / Diff / GameDetail), `PwaIndicator`, `QueryState`, `GpgQuickUnlock`, `Topbar` tooltips/aria-labels, `Settings` rate-limit panel, `BulkActionBar` confirm dialog, `GamesTable` tooltips, and `CommandPalette` resolve through `useTranslation`. Long-form About prose stays English per the `settings.languageHint` policy. Enum values (anti-cheat / genre / type_game / safe) stay dataset-stable.
+- **Third-party deps audit.** Walked `web/package.json` against `About → Stack & third-party` and `docs/ACKNOWLEDGEMENTs.md`. Added missing entries: `react-router-dom`, the i18next stack (`i18next` + `react-i18next` + `i18next-browser-languagedetector`), Tauri 2 + plugins (shell / updater / process), `echarts-for-react`, the styling utilities (`class-variance-authority` / `clsx` / `tailwind-merge` / `tailwindcss-animate`), and PostCSS + autoprefixer. Vite version corrected 5 → 7 (was already bumped by Phase 9; About just hadn't caught up).
+- `ACKNOWLEDGEMENTs.md` restructured into grouped sections (runtime/build, styling, UI primitives, routing & i18n, data & state, charts, crypto & PWA, desktop) with deep links + SPDX licences.
+- `web/src-tauri/Cargo.lock` now committed for reproducible desktop builds.
+
+### 🔑 Phase 10.1 — minisign keypair rotation (#58)
+
+- `desktop-v1.0.0` was failing at the final sign-updater-bundle step:
+  ```
+  failed to decode secret key: incorrect updater private key password:
+                                Missing comment in secret key
+  ```
+  minisign formats the error so the inner "Missing comment" is the symptom of a wrong password — when the password is wrong, decryption returns garbage and the expected `untrusted comment: minisign encrypted secret key` header bytes don't appear. The original keypair's password was lost, so the GH secret could no longer decrypt the key.
+- Re-keyed via `npx tauri signer generate --ci -p ""` with no password. Stored at `~/.tauri/f2p-tracker{,.pub}` on the maintainer's box; `web/src-tauri/.gitignore` extended (`*.key`, `f2p-tracker{,.pub}`) as a guardrail in case keys ever land in `src-tauri/` during dev.
+- New pubkey baked into `tauri.conf.json` `plugins.updater.pubkey`. GH secrets `TAURI_SIGNING_PRIVATE_KEY` and `TAURI_SIGNING_PRIVATE_KEY_PASSWORD` rotated via `gh secret set` (password = empty string).
+- **Trade-off**: any user already on a build signed with the old key would have their auto-update break. Nobody hit that path because Phase 9 / Phase 10 release runs both failed before publishing artefacts. Phase 10.1's rebuild is the first actually-shipped `desktop-v1.0.0`.
+
+### 🏷️ Tag handling
+
+- `desktop-v1.0.0` was force-pushed twice in this cycle as the workflow input commit advanced (Phase 9 → Phase 10 → Phase 10.1). The triggering tag is GPG-signed each time. Once the auto-update story is real users-on-it, future fixes should bump `desktop-v1.0.x` instead of force-pushing.
+
+### 📝 Docs (this release)
+
+- `CHANGELOG.md` — this entry.
+- `web/src-tauri/Cargo.toml` + `tauri.conf.json` + `.gitignore` — Phase 10 / 10.1 changes documented in their own commit messages and PR bodies (#57, #58).
+
+---
+
 ## [v3.0.0] – 2026-05-07 (The "It Has a Website Now" Edition)
 
 The repo is no longer just a list. It is a **list + a React/Vite web app + a Tauri desktop app**, all reading the same Python-pipeline-maintained data.
