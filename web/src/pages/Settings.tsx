@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Languages, Globe2 } from "lucide-react";
 import { AuthPanel } from "../components/auth/AuthPanel";
+import { DeviceFlowPanel } from "../components/auth/DeviceFlowPanel";
 import { GpgPanel } from "../components/auth/GpgPanel";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
 import { Button } from "../components/ui/button";
@@ -94,6 +95,8 @@ export function SettingsPage() {
       </Card>
 
       <AuthPanel />
+
+      {!auth.isAuthenticated && <DeviceFlowPanel />}
 
       {auth.isAuthenticated && <GpgPanel />}
 

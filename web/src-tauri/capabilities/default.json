@@ -1,10 +1,11 @@
 {
   "$schema": "../gen/schemas/desktop-schema.json",
   "identifier": "default",
-  "description": "Capabilities for the main window. Frontend is a static SPA fetching from raw.githubusercontent.com / api.github.com — no native bridges required.",
+  "description": "Capabilities for the main window. Frontend is a static SPA fetching from raw.githubusercontent.com / api.github.com — only shell:open and updater are needed for native bridges.",
   "windows": ["main"],
   "permissions": [
     "core:default",
-    "shell:allow-open"
+    "shell:allow-open",
+    "updater:default"
   ]
 }
