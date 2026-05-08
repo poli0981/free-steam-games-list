@@ -1,15 +1,4 @@
-name: Notify Deploy Status to Discord
-
-# FIXED v2 — uses substring match instead of exact-match array.
-# Bug in v1: filter array required exact equality with workflow_run.name,
-# which broke for names like "Deploy Web (GitHub Pages)" — the trailing
-# "(GitHub Pages)" suffix made exact-match fail.
-#
-# Drop this in .github/workflows/notify-deploy.yml in repos that have a
-# user-facing deploy (GitHub Pages, Cloudflare Pages, etc.).
-#
-# Required repo secret:
-#   DISCORD_CI_WEBHOOK    — webhook for #ci-failures
+name: Notify Deploy Status
 
 on:
   workflow_run:
@@ -22,73 +11,5 @@ permissions:
 
 jobs:
   notify:
-    # Filter: deploy-related workflows, success or failure (skip cancelled/skipped),
-    # default branch only.
-    #
-    # Substring match: "eploy" matches "Deploy"/"deploy"/"redeploy" without
-    # caring about case (no toLower() in GitHub expressions, so we drop the
-    # leading char to match both cases). Same trick for "ages" (Pages/pages).
-    #
-    # Self-skip: exclude any workflow whose name starts with "Notify" to
-    # prevent feedback loops.
-    if: >
-      (github.event.workflow_run.conclusion == 'success' || github.event.workflow_run.conclusion == 'failure') &&
-      (
-        contains(github.event.workflow_run.name, 'eploy') ||
-        contains(github.event.workflow_run.name, 'ages') ||
-        contains(github.event.workflow_run.name, 'ublish')
-      ) &&
-      !startsWith(github.event.workflow_run.name, 'Notify') &&
-      (
-        github.event.workflow_run.head_branch == github.event.repository.default_branch ||
-        github.event.workflow_run.head_branch == 'main' ||
-        github.event.workflow_run.head_branch == 'master'
-      )
-    runs-on: ubuntu-latest
-    timeout-minutes: 3
-    steps:
-      - name: Checkout (script only)
-        uses: actions/checkout@v6
-        with:
-          sparse-checkout: |
-            .github/scripts
-          sparse-checkout-cone-mode: false
-
-      - name: Resolve deploy URL
-        id: site
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          STATUS: ${{ github.event.workflow_run.conclusion }}
-        run: |
-          DEPLOY_URL=""
-          if [ "$STATUS" = "success" ]; then
-            DEPLOY_URL=$(gh api "repos/${GITHUB_REPOSITORY}/pages" --jq '.html_url' 2>/dev/null || echo "")
-          fi
-          echo "deploy_url=$DEPLOY_URL" >> "$GITHUB_OUTPUT"
-
-      - name: Detect deploy target from workflow name
-        id: target
-        env:
-          WF_NAME: ${{ github.event.workflow_run.name }}
-        run: |
-          TARGET="Deploy"
-          if echo "$WF_NAME" | grep -qiE 'page'; then TARGET="GitHub Pages"; fi
-          if echo "$WF_NAME" | grep -qiE 'cloudflare'; then TARGET="Cloudflare Pages"; fi
-          if echo "$WF_NAME" | grep -qiE 'netlify'; then TARGET="Netlify"; fi
-          if echo "$WF_NAME" | grep -qiE 'vercel'; then TARGET="Vercel"; fi
-          echo "target=$TARGET" >> "$GITHUB_OUTPUT"
-
-      - name: Post deploy status
-        env:
-          DISCORD_CI_WEBHOOK: ${{ secrets.DISCORD_CI_WEBHOOK }}
-          DEPLOY_STATUS: ${{ github.event.workflow_run.conclusion }}
-          DEPLOY_TARGET: ${{ steps.target.outputs.target }}
-          DEPLOY_URL: ${{ steps.site.outputs.deploy_url }}
-          WORKFLOW_NAME: ${{ github.event.workflow_run.name }}
-          RUN_ID: ${{ github.event.workflow_run.id }}
-          RUN_NUMBER: ${{ github.event.workflow_run.run_number }}
-          BRANCH: ${{ github.event.workflow_run.head_branch }}
-          COMMIT_SHA: ${{ github.event.workflow_run.head_sha }}
-          COMMIT_MESSAGE: ${{ github.event.workflow_run.head_commit.message }}
-          ACTOR: ${{ github.event.workflow_run.actor.login }}
-        run: python .github/scripts/discord_notify.py deploy
+    uses: poli0981/.github/.github/workflows/notify-deploy.yml@main
+    secrets: inherit
