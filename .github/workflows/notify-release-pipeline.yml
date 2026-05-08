@@ -1,0 +1,92 @@
+name: Notify Release Pipeline to Discord
+
+# Drop this in .github/workflows/notify-release-pipeline.yml in repos that
+# have a multi-platform / multi-step release build (Velopack, Tauri matrix).
+#
+# Posts to #release-pipeline on every job conclusion within a release-tag
+# triggered build — both success and failure, since user wants full tracking.
+#
+# Listens to release-build workflows by name. Edit the `if:` filter to match
+# this repo's actual release workflow names.
+#
+# Required repo secret:
+#   DISCORD_RELEASE_PIPELINE_WEBHOOK    — webhook for #release-pipeline
+#
+# Per-repo names mapping:
+#   AutoClick:                 'release.yml' / 'Build & Release'
+#   CaptureImage:              'release.yml'
+#   RandomMAC:                 'release.yml'
+#   free-steam-games-list:     'release-desktop.yml' / 'Release Desktop'
+#   youtube-generator:         'release-desktop.yml'
+
+on:
+  workflow_run:
+    workflows: ["*"]
+    types: [completed]
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  notify:
+    # Filter: release/build workflows only. Match by name pattern.
+    # We track success AND failure (per user choice), but skip 'skipped' runs.
+    if: >
+      (
+        contains(github.event.workflow_run.name, 'release') ||
+        contains(github.event.workflow_run.name, 'Release') ||
+        contains(github.event.workflow_run.name, 'desktop')
+      ) &&
+      github.event.workflow_run.name != 'Announce Release to Discord' &&
+      github.event.workflow_run.name != 'Notify Release Pipeline to Discord' &&
+      (
+        github.event.workflow_run.conclusion == 'success' ||
+        github.event.workflow_run.conclusion == 'failure' ||
+        github.event.workflow_run.conclusion == 'cancelled'
+      ) &&
+      (
+        startsWith(github.event.workflow_run.head_branch, 'v') ||
+        startsWith(github.event.workflow_run.head_branch, 'desktop-v') ||
+        github.event.workflow_run.event == 'workflow_dispatch' ||
+        github.event.workflow_run.event == 'release'
+      )
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Checkout (script only)
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            .github/scripts
+          sparse-checkout-cone-mode: false
+
+      - name: Detect packager from workflow name
+        id: detect
+        env:
+          WF_NAME: ${{ github.event.workflow_run.name }}
+          REPO: ${{ github.repository }}
+        run: |
+          PACKAGER=""
+          # Heuristic: repo name + workflow name suggest the packager
+          case "$REPO" in
+            *autoclick*|*captureimg*|*randomizerMAC*|*HashTool*) PACKAGER="Velopack" ;;
+            *youtube-generator*|*free-steam-games-list*|*free-games-itchio-list*) PACKAGER="Tauri" ;;
+            *)
+              if echo "$WF_NAME" | grep -qi 'tauri\|desktop'; then PACKAGER="Tauri"; fi
+              if echo "$WF_NAME" | grep -qi 'velopack\|vpk'; then PACKAGER="Velopack"; fi
+              ;;
+          esac
+          echo "packager=$PACKAGER" >> "$GITHUB_OUTPUT"
+
+      - name: Post release pipeline status
+        env:
+          DISCORD_RELEASE_PIPELINE_WEBHOOK: ${{ secrets.DISCORD_RELEASE_PIPELINE_WEBHOOK }}
+          BUILD_STATUS: ${{ github.event.workflow_run.conclusion }}
+          # head_branch carries the tag name when triggered by a tag push
+          BUILD_PLATFORM: ${{ github.event.workflow_run.event == 'workflow_run' && 'matrix' || github.event.workflow_run.event }}
+          BUILD_PACKAGER: ${{ steps.detect.outputs.packager }}
+          RELEASE_TAG: ${{ github.event.workflow_run.head_branch }}
+          WORKFLOW_NAME: ${{ github.event.workflow_run.name }}
+          RUN_ID: ${{ github.event.workflow_run.id }}
+        run: python .github/scripts/discord_notify.py release-build
