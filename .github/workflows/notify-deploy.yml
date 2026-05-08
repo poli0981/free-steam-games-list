@@ -1,15 +1,7 @@
 name: Notify Deploy Status to Discord
 
-# FIXED v2 — uses substring match instead of exact-match array.
-# Bug in v1: filter array required exact equality with workflow_run.name,
-# which broke for names like "Deploy Web (GitHub Pages)" — the trailing
-# "(GitHub Pages)" suffix made exact-match fail.
-#
-# Drop this in .github/workflows/notify-deploy.yml in repos that have a
-# user-facing deploy (GitHub Pages, Cloudflare Pages, etc.).
-#
-# Required repo secret:
-#   DISCORD_CI_WEBHOOK    — webhook for #ci-failures
+# v3 — added security-scanner exclusions. CodeQL doesn't deploy anything
+# but its workflow name might accidentally match keywords; explicit exclude.
 
 on:
   workflow_run:
@@ -22,15 +14,6 @@ permissions:
 
 jobs:
   notify:
-    # Filter: deploy-related workflows, success or failure (skip cancelled/skipped),
-    # default branch only.
-    #
-    # Substring match: "eploy" matches "Deploy"/"deploy"/"redeploy" without
-    # caring about case (no toLower() in GitHub expressions, so we drop the
-    # leading char to match both cases). Same trick for "ages" (Pages/pages).
-    #
-    # Self-skip: exclude any workflow whose name starts with "Notify" to
-    # prevent feedback loops.
     if: >
       (github.event.workflow_run.conclusion == 'success' || github.event.workflow_run.conclusion == 'failure') &&
       (
@@ -39,6 +22,8 @@ jobs:
         contains(github.event.workflow_run.name, 'ublish')
       ) &&
       !startsWith(github.event.workflow_run.name, 'Notify') &&
+      !contains(github.event.workflow_run.name, 'odeQL') &&
+      !contains(github.event.workflow_run.name, 'ependabot') &&
       (
         github.event.workflow_run.head_branch == github.event.repository.default_branch ||
         github.event.workflow_run.head_branch == 'main' ||
