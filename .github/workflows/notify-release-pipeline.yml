@@ -1,15 +1,6 @@
 name: Notify Release Pipeline to Discord
 
-# FIXED v2 — tightened branch/event filter so this doesn't fire on every
-# push to main and skip. Now ONLY fires when:
-#   - Triggered by a release event, OR
-#   - Triggered by workflow_dispatch, OR
-#   - The head_branch is a tag (head_branch starts with "v" or "desktop-v")
-#
-# This eliminates the "trigger then skip" noise on every commit.
-#
-# Required repo secret:
-#   DISCORD_RELEASE_PIPELINE_WEBHOOK    — webhook for #release-pipeline
+# v3 — added security-scanner exclusions.
 
 on:
   workflow_run:
@@ -22,11 +13,6 @@ permissions:
 
 jobs:
   notify:
-    # Two-gate filter:
-    #   Gate 1: workflow name contains "release" / "Release" / "desktop"
-    #           AND is not one of our notify workflows
-    #   Gate 2: triggered by tag/release/manual (NOT regular push to main)
-    #   Gate 3: real conclusion (not skipped/in_progress)
     if: >
       (
         contains(github.event.workflow_run.name, 'elease') ||
@@ -34,6 +20,8 @@ jobs:
       ) &&
       !startsWith(github.event.workflow_run.name, 'Notify') &&
       !startsWith(github.event.workflow_run.name, 'Announce') &&
+      !contains(github.event.workflow_run.name, 'odeQL') &&
+      !contains(github.event.workflow_run.name, 'ependabot') &&
       (
         github.event.workflow_run.event == 'release' ||
         github.event.workflow_run.event == 'workflow_dispatch' ||
