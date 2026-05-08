@@ -1,6 +1,4 @@
-name: Notify Release Pipeline to Discord
-
-# v3 — added security-scanner exclusions.
+name: Notify Release Pipeline
 
 on:
   workflow_run:
@@ -13,60 +11,5 @@ permissions:
 
 jobs:
   notify:
-    if: >
-      (
-        contains(github.event.workflow_run.name, 'elease') ||
-        contains(github.event.workflow_run.name, 'esktop')
-      ) &&
-      !startsWith(github.event.workflow_run.name, 'Notify') &&
-      !startsWith(github.event.workflow_run.name, 'Announce') &&
-      !contains(github.event.workflow_run.name, 'odeQL') &&
-      !contains(github.event.workflow_run.name, 'ependabot') &&
-      (
-        github.event.workflow_run.event == 'release' ||
-        github.event.workflow_run.event == 'workflow_dispatch' ||
-        startsWith(github.event.workflow_run.head_branch, 'v') ||
-        startsWith(github.event.workflow_run.head_branch, 'desktop-v')
-      ) &&
-      (
-        github.event.workflow_run.conclusion == 'success' ||
-        github.event.workflow_run.conclusion == 'failure' ||
-        github.event.workflow_run.conclusion == 'cancelled'
-      )
-    runs-on: ubuntu-latest
-    timeout-minutes: 3
-    steps:
-      - name: Checkout (script only)
-        uses: actions/checkout@v6
-        with:
-          sparse-checkout: |
-            .github/scripts
-          sparse-checkout-cone-mode: false
-
-      - name: Detect packager from workflow name
-        id: detect
-        env:
-          WF_NAME: ${{ github.event.workflow_run.name }}
-          REPO: ${{ github.repository }}
-        run: |
-          PACKAGER=""
-          case "$REPO" in
-            *autoclick*|*captureimg*|*randomizerMAC*|*HashTool*) PACKAGER="Velopack" ;;
-            *youtube-generator*|*free-steam-games-list*|*free-games-itchio-list*) PACKAGER="Tauri" ;;
-            *)
-              if echo "$WF_NAME" | grep -qi 'tauri\|desktop'; then PACKAGER="Tauri"; fi
-              if echo "$WF_NAME" | grep -qi 'velopack\|vpk'; then PACKAGER="Velopack"; fi
-              ;;
-          esac
-          echo "packager=$PACKAGER" >> "$GITHUB_OUTPUT"
-
-      - name: Post release pipeline status
-        env:
-          DISCORD_RELEASE_PIPELINE_WEBHOOK: ${{ secrets.DISCORD_RELEASE_PIPELINE_WEBHOOK }}
-          BUILD_STATUS: ${{ github.event.workflow_run.conclusion }}
-          BUILD_PLATFORM: ${{ github.event.workflow_run.event }}
-          BUILD_PACKAGER: ${{ steps.detect.outputs.packager }}
-          RELEASE_TAG: ${{ github.event.workflow_run.head_branch }}
-          WORKFLOW_NAME: ${{ github.event.workflow_run.name }}
-          RUN_ID: ${{ github.event.workflow_run.id }}
-        run: python .github/scripts/discord_notify.py release-build
+    uses: poli0981/.github/.github/workflows/notify-release-pipeline.yml@main
+    secrets: inherit
