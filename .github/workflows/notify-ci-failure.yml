@@ -1,9 +1,7 @@
 name: Notify CI Failures to Discord
 
-# IMPROVED v2 — added explicit exclusion of deploy/release workflows since
-# notify-deploy.yml and notify-release-pipeline.yml handle those with
-# distinct emoji/labels. Without this exclusion, a failed deploy would post
-# TWICE to #ci-failures (once as ❌, once as 🚫).
+# v3 — added security-scanner exclusions (CodeQL, Dependabot Updates,
+# Dependency Review, etc.) to reduce trigger noise.
 #
 # Required repo secret:
 #   DISCORD_CI_WEBHOOK    — webhook for #ci-failures
@@ -19,14 +17,13 @@ permissions:
 
 jobs:
   notify:
-    # Only post when:
-    #   - Real failure (not cancelled/skipped)
-    #   - Default branch
-    #   - Workflow is NOT a deploy/release/notify workflow (those are handled elsewhere)
     if: >
       github.event.workflow_run.conclusion == 'failure' &&
       !startsWith(github.event.workflow_run.name, 'Notify') &&
       !startsWith(github.event.workflow_run.name, 'Announce') &&
+      !contains(github.event.workflow_run.name, 'odeQL') &&
+      !contains(github.event.workflow_run.name, 'ependabot') &&
+      !contains(github.event.workflow_run.name, 'ependency') &&
       !contains(github.event.workflow_run.name, 'eploy') &&
       !contains(github.event.workflow_run.name, 'ages') &&
       !contains(github.event.workflow_run.name, 'elease') &&
