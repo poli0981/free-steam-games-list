@@ -1,0 +1,128 @@
+name: Announce Release to Discord
+
+# Drop this in .github/workflows/announce-release.yml in any repo.
+# Triggers automatically when a release is published (manual or via CI).
+#
+# Required repo secrets:
+#   DISCORD_RELEASES_WEBHOOK    — webhook for #releases (cross-repo feed)
+#   DISCORD_REPO_WEBHOOK        — webhook for this repo's #<repo>-activity channel
+#                                  (or a fallback channel for Tier 2/3 repos)
+#
+# Optional:
+#   DISCORD_PING_ROLE_ID        — Discord role ID to ping on major releases
+#                                  (only fires when tag does NOT contain '-' i.e. no prerelease/rc suffix)
+
+on:
+  release:
+    types: [published]
+
+  # Allow manual re-run for an existing tag (re-announce a release if needed)
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Existing release tag to re-announce"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  announce:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout (for the script)
+        uses: actions/checkout@v6
+        with:
+          sparse-checkout: |
+            .github/scripts
+          sparse-checkout-cone-mode: false
+
+      - name: Resolve release data
+        id: release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          INPUT_TAG: ${{ inputs.tag }}
+          EVENT_TAG: ${{ github.event.release.tag_name }}
+        run: |
+          set -euo pipefail
+          TAG="${INPUT_TAG:-$EVENT_TAG}"
+          if [ -z "$TAG" ]; then
+            echo "::error::No release tag available."
+            exit 1
+          fi
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+
+          # Fetch release JSON via gh CLI — works for both event-triggered and manual re-runs
+          REL_JSON=$(gh api "repos/${GITHUB_REPOSITORY}/releases/tags/$TAG")
+
+          # Extract fields. Use base64 to safely round-trip multi-line release notes through env.
+          NAME=$(echo "$REL_JSON" | jq -r '.name // ""')
+          BODY=$(echo "$REL_JSON" | jq -r '.body // ""')
+          URL=$(echo "$REL_JSON" | jq -r '.html_url // ""')
+          PRERELEASE=$(echo "$REL_JSON" | jq -r '.prerelease // false')
+          PUBLISHED_AT=$(echo "$REL_JSON" | jq -r '.published_at // ""')
+          ASSETS=$(echo "$REL_JSON" | jq -c '[.assets[]? | {name, browser_download_url, size}]')
+
+          # Multi-line body via heredoc-style env (GitHub Actions pattern)
+          {
+            echo "name=$NAME"
+            echo "url=$URL"
+            echo "prerelease=$PRERELEASE"
+            echo "published_at=$PUBLISHED_AT"
+            echo "assets<<__ASSETS_EOF__"
+            echo "$ASSETS"
+            echo "__ASSETS_EOF__"
+            echo "body<<__BODY_EOF__"
+            echo "$BODY"
+            echo "__BODY_EOF__"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Build webhook list
+        id: webhooks
+        env:
+          RELEASES_WEBHOOK: ${{ secrets.DISCORD_RELEASES_WEBHOOK }}
+          REPO_WEBHOOK: ${{ secrets.DISCORD_REPO_WEBHOOK }}
+        run: |
+          set -euo pipefail
+          # Comma-join non-empty webhooks. #releases first, then per-repo channel.
+          WEBHOOKS=""
+          [ -n "$RELEASES_WEBHOOK" ] && WEBHOOKS="$RELEASES_WEBHOOK"
+          if [ -n "$REPO_WEBHOOK" ]; then
+            WEBHOOKS="${WEBHOOKS:+$WEBHOOKS,}$REPO_WEBHOOK"
+          fi
+          if [ -z "$WEBHOOKS" ]; then
+            echo "::error::No webhooks configured. Set DISCORD_RELEASES_WEBHOOK and/or DISCORD_REPO_WEBHOOK."
+            exit 1
+          fi
+          # Mask the joined value too (individual webhooks are already masked by GitHub)
+          echo "::add-mask::$WEBHOOKS"
+          echo "list=$WEBHOOKS" >> "$GITHUB_OUTPUT"
+
+      - name: Build optional role-ping content
+        id: ping
+        env:
+          ROLE_ID: ${{ secrets.DISCORD_PING_ROLE_ID }}
+          TAG: ${{ steps.release.outputs.tag }}
+          PRERELEASE: ${{ steps.release.outputs.prerelease }}
+        run: |
+          # Only ping on stable releases (skip prereleases and tags with -rc/-beta/-alpha suffix)
+          CONTENT=""
+          if [ -n "$ROLE_ID" ] && [ "$PRERELEASE" = "false" ] && [[ "$TAG" != *-* ]]; then
+            CONTENT="<@&${ROLE_ID}> new release"
+          fi
+          echo "content=$CONTENT" >> "$GITHUB_OUTPUT"
+
+      - name: Post to Discord
+        env:
+          DISCORD_WEBHOOKS: ${{ steps.webhooks.outputs.list }}
+          DISCORD_CONTENT: ${{ steps.ping.outputs.content }}
+          RELEASE_TAG: ${{ steps.release.outputs.tag }}
+          RELEASE_NAME: ${{ steps.release.outputs.name }}
+          RELEASE_BODY: ${{ steps.release.outputs.body }}
+          RELEASE_URL: ${{ steps.release.outputs.url }}
+          RELEASE_PRERELEASE: ${{ steps.release.outputs.prerelease }}
+          RELEASE_PUBLISHED_AT: ${{ steps.release.outputs.published_at }}
+          RELEASE_ASSETS_JSON: ${{ steps.release.outputs.assets }}
+        run: python .github/scripts/discord_notify.py release

@@ -1,0 +1,62 @@
+name: Notify CI Failures to Discord
+
+# Drop this in .github/workflows/notify-ci-failure.yml in any repo where you
+# want failure alerts. Listens to ALL other workflow runs in the same repo
+# via workflow_run, filters to failures on protected branches, posts a compact
+# embed to the dev-internal #ci-failures channel.
+#
+# Self-skipping: this workflow ignores itself (and the announce-release workflow)
+# so a flaky webhook post doesn't trigger a recursive failure storm.
+#
+# Required repo secret:
+#   DISCORD_CI_WEBHOOK    — webhook for the private #ci-failures channel
+#
+# Tip: in the repo Settings → Actions → General, set "Workflow permissions" to
+# "Read repository contents" — this workflow only reads, never writes.
+
+on:
+  workflow_run:
+    # Listen to every workflow in the repo. Filtering happens in the job's `if`.
+    workflows: ["*"]
+    types: [completed]
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  notify:
+    # Only fire on real failures on the default branch (or main/master fallbacks).
+    # Skip our own notification workflows to avoid feedback loops.
+    if: >
+      github.event.workflow_run.conclusion == 'failure' &&
+      github.event.workflow_run.name != 'Notify CI Failures to Discord' &&
+      github.event.workflow_run.name != 'Announce Release to Discord' &&
+      (
+        github.event.workflow_run.head_branch == github.event.repository.default_branch ||
+        github.event.workflow_run.head_branch == 'main' ||
+        github.event.workflow_run.head_branch == 'master'
+      )
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Checkout (script only)
+        uses: actions/checkout@v6
+        with:
+          sparse-checkout: |
+            .github/scripts
+          sparse-checkout-cone-mode: false
+
+      - name: Post failure to Discord
+        env:
+          DISCORD_CI_WEBHOOK: ${{ secrets.DISCORD_CI_WEBHOOK }}
+          WORKFLOW_NAME: ${{ github.event.workflow_run.name }}
+          RUN_ID: ${{ github.event.workflow_run.id }}
+          RUN_NUMBER: ${{ github.event.workflow_run.run_number }}
+          RUN_ATTEMPT: ${{ github.event.workflow_run.run_attempt }}
+          BRANCH: ${{ github.event.workflow_run.head_branch }}
+          COMMIT_SHA: ${{ github.event.workflow_run.head_sha }}
+          COMMIT_MESSAGE: ${{ github.event.workflow_run.head_commit.message }}
+          ACTOR: ${{ github.event.workflow_run.actor.login }}
+          EVENT_NAME: ${{ github.event.workflow_run.event }}
+        run: python .github/scripts/discord_notify.py failure
