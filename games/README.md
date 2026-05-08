@@ -1,6 +1,6 @@
 # 🎮 Steam F2P Tracker
 
-**1248 games** · 2026-05-08 15:10 UTC
+**1248 games** · 2026-05-08 17:05 UTC
 
 ## 📋 Full List
 
@@ -65,8 +65,8 @@
 | Isometric | 1 | [isometric.md](isometric.md) |
 | Life Sim | 2 | [life-sim.md](life-sim.md) |
 | Looter Shooter | 5 | [looter-shooter.md](looter-shooter.md) |
-| MMO | 12 | [mmo.md](mmo.md) |
-| MMORPG | 44 | [mmorpg.md](mmorpg.md) |
+| MMO | 11 | [mmo.md](mmo.md) |
+| MMORPG | 45 | [mmorpg.md](mmorpg.md) |
 | MOBA | 10 | [moba.md](moba.md) |
 | Metroidvania | 1 | [metroidvania.md](metroidvania.md) |
 | Parkour | 1 | [parkour.md](parkour.md) |
