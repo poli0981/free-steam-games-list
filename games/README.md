@@ -1,6 +1,6 @@
 # 🎮 Steam F2P Tracker
 
-**1248 games** · 2026-05-08 14:40 UTC
+**1248 games** · 2026-05-08 15:10 UTC
 
 ## 📋 Full List
 
@@ -52,7 +52,6 @@
 | Fighter | 1 | [fighter.md](fighter.md) |
 | Fighting | 7 | [fighting.md](fighting.md) |
 | Fishing | 1 | [fishing.md](fishing.md) |
-| Free To Play | 1 | [free-to-play.md](free-to-play.md) |
 | Gambling | 3 | [gambling.md](gambling.md) |
 | Hack & Slash | 5 | [hack-&-slash.md](hack-&-slash.md) |
 | Hack and Slash | 4 | [hack-and-slash.md](hack-and-slash.md) |
@@ -60,7 +59,7 @@
 | Hero Shooter | 2 | [hero-shooter.md](hero-shooter.md) |
 | Hidden Object | 31 | [hidden-object.md](hidden-object.md) |
 | Horror | 90 | [horror.md](horror.md) |
-| Idler | 16 | [idler.md](idler.md) |
+| Idler | 17 | [idler.md](idler.md) |
 | Indie | 5 | [indie.md](indie.md) |
 | Interactive Fiction | 1 | [interactive-fiction.md](interactive-fiction.md) |
 | Isometric | 1 | [isometric.md](isometric.md) |
