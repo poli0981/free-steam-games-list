@@ -1,0 +1,81 @@
+name: Notify Deploy Status to Discord
+
+# Drop this in .github/workflows/notify-deploy.yml in repos that have a
+# user-facing deploy (GitHub Pages, Cloudflare Pages, etc.).
+#
+# Listens to specific deploy workflows by name and posts to Discord on
+# both success and failure with a distinct icon (🌐 / 🚫).
+#
+# Goes to the SAME channel as notify-ci-failure (#ci-failures) per project
+# decision — different label/icon distinguishes deploy from generic CI fail.
+#
+# Required repo secret:
+#   DISCORD_CI_WEBHOOK    — webhook for #ci-failures
+#
+# Configuration: edit the `DEPLOY_WORKFLOWS` list below to match the deploy
+# workflow file names in this specific repo. Examples:
+#   - free-steam-games-list:  ['deploy-pages.yml', 'Deploy Web']
+#   - free-games-itchio-list: ['deploy_webapp.yml']
+#   - youtube-generator:      none (private, no deploy)
+
+on:
+  workflow_run:
+    # NOTE: GitHub matches workflow_run by display name, not file name.
+    # List the `name:` field from each deploy workflow's YAML.
+    # Use `workflows: ["*"]` then filter in `if:` for flexibility.
+    workflows: ["*"]
+    types: [completed]
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  notify:
+    # Filter: deploy workflows only, success or failure (skip cancelled), default branch.
+    if: >
+      contains(fromJSON('["Deploy Web", "Deploy Webapp", "deploy-pages", "deploy_webapp", "pages-build-deployment"]'), github.event.workflow_run.name) &&
+      (github.event.workflow_run.conclusion == 'success' || github.event.workflow_run.conclusion == 'failure') &&
+      (
+        github.event.workflow_run.head_branch == github.event.repository.default_branch ||
+        github.event.workflow_run.head_branch == 'main' ||
+        github.event.workflow_run.head_branch == 'master'
+      )
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Checkout (script only)
+        uses: actions/checkout@v6
+        with:
+          sparse-checkout: |
+            .github/scripts
+          sparse-checkout-cone-mode: false
+
+      - name: Resolve deploy URL
+        id: site
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          STATUS: ${{ github.event.workflow_run.conclusion }}
+        run: |
+          # For GitHub Pages, fetch the live URL via the Pages API. Skips on failure
+          # since there's no live site to link.
+          DEPLOY_URL=""
+          if [ "$STATUS" = "success" ]; then
+            DEPLOY_URL=$(gh api "repos/${GITHUB_REPOSITORY}/pages" --jq '.html_url' 2>/dev/null || echo "")
+          fi
+          echo "deploy_url=$DEPLOY_URL" >> "$GITHUB_OUTPUT"
+
+      - name: Post deploy status
+        env:
+          DISCORD_CI_WEBHOOK: ${{ secrets.DISCORD_CI_WEBHOOK }}
+          DEPLOY_STATUS: ${{ github.event.workflow_run.conclusion }}
+          DEPLOY_TARGET: GitHub Pages
+          DEPLOY_URL: ${{ steps.site.outputs.deploy_url }}
+          WORKFLOW_NAME: ${{ github.event.workflow_run.name }}
+          RUN_ID: ${{ github.event.workflow_run.id }}
+          RUN_NUMBER: ${{ github.event.workflow_run.run_number }}
+          BRANCH: ${{ github.event.workflow_run.head_branch }}
+          COMMIT_SHA: ${{ github.event.workflow_run.head_sha }}
+          COMMIT_MESSAGE: ${{ github.event.workflow_run.head_commit.message }}
+          ACTOR: ${{ github.event.workflow_run.actor.login }}
+        run: python .github/scripts/discord_notify.py deploy
