@@ -51,6 +51,21 @@ Only when you sign in and edit, add, or delete:
 - Your PAT goes only to `api.github.com`, never anywhere else.
 - The commits you make are public on the repo and visible to anyone — that is by design. Author and committer email come from your GPG key's user ID (when unlocked) or from GitHub's noreply email format (when the key is locked). The web app never alters these without your input.
 
+### Telegram bot (opt-in contribution channel)
+
+If you choose to contribute games via the **Scraper Info Game bot** ([`@my_skull_bot`](https://t.me/my_skull_bot)) instead of GitHub issues, the following data is exchanged:
+
+- **What you give the maintainer**: your Telegram numeric `user_id` (sent privately, never via public channels — see [`CONTRIBUTING.md`](../CONTRIBUTING.md)).
+- **Where it's stored**: in a private allowlist file on the maintainer's local machine (the bot runs in Docker on the maintainer's box, ~2–5 hrs/day). The allowlist is **not** committed to this public repository.
+- **What the bot then sees**: the messages you send it (Steam URLs + any manual-field overrides you specify in the conversation flow). Telegram itself stores the chat per its own [Privacy Policy](https://telegram.org/privacy).
+- **What ends up public**: only the resulting game records (links + Steam-derived metadata) appear in `data/*.jsonl`. The author/committer of the resulting commit is `github-actions[bot]`, not your Telegram handle. Your `user_id` never appears in the repo.
+- **What you can ask for**: removal from the allowlist (DM the maintainer; processing time depends on Docker uptime). Removal blocks future bot use; previously-ingested games stay in the dataset under MIT licence as they are unattributed contributions.
+
+**Maintainer's commitment**:
+- The Telegram `user_id` you share is treated as confidential. It is never published, never shared with third parties, and never logged into the public repo.
+- Public Discord, public Telegram groups, and GitHub issues are **not** acceptable channels for sharing your `user_id` — the maintainer will refuse to record IDs that arrived via those channels and will ask you to re-send privately.
+- Other personal information (real name, email, location, demographics) should not be sent at all. The bot does not need it.
+
 ### LLM / AI
 
 About 70 % of the code in this repo was generated with help from Grok (v1) and Claude (v2+). Those LLM calls happen on the maintainer's development machine — never from your browser. No user data is sent to any AI service at runtime.

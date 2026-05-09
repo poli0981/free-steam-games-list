@@ -14,6 +14,10 @@ import {
   Scale,
   Sparkles,
   AlertTriangle,
+  Send,
+  Bot,
+  QrCode,
+  Mail,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
@@ -31,9 +35,13 @@ interface Social {
   label: string;
   href: string;
   handle?: string;
+  /** Optional path under public/qr/ for a scannable code shown beside the row. */
+  qr?: string;
 }
 
 const SOCIALS: Social[] = [
+  { icon: Bot, label: "Telegram bot", handle: "@my_skull_bot", href: "https://t.me/my_skull_bot", qr: "qr/telegram-bot.png" },
+  { icon: Send, label: "Telegram (DM)", handle: "@SkullMute0011", href: "https://t.me/SkullMute0011", qr: "qr/telegram-user.png" },
   { icon: Twitter, label: "X / Twitter", handle: "@SkullMute0011", href: "https://x.com/SkullMute0011" },
   { icon: Youtube, label: "YouTube", handle: "@SkullMute", href: "https://www.youtube.com/@SkullMute" },
   { icon: MessageCircle, label: "Discord (repo)", handle: "#general", href: "https://discord.gg/2aNR3aVt" },
@@ -42,6 +50,7 @@ const SOCIALS: Social[] = [
   { icon: ExternalLink, label: "Steam", handle: "Profile", href: "https://steamcommunity.com/profiles/76561199544666292/" },
   { icon: ExternalLink, label: "Bluesky", handle: "@skullmute0011", href: "https://bsky.app/profile/skullmute0011.bsky.social" },
   { icon: ExternalLink, label: "Mastodon", handle: "@skullmute1122", href: "https://mastodon.social/@skullmute1122" },
+  { icon: Mail, label: "Email", handle: "lopop05905@proton.me", href: "mailto:lopop05905@proton.me" },
 ];
 
 interface Dep {
@@ -266,7 +275,7 @@ export function AboutPage() {
               <a
                 key={s.label}
                 href={s.href}
-                target="_blank"
+                target={s.href.startsWith("mailto:") ? undefined : "_blank"}
                 rel="noreferrer"
                 className="flex items-center gap-2 rounded-md border bg-card px-3 py-2 text-sm transition-colors hover:bg-accent"
               >
@@ -277,9 +286,94 @@ export function AboutPage() {
                     <div className="truncate text-xs text-muted-foreground">{s.handle}</div>
                   )}
                 </div>
+                {s.qr && (
+                  <img
+                    src={s.qr}
+                    alt=""
+                    width={32}
+                    height={32}
+                    loading="lazy"
+                    className="h-8 w-8 rounded bg-white p-0.5"
+                    title="Scan to open in Telegram"
+                  />
+                )}
                 <ExternalLink className="h-3 w-3 text-muted-foreground" />
               </a>
             ))}
+          </div>
+          <Separator />
+          <div className="rounded-md border border-amber-500/30 bg-amber-500/5 p-3 text-xs text-muted-foreground">
+            <div className="mb-1 flex items-center gap-1.5 font-semibold text-amber-400">
+              <Shield className="h-3.5 w-3.5" /> Privacy note for Telegram contributors
+            </div>
+            <p>
+              The bot adds you to a whitelist by your Telegram <code>user_id</code>. To
+              send your <code>user_id</code>, DM the maintainer privately on Telegram or
+              another channel — <strong>do not</strong> post it in public Discord channels,
+              public Telegram groups, or repo issues. See <a href={`${REPO_URL}/blob/main/CONTRIBUTING.md`} className="text-primary hover:underline" target="_blank" rel="noreferrer">CONTRIBUTING.md</a> for the full flow.
+            </p>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <QrCode className="h-4 w-4" /> Telegram QR codes
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <p className="text-sm text-muted-foreground">
+            Scan to open the bot or DM directly. Source PNGs live at{" "}
+            <a
+              href={`${REPO_URL}/tree/main/assets/qr`}
+              target="_blank"
+              rel="noreferrer"
+              className="text-primary hover:underline"
+            >
+              <code>assets/qr/</code>
+            </a>{" "}
+            in the repo.
+          </p>
+          <div className="grid gap-3 sm:grid-cols-2">
+            <a
+              href="https://t.me/my_skull_bot"
+              target="_blank"
+              rel="noreferrer"
+              className="flex flex-col items-center gap-2 rounded-md border bg-card p-3 transition-colors hover:bg-accent"
+            >
+              <img
+                src="qr/telegram-bot.png"
+                alt="Telegram bot QR code"
+                width={200}
+                height={200}
+                loading="lazy"
+                className="h-40 w-40 rounded bg-white p-2"
+              />
+              <div className="text-center">
+                <div className="font-medium">@my_skull_bot</div>
+                <div className="text-xs text-muted-foreground">Scraper Info Game bot</div>
+              </div>
+            </a>
+            <a
+              href="https://t.me/SkullMute0011"
+              target="_blank"
+              rel="noreferrer"
+              className="flex flex-col items-center gap-2 rounded-md border bg-card p-3 transition-colors hover:bg-accent"
+            >
+              <img
+                src="qr/telegram-user.png"
+                alt="Telegram DM QR code"
+                width={200}
+                height={200}
+                loading="lazy"
+                className="h-40 w-40 rounded bg-white p-2"
+              />
+              <div className="text-center">
+                <div className="font-medium">@SkullMute0011</div>
+                <div className="text-xs text-muted-foreground">DM (whitelist requests)</div>
+              </div>
+            </a>
           </div>
         </CardContent>
       </Card>
