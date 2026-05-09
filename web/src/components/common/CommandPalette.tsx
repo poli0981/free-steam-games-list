@@ -26,6 +26,7 @@ import {
 } from "lucide-react";
 import { useGames } from "../../hooks/useGames";
 import { useGpg } from "../../stores/gpg";
+import { headerToCapsule } from "../../lib/image";
 import "./command-palette.css";
 
 interface NavCmd {
@@ -187,9 +188,16 @@ export function CommandPalette() {
                   >
                     {r.header_image ? (
                       <img
-                        src={r.header_image}
+                        loading="lazy"
+                        src={headerToCapsule(r.header_image)}
                         alt=""
+                        width={92}
+                        height={43}
                         className="h-4 w-7 rounded object-cover"
+                        onError={(e) => {
+                          const el = e.currentTarget;
+                          if (el.src !== r.header_image) el.src = r.header_image;
+                        }}
                       />
                     ) : (
                       <Gamepad2 className="h-3.5 w-3.5" />
