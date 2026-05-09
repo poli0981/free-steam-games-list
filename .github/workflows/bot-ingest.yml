@@ -29,8 +29,7 @@ permissions:
 concurrency:
   group: data-write
   cancel-in-progress: false
-  cancel-in-progress: false
-
+  
 jobs:
   ingest:
     runs-on: ubuntu-latest
