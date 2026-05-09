@@ -20,6 +20,7 @@ on:
       - "Ingest from Issue"
       - "Bot Ingest"
       - "Force Re-fetch All (v2.1 Schema)"
+      - "Mark Dead Games"
       - "CodeQL"
     types: [completed]
 

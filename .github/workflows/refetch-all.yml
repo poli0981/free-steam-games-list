@@ -15,6 +15,10 @@ on :
 permissions :
   contents : write
 
+concurrency :
+  group : data-write
+  cancel-in-progress : false
+
 jobs :
   refetch :
     if : ${{ github.event.inputs.confirm == 'yes' }}

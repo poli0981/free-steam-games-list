@@ -184,7 +184,24 @@ _SKELETON_TEMPLATE = {
     "drm_notes": "-",
     "notes": "", "safe": "?",
     "status": "active", "last_updated": "", "added_at": "",
+    # v2.3 dead-game detection
+    "is_dead": False,
+    "zero_player_since": "",
 }
+
+
+def append_note_idempotent(game: dict, marker: str, full_note: str) -> bool:
+    """Append `full_note` to game['notes'] only if `marker` isn't already present.
+
+    Used by check_dead_links and mark_dead_games to avoid duplicating system
+    notes when a workflow re-runs over an already-marked game. Returns True
+    when the note was actually changed.
+    """
+    notes = game.get("notes", "") or ""
+    if marker in notes:
+        return False
+    game["notes"] = (notes + " " + full_note).strip() if notes else full_note
+    return True
 
 
 def make_skeleton(link: str) -> dict:

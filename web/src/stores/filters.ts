@@ -12,6 +12,7 @@ export interface FilterState {
   safe: string | null;
   status: "active" | "delisted" | null;
   hasAntiCheat: boolean | null;
+  hideDead: boolean;
   sortKey: string | null;
   sortDir: SortDir;
   pageSize: PageSize;
@@ -23,6 +24,7 @@ export interface FilterState {
   setSafe: (s: string | null) => void;
   setStatus: (s: "active" | "delisted" | null) => void;
   setHasAntiCheat: (b: boolean | null) => void;
+  setHideDead: (b: boolean) => void;
   setSort: (key: string | null, dir: SortDir) => void;
   setPageSize: (size: PageSize) => void;
   toggleSelect: (appid: string) => void;
@@ -39,6 +41,7 @@ const initial = {
   safe: null,
   status: null,
   hasAntiCheat: null,
+  hideDead: false,
   sortKey: null,
   sortDir: null as SortDir,
   pageSize: 100 as PageSize,
@@ -54,6 +57,7 @@ export const useFilters = create<FilterState>((set) => ({
   setSafe: (safe) => set({ safe }),
   setStatus: (status) => set({ status }),
   setHasAntiCheat: (hasAntiCheat) => set({ hasAntiCheat }),
+  setHideDead: (hideDead) => set({ hideDead }),
   setSort: (sortKey, sortDir) => set({ sortKey, sortDir }),
   setPageSize: (pageSize) => set({ pageSize }),
   toggleSelect: (appid) =>

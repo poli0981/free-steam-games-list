@@ -94,7 +94,12 @@ const COLS: ColDef[] = [
     width: 280,
     sortable: true,
     sortValue: (g) => g.name?.toLowerCase() ?? "",
-    render: (g) => <span className="font-medium">{g.name || "—"}</span>,
+    render: (g) => (
+      <span className="font-medium">
+        {g.is_dead && <span title="Dead game (no players)" className="mr-1">💀</span>}
+        {g.name || "—"}
+      </span>
+    ),
   },
   {
     key: "genre",
@@ -239,6 +244,7 @@ export function GamesTable({ records, onRowOpen }: Props) {
   const typeGame = useFilters((s) => s.type_game);
   const platform = useFilters((s) => s.platform);
   const status = useFilters((s) => s.status);
+  const hideDead = useFilters((s) => s.hideDead);
   const sortKey = useFilters((s) => s.sortKey);
   const sortDir = useFilters((s) => s.sortDir);
   const setSort = useFilters((s) => s.setSort);
@@ -256,7 +262,7 @@ export function GamesTable({ records, onRowOpen }: Props) {
   // Reset page when filters or page size change.
   useEffect(() => {
     setPage(1);
-  }, [search, genre, typeGame, platform, status, pageSize]);
+  }, [search, genre, typeGame, platform, status, hideDead, pageSize]);
 
   const fuse = useMemo(
     () =>
@@ -278,8 +284,9 @@ export function GamesTable({ records, onRowOpen }: Props) {
     if (platform)
       out = out.filter((g) => (g.platforms ?? []).includes(platform));
     if (status) out = out.filter((g) => g.status === status);
+    if (hideDead) out = out.filter((g) => !g.is_dead);
     return out;
-  }, [records, search, genre, typeGame, platform, status, fuse]);
+  }, [records, search, genre, typeGame, platform, status, hideDead, fuse]);
 
   const sorted = useMemo(() => {
     if (!sortKey || !sortDir) return filtered;

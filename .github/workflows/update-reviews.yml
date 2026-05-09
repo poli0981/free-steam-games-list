@@ -3,6 +3,9 @@ on :
   schedule : [ { cron : '0 6 */2 * *' } ]
   workflow_dispatch :
 permissions : { contents : write }
+concurrency :
+  group : data-write
+  cancel-in-progress : false
 jobs :
   reviews :
     runs-on : ubuntu-latest

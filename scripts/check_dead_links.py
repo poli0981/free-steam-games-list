@@ -4,7 +4,7 @@ import sys, os, random, time
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from datetime import datetime, timezone
 from core.constants import DEAD_LINKS_LOG, BATCH_SIZE, BATCH_PAUSE_MIN, BATCH_PAUSE_MAX
-from core.data_store import load_main, save_main, extract_appid, now_iso
+from core.data_store import load_main, save_main, extract_appid, now_iso, append_note_idempotent
 from core.steam_client import get_client
 
 def main():
@@ -24,7 +24,7 @@ def main():
             if code in (404, 410):
                 print(f"  [{i+1}/{total}] 💀 {name} ({code})")
                 g["status"] = "delisted"
-                g["notes"] = (g.get("notes","") + f" 💀 Delisted ({code})").strip()
+                append_note_idempotent(g, "💀 Delisted", f"💀 Delisted ({code})")
                 g["last_updated"] = now_iso()
                 dead.append({"name": name, "appid": appid, "code": code})
             else:

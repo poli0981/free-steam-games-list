@@ -3,6 +3,9 @@ on:
   workflow_run: {workflows: ['Auto Update JSON Data'], types: [completed]}
   workflow_dispatch:
 permissions: {contents: write}
+concurrency:
+  group: data-write
+  cancel-in-progress: false
 jobs:
   generate:
     if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}

@@ -87,6 +87,7 @@
     "filterAllTypes": "All types",
     "filterAllPlatforms": "All platforms",
     "filterAllStatus": "All status",
+    "hideDead": "Hide dead",
     "selectAllVisible": "Select all visible ({{count}})",
     "bulkEdit": "Bulk edit",
     "bulkDelete": "Delete",

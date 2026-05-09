@@ -87,6 +87,7 @@
     "filterAllTypes": "Mọi loại",
     "filterAllPlatforms": "Mọi nền tảng",
     "filterAllStatus": "Mọi trạng thái",
+    "hideDead": "Ẩn dead",
     "selectAllVisible": "Chọn tất cả ({{count}})",
     "bulkEdit": "Sửa hàng loạt",
     "bulkDelete": "Xoá",
