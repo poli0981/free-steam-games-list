@@ -2,6 +2,67 @@
 
 All notable changes to this awesome noob repo will be documented here.
 
+## [v3.1.0] – 2026-05-09 (The "Less CI Noise, Lighter Images, Dead-Game Detection" Edition)
+
+Four PRs landed in this release plus a refresh of the docs and the contributor surface around the new Telegram bot. Web app + desktop app bumped from `1.0.0` → `1.1.0`. Repo public-facing version `3.0.1` → `3.1.0`. Tag `v3.1.0` is GPG-signed; companion desktop tag is `desktop-v1.1.0`.
+
+### 🛠️ CI hygiene — notify wrappers (#60)
+
+- The 3 notify wrappers (`notify-ci-failure`, `notify-deploy`, `notify-release-pipeline`) used to trigger on `workflow_run: workflows: ["*"]` and were filtered out by their reusable callee's `if:` — 95–100 % of runs showed as "skipped". Replaced the catch-all with explicit lists of source workflow `name:` strings per wrapper, plus job-level `if:` to short-circuit non-matching conclusions. Drops skip rate to <10 %.
+- Trade-off documented in each file: renaming a source workflow's `name:` field silently breaks notifications; comment warns about the coupling.
+
+### 🖼️ Image optimisation — capsule swap + WebP via wsrv.nl (#61)
+
+- `scripts/generate_tables.py:68` — markdown thumbnails now use `capsule_184x69.jpg` instead of `header.jpg` (~80 % bandwidth reduction at the same 120 px render width).
+- Web app `GamesTable` + `CommandPalette` — capsule swap with explicit `width`/`height` to eliminate CLS, plus `onError` fallback to `header.jpg` for the ~5 % of games without a capsule variant.
+- `GameDetailDrawer` — `<picture>` element with WebP source via `images.weserv.nl` proxy + JPEG fallback. Lazy-loaded, explicit dimensions.
+- `vite.config.ts` — new `CacheFirst` runtime cache for `images.weserv.nl` (`statuses: [200]` only — opaque 0-status would cache proxy errors).
+- New helper `web/src/lib/image.ts` — `headerToCapsule()` + `webpProxyUrl()`.
+
+### 💀 Dead-game detection — `mark-dead-games.yml` (#62)
+
+- New cron `Mon + Thu 04:30 UTC` flags **online games released >1 year ago** whose `current_players == 0` for **≥14 days** (configurable via `DEAD_GAME_DAYS` env or `--days` CLI). On trigger: `is_dead = true` + `"💀 Dead game"` appended to `notes` (idempotent).
+- **State model**: ISO timestamp `zero_player_since` (robust against schedule drift), not a streak counter.
+- **Mark mechanism**: additive `is_dead: bool` + note. `status` stays `"active"` so the existing enum / Top Online filter / chart groupings don't break. Web app gains a "Hide dead" filter toggle and a 💀 emoji prefix on dead rows.
+- **Dry-run available**: `python scripts/mark_dead_games.py --dry-run --days 0` for auditing without writes.
+- New helper `append_note_idempotent()` in `scripts/core/data_store.py`. Retrofitted onto `check_dead_links.py` to fix duplicate `"💀 Delisted"` accumulation on reruns.
+- Schema migration via `_SKELETON_TEMPLATE` only (no one-shot script). Both the Python pipeline and the React app inherit defaults via existing `migrate_record()` / `migrateRecord()` loops.
+
+### 🔄 Concurrency unification
+
+All data-mutating workflows now share `concurrency: { group: data-write, cancel-in-progress: false }`:
+
+- `update-json`, `update-daily`, `top-online`, `update-reviews`
+- `check-dead-links`, `purge-unhealthy`, `mark-dead-games` (new)
+- `ingest-new`, `ingest-from-issue`, `bot-ingest`, `refetch-all`
+
+Prevents races on `git push` to `data/` shards. Bot-ingest moved from its own `bot-ingest` group to the unified group.
+
+### 📝 Docs + contributor surface (this PR)
+
+- **`AUTHORS.md`** at repo root — handle map for the maintainer, AI-assistant disclosure, MIT licensing reminder.
+- **`username.txt`** extended with `telegram bot`, `telegram user`, and `email` lines (canonical machine-readable handle map mirrored by `AUTHORS.md`).
+- **`assets/qr/`** — QR-code PNGs for `@my_skull_bot` and `@SkullMute0011` (mirrored to `web/public/qr/` so the SPA can serve them). Generated via `python -m qrcode`.
+- **`web/src/pages/About.tsx`** — Maintainer card now lists Telegram bot + Telegram DM (with QR thumbnails inline) + Email. New "Telegram QR codes" card with full-size scannable codes. Privacy note about Telegram `user_id` handling.
+- **`CONTRIBUTING.md`** rewrite — adds the `@my_skull_bot` flow as a first-class contribution path (find `user_id` → DM maintainer privately → whitelist → run when bot's online → follow prompts). Loud privacy warning at the top.
+- **`docs/PRIVACY_POLICY.md`** — new "Telegram bot" section covering the `user_id` data flow, where it's stored, retention/removal, and the maintainer's commitment.
+- **`docs/ToS.md`** — new section 5.1 "Sharing personal information when contributing" with non-negotiable rules about private vs public channels.
+- **`docs/Contact.md`** — Telegram bot + DM entries added at the top.
+- **README** badges and feature list refreshed (version bumped, dead-game workflow listed, About-page QR card mentioned).
+
+### 🔢 Versioning
+
+| Surface | Old | New |
+|---|---|---|
+| Repo public-facing | 3.0.1 | **3.1.0** |
+| `web/package.json` | 1.0.0 | **1.1.0** |
+| `web/src-tauri/Cargo.toml` | 1.0.0 | **1.1.0** |
+| `web/src-tauri/tauri.conf.json` | 1.0.0 | **1.1.0** |
+| Git tag (signed) | `v3.0.1` | `v3.1.0` |
+| Desktop tag (signed) | `desktop-v1.0.0` | `desktop-v1.1.0` |
+
+---
+
 ## [v3.0.1] – 2026-05-07 (The "Desktop Actually Ships This Time" Edition)
 
 Same-day post-v3.0.0 maintenance covering Phase 9 (auto-update foundations + CVE bumps + Device Flow scaffold), Phase 10 (Tauri build break + i18n full coverage + deps audit), and Phase 10.1 (minisign keypair rotation). The desktop release pipeline is now end-to-end green — `desktop-v1.0.0` finally produces signed `.msi` / `.exe` / `.dmg` / `.AppImage` / `.deb` / `.rpm` artefacts with a valid `latest.json` for auto-update.

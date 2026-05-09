@@ -15,6 +15,13 @@ That's me in a nutshell – unremarkable, but building this repo to spite the in
 
 ### Socials (don’t expect replies, seriously)
 
+- **[Telegram bot — @my_skull_bot](https://t.me/my_skull_bot)** (Scraper Info Game bot):
+  → For adding F2P games to the list. Whitelist your Telegram `user_id` first (DM me, see [CONTRIBUTING.md](../CONTRIBUTING.md)). Bot runs in Docker on my machine ~2–5 hrs/day — offline outside that window.
+  → 🛑 **Never post your Telegram `user_id` in public channels** (Discord, Telegram groups, GitHub issues). DM only.
+
+- **[Telegram DM — @SkullMute0011](https://t.me/SkullMute0011)**:
+  → Use this to send your Telegram `user_id` for the bot whitelist. General chat: see Steam rule below — same vibe.
+
 - **[Steam](https://steamcommunity.com/profiles/76561199544666292/)**:  
   → If my profile is **offline** → maybe I’ll reply (50% chance).  
   → If it’s **online** → 96.69% I’m NOT replying. I’m just picking a random game from my 400+ backlog and pretending I’m having fun. Do not disturb. Touch grass instead.

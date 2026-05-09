@@ -1,7 +1,7 @@
 [![Games Count](https://img.shields.io/badge/Games-1.2k%2B-green?style=flat&logo=steam)](games/all-games_part1.md)
 [![Last Updated](https://img.shields.io/badge/Updated-Daily-blue?style=flat&logo=github-actions)](.github/workflows)
 [![Top Online](https://img.shields.io/badge/Top%20Online-Live%20Leaderboard-red?style=flat&logo=steam)](games/top-online.md)
-[![Version](https://img.shields.io/badge/version-3.0.0-purple?style=flat&logo=github)](https://github.com/poli0981/free-steam-games-list)
+[![Version](https://img.shields.io/badge/version-3.1.0-purple?style=flat&logo=github)](https://github.com/poli0981/free-steam-games-list)
 [![Web App](https://img.shields.io/badge/Web%20App-Live-2563eb?style=flat&logo=react)](https://poli0981.github.io/free-steam-games-list/)
 [![Desktop](https://img.shields.io/badge/Desktop-Tauri%202-FFC131?style=flat&logo=tauri)](https://github.com/poli0981/free-steam-games-list/releases)
 [![Health Check](https://img.shields.io/badge/Health%20Check-Weekly-orange?style=flat&logo=github-actions)](.github/workflows/purge-unhealthy.yml)
@@ -32,6 +32,8 @@ A **curated list** of free-to-play games on Steam — now ~1,200 of them — no 
 | 📦 Raw data         | [data/data_001.jsonl](data/data_001.jsonl) + [data/data_002.jsonl](data/data_002.jsonl) (sharded JSONL)              |
 | 📖 Index            | [games/README.md](games/README.md)                                                                                   |
 | 🛠️ About            | <https://poli0981.github.io/free-steam-games-list/#/about> (in-app)                                                 |
+| 👤 Authors          | [`AUTHORS.md`](AUTHORS.md) — maintainer + contact channels + AI-assistant disclosure                                 |
+| 🤖 Telegram bot     | [`@my_skull_bot`](https://t.me/my_skull_bot) — Scraper Info Game bot, see [`CONTRIBUTING.md`](CONTRIBUTING.md)        |
 
 ### Quick Links
 
@@ -177,6 +179,8 @@ scripts/
 | Ingest New            | On `scripts/temp_info.jsonl` push | Add new games (web app + extension queue here)           |
 | Ingest from Issue     | On `[add-game]` issue            | Parse issue → ingest → auto-close                         |
 | Force Re-fetch        | Manual only                      | Re-fetch ALL games                                        |
+| **Mark Dead Games**   | Mon + Thu 04:30 UTC              | Online + >1y + 0 players ≥14d → `is_dead=true` + 💀 note |
+| **Bot Ingest**        | Telegram bot dispatch            | Add games via `@my_skull_bot` (whitelist required)        |
 | **Deploy Web**        | On `web/**` or `data/**` change  | Build + deploy SPA to GitHub Pages                        |
 | **Release Desktop**   | On `desktop-v*` tag              | Matrix-build Tauri installers (Win/Mac/Linux) → Releases |
 
@@ -185,6 +189,8 @@ scripts/
 **The easy way — open an issue.** Pick the [Add games](.github/ISSUE_TEMPLATE/add_games.yml) template and paste up to 15 Steam links. Workflow auto-ingests, validates, health-checks, fetches metadata, and closes the issue with a status comment. The [Bug report](.github/ISSUE_TEMPLATE/bug_report.yml), [Feature request](.github/ISSUE_TEMPLATE/feature_request.yml), [Delete game](.github/ISSUE_TEMPLATE/delete_game.yml), and [Feedback](.github/ISSUE_TEMPLATE/feedback.yml) templates are also pre-filled.
 
 **The web app way — sign in.** If you have repo write access, sign into the web app with a Classic GitHub PAT (scopes: `repo` + `workflow`) and use the Add or Edit drawers. Optionally unlock a GPG key in Settings to get **Verified ✓** commits.
+
+**The Telegram bot way — `@my_skull_bot`.** No GitHub PAT needed. One-time: DM the maintainer privately with your Telegram `user_id` (NEVER post it in public Discord / Telegram groups / GitHub issues — see [`CONTRIBUTING.md`](CONTRIBUTING.md)) → maintainer adds you to the whitelist → chat with the bot when it's online (~2–5 hrs/day, runs in Docker locally) and follow its prompts. QR codes for the bot and DM live at [`assets/qr/`](assets/qr/).
 
 **The extension way.** The companion Chrome extension detects F2P games on Steam store pages and pushes pre-fetched metadata to `scripts/temp_info.jsonl`.
 
@@ -213,11 +219,13 @@ Unemployed, introvert max level, dropped out uni year 3, mooching off family. Ne
 
 ### Docs
 
+- [AUTHORS](AUTHORS.md) — maintainer + canonical handle map + AI-assistant disclosure.
 - [CHANGELOG](CHANGELOG.md) — what changed in each version.
+- [CONTRIBUTING](CONTRIBUTING.md) — issue templates, web-app sign-in, Telegram bot flow, extension, manual fork.
 - [DISCLAIMER](docs/DISCLAIMER.md) — accuracy caveats, no-warranty, the broke-maintainer note.
-- [Terms of Use](docs/ToS.md) — usage agreement, contributions, governing law.
+- [Terms of Use](docs/ToS.md) — usage agreement, contributions, governing law, **rules for sharing your Telegram `user_id`**.
 - [EULA](docs/EULA.md) — supplemental to the MIT licence.
-- [Privacy Policy](docs/PRIVACY_POLICY.md) — zero personal data collected; lists every third-party endpoint the web app touches at runtime.
+- [Privacy Policy](docs/PRIVACY_POLICY.md) — zero personal data collected by the site; **Telegram-bot data flow** documented separately.
 - [Acknowledgements](docs/ACKNOWLEDGEMENTs.md) — credits, AI assistants, third-party libraries.
 - [Contact](docs/Contact.md) — where to find the maintainer.
 - [CODE OF CONDUCT](CODE_OF_CONDUCT.md) — be chill.

@@ -31,6 +31,17 @@ See [`DISCLAIMER.md`](./DISCLAIMER.md). Short version: the maintainer is not res
 
 Pull requests are welcome but optional to merge. By submitting a contribution you license it under the same MIT terms as the rest of the repo. Don't include code or data you don't have the right to share.
 
+#### 5.1 Sharing personal information when contributing
+
+For the Telegram-bot contribution path ([`@my_skull_bot`](https://t.me/my_skull_bot), see [`CONTRIBUTING.md`](../CONTRIBUTING.md)):
+
+1. **Your Telegram `user_id` must be sent via a private channel only** — Telegram DM, email, or any 1-on-1 chat. Posting it in public Discord channels, public Telegram groups, GitHub issues, or any other public surface is forbidden by these Terms; the maintainer will reject IDs that arrived via public channels and ask for a re-send.
+2. **You retain control of your data.** The maintainer's allowlist is local and unpublished. You can request removal at any time via the same private channels. Removal blocks future bot use; previously-ingested game records remain in the public dataset since they are unattributed Steam-link submissions and form part of the curated MIT-licensed list.
+3. **No other personal information should be transmitted.** The bot needs only your `user_id`. Real names, addresses, payment info, government IDs, biometric data, or any sensitive personal data should NOT be sent — the maintainer is a hobbyist with no infrastructure for handling them, and the bot does not request them.
+4. **Public-channel discussion of `user_id`s is a security issue.** If you accidentally post a Telegram `user_id` (yours or anyone else's) in a public channel of this project, edit/delete it immediately and notify the maintainer via DM. The maintainer will assist with cleanup but cannot recall messages already mirrored by third parties.
+
+These rules are non-negotiable: they protect contributors from doxxing and the maintainer from liability.
+
 ### 6. Trademarks & third-party content
 
 - Steam, the Steam logo, VAC, BattlEye, EAC, Vanguard, etc., are trademarks of their respective owners. Their use here is descriptive / nominative.

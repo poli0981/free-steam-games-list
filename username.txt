@@ -7,3 +7,6 @@ patreon, ko-fi: skullmute
 steam profile: https://steamcommunity.com/profiles/76561199544666292/
 bluesky: https://bsky.app/profile/skullmute0011.bsky.social
 mastodon instance: https://mastodon.social/@skullmute1122
+telegram bot: @my_skull_bot (Scraper Info Game bot — see CONTRIBUTING.md)
+telegram user: @SkullMute0011
+email: lopop05905@proton.me
