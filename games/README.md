@@ -1,6 +1,6 @@
 # 🎮 Steam F2P Tracker
 
-**1257 games** · 2026-05-09 03:29 UTC
+**1267 games** · 2026-05-09 17:21 UTC
 
 ## 📋 Full List
 
@@ -17,11 +17,11 @@
 | Genre | # | File |
 |-------|---|------|
 | 2D Fighter | 2 | [2d-fighter.md](2d-fighter.md) |
-| Action | 34 | [action.md](action.md) |
+| Action | 40 | [action.md](action.md) |
 | Action RPG | 6 | [action-rpg.md](action-rpg.md) |
 | Action RPG, Gacha | 2 | [action-rpg-gacha.md](action-rpg-gacha.md) |
 | Action-Adventure | 1 | [action-adventure.md](action-adventure.md) |
-| Adventure | 51 | [adventure.md](adventure.md) |
+| Adventure | 52 | [adventure.md](adventure.md) |
 | Arcade | 14 | [arcade.md](arcade.md) |
 | Arena Shooter | 7 | [arena-shooter.md](arena-shooter.md) |
 | Auto Battler | 2 | [auto-battler.md](auto-battler.md) |
@@ -52,6 +52,7 @@
 | Fighter | 1 | [fighter.md](fighter.md) |
 | Fighting | 7 | [fighting.md](fighting.md) |
 | Fishing | 1 | [fishing.md](fishing.md) |
+| Free To Play | 2 | [free-to-play.md](free-to-play.md) |
 | Gambling | 3 | [gambling.md](gambling.md) |
 | Hack & Slash | 5 | [hack-&-slash.md](hack-&-slash.md) |
 | Hack and Slash | 4 | [hack-and-slash.md](hack-and-slash.md) |
@@ -60,7 +61,7 @@
 | Hidden Object | 31 | [hidden-object.md](hidden-object.md) |
 | Horror | 92 | [horror.md](horror.md) |
 | Idler | 17 | [idler.md](idler.md) |
-| Indie | 5 | [indie.md](indie.md) |
+| Indie | 6 | [indie.md](indie.md) |
 | Interactive Fiction | 1 | [interactive-fiction.md](interactive-fiction.md) |
 | Isometric | 1 | [isometric.md](isometric.md) |
 | Life Sim | 2 | [life-sim.md](life-sim.md) |
@@ -80,7 +81,7 @@
 | Racing | 9 | [racing.md](racing.md) |
 | Real-Time Strategy | 1 | [real-time-strategy.md](real-time-strategy.md) |
 | Retro | 1 | [retro.md](retro.md) |
-| Rhythm | 11 | [rhythm.md](rhythm.md) |
+| Rhythm | 12 | [rhythm.md](rhythm.md) |
 | Roguelike | 20 | [roguelike.md](roguelike.md) |
 | Roguelite | 3 | [roguelite.md](roguelite.md) |
 | Rougelite | 2 | [rougelite.md](rougelite.md) |
@@ -109,7 +110,7 @@
 | Tower Defense | 8 | [tower-defense.md](tower-defense.md) |
 | Turn-Based Combat | 2 | [turn-based-combat.md](turn-based-combat.md) |
 | Turn-Based Strategy | 3 | [turn-based-strategy.md](turn-based-strategy.md) |
-| Turn-Based Tactics | 5 | [turn-based-tactics.md](turn-based-tactics.md) |
+| Turn-Based Tactics | 4 | [turn-based-tactics.md](turn-based-tactics.md) |
 | Turn-based RPG | 5 | [turn-based-rpg.md](turn-based-rpg.md) |
 | Turn-based Strategy | 8 | [turn-based-strategy.md](turn-based-strategy.md) |
 | Turn-based Tactics | 3 | [turn-based-tactics.md](turn-based-tactics.md) |
