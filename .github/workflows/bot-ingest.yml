@@ -23,11 +23,12 @@ on:
 permissions:
   contents: write
 
-# Queue concurrent dispatches instead of running them in parallel — prevents
-# commit conflicts on data/ shards. cancel-in-progress=false so we don't drop
-# legitimate work when the user dispatches twice in quick succession.
+# Share `data-write` group with all other workflows that push to data/ —
+# prevents commit conflicts on shards. cancel-in-progress=false so we don't
+# drop legitimate work.
 concurrency:
-  group: bot-ingest
+  group: data-write
+  cancel-in-progress: false
   cancel-in-progress: false
 
 jobs:

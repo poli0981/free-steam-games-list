@@ -117,6 +117,9 @@ export interface GameRecord {
   status: GameStatus;
   last_updated: string;
   added_at: string;
+  // v2.3 dead-game detection
+  is_dead: boolean;
+  zero_player_since: string;
 }
 
 export interface ShardManifestEntry {
@@ -159,6 +162,8 @@ export const SKELETON_TEMPLATE: GameRecord = {
   status: "active",
   last_updated: "",
   added_at: "",
+  is_dead: false,
+  zero_player_since: "",
 };
 
 export function isManualField(key: string): key is ManualField {

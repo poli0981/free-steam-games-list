@@ -3,6 +3,9 @@ on:
   schedule: [{cron: '0 3 * * 0,3,5'}]
   workflow_dispatch:
 permissions: {contents: write}
+concurrency:
+  group: data-write
+  cancel-in-progress: false
 jobs:
   leaderboard:
     runs-on: ubuntu-latest

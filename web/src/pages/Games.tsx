@@ -23,6 +23,8 @@ export function GamesPage() {
   const setPlatform = useFilters((s) => s.setPlatform);
   const status = useFilters((s) => s.status);
   const setStatus = useFilters((s) => s.setStatus);
+  const hideDead = useFilters((s) => s.hideDead);
+  const setHideDead = useFilters((s) => s.setHideDead);
   const reset = useFilters((s) => s.reset);
 
   const facets = useMemo(() => {
@@ -45,7 +47,7 @@ export function GamesPage() {
   if (q.error) return <ErrorState error={q.error} />;
   if (!q.data) return null;
 
-  const hasFilter = genre || typeGame || platform || status;
+  const hasFilter = genre || typeGame || platform || status || hideDead;
   const linkedGame = appid
     ? (() => {
         const idx = q.data.appidIndex.get(appid);
@@ -114,6 +116,16 @@ export function GamesPage() {
           <option value="delisted">{t("common.delisted")}</option>
         </select>
 
+        <label className="flex h-8 select-none items-center gap-1.5 rounded-md border bg-background px-2 text-sm">
+          <input
+            type="checkbox"
+            checked={hideDead}
+            onChange={(e) => setHideDead(e.target.checked)}
+            className="h-3.5 w-3.5 rounded border-input bg-transparent accent-primary"
+          />
+          {t("games.hideDead")}
+        </label>
+
         {hasFilter && (
           <Button variant="ghost" size="sm" onClick={reset}>
             <X className="mr-1 h-3 w-3" /> {t("common.clear")}
@@ -125,6 +137,7 @@ export function GamesPage() {
           {typeGame && <Badge variant="default">type: {typeGame}</Badge>}
           {platform && <Badge variant="default">platform: {platform}</Badge>}
           {status && <Badge variant="default">status: {status}</Badge>}
+          {hideDead && <Badge variant="default">💀 hidden</Badge>}
         </div>
       </div>
 
