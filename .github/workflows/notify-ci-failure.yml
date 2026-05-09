@@ -2,7 +2,25 @@ name: Notify CI Failures
 
 on:
   workflow_run:
-    workflows: ["*"]
+    # Listen only to workflows we want failure notifications for. Replaces the
+    # earlier `workflows: ["*"]` catch-all that fired on every completion and
+    # was filtered out by the reusable's `if:` (95%+ skip rate).
+    #
+    # WARNING: these strings must match the `name:` field in each source
+    # workflow's YAML. Renaming a source workflow → update this list, or
+    # notifications silently break.
+    workflows:
+      - "Auto Update JSON Data"
+      - "Generate Markdown Tables"
+      - "Top Online Leaderboard"
+      - "Update Reviews"
+      - "Check Dead Links"
+      - "Purge Unhealthy Games"
+      - "Ingest New Game Links"
+      - "Ingest from Issue"
+      - "Bot Ingest"
+      - "Force Re-fetch All (v2.1 Schema)"
+      - "CodeQL"
     types: [completed]
 
 # REQUIRED: declare permissions matching the reusable workflow's needs.
@@ -13,5 +31,8 @@ permissions:
 
 jobs:
   notify:
+    # Defense-in-depth: only fire on actual failures so the reusable's own
+    # `if:` becomes a no-op rather than a "skipped" run.
+    if: github.event.workflow_run.conclusion == 'failure'
     uses: poli0981/.github/.github/workflows/notify-ci-failure.yml@main
     secrets: inherit
