@@ -1,6 +1,6 @@
 # 🎮 Steam F2P Tracker
 
-**1248 games** · 2026-05-09 00:36 UTC
+**1257 games** · 2026-05-09 02:54 UTC
 
 ## 📋 Full List
 
@@ -17,7 +17,7 @@
 | Genre | # | File |
 |-------|---|------|
 | 2D Fighter | 2 | [2d-fighter.md](2d-fighter.md) |
-| Action | 33 | [action.md](action.md) |
+| Action | 34 | [action.md](action.md) |
 | Action RPG | 6 | [action-rpg.md](action-rpg.md) |
 | Action RPG, Gacha | 2 | [action-rpg-gacha.md](action-rpg-gacha.md) |
 | Action-Adventure | 1 | [action-adventure.md](action-adventure.md) |
@@ -31,7 +31,7 @@
 | Board Game | 6 | [board-game.md](board-game.md) |
 | Boomer Shooter | 1 | [boomer-shooter.md](boomer-shooter.md) |
 | Building | 1 | [building.md](building.md) |
-| Bullet Hell | 15 | [bullet-hell.md](bullet-hell.md) |
+| Bullet Hell | 16 | [bullet-hell.md](bullet-hell.md) |
 | Card Battler | 2 | [card-battler.md](card-battler.md) |
 | Card Game | 43 | [card-game.md](card-game.md) |
 | Casual | 7 | [casual.md](casual.md) |
@@ -58,7 +58,7 @@
 | Hacking | 1 | [hacking.md](hacking.md) |
 | Hero Shooter | 2 | [hero-shooter.md](hero-shooter.md) |
 | Hidden Object | 31 | [hidden-object.md](hidden-object.md) |
-| Horror | 90 | [horror.md](horror.md) |
+| Horror | 92 | [horror.md](horror.md) |
 | Idler | 17 | [idler.md](idler.md) |
 | Indie | 5 | [indie.md](indie.md) |
 | Interactive Fiction | 1 | [interactive-fiction.md](interactive-fiction.md) |
@@ -72,7 +72,7 @@
 | Parkour | 1 | [parkour.md](parkour.md) |
 | Party Game | 7 | [party-game.md](party-game.md) |
 | Party-Based RPG | 2 | [party-based-rpg.md](party-based-rpg.md) |
-| Platformer | 66 | [platformer.md](platformer.md) |
+| Platformer | 68 | [platformer.md](platformer.md) |
 | Point & Click | 1 | [point-&-click.md](point-&-click.md) |
 | Point-and-Click | 1 | [point-and-click.md](point-and-click.md) |
 | Puzzle | 68 | [puzzle.md](puzzle.md) |
@@ -90,7 +90,7 @@
 | Shoot 'Em Up | 4 | [shoot-'em-up.md](shoot-'em-up.md) |
 | Shoot'em up | 1 | [shoot'em-up.md](shoot'em-up.md) |
 | Shooter | 4 | [shooter.md](shooter.md) |
-| Simulation | 64 | [simulation.md](simulation.md) |
+| Simulation | 65 | [simulation.md](simulation.md) |
 | Social Deduction | 1 | [social-deduction.md](social-deduction.md) |
 | Software | 1 | [software.md](software.md) |
 | Souls-like | 4 | [souls-like.md](souls-like.md) |
@@ -103,7 +103,7 @@
 | Third-Person Shooter | 7 | [third-person-shooter.md](third-person-shooter.md) |
 | Third-person Shooter | 1 | [third-person-shooter.md](third-person-shooter.md) |
 | Top-Down | 1 | [top-down.md](top-down.md) |
-| Top-Down Shooter | 2 | [top-down-shooter.md](top-down-shooter.md) |
+| Top-Down Shooter | 3 | [top-down-shooter.md](top-down-shooter.md) |
 | Top-down Shooter | 11 | [top-down-shooter.md](top-down-shooter.md) |
 | Top-down Survival | 1 | [top-down-survival.md](top-down-survival.md) |
 | Tower Defense | 8 | [tower-defense.md](tower-defense.md) |
@@ -113,7 +113,7 @@
 | Turn-based RPG | 5 | [turn-based-rpg.md](turn-based-rpg.md) |
 | Turn-based Strategy | 8 | [turn-based-strategy.md](turn-based-strategy.md) |
 | Turn-based Tactics | 3 | [turn-based-tactics.md](turn-based-tactics.md) |
-| Visual Novel | 297 | [visual-novel.md](visual-novel.md) |
+| Visual Novel | 298 | [visual-novel.md](visual-novel.md) |
 | Walking Simulator | 1 | [walking-simulator.md](walking-simulator.md) |
 
 ## 🏆 Leaderboard
