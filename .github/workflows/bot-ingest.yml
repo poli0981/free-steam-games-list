@@ -1,0 +1,184 @@
+# Place this file at .github/workflows/bot-ingest.yml in the steam-f2p-tracker repo.
+#
+# Triggered by telegram-scraper-bot via workflow_dispatch.
+# Required repository secrets:
+#   - STEAM_API_KEY        (existing)
+#   - TELEGRAM_BOT_TOKEN   (new — same token the bot uses)
+
+name: Bot Ingest
+
+on:
+  workflow_dispatch:
+    inputs:
+      links:
+        description: "Newline-separated Steam URLs"
+        required: true
+      chat_id:
+        description: "Telegram chat ID for callback"
+        required: true
+      message_id:
+        description: "Telegram message ID to edit"
+        required: true
+
+permissions:
+  contents: write
+
+# Queue concurrent dispatches instead of running them in parallel — prevents
+# commit conflicts on data/ shards. cancel-in-progress=false so we don't drop
+# legitimate work when the user dispatches twice in quick succession.
+concurrency:
+  group: bot-ingest
+  cancel-in-progress: false
+
+jobs:
+  ingest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install deps
+        run: pip install --quiet requests
+
+      - name: Append links to temp_info.jsonl
+        env:
+          LINKS: ${{ inputs.links }}
+        run: |
+          python <<'PY'
+          import json, os, pathlib
+
+          path = pathlib.Path("scripts/temp_info.jsonl")
+          path.parent.mkdir(parents=True, exist_ok=True)
+
+          added = 0
+          with path.open("a", encoding="utf-8") as f:
+              for line in os.environ["LINKS"].splitlines():
+                  line = line.strip()
+                  if not line:
+                      continue
+                  f.write(json.dumps({"link": line}, ensure_ascii=False) + "\n")
+                  added += 1
+          print(f"Appended {added} link(s) to {path}")
+          PY
+
+      - name: Run ingest_new.py
+        id: ingest
+        env:
+          STEAM_API_KEY: ${{ secrets.STEAM_API_KEY }}
+        run: |
+          set -o pipefail
+          python scripts/ingest_new.py 2>&1 | tee /tmp/ingest.log
+
+          # Capture the summary line printed by ingest_new.py
+          # Format: "Added: N | Dup: N | Bad: N | Net: N"
+          summary=$(grep -E "^Added:" /tmp/ingest.log | tail -n 1 || true)
+          if [ -z "$summary" ]; then
+            summary="(no summary line found in output)"
+          fi
+
+          # Capture total games line
+          total=$(grep -E "^Total:" /tmp/ingest.log | tail -n 1 || true)
+
+          # Multi-line output via heredoc syntax
+          {
+            echo "summary<<EOF"
+            echo "$summary"
+            [ -n "$total" ] && echo "$total"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Commit changes
+        id: commit
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/ scripts/temp_info.jsonl scripts/removed_games.jsonl 2>/dev/null || true
+
+          if git diff --staged --quiet; then
+            echo "committed=false" >> "$GITHUB_OUTPUT"
+            echo "No changes to commit."
+          else
+            git commit -m "bot-ingest: run ${{ github.run_id }}"
+            git push
+            echo "committed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Notify Telegram (success)
+        if: success()
+        env:
+          BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          CHAT_ID:   ${{ inputs.chat_id }}
+          MSG_ID:    ${{ inputs.message_id }}
+          SUMMARY:   ${{ steps.ingest.outputs.summary }}
+          COMMITTED: ${{ steps.commit.outputs.committed }}
+          RUN_URL:   ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          python <<'PY'
+          import os, urllib.request, urllib.parse, json
+
+          summary   = os.environ.get("SUMMARY", "(no summary)")
+          committed = os.environ.get("COMMITTED", "false") == "true"
+          run_url   = os.environ["RUN_URL"]
+
+          status = "✅" if committed else "ℹ️"
+          commit_line = "Committed to repo." if committed else "No changes (all duplicates / network errors)."
+
+          text = (
+              f"{status} *Steam ingest done*\n\n"
+              f"```\n{summary}\n```\n"
+              f"{commit_line}\n\n"
+              f"[View workflow run]({run_url})"
+          )
+
+          payload = urllib.parse.urlencode({
+              "chat_id":      os.environ["CHAT_ID"],
+              "message_id":   os.environ["MSG_ID"],
+              "parse_mode":   "Markdown",
+              "text":         text,
+          }).encode()
+
+          url = f"https://api.telegram.org/bot{os.environ['BOT_TOKEN']}/editMessageText"
+          req = urllib.request.Request(url, data=payload)
+          try:
+              with urllib.request.urlopen(req, timeout=30) as resp:
+                  print(f"Telegram callback: HTTP {resp.status}")
+          except Exception as e:
+              print(f"Telegram callback failed: {e}")
+              # Don't fail the workflow — the ingest itself succeeded
+          PY
+
+      - name: Notify Telegram (failure)
+        if: failure()
+        env:
+          BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          CHAT_ID:   ${{ inputs.chat_id }}
+          MSG_ID:    ${{ inputs.message_id }}
+          RUN_URL:   ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          python <<'PY'
+          import os, urllib.request, urllib.parse
+
+          text = (
+              "❌ *Steam ingest failed*\n\n"
+              f"[View workflow run]({os.environ['RUN_URL']})"
+          )
+          payload = urllib.parse.urlencode({
+              "chat_id":    os.environ["CHAT_ID"],
+              "message_id": os.environ["MSG_ID"],
+              "parse_mode": "Markdown",
+              "text":       text,
+          }).encode()
+
+          url = f"https://api.telegram.org/bot{os.environ['BOT_TOKEN']}/editMessageText"
+          req = urllib.request.Request(url, data=payload)
+          try:
+              with urllib.request.urlopen(req, timeout=30) as resp:
+                  print(f"Telegram callback: HTTP {resp.status}")
+          except Exception as e:
+              print(f"Telegram callback failed: {e}")
+          PY
