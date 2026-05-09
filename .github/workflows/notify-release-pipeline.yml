@@ -2,7 +2,10 @@ name: Notify Release Pipeline
 
 on:
   workflow_run:
-    workflows: ["*"]
+    # Release-related workflows only. Renaming any of these → update list.
+    workflows:
+      - "Release Desktop App"
+      - "Announce Release to Discord"
     types: [completed]
 
 permissions:
@@ -11,5 +14,6 @@ permissions:
 
 jobs:
   notify:
+    if: contains(fromJSON('["success","failure","cancelled"]'), github.event.workflow_run.conclusion)
     uses: poli0981/.github/.github/workflows/notify-release-pipeline.yml@main
     secrets: inherit

@@ -2,7 +2,9 @@ name: Notify Deploy Status
 
 on:
   workflow_run:
-    workflows: ["*"]
+    # Only the deploy workflow's name matters here. Renaming "Deploy Web
+    # (GitHub Pages)" → update this list.
+    workflows: ["Deploy Web (GitHub Pages)"]
     types: [completed]
 
 permissions:
@@ -11,5 +13,6 @@ permissions:
 
 jobs:
   notify:
+    if: contains(fromJSON('["success","failure"]'), github.event.workflow_run.conclusion)
     uses: poli0981/.github/.github/workflows/notify-deploy.yml@main
     secrets: inherit
