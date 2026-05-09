@@ -199,4 +199,4 @@ jobs :
             -d chat_id=${{ inputs.chat_id }} \
             -d message_id=${{ inputs.message_id }} \
             --data-urlencode "text=$(cat result.txt)
-         🔗 https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          🔗 https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
