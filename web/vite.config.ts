@@ -77,6 +77,18 @@ export default defineConfig(({ command }) => ({
               cacheableResponse: { statuses: [0, 200] },
             },
           },
+          // images.weserv.nl WebP transcodes — same long-lived caching, but
+          // restrict to status 200 so a 502 from the proxy doesn't get cached
+          // as an opaque 0-status placeholder for 30 days.
+          {
+            urlPattern: /^https:\/\/images\.weserv\.nl\/.*/,
+            handler: "CacheFirst",
+            options: {
+              cacheName: "weserv-webp",
+              expiration: { maxEntries: 800, maxAgeSeconds: 60 * 60 * 24 * 30 },
+              cacheableResponse: { statuses: [200] },
+            },
+          },
           // GitHub user/avatar — cache short.
           {
             urlPattern: /^https:\/\/avatars\.githubusercontent\.com\/.*/,

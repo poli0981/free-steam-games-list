@@ -24,6 +24,7 @@ import {
   parseReviewPercent,
 } from "../../lib/utils";
 import { extractAppid } from "../../lib/data-store";
+import { headerToCapsule } from "../../lib/image";
 import type { GameRecord } from "../../lib/schema";
 import { cn } from "../../lib/utils";
 import { GameDetailDrawer } from "./GameDetailDrawer";
@@ -56,9 +57,15 @@ const COLS: ColDef[] = [
       g.header_image ? (
         <img
           loading="lazy"
-          src={g.header_image}
+          src={headerToCapsule(g.header_image)}
           alt=""
+          width={92}
+          height={43}
           className="h-8 w-16 rounded object-cover"
+          onError={(e) => {
+            const el = e.currentTarget;
+            if (el.src !== g.header_image) el.src = g.header_image;
+          }}
         />
       ) : (
         <div className="h-8 w-16 rounded bg-muted" />

@@ -44,6 +44,17 @@ def _status(g):
     return "✅"
 
 
+def _to_capsule(url: str) -> str:
+    """Steam header.jpg → capsule_184x69.jpg (~10 KB instead of ~50 KB).
+
+    GitHub renders these at 120 px width; the smaller capsule is plenty.
+    Falls back to the original URL when the filename doesn't match.
+    """
+    if not url or "header.jpg" not in url:
+        return url
+    return url.replace("header.jpg", "capsule_184x69.jpg")
+
+
 def _short_desc(full, max_len=120):
     if not full or full in ("N/A", ""):
         return "N/A"
@@ -65,7 +76,8 @@ HEADER = (
 def _row(idx, g):
     name = _trunc(g.get("name", "Unknown"))
     img = g.get("header_image", "")
-    thumb = f"<img src='{img}' width='120'>" if img and "placeholder" not in img else "-"
+    thumb_url = _to_capsule(img)
+    thumb = f"<img src='{thumb_url}' width='120' loading='lazy'>" if img and "placeholder" not in img else "-"
     langs = g.get("languages", [])
     lang_str = f"{len(langs)} langs" if len(langs) > 3 else _fmt_list(langs)
     ac = g.get("anti_cheat", "-")
