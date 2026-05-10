@@ -1,6 +1,6 @@
 # 🎮 Steam F2P Tracker
 
-**1267 games** · 2026-05-09 17:21 UTC
+**1269 games** · 2026-05-10 00:36 UTC
 
 ## 📋 Full List
 
@@ -21,7 +21,7 @@
 | Action RPG | 6 | [action-rpg.md](action-rpg.md) |
 | Action RPG, Gacha | 2 | [action-rpg-gacha.md](action-rpg-gacha.md) |
 | Action-Adventure | 1 | [action-adventure.md](action-adventure.md) |
-| Adventure | 52 | [adventure.md](adventure.md) |
+| Adventure | 53 | [adventure.md](adventure.md) |
 | Arcade | 14 | [arcade.md](arcade.md) |
 | Arena Shooter | 7 | [arena-shooter.md](arena-shooter.md) |
 | Auto Battler | 2 | [auto-battler.md](auto-battler.md) |
@@ -91,7 +91,7 @@
 | Shoot 'Em Up | 4 | [shoot-'em-up.md](shoot-'em-up.md) |
 | Shoot'em up | 1 | [shoot'em-up.md](shoot'em-up.md) |
 | Shooter | 4 | [shooter.md](shooter.md) |
-| Simulation | 65 | [simulation.md](simulation.md) |
+| Simulation | 66 | [simulation.md](simulation.md) |
 | Social Deduction | 1 | [social-deduction.md](social-deduction.md) |
 | Software | 1 | [software.md](software.md) |
 | Souls-like | 4 | [souls-like.md](souls-like.md) |
