@@ -1,6 +1,6 @@
 # MMORPG Games
 
-45 games · 2026-05-11 06:12 UTC
+45 games · 2026-05-11 06:59 UTC
 
 | # | Thumb | Game | Genre | Developer | Publisher | Released | Platforms | Languages | Reviews | Players | Anti-Cheat | Metacritic | Status | Description | Link | Notes |
 |---|-------|------|-------|-----------|-----------|----------|----------|-----------|---------|---------|------------|-----------|--------|-------------|------|-------|
