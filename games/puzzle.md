@@ -1,6 +1,6 @@
 # Puzzle Games
 
-70 games · 2026-05-10 10:49 UTC
+70 games · 2026-05-11 00:36 UTC
 
 | # | Thumb | Game | Genre | Developer | Publisher | Released | Platforms | Languages | Reviews | Players | Anti-Cheat | Metacritic | Status | Description | Link | Notes |
 |---|-------|------|-------|-----------|-----------|----------|----------|-----------|---------|---------|------------|-----------|--------|-------------|------|-------|
