@@ -68,7 +68,7 @@ def main():
     for g in offline:
         aid = extract_appid(g.get("link", ""))
         if aid: prev[aid] = _ppc(g.get("current_players", "0"))
-    update_players_only(games)
+    update_players_only(games, type_filter="offline")
     # Re-filter after update (status may have changed).
     offline = [g for g in games if _is_offline(g) and g.get("status", "active") == "active"]
     offline.sort(key=lambda g: _ppc(g.get("current_players", "0")), reverse=True)
