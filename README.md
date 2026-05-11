@@ -1,7 +1,7 @@
 [![Games Count](https://img.shields.io/badge/Games-1.2k%2B-green?style=flat&logo=steam)](games/all-games_part1.md)
 [![Last Updated](https://img.shields.io/badge/Updated-Daily-blue?style=flat&logo=github-actions)](.github/workflows)
 [![Top Online](https://img.shields.io/badge/Top%20Online-Live%20Leaderboard-red?style=flat&logo=steam)](games/top-online.md)
-[![Version](https://img.shields.io/badge/version-3.1.0-purple?style=flat&logo=github)](https://github.com/poli0981/free-steam-games-list)
+[![Version](https://img.shields.io/badge/version-3.2.0-purple?style=flat&logo=github)](https://github.com/poli0981/free-steam-games-list)
 [![Web App](https://img.shields.io/badge/Web%20App-Live-2563eb?style=flat&logo=react)](https://poli0981.github.io/free-steam-games-list/)
 [![Desktop](https://img.shields.io/badge/Desktop-Tauri%202-FFC131?style=flat&logo=tauri)](https://github.com/poli0981/free-steam-games-list/releases)
 [![Health Check](https://img.shields.io/badge/Health%20Check-Weekly-orange?style=flat&logo=github-actions)](.github/workflows/purge-unhealthy.yml)
@@ -183,6 +183,8 @@ scripts/
 | **Bot Ingest**        | Telegram bot dispatch            | Add games via `@my_skull_bot` (whitelist required)        |
 | **Deploy Web**        | On `web/**` or `data/**` change  | Build + deploy SPA to GitHub Pages                        |
 | **Release Desktop**   | On `desktop-v*` tag              | Matrix-build Tauri installers (Win/Mac/Linux) → Releases |
+| **Top Offline**       | 1st + 15th of month 05:00 UTC    | Bi-weekly leaderboard for single-player F2P concurrents   |
+| **Announce Discussion** | On release `published`         | Auto-create a GitHub Discussion in `Announcements` per release |
 
 ### Contribute
 
@@ -222,6 +224,10 @@ Unemployed, introvert max level, dropped out uni year 3, mooching off family. Ne
 - [AUTHORS](AUTHORS.md) — maintainer + canonical handle map + AI-assistant disclosure.
 - [CHANGELOG](CHANGELOG.md) — what changed in each version.
 - [CONTRIBUTING](CONTRIBUTING.md) — issue templates, web-app sign-in, Telegram bot flow, extension, manual fork.
+- [PC spec](docs/pc_spec.md) ([VI](docs/i18n/vi/pc_spec.md)) — maintainer's dev hardware + test devices.
+- [Dev environment](docs/dev_env.md) ([VI](docs/i18n/vi/dev_env.md)) — IDE, toolchains (Python 3.12 / Node ≥ 22 / Rust stable / Tauri 2), workflow.
+- [Tauri build](web/src-tauri/TAURI.md) — desktop build prerequisites + signing + auto-update.
+- [Telegram bot](docs/telegram-bot.md) — pointer to the external bot user guide + how it integrates with this repo.
 - [DISCLAIMER](docs/DISCLAIMER.md) — accuracy caveats, no-warranty, the broke-maintainer note.
 - [Terms of Use](docs/ToS.md) — usage agreement, contributions, governing law, **rules for sharing your Telegram `user_id`**.
 - [EULA](docs/EULA.md) — supplemental to the MIT licence.

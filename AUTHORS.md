@@ -23,6 +23,21 @@ This file lives at the repo root so the author can be found without digging into
 
 QR codes for the Telegram channels live in [`assets/qr/`](assets/qr/).
 
+## Dev info
+
+For people forking the repo or trying to reproduce a build:
+
+| Item            | Value                                                        |
+| --------------- | ------------------------------------------------------------ |
+| GitHub          | [@poli0981](https://github.com/poli0981)                     |
+| IDE             | JetBrains 2026.x — paid lineup (PyCharm, WebStorm, RustRover) |
+| Toolchains      | Python 3.12 · Node.js ≥ 22 · Rust stable · Tauri 2           |
+| Git             | GPG signing on (`commit.gpgsign=true`)                        |
+| Hardware spec   | [`docs/pc_spec.md`](docs/pc_spec.md) (EN) · [`docs/i18n/vi/pc_spec.md`](docs/i18n/vi/pc_spec.md) (VI) |
+| Dev environment | [`docs/dev_env.md`](docs/dev_env.md) (EN) · [`docs/i18n/vi/dev_env.md`](docs/i18n/vi/dev_env.md) (VI) |
+| Desktop build   | [`web/src-tauri/TAURI.md`](web/src-tauri/TAURI.md)            |
+| Test devices    | iPhone 14 Pro · iPhone 13 Pro Max · iOS 26.x (Chrome / Brave / Safari) |
+
 ## Contributors
 
 Anyone who's filed an issue, opened a PR, or used the Add-Games template is implicitly thanked. The full list is whatever GitHub renders on the [contributors page](https://github.com/poli0981/free-steam-games-list/graphs/contributors).

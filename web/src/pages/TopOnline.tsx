@@ -1,11 +1,13 @@
 import { useTranslation } from "react-i18next";
 import { useGames } from "../hooks/useGames";
+import { useDocumentTitle } from "../hooks/useDocumentTitle";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
 import { TopOnlineBar } from "../components/charts/TopOnlineBar";
 import { LoadingState, ErrorState } from "../components/common/QueryState";
 
 export function TopOnlinePage() {
   const { t } = useTranslation();
+  useDocumentTitle("topOnline.title");
   const q = useGames();
   if (q.isLoading) return <LoadingState />;
   if (q.error) return <ErrorState error={q.error} />;

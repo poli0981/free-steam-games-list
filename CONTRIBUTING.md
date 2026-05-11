@@ -49,6 +49,10 @@ The web app commits via the Git Data API + GPG signing path. The optimistic-upda
 
 Quick path for users who don't want a GitHub PAT but do want to add games. The bot wraps the same `ingest-new` pipeline behind a Telegram chat.
 
+> 📖 **Full user guide:** [`telegram-scraper-bot/docs/USER_GUIDE.md`](https://github.com/poli0981/telegram-scraper-bot/blob/main/docs/USER_GUIDE.md) — command reference, edge cases, troubleshooting.
+> 🔗 **Bot source repo:** <https://github.com/poli0981/telegram-scraper-bot>
+> 📄 **In-repo summary:** [`docs/telegram-bot.md`](docs/telegram-bot.md) — one-page pointer + privacy notes.
+
 > **One-time setup (whitelist your Telegram `user_id`)**
 >
 > 1. **Find your Telegram `user_id`.** Easiest way: DM `@userinfobot` on Telegram and it replies with your numeric `user_id`. Other options: `@RawDataBot`, `@getmyid_bot`, or any "what's my Telegram ID" bot of your choice.

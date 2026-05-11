@@ -1,0 +1,20 @@
+name: Top Offline Leaderboard
+on:
+  # Bi-weekly: 1st and 15th of every month at 05:00 UTC. Cron does not
+  # truly support "every 14 days"; this is the closest approximation.
+  schedule: [{cron: '0 5 1,15 * *'}]
+  workflow_dispatch:
+permissions: {contents: write}
+concurrency:
+  group: data-write
+  cancel-in-progress: false
+jobs:
+  leaderboard:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: {token: '${{ secrets.GH_TOKEN }}'}
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - run: chmod +x ./bash/offline.sh && ./bash/offline.sh
+        env: {STEAM_API_KEY: '${{ secrets.STEAM_API_KEY }}'}

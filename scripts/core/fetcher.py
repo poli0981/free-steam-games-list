@@ -247,16 +247,35 @@ def update_reviews_only(games):
     process_batch(games, fn, "Reviews")
 
 
-def update_players_only(games):
+def update_players_only(games, type_filter: str = "online"):
+    """Refresh `current_players` + `peak_today` for the games matching
+    `type_filter`. Default 'online' preserves the historical behaviour
+    used by top_online.py.
+
+    type_filter:
+      - "online"  → only games with type_game == 'online' (default).
+      - "offline" → games with a non-empty type_game that is NOT 'online'
+                    (single-player, story, etc). Empty type_game is
+                    excluded — those are unclassified, not offline.
+      - "all"     → every game with a non-empty type_game.
+    """
     if not STEAM_API_KEY:
         print("No STEAM_API_KEY.")
         return
-    online = [g for g in games if g.get("type_game", "").lower() == "online"]
-    print(f"Players update: {len(online)} online games")
+    if type_filter == "offline":
+        target = [
+            g for g in games
+            if (g.get("type_game", "").lower() or "") not in ("online", "")
+        ]
+    elif type_filter == "all":
+        target = [g for g in games if g.get("type_game", "")]
+    else:  # "online" (default + safety fallback)
+        target = [g for g in games if g.get("type_game", "").lower() == "online"]
+    print(f"Players update ({type_filter}): {len(target)} games")
     client = get_client()
     def fn(g):
         appid = extract_appid(g.get("link", ""))
         if not appid: return
         count = client.fetch_player_count(appid, STEAM_API_KEY)
         if count is not None: apply_players(g, count)
-    process_batch(online, fn, "Players")
+    process_batch(target, fn, "Players")

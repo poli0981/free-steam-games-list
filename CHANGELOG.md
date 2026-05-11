@@ -2,6 +2,81 @@
 
 All notable changes to this awesome noob repo will be documented here.
 
+## [v3.2.0] – 2026-05-11 (The "SEO + Donate + Auto-Discussion + Health Polish + Dev Docs" Edition)
+
+Single-PR bundle (#64) shipping eight features on top of v3.1.0. Web app + desktop bumped from `1.1.0` → `1.2.0`. Repo public-facing version `3.1.0` → `3.2.0`. Tag `v3.2.0` is GPG-signed; companion desktop tag is `desktop-v1.2.0`.
+
+### 🔍 SEO basics
+
+- `web/index.html` — full Open Graph block (`og:type`, `og:title`, `og:description`, `og:url`, `og:image`, `og:site_name`, `og:locale` + alternate), Twitter Card (`summary`), `<link rel="canonical">`, `meta name="author"`, JSON-LD (`WebSite` + `Person` + `SoftwareApplication`).
+- New `web/public/robots.txt` (allow all + sitemap pointer) and `web/public/sitemap.xml` (5 entries: site root, GitHub repo, all-games / top-online / changelog markdown).
+- New hook `web/src/hooks/useDocumentTitle.ts` — sets `document.title` to `<page> · Steam F2P Tracker` and re-runs on language change. Wired into all 18 routes (Dashboard / Games / TopOnline / Health / Activity / Add / About / Donate / Settings / 9 charts).
+- VitePWA already emits `manifest.webmanifest` from `vite.config.ts`; no manual manifest needed.
+
+### 💬 Auto-create GitHub Discussion on release
+
+- New `.github/workflows/announce-release-discussion.yml` — fires on `release: published` (plus `workflow_dispatch` with a `tag` input for re-runs).
+- Implemented via `actions/github-script@v8` + GraphQL `createDiscussion` (REST has no equivalent).
+- Resolves the discussion category by slug — defaults to `Announcements`, falls back to `General` with a logged warning, then to the first available category.
+- **Idempotent**: a GraphQL search runs first; if a discussion with the same title exists, the workflow skips with `core.notice()` and returns the existing URL via output. Re-running `workflow_dispatch` is therefore a no-op.
+- Permissions: `contents: read`, `discussions: write` — both granted by `GITHUB_TOKEN` defaults once Discussions is enabled on the repo.
+
+### 💖 Donate page
+
+- New `web/src/pages/Donate.tsx` route at `/donate` — grid of 5 platform cards (GitHub Sponsors, Ko-fi, Buy Me a Coffee, Patreon, PayPal) sourced from `.github/FUNDING.yml`.
+- Each card has a tinted icon ring, label, short description, and an "Open" button (`target="_blank" rel="noopener noreferrer"`).
+- New nav item in `web/src/components/layout/Sidebar.tsx` SECONDARY group (between About and Settings); `Heart` icon from lucide.
+- Full EN + VI i18n keys under `donate.*` (title / subtitle / cta / footnote + per-platform label & desc).
+
+### 📖 Dev docs
+
+- New `docs/pc_spec.md` (EN) + `docs/i18n/vi/pc_spec.md` (VI) — maintainer hardware spec mirroring `E:\spec.txt` (CPU / GPU / RAM / IDE) plus iPhone test-device list.
+- New `docs/dev_env.md` (EN) + `docs/i18n/vi/dev_env.md` (VI) — IDE map (PyCharm / WebStorm / RustRover 2026.x), toolchain table (Python 3.12 / Node ≥ 22 / Rust stable / Tauri 2), per-area dev workflow (web / Tauri / Python pipeline), Git + GPG conventions, branch + PR flow.
+- New `web/src-tauri/TAURI.md` — desktop build prerequisites (incl. CI's exact `apt-get` line), local + production build commands, signing + auto-update notes, troubleshooting.
+- `AUTHORS.md` — new "Dev info" table (GitHub handle, IDE channel, toolchain versions, link map to all the above).
+- README "Docs" section — links the four new docs.
+
+### 🤖 Telegram bot user-guide pointer
+
+- New `docs/telegram-bot.md` — one-page pointer to the external [`telegram-scraper-bot/docs/USER_GUIDE.md`](https://github.com/poli0981/telegram-scraper-bot/blob/main/docs/USER_GUIDE.md), bot source repo, plus a paragraph each on what the bot does and the whitelist lifecycle.
+- `CONTRIBUTING.md` — section 3 (`@my_skull_bot`) gets a 3-line callout with the user guide link, bot source URL, and the new in-repo summary doc.
+- `web/src/pages/About.tsx` — Maintainer card's privacy note now includes a "Bot user guide & source" sub-card with the same three links.
+
+### 🩺 Health bucket split
+
+- `web/src/pages/Health.tsx` — `gatherIssues()` adds a fifth `IssueGroup`: `OnlineAcUnknown` for games with `type_game === "online"` and `anti_cheat ∈ {"", "-"}`. Previously these games were silently dropped from all categories; now they have a discoverable home.
+- Edge-case fix: the existing "Kernel" filter compared `(r.anti_cheat ?? "-") !== "-"`, missing the empty-string case. Both filters now use a normalised `(r.anti_cheat ?? "").trim()`.
+- `ShieldQuestion` icon (lucide). EN + VI i18n keys: `health.groupOnlineAcUnknown` + `…Desc`.
+
+### 🎮 Steam Desktop direct link
+
+- New helper `web/src/lib/steam-link.ts` — `steamProtocolUrl(appid)` returns `steam://store/<appid>`, `steamWebUrl(appid)` returns the regular HTTPS store URL.
+- `web/src/components/games/GameDetailDrawer.tsx` — single store link replaced by two buttons rendered side-by-side: a primary "Steam Desktop" (`steam://`) and an outline "Web" (`https://`). Tooltip on the desktop button explains the fallback path.
+- Works in both web build (browser shows protocol prompt if Steam is installed, silent fail otherwise — Web button is the safety net) and Tauri build (Tauri 2 allows `steam://` navigation by default; no allow-list change needed).
+- EN + VI i18n: `detail.openOnSteamDesktop`, `detail.openOnSteamDesktopHint`, `detail.openOnSteamWeb`.
+
+### 🛌 Bi-weekly offline-player leaderboard
+
+- New `scripts/top_offline.py` — clones the `top_online.py` shape but filters `_is_offline(g)` (non-empty `type_game ≠ "online"`). Emits `games/top-offline.md` (top 100 single-player F2P concurrents, 10-column format identical to top-online).
+- Calibrated tier thresholds (`_TIERS`) lower than online (offline games rarely break 6-figure concurrents) — `🔥 Mega ≥ 20k`, `⭐ Hot ≥ 5k`, `🟢 Healthy ≥ 1.5k`, `🟡 Stable ≥ 300`, `🟠 Low ≥ 50`, `🔴 Quiet ≥ 10`, `💀 Idle <10`.
+- New `bash/offline.sh` matches the shape of `bash/online.sh` (pip install requests → run script → conditional commit).
+- New `.github/workflows/top-offline.yml` — cron `0 5 1,15 * *` (1st + 15th of each month at 05:00 UTC) plus `workflow_dispatch`. Shares the unified `data-write` concurrency group.
+- Health page (`web/src/pages/Health.tsx`) — new manual trigger button "Top offline" (next to the existing "Top online" trigger).
+- **Bug fix during implementation**: `scripts/core/fetcher.py:update_players_only()` had a hardcoded `type_game == "online"` filter that would have made the offline workflow refresh zero rows. Extended with a `type_filter` kwarg (`"online"` default for backward compat, `"offline"`, or `"all"`); `top_offline.py` passes `type_filter="offline"` (excludes both online and empty/unclassified type).
+
+### 🔢 Versioning
+
+| Surface | Old | New |
+|---|---|---|
+| Repo public-facing | 3.1.0 | **3.2.0** |
+| `web/package.json` | 1.1.0 | **1.2.0** |
+| `web/src-tauri/Cargo.toml` | 1.1.0 | **1.2.0** |
+| `web/src-tauri/tauri.conf.json` | 1.1.0 | **1.2.0** |
+| Git tag (signed) | `v3.1.0` | `v3.2.0` |
+| Desktop tag (signed) | `desktop-v1.1.0` | `desktop-v1.2.0` |
+
+---
+
 ## [v3.1.0] – 2026-05-09 (The "Less CI Noise, Lighter Images, Dead-Game Detection" Edition)
 
 Four PRs landed in this release plus a refresh of the docs and the contributor surface around the new Telegram bot. Web app + desktop app bumped from `1.0.0` → `1.1.0`. Repo public-facing version `3.0.1` → `3.1.0`. Tag `v3.1.0` is GPG-signed; companion desktop tag is `desktop-v1.1.0`.

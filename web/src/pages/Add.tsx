@@ -30,6 +30,7 @@ import { Label } from "../components/ui/label";
 import { Separator } from "../components/ui/separator";
 import { useAuth } from "../stores/auth";
 import { useGames } from "../hooks/useGames";
+import { useDocumentTitle } from "../hooks/useDocumentTitle";
 import { useCommitContext, type CommitContext } from "../hooks/useCommitContext";
 import { useIsOwner } from "../hooks/useIsOwner";
 import { addLinks, type AddEntry } from "../lib/edits";
@@ -45,6 +46,7 @@ import {
 
 export function AddPage() {
   const { t } = useTranslation();
+  useDocumentTitle("add.title");
   const auth = useAuth();
   const ctx = useCommitContext();
   const isOwner = useIsOwner();

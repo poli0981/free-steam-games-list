@@ -25,6 +25,7 @@ import { Badge } from "../components/ui/badge";
 import { Button } from "../components/ui/button";
 import { Separator } from "../components/ui/separator";
 import { useGames } from "../hooks/useGames";
+import { useDocumentTitle } from "../hooks/useDocumentTitle";
 import { REPO_OWNER, REPO_NAME } from "../lib/schema";
 import { formatNumber } from "../lib/utils";
 
@@ -120,6 +121,7 @@ const LEGAL_DOCS: LegalDoc[] = [
 
 export function AboutPage() {
   const { t } = useTranslation();
+  useDocumentTitle("about.title");
   const games = useGames();
   const total = games.data?.records.length ?? 0;
   const lastUpdated = games.data?.index.last_updated ?? "";
@@ -312,6 +314,47 @@ export function AboutPage() {
               another channel — <strong>do not</strong> post it in public Discord channels,
               public Telegram groups, or repo issues. See <a href={`${REPO_URL}/blob/main/CONTRIBUTING.md`} className="text-primary hover:underline" target="_blank" rel="noreferrer">CONTRIBUTING.md</a> for the full flow.
             </p>
+          </div>
+          <div className="rounded-md border bg-card p-3 text-xs text-muted-foreground">
+            <div className="mb-1 flex items-center gap-1.5 font-semibold text-foreground">
+              <Bot className="h-3.5 w-3.5" /> Bot user guide & source
+            </div>
+            <ul className="list-disc space-y-0.5 pl-5">
+              <li>
+                Full user guide:{" "}
+                <a
+                  href="https://github.com/poli0981/telegram-scraper-bot/blob/main/docs/USER_GUIDE.md"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-primary hover:underline"
+                >
+                  USER_GUIDE.md
+                </a>{" "}
+                — command reference, edge cases, troubleshooting.
+              </li>
+              <li>
+                Bot source:{" "}
+                <a
+                  href="https://github.com/poli0981/telegram-scraper-bot"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-primary hover:underline"
+                >
+                  poli0981/telegram-scraper-bot
+                </a>
+              </li>
+              <li>
+                In-repo summary:{" "}
+                <a
+                  href={`${REPO_URL}/blob/main/docs/telegram-bot.md`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-primary hover:underline"
+                >
+                  docs/telegram-bot.md
+                </a>
+              </li>
+            </ul>
           </div>
         </CardContent>
       </Card>

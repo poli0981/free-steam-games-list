@@ -18,6 +18,7 @@
     "activity": "Hoạt động",
     "add": "Thêm",
     "about": "Giới thiệu",
+    "donate": "Ủng hộ",
     "settings": "Cài đặt"
   },
   "common": {
@@ -299,6 +300,24 @@
     "lockGpgKey": "Khoá GPG key",
     "unlockGpgSettings": "Unlock GPG key (mở Settings)"
   },
+  "donate": {
+    "title": "Ủng hộ dự án",
+    "subtitle": "Nếu cái list này tiết kiệm cho bạn cả buổi search trên Steam, mời maintainer 1 ly cà phê hoặc 1 game indie sale giá rẻ. 100% đi vào mì tôm + lần sale $5 tiếp theo.",
+    "cta": "Mở",
+    "footnote": "Cùng handle với .github/FUNDING.yml. Nút Sponsor trên đầu mọi page của repo GitHub cũng dẫn về đây.",
+    "platform": {
+      "github": "GitHub Sponsors",
+      "githubDesc": "Định kỳ hoặc 1 lần, miễn phí, gắn thẳng vào profile GitHub của maintainer.",
+      "kofi": "Ko-fi",
+      "kofiDesc": "Cà phê 1 lần hoặc membership tháng. Không thu phí với tip 1 lần.",
+      "bmc": "Buy Me a Coffee",
+      "bmcDesc": "Ý tưởng giống Ko-fi — chọn nếu bạn đã có account ở đây.",
+      "patreon": "Patreon",
+      "patreonDesc": "Subscribe theo tháng — tốt nếu bạn muốn maintainer duy trì project lâu dài.",
+      "paypal": "PayPal",
+      "paypalDesc": "Link PayPal.me trực tiếp. Dùng khi các platform khác bị chặn ở vùng bạn."
+    }
+  },
   "about": {
     "title": "Giới thiệu",
     "subtitle": "Repo, dev, stack, phần legal, và những lưu ý về độ chính xác.",
@@ -333,6 +352,8 @@
     "groupMissingDesc": "Thiếu 1 hoặc nhiều trong: genre / type_game / safe.",
     "groupKernel": "Online + AC + chưa rõ kernel",
     "groupKernelDesc": "type_game=online có anti-cheat name nhưng is_kernel_ac là null.",
+    "groupOnlineAcUnknown": "Online · chưa biết / không có anti-cheat",
+    "groupOnlineAcUnknownDesc": "type_game=online với anti_cheat rỗng hoặc '-'. Có thể chưa biết, có thể thật sự không có.",
     "moreItems": "+{{count}} mục nữa…",
     "maintenanceTriggers": "Nút maintenance",
     "maintenanceDesc": "Trigger thủ công các workflow GitHub Actions hiện có. Cần đăng nhập với scope {{scope}}.",
@@ -342,6 +363,8 @@
     "triggerUpdateReviewsDesc": "Refresh chỉ reviews",
     "triggerTopOnline": "Top online",
     "triggerTopOnlineDesc": "Bảng xếp hạng người chơi",
+    "triggerTopOffline": "Top offline",
+    "triggerTopOfflineDesc": "Người chơi single-player (2 tuần/lần)",
     "triggerCheckLinks": "Check link chết",
     "triggerCheckLinksDesc": "Scan HEAD mọi trang app",
     "triggerPurge": "Purge unhealthy",
@@ -373,6 +396,9 @@
   },
   "detail": {
     "openOnSteam": "appid {{appid}} · mở trên Steam",
+    "openOnSteamDesktop": "Steam Desktop",
+    "openOnSteamDesktopHint": "Mở trong Steam client nếu đã cài (steam://). Nếu chưa cài, browser sẽ hiện protocol prompt — dùng nút Web thay thế.",
+    "openOnSteamWeb": "Web",
     "labelGenre": "Thể loại",
     "labelType": "Loại",
     "labelDeveloper": "Developer",

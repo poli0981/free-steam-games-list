@@ -2,11 +2,83 @@
 <html lang="vi" class="dark">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='18' fill='%231e293b'/%3E%3Ctext x='50' y='66' font-family='system-ui' font-size='62' font-weight='700' text-anchor='middle' fill='%2360a5fa'%3E▶%3C/text%3E%3C/svg%3E" />
+    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="theme-color" content="#0f172a" />
-    <meta name="description" content="Steam Free-to-Play games tracker — browse, analyze, and manage 1,200+ F2P games" />
+
     <title>Steam F2P Tracker</title>
+    <meta
+      name="description"
+      content="Curated list of 1,200+ free-to-play Steam games — browse, search, filter by genre/anti-cheat/players, view live leaderboards, export to CSV/JSON. Open-source, MIT-licensed."
+    />
+    <meta name="author" content="poli0981 / SkullMute" />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://poli0981.github.io/free-steam-games-list/" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Steam F2P Tracker" />
+    <meta property="og:title" content="Steam F2P Tracker — 1,200+ free-to-play games" />
+    <meta
+      property="og:description"
+      content="Browse, analyse, and edit a curated list of 1,200+ free-to-play Steam games. Live player leaderboards, 12 charts, fuzzy search, multi-language UI."
+    />
+    <meta property="og:url" content="https://poli0981.github.io/free-steam-games-list/" />
+    <meta property="og:image" content="https://poli0981.github.io/free-steam-games-list/icon-512.svg" />
+    <meta property="og:image:type" content="image/svg+xml" />
+    <meta property="og:image:width" content="512" />
+    <meta property="og:image:height" content="512" />
+    <meta property="og:locale" content="vi_VN" />
+    <meta property="og:locale:alternate" content="en_US" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="Steam F2P Tracker — 1,200+ free-to-play games" />
+    <meta
+      name="twitter:description"
+      content="Curated, auto-refreshed list of free-to-play Steam games. Browse / charts / leaderboards. Open-source."
+    />
+    <meta name="twitter:image" content="https://poli0981.github.io/free-steam-games-list/icon-512.svg" />
+    <meta name="twitter:creator" content="@SkullMute0011" />
+
+    <!-- Structured data -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "WebSite",
+            "@id": "https://poli0981.github.io/free-steam-games-list/#website",
+            "url": "https://poli0981.github.io/free-steam-games-list/",
+            "name": "Steam F2P Tracker",
+            "description": "Curated list of 1,200+ free-to-play Steam games.",
+            "inLanguage": ["vi", "en"],
+            "publisher": { "@id": "https://github.com/poli0981#person" }
+          },
+          {
+            "@type": "Person",
+            "@id": "https://github.com/poli0981#person",
+            "name": "poli0981",
+            "alternateName": "SkullMute",
+            "url": "https://github.com/poli0981",
+            "sameAs": [
+              "https://x.com/SkullMute0011",
+              "https://www.youtube.com/@SkullMute",
+              "https://bsky.app/profile/skullmute0011.bsky.social",
+              "https://mastodon.social/@skullmute1122"
+            ]
+          },
+          {
+            "@type": "SoftwareApplication",
+            "name": "Steam F2P Tracker",
+            "applicationCategory": "BrowserApplication",
+            "operatingSystem": "Web, Windows, macOS, Linux",
+            "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+            "license": "https://opensource.org/licenses/MIT"
+          }
+        ]
+      }
+    </script>
   </head>
   <body class="bg-background text-foreground antialiased">
     <div id="root"></div>

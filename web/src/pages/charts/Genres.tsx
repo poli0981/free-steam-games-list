@@ -1,11 +1,13 @@
 import { useTranslation } from "react-i18next";
 import { useGames } from "../../hooks/useGames";
+import { useDocumentTitle } from "../../hooks/useDocumentTitle";
 import { GenreTreemap } from "../../components/charts/GenreTreemap";
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
 import { LoadingState, ErrorState } from "../../components/common/QueryState";
 
 export function GenresPage() {
   const { t } = useTranslation();
+  useDocumentTitle("charts.genres.title");
   const q = useGames();
   if (q.isLoading) return <LoadingState />;
   if (q.error) return <ErrorState error={q.error} />;

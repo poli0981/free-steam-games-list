@@ -1,0 +1,168 @@
+name: Announce Release as Discussion
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Existing release tag to announce"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  discussions: write
+
+jobs:
+  announce:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Resolve release + create Discussion
+        uses: actions/github-script@v8
+        env:
+          # Slug of the discussion category to post into. The category must
+          # already exist on the repo (Settings → General → Features →
+          # Discussions). If the slug is missing, the job falls back to the
+          # first available category and logs a warning.
+          PRIMARY_CATEGORY_SLUG: announcements
+          FALLBACK_CATEGORY_SLUG: general
+          # Truncate the release body to keep the discussion readable.
+          BODY_CHAR_LIMIT: "3000"
+        with:
+          script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const isDispatch = context.eventName === 'workflow_dispatch';
+            const tag = isDispatch
+              ? context.payload.inputs.tag
+              : context.payload.release.tag_name;
+
+            if (!tag) {
+              core.setFailed('No tag resolved from event payload.');
+              return;
+            }
+
+            // Pull release metadata (workflow_dispatch path doesn't include
+            // a release object, so use REST).
+            const { data: release } = await github.rest.repos.getReleaseByTag({
+              owner,
+              repo,
+              tag,
+            });
+
+            const releaseUrl = release.html_url;
+            const releaseName = release.name || tag;
+            const isDesktop = tag.startsWith('desktop-v');
+            const titlePrefix = isDesktop ? 'Desktop' : 'Repo';
+            const title = `[${titlePrefix} ${tag}] ${releaseName}`;
+
+            // Truncate body to keep the discussion light.
+            const limit = parseInt(process.env.BODY_CHAR_LIMIT, 10);
+            let bodyText = release.body || '*(No release notes provided.)*';
+            if (bodyText.length > limit) {
+              bodyText =
+                bodyText.slice(0, limit).trimEnd() +
+                `\n\n…\n\n*(Truncated. Read the full release notes on the [Release page](${releaseUrl}).)*`;
+            }
+
+            const body = [
+              `**Release tag:** \`${tag}\``,
+              `**Release page:** ${releaseUrl}`,
+              `**Published at:** ${release.published_at || release.created_at}`,
+              isDesktop
+                ? '**Platform builds:** Windows `.msi` · macOS `.dmg` · Linux `.AppImage` / `.deb` (auto-update via signed minisign).'
+                : '',
+              '',
+              '---',
+              '',
+              bodyText,
+              '',
+              '---',
+              '',
+              '*(Auto-posted by `.github/workflows/announce-release-discussion.yml`. Reply with feedback, install issues, or feature requests — full bug reports still go through the [issue templates](../../issues/new/choose).)*',
+            ]
+              .filter(Boolean)
+              .join('\n');
+
+            // GraphQL: resolve repo ID + discussion category list.
+            const repoQuery = `
+              query($owner: String!, $repo: String!) {
+                repository(owner: $owner, name: $repo) {
+                  id
+                  discussionCategories(first: 25) {
+                    nodes { id name slug }
+                  }
+                }
+              }
+            `;
+            const repoData = await github.graphql(repoQuery, { owner, repo });
+            const repoId = repoData.repository.id;
+            const categories = repoData.repository.discussionCategories.nodes;
+
+            const primary = process.env.PRIMARY_CATEGORY_SLUG;
+            const fallback = process.env.FALLBACK_CATEGORY_SLUG;
+            let category = categories.find((c) => c.slug === primary);
+            if (!category) {
+              category = categories.find((c) => c.slug === fallback);
+              if (category) {
+                core.warning(
+                  `Category '${primary}' not found — falling back to '${category.slug}'. ` +
+                    `Create an 'Announcements' category to silence this warning.`,
+                );
+              }
+            }
+            if (!category) {
+              category = categories[0];
+              core.warning(
+                `Neither '${primary}' nor '${fallback}' categories exist — using first available: '${category?.slug}'.`,
+              );
+            }
+            if (!category) {
+              core.setFailed('No discussion categories exist on this repo. Enable Discussions first.');
+              return;
+            }
+
+            // Idempotency: search for an existing discussion with the same title.
+            const searchQuery = `
+              query($q: String!) {
+                search(type: DISCUSSION, query: $q, first: 5) {
+                  nodes {
+                    ... on Discussion { id title url }
+                  }
+                }
+              }
+            `;
+            const searchString = `repo:${owner}/${repo} in:title "${title}"`;
+            const searchResult = await github.graphql(searchQuery, { q: searchString });
+            const existing = searchResult.search.nodes.find((n) => n.title === title);
+            if (existing) {
+              core.notice(`Discussion already exists: ${existing.url} — skipping create.`);
+              core.setOutput('discussion_url', existing.url);
+              core.setOutput('skipped', 'true');
+              return;
+            }
+
+            // Create the discussion.
+            const createMutation = `
+              mutation($repositoryId: ID!, $categoryId: ID!, $title: String!, $body: String!) {
+                createDiscussion(input: {
+                  repositoryId: $repositoryId,
+                  categoryId: $categoryId,
+                  title: $title,
+                  body: $body,
+                }) {
+                  discussion { id url }
+                }
+              }
+            `;
+            const created = await github.graphql(createMutation, {
+              repositoryId: repoId,
+              categoryId: category.id,
+              title,
+              body,
+            });
+            const url = created.createDiscussion.discussion.url;
+            core.notice(`Discussion created: ${url} (category: ${category.slug})`);
+            core.setOutput('discussion_url', url);
+            core.setOutput('skipped', 'false');
