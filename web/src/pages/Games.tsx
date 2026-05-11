@@ -1,6 +1,6 @@
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { useGames } from "../hooks/useGames";
 import { useDocumentTitle } from "../hooks/useDocumentTitle";
 import { GamesTable } from "../components/games/GamesTable";
@@ -17,6 +17,8 @@ export function GamesPage() {
   const q = useGames();
   const navigate = useNavigate();
   const { appid } = useParams<{ appid: string }>();
+  const [searchParams] = useSearchParams();
+  const setSearch = useFilters((s) => s.setSearch);
   const genre = useFilters((s) => s.genre);
   const setGenre = useFilters((s) => s.setGenre);
   const typeGame = useFilters((s) => s.type_game);
@@ -44,6 +46,14 @@ export function GamesPage() {
       platforms: Array.from(platforms.entries()).sort((a, b) => b[1] - a[1]),
     };
   }, [q.data]);
+
+  // Sync ?search= URL param into the global filter store. Health page links
+  // arrive at #/games?search=Foo expecting the Topbar input + GamesTable to
+  // filter to Foo. Without this effect the param is silently ignored.
+  useEffect(() => {
+    const term = searchParams.get("search");
+    if (term !== null) setSearch(term);
+  }, [searchParams, setSearch]);
 
   if (q.isLoading) return <LoadingState />;
   if (q.error) return <ErrorState error={q.error} />;
