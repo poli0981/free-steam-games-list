@@ -2,6 +2,33 @@
 
 All notable changes to this awesome noob repo will be documented here.
 
+## [v3.2.2] – 2026-05-11 (The "Bug Fix Quartet" Edition)
+
+Patch release on top of v3.2.1. Four user-reported bug fixes touching the Ctrl+K command palette on desktop, the Health → Games navigation flow, Tauri process-stacking on every launch, and the `type_game` scraper that was defaulting every new game to `"offline"`. Web app + desktop bumped `1.2.1` → `1.2.2`. Repo public-facing version `3.2.1` → `3.2.2`. Tag `v3.2.2` is GPG-signed; companion desktop tag is `desktop-v1.2.2`.
+
+### 🔗 Desktop Ctrl+K external link
+
+- New `web/src/lib/external-open.ts` — lazy-detects the Tauri runtime via `__TAURI_INTERNALS__`, opens external URLs through `@tauri-apps/plugin-shell` on desktop (capability `shell:allow-open` already granted in `web/src-tauri/capabilities/default.json`), falls back to `window.open(url, "_blank", "noopener,noreferrer")` on web/PWA. Plugin module is lazy-imported, so the web bundle never pays for the Tauri code path.
+- `web/src/components/common/CommandPalette.tsx` — Ctrl+K game results now route through `openExternal()`. The Tauri webview was silently blocking the raw `window.open(r.link, "_blank")` for external HTTPS URLs, so clicking a search result on desktop did nothing.
+- Six other `window.open(...)` call sites (Health workflow link, Add, BulkActionBar, BulkEditDrawer, EditGameDrawer, DeviceFlowPanel) are flagged for follow-up migration to `openExternal()` — same desktop silent-fail will hit them when triggered.
+
+### 🩺 Health → Games filter restoration
+
+- `web/src/pages/Games.tsx` — adds `useSearchParams` + a `useEffect` that mirrors the URL `?search=` parameter into `useFilters.search` on mount. The Health page already linked rows to `#/games?search=<name>`, but Games never read the param, so the table stayed unfiltered and the Topbar input stayed empty. The store binding to Topbar means visual feedback is automatic once the filter is set.
+- Guard `if (term !== null)` (instead of `if (term)`) lets `?search=` explicitly clear the filter — useful for shareable "no filter" links.
+
+### 🪟 Tauri single-instance enforcement
+
+- `web/src-tauri/Cargo.toml` — adds `tauri-plugin-single-instance = "2"` under the existing desktop-only `cfg(not(any(target_os = "android", target_os = "ios")))` block, matching the updater plugin's gating pattern.
+- `web/src-tauri/src/lib.rs` — registers single-instance as the **first** plugin so it short-circuits duplicate launches before any other state initialises. The dup-launch callback calls `unminimize()` + `show()` + `set_focus()` on the existing `main` window. Without this, every Start-menu / shortcut / file-association invocation spawned a fresh `f2p-tracker.exe` that lingered in Task Manager.
+- No capability changes needed — plugin runs entirely Rust-side, no frontend command exposed.
+
+### 🎮 `type_game` online inference
+
+- `scripts/core/fetcher.py` — new `_infer_type_game(categories)` reads `data.get("categories", [])` and returns `"online"` when any description contains `online`, `mmo`, `massively multiplayer`, `cross-platform multiplayer`, or `multi-player`. Pure `shared/split screen` descriptions are treated as local-only and skipped unless paired with another online signal.
+- Wired into `apply_details()` next to the existing anti-cheat category loop, guarded by `is_empty(game.get("type_game"))` so manual prefills in `temp_info.jsonl` remain authoritative — the `MANUAL_FIELDS` merge in `data_store.merge_extension_data()` and the override re-apply in `ingest_new.py` are unchanged.
+- The legacy default-to-`"offline"` at the end of `fetch_full()` stays as the final safety net for games with no multiplayer signal in Steam categories. New ingests of online F2P games now classify correctly instead of all-offline.
+
 ## [v3.2.1] – 2026-05-11 (The "Genre Cleanup" Edition)
 
 Patch release on top of v3.2.0. Normalizes inconsistent `genre` values across the dataset (31 records, 10 canonical mappings) and broadens the webapp's genre combobox with 14 additional suggestions. Web app + desktop bumped `1.2.0` → `1.2.1`. Repo public-facing version `3.2.0` → `3.2.1`. Tag `v3.2.1` is GPG-signed; companion desktop tag is `desktop-v1.2.1`.
