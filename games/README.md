@@ -1,6 +1,6 @@
 # 🎮 Steam F2P Tracker
 
-**1327 games** · 2026-05-11 06:04 UTC
+**1327 games** · 2026-05-11 06:10 UTC
 
 ## 📋 Full List
 
@@ -17,7 +17,7 @@
 | Genre | # | File |
 |-------|---|------|
 | 2D Fighter | 2 | [2d-fighter.md](2d-fighter.md) |
-| Action | 69 | [action.md](action.md) |
+| Action | 68 | [action.md](action.md) |
 | Action RPG | 6 | [action-rpg.md](action-rpg.md) |
 | Action RPG, Gacha | 2 | [action-rpg-gacha.md](action-rpg-gacha.md) |
 | Action-Adventure | 1 | [action-adventure.md](action-adventure.md) |
@@ -58,7 +58,7 @@
 | Hacking | 1 | [hacking.md](hacking.md) |
 | Hero Shooter | 2 | [hero-shooter.md](hero-shooter.md) |
 | Hidden Object | 31 | [hidden-object.md](hidden-object.md) |
-| Horror | 92 | [horror.md](horror.md) |
+| Horror | 93 | [horror.md](horror.md) |
 | Idler | 17 | [idler.md](idler.md) |
 | Indie | 6 | [indie.md](indie.md) |
 | Interactive Fiction | 1 | [interactive-fiction.md](interactive-fiction.md) |
