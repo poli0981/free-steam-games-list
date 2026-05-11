@@ -1,6 +1,6 @@
 # Cozy Games
 
-3 games · 2026-05-11 06:10 UTC
+3 games · 2026-05-11 06:12 UTC
 
 | # | Thumb | Game | Genre | Developer | Publisher | Released | Platforms | Languages | Reviews | Players | Anti-Cheat | Metacritic | Status | Description | Link | Notes |
 |---|-------|------|-------|-----------|-----------|----------|----------|-----------|---------|---------|------------|-----------|--------|-------------|------|-------|
