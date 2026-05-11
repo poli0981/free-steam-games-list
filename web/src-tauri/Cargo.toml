@@ -36,12 +36,13 @@ serde = { version = "1", features = ["derive"] }
 tauri = { version = "2", features = [] }
 tauri-plugin-shell = "2"
 
-# Auto-updater is desktop-only — Tauri itself rejects the plugin on mobile
-# at compile time, so we gate the dep behind cfg(not(any(target_os="ios",
-# target_os="android"))) inside lib.rs and only depend on it for desktop
-# targets here.
+# Auto-updater and single-instance plugins are desktop-only — Tauri rejects
+# both at compile time on mobile, so we gate the deps behind
+# cfg(not(any(target_os="ios", target_os="android"))) inside lib.rs and only
+# depend on them for desktop targets here.
 [target.'cfg(not(any(target_os = "android", target_os = "ios")))'.dependencies]
 tauri-plugin-updater = "2"
+tauri-plugin-single-instance = "2"
 
 [features]
 # DO NOT REMOVE: feature flags consumed by the bundled tauri build.

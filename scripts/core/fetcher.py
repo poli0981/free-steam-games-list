@@ -19,6 +19,37 @@ from .data_store import extract_appid, now_iso, is_info_complete, is_empty
 from .scraper import scrape_store_page
 
 
+# Steam category descriptions that imply online multiplayer. Bias toward
+# "online" only when the signal is clear (Online PvP, MMO, Cross-Platform
+# Multiplayer, etc.). Pure "Shared/Split Screen" games fall through to the
+# empty default and become "offline" at the end of fetch_full.
+_ONLINE_CATEGORY_TOKENS = (
+    "online",                       # Online PvP, Online Co-op, etc.
+    "mmo",
+    "massively multiplayer",
+    "cross-platform multiplayer",
+    "multi-player",                 # Steam's catch-all multiplayer tag
+)
+_LOCAL_ONLY_TOKENS = ("shared/split screen",)
+
+
+def _infer_type_game(categories: list[dict]) -> str:
+    """Return 'online' if any category signals online multiplayer, else ''
+    (caller falls back to 'offline'). Local-only signals are ignored unless
+    paired with an online signal in another category."""
+    for cat in categories:
+        desc = (cat.get("description") or "").lower()
+        if not desc:
+            continue
+        if any(tok in desc for tok in _LOCAL_ONLY_TOKENS) and not any(
+            tok in desc for tok in ("online", "mmo", "cross-platform")
+        ):
+            continue
+        if any(tok in desc for tok in _ONLINE_CATEGORY_TOKENS):
+            return "online"
+    return ""
+
+
 # ──────────── Apply functions ────────────
 
 def apply_details(game: dict, data: dict) -> dict:
@@ -73,6 +104,14 @@ def apply_details(game: dict, data: dict) -> dict:
                     break
             if game["anti_cheat"] != "-":
                 break
+
+    # Infer type_game from categories when not manually set. Manual prefills
+    # win because MANUAL_FIELDS gates the merge in merge_extension_data(),
+    # and ingest_new.py re-applies overrides after fetch_full.
+    if is_empty(game.get("type_game")):
+        inferred = _infer_type_game(data.get("categories", []))
+        if inferred:
+            game["type_game"] = inferred
 
     # Metacritic
     mc = data.get("metacritic", {})

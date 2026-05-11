@@ -27,6 +27,7 @@ import {
 import { useGames } from "../../hooks/useGames";
 import { useGpg } from "../../stores/gpg";
 import { headerToCapsule } from "../../lib/image";
+import { openExternal } from "../../lib/external-open";
 import "./command-palette.css";
 
 interface NavCmd {
@@ -180,7 +181,7 @@ export function CommandPalette() {
                   <Command.Item
                     key={r.link}
                     onSelect={() => {
-                      window.open(r.link, "_blank");
+                      void openExternal(r.link);
                       setOpen(false);
                     }}
                     className="cmdk-item"
