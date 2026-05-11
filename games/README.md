@@ -1,6 +1,6 @@
 # 🎮 Steam F2P Tracker
 
-**1327 games** · 2026-05-11 00:36 UTC
+**1327 games** · 2026-05-11 05:15 UTC
 
 ## 📋 Full List
 
@@ -54,8 +54,7 @@
 | Fishing | 1 | [fishing.md](fishing.md) |
 | Free To Play | 5 | [free-to-play.md](free-to-play.md) |
 | Gambling | 3 | [gambling.md](gambling.md) |
-| Hack & Slash | 5 | [hack-&-slash.md](hack-&-slash.md) |
-| Hack and Slash | 4 | [hack-and-slash.md](hack-and-slash.md) |
+| Hack & Slash | 9 | [hack-&-slash.md](hack-&-slash.md) |
 | Hacking | 1 | [hacking.md](hacking.md) |
 | Hero Shooter | 2 | [hero-shooter.md](hero-shooter.md) |
 | Hidden Object | 31 | [hidden-object.md](hidden-object.md) |
@@ -74,8 +73,7 @@
 | Party Game | 7 | [party-game.md](party-game.md) |
 | Party-Based RPG | 2 | [party-based-rpg.md](party-based-rpg.md) |
 | Platformer | 68 | [platformer.md](platformer.md) |
-| Point & Click | 1 | [point-&-click.md](point-&-click.md) |
-| Point-and-Click | 1 | [point-and-click.md](point-and-click.md) |
+| Point & Click | 2 | [point-&-click.md](point-&-click.md) |
 | Puzzle | 70 | [puzzle.md](puzzle.md) |
 | RPG | 3 | [rpg.md](rpg.md) |
 | Racing | 9 | [racing.md](racing.md) |
@@ -83,13 +81,11 @@
 | Retro | 1 | [retro.md](retro.md) |
 | Rhythm | 12 | [rhythm.md](rhythm.md) |
 | Roguelike | 20 | [roguelike.md](roguelike.md) |
-| Roguelite | 3 | [roguelite.md](roguelite.md) |
-| Rougelite | 2 | [rougelite.md](rougelite.md) |
+| Roguelite | 5 | [roguelite.md](roguelite.md) |
 | Runner | 1 | [runner.md](runner.md) |
 | Sandbox | 1 | [sandbox.md](sandbox.md) |
 | Score Attack | 1 | [score-attack.md](score-attack.md) |
-| Shoot 'Em Up | 4 | [shoot-'em-up.md](shoot-'em-up.md) |
-| Shoot'em up | 1 | [shoot'em-up.md](shoot'em-up.md) |
+| Shoot 'em up | 5 | [shoot-'em-up.md](shoot-'em-up.md) |
 | Shooter | 4 | [shooter.md](shooter.md) |
 | Simulation | 68 | [simulation.md](simulation.md) |
 | Social Deduction | 1 | [social-deduction.md](social-deduction.md) |
@@ -101,19 +97,15 @@
 | Surreal | 1 | [surreal.md](surreal.md) |
 | Survival | 4 | [survival.md](survival.md) |
 | Tactical RPG | 1 | [tactical-rpg.md](tactical-rpg.md) |
-| Third-Person Shooter | 7 | [third-person-shooter.md](third-person-shooter.md) |
-| Third-person Shooter | 1 | [third-person-shooter.md](third-person-shooter.md) |
+| Third-person Shooter | 8 | [third-person-shooter.md](third-person-shooter.md) |
 | Top-Down | 1 | [top-down.md](top-down.md) |
-| Top-Down Shooter | 3 | [top-down-shooter.md](top-down-shooter.md) |
-| Top-down Shooter | 11 | [top-down-shooter.md](top-down-shooter.md) |
+| Top-down Shooter | 14 | [top-down-shooter.md](top-down-shooter.md) |
 | Top-down Survival | 1 | [top-down-survival.md](top-down-survival.md) |
 | Tower Defense | 8 | [tower-defense.md](tower-defense.md) |
-| Turn-Based Combat | 2 | [turn-based-combat.md](turn-based-combat.md) |
-| Turn-Based Strategy | 3 | [turn-based-strategy.md](turn-based-strategy.md) |
-| Turn-Based Tactics | 4 | [turn-based-tactics.md](turn-based-tactics.md) |
+| Turn-based Combat | 2 | [turn-based-combat.md](turn-based-combat.md) |
 | Turn-based RPG | 5 | [turn-based-rpg.md](turn-based-rpg.md) |
-| Turn-based Strategy | 8 | [turn-based-strategy.md](turn-based-strategy.md) |
-| Turn-based Tactics | 3 | [turn-based-tactics.md](turn-based-tactics.md) |
+| Turn-based Strategy | 11 | [turn-based-strategy.md](turn-based-strategy.md) |
+| Turn-based Tactics | 7 | [turn-based-tactics.md](turn-based-tactics.md) |
 | Visual Novel | 298 | [visual-novel.md](visual-novel.md) |
 | Walking Simulator | 1 | [walking-simulator.md](walking-simulator.md) |
 

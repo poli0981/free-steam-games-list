@@ -2,6 +2,25 @@
 
 All notable changes to this awesome noob repo will be documented here.
 
+## [v3.2.1] – 2026-05-11 (The "Genre Cleanup" Edition)
+
+Patch release on top of v3.2.0. Normalizes inconsistent `genre` values across the dataset (31 records, 10 canonical mappings) and broadens the webapp's genre combobox with 14 additional suggestions. Web app + desktop bumped `1.2.0` → `1.2.1`. Repo public-facing version `3.2.0` → `3.2.1`. Tag `v3.2.1` is GPG-signed; companion desktop tag is `desktop-v1.2.1`.
+
+### 🧹 Genre normalization script
+
+- New `scripts/normalize_genres.py` — local one-shot tool with `--apply` flag (dry-run by default). Reuses `core.data_store.load_main` / `save_main` so writes are atomic + sharded.
+- Canonical mappings applied (sentence-case style for compounds): `Hack and Slash` → `Hack & Slash` (4), `Third-Person Shooter` → `Third-person Shooter` (7), `Top-Down Shooter` → `Top-down Shooter` (3), `Turn-Based Strategy` → `Turn-based Strategy` (3), `Turn-Based Tactics` → `Turn-based Tactics` (4), `Turn-Based Combat` → `Turn-based Combat` (2), `Shoot 'Em Up` / `Shoot'em up` → `Shoot 'em up` (5), `Point-and-Click` → `Point & Click` (1), `Rougelite` → `Roguelite` (2 typo).
+- 31 records updated · 10 unique canonical changes · unique-genre count 100 → 92.
+- Idempotent — second run reports "data already canonical".
+- Comma-separated values like `"Action RPG, Gacha"` (Wuthering Waves, Honkai Impact 3rd) are flagged in a "Manual review needed" section rather than auto-split, since the schema is single-genre.
+- All `games/*.md` regenerated via `scripts/generate_tables.py`; affected genre files include the new sentence-case slugs (`turn-based-strategy.md`, `top-down-shooter.md`, `third-person-shooter.md`, `roguelite.md`, etc.).
+
+### 🎛 Webapp genre dropdown additions
+
+- `web/src/lib/enums.ts` — `GENRE_ENUM` extended from 44 → 58 entries. Added 14 sub-genres already common in the data: `Action RPG`, `Beat 'em up`, `Bullet Hell`, `Clicker`, `Hidden Object`, `Real-Time Strategy`, `Roguelite`, `Survival Horror`, `Tactical RPG`, `Third-person Shooter`, `Top-down Shooter`, `Turn-based RPG`, `Turn-based Strategy`, `Turn-based Tactics`.
+- Sentence-case style matches the normalized data values.
+- Dropdown filter on `web/src/pages/Games.tsx` is facet-driven (auto-updates from the records), so it now shows the deduplicated canonical names. The `EditGameDrawer` combobox suggests the 14 new entries while still accepting free-text input.
+
 ## [v3.2.0] – 2026-05-11 (The "SEO + Donate + Auto-Discussion + Health Polish + Dev Docs" Edition)
 
 Single-PR bundle (#64) shipping eight features on top of v3.1.0. Web app + desktop bumped from `1.1.0` → `1.2.0`. Repo public-facing version `3.1.0` → `3.2.0`. Tag `v3.2.0` is GPG-signed; companion desktop tag is `desktop-v1.2.0`.
