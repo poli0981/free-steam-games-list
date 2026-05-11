@@ -7,6 +7,7 @@ import { GpgPanel } from "../components/auth/GpgPanel";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
 import { Button } from "../components/ui/button";
 import { useAuth } from "../stores/auth";
+import { useDocumentTitle } from "../hooks/useDocumentTitle";
 import { getRateLimit, type RateLimit } from "../lib/github-api";
 import { formatNumber } from "../lib/utils";
 import {
@@ -23,6 +24,7 @@ const LANG_LABELS: Record<SupportedLanguage, { native: string; en: string; flag:
 
 export function SettingsPage() {
   const { t, i18n } = useTranslation();
+  useDocumentTitle("settings.title");
   const auth = useAuth();
   const [rate, setRate] = useState<RateLimit | null>(null);
   const [lang, setLang] = useState<SupportedLanguage>(currentLanguage());

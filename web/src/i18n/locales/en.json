@@ -18,6 +18,7 @@
     "activity": "Activity",
     "add": "Add",
     "about": "About",
+    "donate": "Donate",
     "settings": "Settings"
   },
   "common": {
@@ -299,6 +300,24 @@
     "lockGpgKey": "Lock GPG key",
     "unlockGpgSettings": "Unlock GPG key (Settings)"
   },
+  "donate": {
+    "title": "Support the project",
+    "subtitle": "If this list saved you a Steam-search rabbit hole, consider buying the maintainer a coffee or a sale-priced indie game. 100% goes to instant noodles + the next $5 sale binge.",
+    "cta": "Open",
+    "footnote": "Same handles as in .github/FUNDING.yml. The GitHub repo's Sponsor button at the top of every page also funnels here.",
+    "platform": {
+      "github": "GitHub Sponsors",
+      "githubDesc": "Recurring or one-off, fee-free, plugs straight into the maintainer's GitHub profile.",
+      "kofi": "Ko-fi",
+      "kofiDesc": "One-off coffees or monthly memberships. No fees on one-time tips.",
+      "bmc": "Buy Me a Coffee",
+      "bmcDesc": "Same idea as Ko-fi — different platform if you already have an account here.",
+      "patreon": "Patreon",
+      "patreonDesc": "Monthly tiers — best if you'd like the maintainer to keep this running long-term.",
+      "paypal": "PayPal",
+      "paypalDesc": "Direct PayPal.me link. Use this if every other platform is blocked in your region."
+    }
+  },
   "about": {
     "title": "About",
     "subtitle": "The repo, the dev, the stack, the legal stuff, and the fine print on accuracy.",
@@ -333,6 +352,8 @@
     "groupMissingDesc": "Missing one or more of: genre / type_game / safe.",
     "groupKernel": "Online + AC + kernel unknown",
     "groupKernelDesc": "type_game=online with an anti-cheat name set but is_kernel_ac is null.",
+    "groupOnlineAcUnknown": "Online · anti-cheat unknown / none",
+    "groupOnlineAcUnknownDesc": "type_game=online with anti_cheat empty or '-'. May be unknown, may genuinely have none.",
     "moreItems": "+{{count}} more…",
     "maintenanceTriggers": "Maintenance triggers",
     "maintenanceDesc": "Manually fire the existing GitHub Actions workflows. Requires sign-in with {{scope}} scope.",
@@ -342,6 +363,8 @@
     "triggerUpdateReviewsDesc": "Reviews-only refresh",
     "triggerTopOnline": "Top online",
     "triggerTopOnlineDesc": "Player leaderboard",
+    "triggerTopOffline": "Top offline",
+    "triggerTopOfflineDesc": "Single-player concurrents (bi-weekly)",
     "triggerCheckLinks": "Check dead links",
     "triggerCheckLinksDesc": "HEAD scan all app pages",
     "triggerPurge": "Purge unhealthy",
@@ -373,6 +396,9 @@
   },
   "detail": {
     "openOnSteam": "appid {{appid}} · open on Steam",
+    "openOnSteamDesktop": "Steam Desktop",
+    "openOnSteamDesktopHint": "Opens in the Steam client if installed (steam://). Otherwise the browser will show a protocol prompt — fall back to the Web button.",
+    "openOnSteamWeb": "Web",
     "labelGenre": "Genre",
     "labelType": "Type",
     "labelDeveloper": "Developer",

@@ -16,6 +16,7 @@ import { HealthPage } from "./pages/Health";
 import { ActivityPage } from "./pages/Activity";
 import { AddPage } from "./pages/Add";
 import { AboutPage } from "./pages/About";
+import { DonatePage } from "./pages/Donate";
 import { SettingsPage } from "./pages/Settings";
 
 export default function App() {
@@ -42,6 +43,7 @@ export default function App() {
         <Route path="activity" element={<ActivityPage />} />
         <Route path="add" element={<AddPage />} />
         <Route path="about" element={<AboutPage />} />
+        <Route path="donate" element={<DonatePage />} />
         <Route path="settings" element={<SettingsPage />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Route>

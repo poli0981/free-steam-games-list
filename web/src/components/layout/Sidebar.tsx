@@ -20,6 +20,7 @@ import {
   Lock,
   History,
   Info,
+  Heart,
 } from "lucide-react";
 import { cn } from "../../lib/utils";
 import { Sheet, SheetContent } from "../ui/sheet";
@@ -59,6 +60,7 @@ const SECONDARY: NavItemWithOwner[] = [
   { to: "/activity", i18n: "nav.activity", icon: History },
   { to: "/add", i18n: "nav.add", icon: PlusCircle, ownerOnly: true },
   { to: "/about", i18n: "nav.about", icon: Info },
+  { to: "/donate", i18n: "nav.donate", icon: Heart },
   { to: "/settings", i18n: "nav.settings", icon: Settings },
 ];
 

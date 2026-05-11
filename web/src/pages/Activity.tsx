@@ -15,6 +15,7 @@ import { Badge } from "../components/ui/badge";
 import { Button } from "../components/ui/button";
 import { LoadingState, ErrorState } from "../components/common/QueryState";
 import { useAuth } from "../stores/auth";
+import { useDocumentTitle } from "../hooks/useDocumentTitle";
 import { REPO_OWNER, REPO_NAME, DEFAULT_BRANCH } from "../lib/schema";
 import { formatRelativeDate } from "../lib/utils";
 import { cn } from "../lib/utils";
@@ -49,6 +50,7 @@ async function fetchCommits(token: string | null): Promise<Commit[]> {
 
 export function ActivityPage() {
   const { t } = useTranslation();
+  useDocumentTitle("activity.title");
   const auth = useAuth();
   const [filter, setFilter] = useState<Filter>("all");
 

@@ -11,11 +11,13 @@ import {
   Link as LinkIcon,
   Calendar,
   Sparkles,
+  ShieldQuestion,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "../components/ui/card";
 import { Button } from "../components/ui/button";
 import { Badge } from "../components/ui/badge";
 import { useGames } from "../hooks/useGames";
+import { useDocumentTitle } from "../hooks/useDocumentTitle";
 import { useAuth } from "../stores/auth";
 import { LoadingState, ErrorState } from "../components/common/QueryState";
 import { dispatchWorkflow } from "../lib/github-api";
@@ -25,7 +27,7 @@ import { formatNumber, formatRelativeDate } from "../lib/utils";
 
 interface IssueGroup {
   /** i18n key suffix under `health.group{Suffix}` for label, `Desc` for description. */
-  key: "Delisted" | "Stale" | "Missing" | "Kernel";
+  key: "Delisted" | "Stale" | "Missing" | "Kernel" | "OnlineAcUnknown";
   records: GameRecord[];
   icon: React.ComponentType<{ className?: string }>;
   variant: "warning" | "destructive" | "secondary";
@@ -36,6 +38,7 @@ function gatherIssues(records: GameRecord[]): IssueGroup[] {
   const stale: GameRecord[] = [];
   const missingManual: GameRecord[] = [];
   const onlineNoKernelInfo: GameRecord[] = [];
+  const onlineAcUnknown: GameRecord[] = [];
 
   const NOW = Date.now();
   const STALE_DAYS = 30;
@@ -54,8 +57,15 @@ function gatherIssues(records: GameRecord[]): IssueGroup[] {
       missingManual.push(r);
     }
 
-    if (r.type_game === "online" && r.is_kernel_ac == null && (r.anti_cheat ?? "-") !== "-") {
+    const ac = (r.anti_cheat ?? "").trim();
+    const acIsBlank = ac === "" || ac === "-";
+
+    if (r.type_game === "online" && r.is_kernel_ac == null && !acIsBlank) {
       onlineNoKernelInfo.push(r);
+    }
+
+    if (r.type_game === "online" && acIsBlank) {
+      onlineAcUnknown.push(r);
     }
   }
 
@@ -64,11 +74,13 @@ function gatherIssues(records: GameRecord[]): IssueGroup[] {
     { key: "Stale", records: stale, icon: Calendar, variant: "warning" },
     { key: "Missing", records: missingManual, icon: AlertTriangle, variant: "warning" },
     { key: "Kernel", records: onlineNoKernelInfo, icon: HeartPulse, variant: "secondary" },
+    { key: "OnlineAcUnknown", records: onlineAcUnknown, icon: ShieldQuestion, variant: "warning" },
   ];
 }
 
 export function HealthPage() {
   const { t } = useTranslation();
+  useDocumentTitle("health.title");
   const q = useGames();
   const auth = useAuth();
   const [busy, setBusy] = useState<string | null>(null);
@@ -201,6 +213,15 @@ export function HealthPage() {
             busy={busy}
             disabled={!auth.isAuthenticated}
             onClick={() => trigger("health.triggerTopOnline", "top-online.yml")}
+          />
+          <TriggerButton
+            label={t("health.triggerTopOffline")}
+            description={t("health.triggerTopOfflineDesc")}
+            file="top-offline.yml"
+            icon={Trophy}
+            busy={busy}
+            disabled={!auth.isAuthenticated}
+            onClick={() => trigger("health.triggerTopOffline", "top-offline.yml")}
           />
           <TriggerButton
             label={t("health.triggerCheckLinks")}

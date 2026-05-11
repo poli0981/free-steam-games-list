@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router-dom";
 import { useGames } from "../hooks/useGames";
+import { useDocumentTitle } from "../hooks/useDocumentTitle";
 import { GamesTable } from "../components/games/GamesTable";
 import { GameDetailDrawer } from "../components/games/GameDetailDrawer";
 import { LoadingState, ErrorState } from "../components/common/QueryState";
@@ -12,6 +13,7 @@ import { X } from "lucide-react";
 
 export function GamesPage() {
   const { t } = useTranslation();
+  useDocumentTitle("games.title");
   const q = useGames();
   const navigate = useNavigate();
   const { appid } = useParams<{ appid: string }>();

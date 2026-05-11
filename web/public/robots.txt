@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://poli0981.github.io/free-steam-games-list/sitemap.xml

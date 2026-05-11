@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { useGames } from "../hooks/useGames";
+import { useDocumentTitle } from "../hooks/useDocumentTitle";
 import { KpiCards } from "../components/charts/KpiCards";
 import { GenreTreemap } from "../components/charts/GenreTreemap";
 import { PlatformsDonut } from "../components/charts/PlatformsDonut";
@@ -9,6 +10,7 @@ import { LoadingState, ErrorState } from "../components/common/QueryState";
 
 export function Dashboard() {
   const { t } = useTranslation();
+  useDocumentTitle("dashboard.title");
   const q = useGames();
   if (q.isLoading) return <LoadingState />;
   if (q.error) return <ErrorState error={q.error} />;

@@ -1,11 +1,13 @@
 import { useTranslation } from "react-i18next";
 import { useGames } from "../../hooks/useGames";
+import { useDocumentTitle } from "../../hooks/useDocumentTitle";
 import { LanguagesHeatmap } from "../../components/charts/LanguagesHeatmap";
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
 import { LoadingState, ErrorState } from "../../components/common/QueryState";
 
 export function LanguagesPage() {
   const { t } = useTranslation();
+  useDocumentTitle("charts.languages.title");
   const q = useGames();
   if (q.isLoading) return <LoadingState />;
   if (q.error) return <ErrorState error={q.error} />;

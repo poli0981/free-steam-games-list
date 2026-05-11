@@ -19,6 +19,7 @@ import {
   Globe,
   Tag,
   Pencil,
+  Monitor,
 } from "lucide-react";
 import {
   formatNumber,
@@ -27,6 +28,7 @@ import {
   formatRelativeDate,
 } from "../../lib/utils";
 import { extractAppid } from "../../lib/data-store";
+import { steamProtocolUrl, steamWebUrl } from "../../lib/steam-link";
 import { webpProxyUrl } from "../../lib/image";
 import type { GameRecord } from "../../lib/schema";
 import { EditGameDrawer } from "./EditGameDrawer";
@@ -120,16 +122,38 @@ export function GameDetailDrawer({ game, onClose, missing }: Props) {
                   </Button>
                 )}
               </div>
-              <DialogDescription>
-                <a
-                  href={game.link}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="inline-flex items-center gap-1 text-primary hover:underline"
-                >
-                  {t("detail.openOnSteam", { appid: extractAppid(game.link) })}{" "}
-                  <ExternalLink className="h-3 w-3" />
-                </a>
+              <DialogDescription asChild>
+                <div className="space-y-1.5">
+                  <div className="text-xs text-muted-foreground">
+                    {t("detail.openOnSteam", { appid: extractAppid(game.link) })}
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {(() => {
+                      const appid = extractAppid(game.link);
+                      const protocol = appid ? steamProtocolUrl(appid) : game.link;
+                      const web = appid ? steamWebUrl(appid) : game.link;
+                      return (
+                        <>
+                          <Button asChild size="sm" variant="default">
+                            <a
+                              href={protocol}
+                              title={t("detail.openOnSteamDesktopHint")}
+                            >
+                              <Monitor className="mr-1 h-3 w-3" />
+                              {t("detail.openOnSteamDesktop")}
+                            </a>
+                          </Button>
+                          <Button asChild size="sm" variant="outline">
+                            <a href={web} target="_blank" rel="noopener noreferrer">
+                              <ExternalLink className="mr-1 h-3 w-3" />
+                              {t("detail.openOnSteamWeb")}
+                            </a>
+                          </Button>
+                        </>
+                      );
+                    })()}
+                  </div>
+                </div>
               </DialogDescription>
             </DialogHeader>
 

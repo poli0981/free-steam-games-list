@@ -1,11 +1,13 @@
 import { useTranslation } from "react-i18next";
 import { useGames } from "../../hooks/useGames";
+import { useDocumentTitle } from "../../hooks/useDocumentTitle";
 import { DrmDlcBars } from "../../components/charts/DrmDlcBars";
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
 import { LoadingState, ErrorState } from "../../components/common/QueryState";
 
 export function DrmPage() {
   const { t } = useTranslation();
+  useDocumentTitle("charts.drm.title");
   const q = useGames();
   if (q.isLoading) return <LoadingState />;
   if (q.error) return <ErrorState error={q.error} />;
