@@ -1,7 +1,7 @@
 # Action-Adventure Games
 
-1 games · 2026-05-11 06:59 UTC
+1 games · 2026-05-12 00:34 UTC
 
 | # | Thumb | Game | Genre | Developer | Publisher | Released | Platforms | Languages | Reviews | Players | Anti-Cheat | Metacritic | Status | Description | Link | Notes |
 |---|-------|------|-------|-----------|-----------|----------|----------|-----------|---------|---------|------------|-----------|--------|-------------|------|-------|
-| 1 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4293970/f68f745775f61c511b946dc428266f4da0cd589f/capsule_184x69.jpg?t=1772561674' width='120' loading='lazy'> | Alstan | Action-Adventure | Mirage Company | Mirage Company | Mar 2, 2026 | Windows | English | 74% (Mostly Positive) | 0 |  | N/A | ✅ | Alstan is a 3rd-person action-adventure game set in the merciless deserts of Idnan, inspired by Amazigh and Tuareg cultu... | [Steam](https://store.steampowered.com/app/4293970/) | English language only |
+| 1 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4293970/f68f745775f61c511b946dc428266f4da0cd589f/capsule_184x69.jpg?t=1772561674' width='120' loading='lazy'> | Alstan | Action-Adventure | Mirage Company | Mirage Company | Mar 2, 2026 | Windows | English | 75% (Mostly Positive) | 0 |  | N/A | ✅ | Alstan is a 3rd-person action-adventure game set in the merciless deserts of Idnan, inspired by Amazigh and Tuareg cultu... | [Steam](https://store.steampowered.com/app/4293970/) | English language only |
