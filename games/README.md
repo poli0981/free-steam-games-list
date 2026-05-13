@@ -1,6 +1,6 @@
 # 🎮 Steam F2P Tracker
 
-**1327 games** · 2026-05-12 00:34 UTC
+**1347 games** · 2026-05-13 00:38 UTC
 
 ## 📋 Full List
 
@@ -17,11 +17,11 @@
 | Genre | # | File |
 |-------|---|------|
 | 2D Fighter | 2 | [2d-fighter.md](2d-fighter.md) |
-| Action | 68 | [action.md](action.md) |
+| Action | 73 | [action.md](action.md) |
 | Action RPG | 6 | [action-rpg.md](action-rpg.md) |
 | Action RPG, Gacha | 2 | [action-rpg-gacha.md](action-rpg-gacha.md) |
 | Action-Adventure | 1 | [action-adventure.md](action-adventure.md) |
-| Adventure | 74 | [adventure.md](adventure.md) |
+| Adventure | 75 | [adventure.md](adventure.md) |
 | Arcade | 14 | [arcade.md](arcade.md) |
 | Arena Shooter | 7 | [arena-shooter.md](arena-shooter.md) |
 | Auto Battler | 2 | [auto-battler.md](auto-battler.md) |
@@ -52,7 +52,7 @@
 | Fighter | 1 | [fighter.md](fighter.md) |
 | Fighting | 7 | [fighting.md](fighting.md) |
 | Fishing | 1 | [fishing.md](fishing.md) |
-| Free To Play | 5 | [free-to-play.md](free-to-play.md) |
+| Free To Play | 10 | [free-to-play.md](free-to-play.md) |
 | Gambling | 3 | [gambling.md](gambling.md) |
 | Hack & Slash | 9 | [hack-&-slash.md](hack-&-slash.md) |
 | Hacking | 1 | [hacking.md](hacking.md) |
@@ -75,8 +75,8 @@
 | Platformer | 68 | [platformer.md](platformer.md) |
 | Point & Click | 2 | [point-&-click.md](point-&-click.md) |
 | Puzzle | 70 | [puzzle.md](puzzle.md) |
-| RPG | 3 | [rpg.md](rpg.md) |
-| Racing | 9 | [racing.md](racing.md) |
+| RPG | 4 | [rpg.md](rpg.md) |
+| Racing | 10 | [racing.md](racing.md) |
 | Real-Time Strategy | 1 | [real-time-strategy.md](real-time-strategy.md) |
 | Retro | 1 | [retro.md](retro.md) |
 | Rhythm | 12 | [rhythm.md](rhythm.md) |
@@ -87,7 +87,7 @@
 | Score Attack | 1 | [score-attack.md](score-attack.md) |
 | Shoot 'em up | 5 | [shoot-'em-up.md](shoot-'em-up.md) |
 | Shooter | 4 | [shooter.md](shooter.md) |
-| Simulation | 68 | [simulation.md](simulation.md) |
+| Simulation | 75 | [simulation.md](simulation.md) |
 | Social Deduction | 1 | [social-deduction.md](social-deduction.md) |
 | Software | 1 | [software.md](software.md) |
 | Souls-like | 4 | [souls-like.md](souls-like.md) |

@@ -1,6 +1,6 @@
 # MOBA Games
 
-10 games · 2026-05-12 00:34 UTC
+10 games · 2026-05-13 00:38 UTC
 
 | # | Thumb | Game | Genre | Developer | Publisher | Released | Platforms | Languages | Reviews | Players | Anti-Cheat | Metacritic | Status | Description | Link | Notes |
 |---|-------|------|-------|-----------|-----------|----------|----------|-----------|---------|---------|------------|-----------|--------|-------------|------|-------|
