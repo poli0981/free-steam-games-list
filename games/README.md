@@ -1,6 +1,6 @@
 # 🎮 Steam F2P Tracker
 
-**1347 games** · 2026-05-13 01:40 UTC
+**1346 games** · 2026-05-14 00:39 UTC
 
 ## 📋 Full List
 
@@ -52,7 +52,7 @@
 | Fighter | 1 | [fighter.md](fighter.md) |
 | Fighting | 7 | [fighting.md](fighting.md) |
 | Fishing | 1 | [fishing.md](fishing.md) |
-| Free To Play | 9 | [free-to-play.md](free-to-play.md) |
+| Free To Play | 8 | [free-to-play.md](free-to-play.md) |
 | Gambling | 3 | [gambling.md](gambling.md) |
 | Hack & Slash | 9 | [hack-&-slash.md](hack-&-slash.md) |
 | Hacking | 1 | [hacking.md](hacking.md) |

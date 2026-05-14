@@ -1,8 +1,8 @@
 # Farming Sim Games
 
-2 games · 2026-05-13 01:40 UTC
+2 games · 2026-05-14 00:39 UTC
 
 | # | Thumb | Game | Genre | Developer | Publisher | Released | Platforms | Languages | Reviews | Players | Anti-Cheat | Metacritic | Status | Description | Link | Notes |
 |---|-------|------|-------|-----------|-----------|----------|----------|-----------|---------|---------|------------|-----------|--------|-------------|------|-------|
 | 1 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3632130/411cc38a31e9a934958a7893a1a4e4aa2f4fbb66/capsule_184x69.jpg?t=1766646236' width='120' loading='lazy'> | Endless Forest | Farming Sim | Rin | Rin | Dec 24, 2025 | Windows | English | 86% (Positive) | 0 |  | N/A | ✅ | You find yourself in an unending forest, trees as far as the imagination can reach. | [Steam](https://store.steampowered.com/app/3632130/) | Not reviewed yet |
-| 2 | <img src='https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/4532020/0246cff373d311b194da3e5c30e165ecd14d1aae/capsule_184x69.jpg?t=1776347909' width='120' loading='lazy'> | Agro Life | Farming Sim | Nosatskyi Games | Nosatskyi Games | 15 Apr, 2026 | Windows | English | 0% (3 user reviews) | 0 | - | N/A | ✅ | Agro Life is a relaxing low-poly farming simulation where you grow crops, raise animals, craft tools, and build your own... | [Steam](https://store.steampowered.com/app/4532020/) | Not reviewed yet |
+| 2 | <img src='https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/4532020/0246cff373d311b194da3e5c30e165ecd14d1aae/capsule_184x69.jpg?t=1776347909' width='120' loading='lazy'> | Agro Life | Farming Sim | Nosatskyi Games | Nosatskyi Games | 15 Apr, 2026 | Windows | English | 20% (5 user reviews) | 0 | - | N/A | ✅ | Agro Life is a relaxing low-poly farming simulation where you grow crops, raise animals, craft tools, and build your own... | [Steam](https://store.steampowered.com/app/4532020/) | Not reviewed yet |
