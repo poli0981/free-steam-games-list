@@ -1,6 +1,6 @@
 # RPG Games
 
-4 games · 2026-05-15 15:24 UTC
+5 games · 2026-05-15 15:48 UTC
 
 | # | Thumb | Game | Genre | Developer | Publisher | Released | Platforms | Languages | Reviews | Players | Anti-Cheat | Metacritic | Status | Description | Link | Notes |
 |---|-------|------|-------|-----------|-----------|----------|----------|-----------|---------|---------|------------|-----------|--------|-------------|------|-------|
@@ -8,3 +8,4 @@
 | 2 | <img src='https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/3230290/capsule_184x69.jpg?t=1772912652' width='120' loading='lazy'> | BlightFog | RPG | Zakroutil | Zakroutil | 4 Oct, 2024 | Windows | English | 87% (Very Positive) | 0 | - | N/A | ✅ | Journey across a dying world. | [Steam](https://store.steampowered.com/app/3230290/) | Not reviewed yet |
 | 3 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2478730/capsule_184x69.jpg?t=1691369439' width='120' loading='lazy'> | It's a Gluttonous Life | RPG | Loneclaw | Loneclaw | Aug 6, 2023 | Windows, Linux | - | 86% (Very Positive) | 6 | - | N/A | ✅ | A lewd life simulator game set in an alternate early 2000s where you have to juggle mundane responsibilities such as goi... | [Steam](https://store.steampowered.com/app/2478730/) | Not reviewed yet |
 | 4 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4593220/1948dd33562346c5959f9852f5a97dec4cc35606/capsule_184x69.jpg?t=1778095723' width='120' loading='lazy'> | Adrift | RPG | Henco | Henco | 7 May, 2026 | Windows | English | 67% (6 user reviews) | 0 | - | N/A | ✅ | Wander a quiet forest, collect materials and uncover hidden items. | [Steam](https://store.steampowered.com/app/4593220/) | Not reviewed yet |
+| 5 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3813590/3d70af7b02984534f8a381388b43f67b4aba6de3/capsule_184x69.jpg?t=1776742064' width='120' loading='lazy'> | Summoners War: RUSH | RPG | Com2uS | Com2uS | 12 Sep, 2025 | Windows | 9 langs | 48% (Mixed) | 95 | nProtect 🔴 | N/A | ✅ | Summoners War: Rush is an idle tower defense RPG where you collect and strengthen your Monsters to build a team and defe... | [Steam](https://store.steampowered.com/app/3813590/) | nProtect GameGuard [Kernel] |
