@@ -1,6 +1,6 @@
 # Free To Play Games
 
-8 games · 2026-05-15 12:17 UTC
+7 games · 2026-05-15 12:22 UTC
 
 | # | Thumb | Game | Genre | Developer | Publisher | Released | Platforms | Languages | Reviews | Players | Anti-Cheat | Metacritic | Status | Description | Link | Notes |
 |---|-------|------|-------|-----------|-----------|----------|----------|-----------|---------|---------|------------|-----------|--------|-------------|------|-------|
@@ -11,4 +11,3 @@
 | 5 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/726390/capsule_184x69.jpg?t=1729029187' width='120' loading='lazy'> | Scream Collector | Free To Play | PuzzleRoo | PuzzleRoo | Oct 26, 2017 | Windows | English | 88% (Very Positive) | 15 | - | N/A | ✅ | Build up a haunted house in this Halloween themed Idle Clicker game!. | [Steam](https://store.steampowered.com/app/726390/) | Not reviewed yet |
 | 6 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2880460/capsule_184x69.jpg?t=1730141986' width='120' loading='lazy'> | Terroro | Free To Play | Melt | Melt | Oct 10, 2024 | Windows | English, Spanish - Spain | 82% (Very Positive) | 2 | - | N/A | ✅ | In this psychological horror game about a famous TikToker, you take on the role of her boyfriend to discover that behind... | [Steam](https://store.steampowered.com/app/2880460/) | Not reviewed yet |
 | 7 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4650900/3afb5c112bea3978825f36f90fd703989fddc7d9/capsule_184x69.jpg?t=1778551800' width='120' loading='lazy'> | Grid of Change | Free To Play | KimGoc Studio | KimGoc Studio | May 11, 2026 | Windows | English, Indonesian, Spanish - Latin America | 75% (4 user reviews) | 4 | - | N/A | ✅ | Grid of Change is a turn-based strategy board game where every move can change the entire match. | [Steam](https://store.steampowered.com/app/4650900/) | Not reviewed yet |
-| 8 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4553440/2c630963af5559106b5cffa2507c6f0feb19ec56/capsule_184x69.jpg?t=1777547017' width='120' loading='lazy'> | 团战不能输 | Free To Play | 弈人 | 弈人 | Apr 30, 2026 | Windows | Simplified Chinese | 25% (4 user reviews) | 0 | - | N/A | ✅ | 创新融合卡牌策略与 MOBA 团战对抗，带来全新策略对战体验。玩家自由组合5 名英雄组成出战阵容，打造属于自己的战术体系。手牌会随机变化，相同的阵容也能打出完全不同的节奏与套路。没有复杂走位与手速要求，你只需专注出牌、技能释放，用智慧与运营... | [Steam](https://store.steampowered.com/app/4553440/) | Not reviewed yet |
