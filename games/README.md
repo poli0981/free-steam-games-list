@@ -1,6 +1,6 @@
 # 🎮 Steam F2P Tracker
 
-**1377 games** · 2026-05-15 12:36 UTC
+**1377 games** · 2026-05-15 12:38 UTC
 
 ## 📋 Full List
 
@@ -52,7 +52,7 @@
 | Fighter | 1 | [fighter.md](fighter.md) |
 | Fighting | 8 | [fighting.md](fighting.md) |
 | Fishing | 1 | [fishing.md](fishing.md) |
-| Free To Play | 5 | [free-to-play.md](free-to-play.md) |
+| Free To Play | 4 | [free-to-play.md](free-to-play.md) |
 | Gambling | 3 | [gambling.md](gambling.md) |
 | Hack & Slash | 9 | [hack-&-slash.md](hack-&-slash.md) |
 | Hacking | 1 | [hacking.md](hacking.md) |
@@ -104,7 +104,7 @@
 | Tower Defense | 8 | [tower-defense.md](tower-defense.md) |
 | Turn-based Combat | 2 | [turn-based-combat.md](turn-based-combat.md) |
 | Turn-based RPG | 5 | [turn-based-rpg.md](turn-based-rpg.md) |
-| Turn-based Strategy | 12 | [turn-based-strategy.md](turn-based-strategy.md) |
+| Turn-based Strategy | 13 | [turn-based-strategy.md](turn-based-strategy.md) |
 | Turn-based Tactics | 8 | [turn-based-tactics.md](turn-based-tactics.md) |
 | Visual Novel | 299 | [visual-novel.md](visual-novel.md) |
 | Walking Simulator | 1 | [walking-simulator.md](walking-simulator.md) |
