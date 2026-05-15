@@ -1,6 +1,6 @@
 # 🎮 Steam F2P Tracker
 
-**1346 games** · 2026-05-15 00:36 UTC
+**1377 games** · 2026-05-15 11:40 UTC
 
 ## 📋 Full List
 
@@ -17,24 +17,24 @@
 | Genre | # | File |
 |-------|---|------|
 | 2D Fighter | 2 | [2d-fighter.md](2d-fighter.md) |
-| Action | 73 | [action.md](action.md) |
+| Action | 75 | [action.md](action.md) |
 | Action RPG | 6 | [action-rpg.md](action-rpg.md) |
 | Action RPG, Gacha | 2 | [action-rpg-gacha.md](action-rpg-gacha.md) |
-| Action-Adventure | 1 | [action-adventure.md](action-adventure.md) |
-| Adventure | 75 | [adventure.md](adventure.md) |
+| Action-Adventure | 3 | [action-adventure.md](action-adventure.md) |
+| Adventure | 76 | [adventure.md](adventure.md) |
 | Arcade | 14 | [arcade.md](arcade.md) |
 | Arena Shooter | 7 | [arena-shooter.md](arena-shooter.md) |
 | Auto Battler | 2 | [auto-battler.md](auto-battler.md) |
 | Automation | 1 | [automation.md](automation.md) |
 | Battle Royale | 17 | [battle-royale.md](battle-royale.md) |
-| Beat 'em up | 7 | [beat-'em-up.md](beat-'em-up.md) |
+| Beat 'em up | 8 | [beat-'em-up.md](beat-'em-up.md) |
 | Board Game | 6 | [board-game.md](board-game.md) |
 | Boomer Shooter | 1 | [boomer-shooter.md](boomer-shooter.md) |
 | Building | 1 | [building.md](building.md) |
 | Bullet Hell | 16 | [bullet-hell.md](bullet-hell.md) |
 | Card Battler | 2 | [card-battler.md](card-battler.md) |
-| Card Game | 43 | [card-game.md](card-game.md) |
-| Casual | 7 | [casual.md](casual.md) |
+| Card Game | 45 | [card-game.md](card-game.md) |
+| Casual | 8 | [casual.md](casual.md) |
 | City Builder | 4 | [city-builder.md](city-builder.md) |
 | Clicker | 24 | [clicker.md](clicker.md) |
 | Cooking | 1 | [cooking.md](cooking.md) |
@@ -42,7 +42,7 @@
 | Crafting | 2 | [crafting.md](crafting.md) |
 | Dating Sim | 6 | [dating-sim.md](dating-sim.md) |
 | Deckbuilding | 1 | [deckbuilding.md](deckbuilding.md) |
-| Dungeon Crawler | 3 | [dungeon-crawler.md](dungeon-crawler.md) |
+| Dungeon Crawler | 4 | [dungeon-crawler.md](dungeon-crawler.md) |
 | Education | 2 | [education.md](education.md) |
 | Exploration | 7 | [exploration.md](exploration.md) |
 | Extraction Shooter | 2 | [extraction-shooter.md](extraction-shooter.md) |
@@ -50,7 +50,7 @@
 | FPS | 28 | [fps.md](fps.md) |
 | Farming Sim | 2 | [farming-sim.md](farming-sim.md) |
 | Fighter | 1 | [fighter.md](fighter.md) |
-| Fighting | 7 | [fighting.md](fighting.md) |
+| Fighting | 8 | [fighting.md](fighting.md) |
 | Fishing | 1 | [fishing.md](fishing.md) |
 | Free To Play | 8 | [free-to-play.md](free-to-play.md) |
 | Gambling | 3 | [gambling.md](gambling.md) |
@@ -58,7 +58,7 @@
 | Hacking | 1 | [hacking.md](hacking.md) |
 | Hero Shooter | 2 | [hero-shooter.md](hero-shooter.md) |
 | Hidden Object | 31 | [hidden-object.md](hidden-object.md) |
-| Horror | 94 | [horror.md](horror.md) |
+| Horror | 97 | [horror.md](horror.md) |
 | Idler | 17 | [idler.md](idler.md) |
 | Indie | 6 | [indie.md](indie.md) |
 | Interactive Fiction | 1 | [interactive-fiction.md](interactive-fiction.md) |
@@ -66,28 +66,28 @@
 | Life Sim | 2 | [life-sim.md](life-sim.md) |
 | Looter Shooter | 5 | [looter-shooter.md](looter-shooter.md) |
 | MMO | 11 | [mmo.md](mmo.md) |
-| MMORPG | 45 | [mmorpg.md](mmorpg.md) |
+| MMORPG | 46 | [mmorpg.md](mmorpg.md) |
 | MOBA | 10 | [moba.md](moba.md) |
 | Metroidvania | 1 | [metroidvania.md](metroidvania.md) |
 | Parkour | 1 | [parkour.md](parkour.md) |
 | Party Game | 7 | [party-game.md](party-game.md) |
 | Party-Based RPG | 2 | [party-based-rpg.md](party-based-rpg.md) |
-| Platformer | 68 | [platformer.md](platformer.md) |
+| Platformer | 70 | [platformer.md](platformer.md) |
 | Point & Click | 2 | [point-&-click.md](point-&-click.md) |
-| Puzzle | 70 | [puzzle.md](puzzle.md) |
+| Puzzle | 74 | [puzzle.md](puzzle.md) |
 | RPG | 4 | [rpg.md](rpg.md) |
-| Racing | 10 | [racing.md](racing.md) |
+| Racing | 11 | [racing.md](racing.md) |
 | Real-Time Strategy | 1 | [real-time-strategy.md](real-time-strategy.md) |
 | Retro | 1 | [retro.md](retro.md) |
 | Rhythm | 12 | [rhythm.md](rhythm.md) |
-| Roguelike | 20 | [roguelike.md](roguelike.md) |
+| Roguelike | 21 | [roguelike.md](roguelike.md) |
 | Roguelite | 5 | [roguelite.md](roguelite.md) |
 | Runner | 1 | [runner.md](runner.md) |
 | Sandbox | 1 | [sandbox.md](sandbox.md) |
 | Score Attack | 1 | [score-attack.md](score-attack.md) |
 | Shoot 'em up | 5 | [shoot-'em-up.md](shoot-'em-up.md) |
 | Shooter | 4 | [shooter.md](shooter.md) |
-| Simulation | 75 | [simulation.md](simulation.md) |
+| Simulation | 79 | [simulation.md](simulation.md) |
 | Social Deduction | 1 | [social-deduction.md](social-deduction.md) |
 | Software | 1 | [software.md](software.md) |
 | Souls-like | 4 | [souls-like.md](souls-like.md) |
@@ -102,12 +102,15 @@
 | Top-down Shooter | 14 | [top-down-shooter.md](top-down-shooter.md) |
 | Top-down Survival | 1 | [top-down-survival.md](top-down-survival.md) |
 | Tower Defense | 8 | [tower-defense.md](tower-defense.md) |
+| Turn-Based Strategy | 1 | [turn-based-strategy.md](turn-based-strategy.md) |
+| Turn-Based Tactics | 1 | [turn-based-tactics.md](turn-based-tactics.md) |
 | Turn-based Combat | 2 | [turn-based-combat.md](turn-based-combat.md) |
 | Turn-based RPG | 5 | [turn-based-rpg.md](turn-based-rpg.md) |
 | Turn-based Strategy | 11 | [turn-based-strategy.md](turn-based-strategy.md) |
 | Turn-based Tactics | 7 | [turn-based-tactics.md](turn-based-tactics.md) |
-| Visual Novel | 298 | [visual-novel.md](visual-novel.md) |
+| Visual Novel | 299 | [visual-novel.md](visual-novel.md) |
 | Walking Simulator | 1 | [walking-simulator.md](walking-simulator.md) |
+| Word Game | 1 | [word-game.md](word-game.md) |
 
 ## 🏆 Leaderboard
 
