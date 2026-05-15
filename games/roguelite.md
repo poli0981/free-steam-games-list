@@ -1,6 +1,6 @@
 # Roguelite Games
 
-5 games · 2026-05-15 12:59 UTC
+5 games · 2026-05-15 13:02 UTC
 
 | # | Thumb | Game | Genre | Developer | Publisher | Released | Platforms | Languages | Reviews | Players | Anti-Cheat | Metacritic | Status | Description | Link | Notes |
 |---|-------|------|-------|-----------|-----------|----------|----------|-----------|---------|---------|------------|-----------|--------|-------------|------|-------|

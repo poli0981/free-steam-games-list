@@ -1,6 +1,6 @@
 # 🎮 Steam F2P Tracker
 
-**1377 games** · 2026-05-15 12:59 UTC
+**1377 games** · 2026-05-15 13:02 UTC
 
 ## 📋 Full List
 
@@ -59,7 +59,6 @@
 | Hidden Object | 31 | [hidden-object.md](hidden-object.md) |
 | Horror | 103 | [horror.md](horror.md) |
 | Idler | 17 | [idler.md](idler.md) |
-| Indie | 1 | [indie.md](indie.md) |
 | Interactive Fiction | 1 | [interactive-fiction.md](interactive-fiction.md) |
 | Isometric | 1 | [isometric.md](isometric.md) |
 | Life Sim | 2 | [life-sim.md](life-sim.md) |
@@ -101,7 +100,7 @@
 | Top-down Shooter | 14 | [top-down-shooter.md](top-down-shooter.md) |
 | Top-down Survival | 1 | [top-down-survival.md](top-down-survival.md) |
 | Tower Defense | 8 | [tower-defense.md](tower-defense.md) |
-| Turn-based Combat | 2 | [turn-based-combat.md](turn-based-combat.md) |
+| Turn-based Combat | 3 | [turn-based-combat.md](turn-based-combat.md) |
 | Turn-based RPG | 5 | [turn-based-rpg.md](turn-based-rpg.md) |
 | Turn-based Strategy | 13 | [turn-based-strategy.md](turn-based-strategy.md) |
 | Turn-based Tactics | 8 | [turn-based-tactics.md](turn-based-tactics.md) |

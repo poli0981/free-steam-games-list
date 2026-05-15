@@ -1,8 +1,9 @@
 # Turn-based Combat Games
 
-2 games · 2026-05-15 12:59 UTC
+3 games · 2026-05-15 13:02 UTC
 
 | # | Thumb | Game | Genre | Developer | Publisher | Released | Platforms | Languages | Reviews | Players | Anti-Cheat | Metacritic | Status | Description | Link | Notes |
 |---|-------|------|-------|-----------|-----------|----------|----------|-----------|---------|---------|------------|-----------|--------|-------------|------|-------|
 | 1 | <img src='https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/3222960/6dd283a195bb85e00509e802ddd6935b8b9f0989/header_alt_assets_8.jpg?t=1775719009' width='120' loading='lazy'> | 悠久之树 | Turn-based Combat | Shanghai GuangYan Network Technology Co., Ltd | Shanghai GuangYan Network Technology Co., Ltd | 22 Jan, 2025 | Windows | Simplified Chinese, Japanese | 71% (Mostly Positive) | 44 | - | N/A | ✅ | "Eternal Tree" is a turn-based combat role-playing game that tells the story of a journey spanning the Divine Era and th... | [Steam](https://store.steampowered.com/app/3222960/) | Not reviewed yet |
 | 2 | <img src='https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/3464350/capsule_184x69.jpg?t=1746193451' width='120' loading='lazy'> | DUNGEON OF LOVE: Catch Monsters | Turn-based Combat | Red Fables | Red Fables | 26 Feb, 2025 | Windows | 6 langs | 30% (Mostly Negative) | 1 | - | N/A | ✅ | Capture monsters, discover their human form, and fall in love with a unique cast of girls while exploring dangerous dung... | [Steam](https://store.steampowered.com/app/3464350/) | Có DLC trả phí |
+| 3 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4294730/f0cc72c1365f476b5b71a06a81e04982be906768/capsule_184x69.jpg?t=1774202756' width='120' loading='lazy'> | Keg & Quest | Turn-based Combat | Piotr Mikosiński | Mikosiński Games | Mar 22, 2026 | Windows | English, Polish, German | 25% (Mostly Negative) | 4 |  | N/A | ✅ | Keg &amp; Quest is a free-to-play idle RPG with online multiplayer. | [Steam](https://store.steampowered.com/app/4294730/) | Not reviewed yet |
