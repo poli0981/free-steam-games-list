@@ -1,6 +1,6 @@
 # 🎮 Steam F2P Tracker
 
-**1377 games** · 2026-05-15 12:40 UTC
+**1377 games** · 2026-05-15 12:42 UTC
 
 ## 📋 Full List
 
@@ -36,7 +36,7 @@
 | Card Game | 45 | [card-game.md](card-game.md) |
 | Casual | 8 | [casual.md](casual.md) |
 | City Builder | 4 | [city-builder.md](city-builder.md) |
-| Clicker | 24 | [clicker.md](clicker.md) |
+| Clicker | 25 | [clicker.md](clicker.md) |
 | Cooking | 1 | [cooking.md](cooking.md) |
 | Cozy | 3 | [cozy.md](cozy.md) |
 | Crafting | 2 | [crafting.md](crafting.md) |
@@ -52,7 +52,7 @@
 | Fighter | 1 | [fighter.md](fighter.md) |
 | Fighting | 8 | [fighting.md](fighting.md) |
 | Fishing | 1 | [fishing.md](fishing.md) |
-| Free To Play | 3 | [free-to-play.md](free-to-play.md) |
+| Free To Play | 2 | [free-to-play.md](free-to-play.md) |
 | Gambling | 3 | [gambling.md](gambling.md) |
 | Hack & Slash | 9 | [hack-&-slash.md](hack-&-slash.md) |
 | Hacking | 1 | [hacking.md](hacking.md) |
