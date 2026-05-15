@@ -1,6 +1,6 @@
 # Hero Shooter Games
 
-2 games · 2026-05-15 12:57 UTC
+2 games · 2026-05-15 12:59 UTC
 
 | # | Thumb | Game | Genre | Developer | Publisher | Released | Platforms | Languages | Reviews | Players | Anti-Cheat | Metacritic | Status | Description | Link | Notes |
 |---|-------|------|-------|-----------|-----------|----------|----------|-----------|---------|---------|------------|-----------|--------|-------------|------|-------|

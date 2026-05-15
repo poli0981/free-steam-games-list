@@ -1,6 +1,6 @@
 # 🎮 Steam F2P Tracker
 
-**1377 games** · 2026-05-15 12:57 UTC
+**1377 games** · 2026-05-15 12:59 UTC
 
 ## 📋 Full List
 
@@ -59,7 +59,7 @@
 | Hidden Object | 31 | [hidden-object.md](hidden-object.md) |
 | Horror | 103 | [horror.md](horror.md) |
 | Idler | 17 | [idler.md](idler.md) |
-| Indie | 2 | [indie.md](indie.md) |
+| Indie | 1 | [indie.md](indie.md) |
 | Interactive Fiction | 1 | [interactive-fiction.md](interactive-fiction.md) |
 | Isometric | 1 | [isometric.md](isometric.md) |
 | Life Sim | 2 | [life-sim.md](life-sim.md) |
@@ -73,7 +73,7 @@
 | Party-Based RPG | 2 | [party-based-rpg.md](party-based-rpg.md) |
 | Platformer | 70 | [platformer.md](platformer.md) |
 | Point & Click | 2 | [point-&-click.md](point-&-click.md) |
-| Puzzle | 75 | [puzzle.md](puzzle.md) |
+| Puzzle | 76 | [puzzle.md](puzzle.md) |
 | RPG | 4 | [rpg.md](rpg.md) |
 | Racing | 11 | [racing.md](racing.md) |
 | Real-Time Strategy | 1 | [real-time-strategy.md](real-time-strategy.md) |
