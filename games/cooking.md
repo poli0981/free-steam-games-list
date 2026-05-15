@@ -1,6 +1,6 @@
 # Cooking Games
 
-1 games · 2026-05-15 12:38 UTC
+1 games · 2026-05-15 12:40 UTC
 
 | # | Thumb | Game | Genre | Developer | Publisher | Released | Platforms | Languages | Reviews | Players | Anti-Cheat | Metacritic | Status | Description | Link | Notes |
 |---|-------|------|-------|-----------|-----------|----------|----------|-----------|---------|---------|------------|-----------|--------|-------------|------|-------|
