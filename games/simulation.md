@@ -1,6 +1,6 @@
 # Simulation Games
 
-84 games · 2026-05-16 00:34 UTC
+85 games · 2026-05-16 04:35 UTC
 
 | # | Thumb | Game | Genre | Developer | Publisher | Released | Platforms | Languages | Reviews | Players | Anti-Cheat | Metacritic | Status | Description | Link | Notes |
 |---|-------|------|-------|-----------|-----------|----------|----------|-----------|---------|---------|------------|-----------|--------|-------------|------|-------|
@@ -88,3 +88,4 @@
 | 82 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4672870/4fef61b29b7a8b0e929b40847ec68ded975c4a91/capsule_184x69.jpg?t=1778837730' width='120' loading='lazy'> | Physics Play | Simulation | Myles | CreativeAutisticMinds | 15 May, 2026 | Windows, Linux | English | No reviews | 0 | - | N/A | ✅ | Experience a fun and simple physics simulation. | [Steam](https://store.steampowered.com/app/4672870/) | Not reviewed yet |
 | 83 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4674800/d9fd74864f73bc3b07d8aa3c86242cbc491e11a3/capsule_184x69.jpg?t=1778843130' width='120' loading='lazy'> | Beyond the Soil: Farming & Tales Prologue | Simulation | Mavi Game Lab | Mavi Game Lab | 15 May, 2026 | Windows | 28 langs | No reviews | 0 | - | N/A | ✅ | In this free prologue to Beyond the Soil: Farming & Tales, build a life from scratch in the heart of nature. | [Steam](https://store.steampowered.com/app/4674800/) | Not reviewed yet |
 | 84 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4637810/57e13995cd4e5f83ff0a9f19f9a42fb1f3198494/capsule_184x69.jpg?t=1778628674' width='120' loading='lazy'> | Orbit's Grocery | Simulation | Cosmic Wage Workers | Cosmic Wage Workers | 13 May, 2026 | Windows | English | 0% (2 user reviews) | 0 | - | N/A | ✅ | Manage the galaxy’s quirkiest store in Orbit’s Grocery! Balance retail tasks like window wiping and shelf stocking with ... | [Steam](https://store.steampowered.com/app/4637810/) | Not reviewed yet |
+| 85 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4670730/38a9217900207ab805f31d51f6804efa3a102107/capsule_184x69.jpg?t=1778855280' width='120' loading='lazy'> | 液态围棋 | Simulation | Nianyi Wang | Nianyi Wang | 15 May, 2026 | Windows | Simplified Chinese | No reviews | 4 | - | N/A | ✅ | What if in a Weiqi (Go) game stones lose their solid shapes and could be placed anywhere? Do those classic josekis still... | [Steam](https://store.steampowered.com/app/4670730/) | Not reviewed yet |

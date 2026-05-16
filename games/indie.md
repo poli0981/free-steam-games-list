@@ -1,6 +1,6 @@
 # Indie Games
 
-4 games · 2026-05-16 00:34 UTC
+5 games · 2026-05-16 04:35 UTC
 
 | # | Thumb | Game | Genre | Developer | Publisher | Released | Platforms | Languages | Reviews | Players | Anti-Cheat | Metacritic | Status | Description | Link | Notes |
 |---|-------|------|-------|-----------|-----------|----------|----------|-----------|---------|---------|------------|-----------|--------|-------------|------|-------|
@@ -8,3 +8,4 @@
 | 2 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2246300/capsule_184x69.jpg?t=1755000340' width='120' loading='lazy'> | No More Money - Season 1 | Indie | RoyalCandy | RoyalCandy | 27 Dec, 2022 | Windows | English | 79% (Mostly Positive) | 12 | - | N/A | ✅ | In this Visual Novel you play the role of a 20 years old guy, who just moved to another city where he starts a new life. | [Steam](https://store.steampowered.com/app/2246300/) | Có DLC trả phí |
 | 3 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1159520/capsule_184x69.jpg?t=1745941534' width='120' loading='lazy'> | Twists of My Life | Indie | Novel | Novel | 11 Mar, 2019 | Windows, Linux | 5 langs | 74% (Mostly Positive) | 6 | - | N/A | ✅ | Twists of My Life" - is a visual novel where every decision you make can completely change the storyline. | [Steam](https://store.steampowered.com/app/1159520/) | Not reviewed yet |
 | 4 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2249600/3d23657f5a8a7cefe39d0fdaa16449f49067321e/capsule_184x69.jpg?t=1775724469' width='120' loading='lazy'> | Drag Racing 3D: Streets 2 | Indie | Code Prime FZ LLC | Code Prime FZ LLC | 28 Nov, 2024 | Windows, Linux | 4 langs | 74% (Mostly Positive) | 34 | - | N/A | ✅ | A one-of-a-kind drag racing game. | [Steam](https://store.steampowered.com/app/2249600/) | Not reviewed yet |
+| 5 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4515290/ae7962abbd0fa0a450e8bb463ecddb9239f8b7a5/capsule_184x69.jpg?t=1777925065' width='120' loading='lazy'> | GoblinChess | Indie | Panaq AB | Panaq AB | 11 Apr, 2026 | Windows, macOS, Linux | English | 33% (3 user reviews) | 0 | - | N/A | ✅ | GoblinChess is a new type of chess game where we introduce ten different magical cards to the gameplay, and some chaos i... | [Steam](https://store.steampowered.com/app/4515290/) | Not reviewed yet |
