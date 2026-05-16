@@ -1,6 +1,6 @@
 # Board Game Games
 
-9 games · 2026-05-16 13:46 UTC
+10 games · 2026-05-16 13:47 UTC
 
 | # | Thumb | Game | Genre | Developer | Publisher | Released | Platforms | Languages | Reviews | Players | Anti-Cheat | Metacritic | Status | Description | Link | Notes |
 |---|-------|------|-------|-----------|-----------|----------|----------|-----------|---------|---------|------------|-----------|--------|-------------|------|-------|
@@ -13,3 +13,4 @@
 | 7 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3307700/9a0cc27c5be4fcbb9201ee0df96ba44576ca24a3/capsule_184x69.jpg?t=1778054587' width='120' loading='lazy'> | The First Spine - Arena | Board Game | Teddy Gandon | The First Spine | 6 May, 2026 | Windows | English, French | 60% (5 user reviews) | 0 | - | N/A | ✅ | The First Spine Arena is an exhilarating online competitive board and card game. | [Steam](https://store.steampowered.com/app/3307700/) | Not reviewed yet |
 | 8 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/397900/capsule_184x69.jpg?t=1765384989' width='120' loading='lazy'> | Business Tour - Board Game with Online Mul... | Board Game | 8Floor | 8Floor | 27 Jul, 2017 | Windows, macOS | 23 langs | 60% (Mixed) | 440 | - | N/A | ✅ | Business Tour is a free-to-play multiplayer tabletop game. | [Steam](https://store.steampowered.com/app/397900/) | Có DLC trả phí |
 | 9 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2622000/bf2f2f5bd97e0f3be91209888d067a4858235db7/capsule_184x69.jpg?t=1772698934' width='120' loading='lazy'> | Astral Party  | Board Game | STAR ENGINE PROJECT | Neverland Entertainment | Feb 28, 2024 | Windows | 4 langs | 55% (Mixed) | 1,025 |  | N/A | ✅ | Astral Party is a multiplayer party game populated by cute anime girls! Choose your favorite character, strategize skill... | [Steam](https://store.steampowered.com/app/2622000/) | Not reviewed yet |
+| 10 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4515290/ae7962abbd0fa0a450e8bb463ecddb9239f8b7a5/capsule_184x69.jpg?t=1777925065' width='120' loading='lazy'> | GoblinChess | Board Game | Panaq AB | Panaq AB | 11 Apr, 2026 | Windows, macOS, Linux | English | 33% (3 user reviews) | 0 | - | N/A | ✅ | GoblinChess is a new type of chess game where we introduce ten different magical cards to the gameplay, and some chaos i... | [Steam](https://store.steampowered.com/app/4515290/) | Not reviewed yet |

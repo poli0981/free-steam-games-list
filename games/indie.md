@@ -1,6 +1,6 @@
 # Indie Games
 
-6 games · 2026-05-16 13:46 UTC
+5 games · 2026-05-16 13:47 UTC
 
 | # | Thumb | Game | Genre | Developer | Publisher | Released | Platforms | Languages | Reviews | Players | Anti-Cheat | Metacritic | Status | Description | Link | Notes |
 |---|-------|------|-------|-----------|-----------|----------|----------|-----------|---------|---------|------------|-----------|--------|-------------|------|-------|
@@ -9,4 +9,3 @@
 | 3 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2578110/capsule_184x69.jpg?t=1756944094' width='120' loading='lazy'> | We're Tethered Together | Indie | BunBun Games | BunBun Games | 14 Oct, 2023 | Windows | English | 98% (Very Positive) | 0 | - | N/A | ✅ | Cast into an ancient crypt, survive the horrors that dwell below, and ascend from despair with your unexpected companion... | [Steam](https://store.steampowered.com/app/2578110/) | Not reviewed yet |
 | 4 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3659920/f2f99114d47da3655d69eda45cb5fef9a2e054fb/capsule_184x69.jpg?t=1772700642' width='120' loading='lazy'> | Dream on | Indie | Alice Karaush | Alice Karaush | 15 May, 2025 | Windows | 12 langs | 98% (Very Positive) | 0 | - | N/A | ✅ | Dream On is a very short, atmospheric walking simulator (5-10 minutes) about making a wish. | [Steam](https://store.steampowered.com/app/3659920/) | Có DLC trả phí |
 | 5 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3408060/capsule_184x69.jpg?t=1778570313' width='120' loading='lazy'> | Palm Cracker | Indie | Petter Malmehed | Petter Malmehed | 21 Mar, 2025 | Windows | 12 langs | 98% (Very Positive) | 1 | - | N/A | ✅ | Delve into a gripping world of puzzles, true ciphers on an old PalmPilot system. | [Steam](https://store.steampowered.com/app/3408060/) | Not reviewed yet |
-| 6 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4515290/ae7962abbd0fa0a450e8bb463ecddb9239f8b7a5/capsule_184x69.jpg?t=1777925065' width='120' loading='lazy'> | GoblinChess | Indie | Panaq AB | Panaq AB | 11 Apr, 2026 | Windows, macOS, Linux | English | 33% (3 user reviews) | 0 | - | N/A | ✅ | GoblinChess is a new type of chess game where we introduce ten different magical cards to the gameplay, and some chaos i... | [Steam](https://store.steampowered.com/app/4515290/) | Not reviewed yet |

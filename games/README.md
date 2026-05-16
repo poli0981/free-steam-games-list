@@ -1,6 +1,6 @@
 # 🎮 Steam F2P Tracker
 
-**1857 games** · 2026-05-16 13:46 UTC
+**1857 games** · 2026-05-16 13:47 UTC
 
 ## 📋 Full List
 
@@ -31,7 +31,7 @@
 | Automation | 1 | [automation.md](automation.md) |
 | Battle Royale | 20 | [battle-royale.md](battle-royale.md) |
 | Beat 'em up | 10 | [beat-'em-up.md](beat-'em-up.md) |
-| Board Game | 9 | [board-game.md](board-game.md) |
+| Board Game | 10 | [board-game.md](board-game.md) |
 | Boomer Shooter | 1 | [boomer-shooter.md](boomer-shooter.md) |
 | Building | 1 | [building.md](building.md) |
 | Bullet Hell | 18 | [bullet-hell.md](bullet-hell.md) |
@@ -62,7 +62,7 @@
 | Hidden Object | 38 | [hidden-object.md](hidden-object.md) |
 | Horror | 137 | [horror.md](horror.md) |
 | Idler | 19 | [idler.md](idler.md) |
-| Indie | 6 | [indie.md](indie.md) |
+| Indie | 5 | [indie.md](indie.md) |
 | Interactive Fiction | 1 | [interactive-fiction.md](interactive-fiction.md) |
 | Isometric | 1 | [isometric.md](isometric.md) |
 | Life Sim | 2 | [life-sim.md](life-sim.md) |
