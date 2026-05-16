@@ -37,6 +37,7 @@ import { addLinks, type AddEntry } from "../lib/edits";
 import { extractAppid, normalizeLink } from "../lib/data-store";
 import { LoadingState } from "../components/common/QueryState";
 import { pollCommitVerification } from "../lib/verify-commit";
+import { openExternal } from "../lib/external-open";
 import {
   ANTI_CHEAT_ENUM,
   GENRE_ENUM,
@@ -174,24 +175,32 @@ function reportToast(
   const ingestStarting = "ingest starting";
   toast.success(label, {
     id: toastId,
+    duration: 15000,
     description: ctx.willSign
       ? `${sevenSha} · ${t("common.verifying")} · ${ingestStarting}`
       : `${sevenSha} · ${t("games.unsigned")} · ${ingestStarting}`,
     action: {
       label: t("verify.viewCommit"),
-      onClick: () => window.open(result.commit.htmlUrl, "_blank"),
+      onClick: (event) => {
+        event.preventDefault();
+        void openExternal(result.commit.htmlUrl);
+      },
     },
   });
   if (ctx.willSign) {
     void pollCommitVerification(result.commit.sha, token).then((v) => {
       toast.success(label, {
         id: toastId,
+        duration: 15000,
         description: v.verified
           ? `${sevenSha} · ${t("verify.verified")} · ${ingestStarting}`
           : `${sevenSha} · ${t("verify.unverifiedReason", { reason: v.reason })}`,
         action: {
           label: t("verify.viewCommit"),
-          onClick: () => window.open(result.commit.htmlUrl, "_blank"),
+          onClick: (event) => {
+            event.preventDefault();
+            void openExternal(result.commit.htmlUrl);
+          },
         },
       });
     });
@@ -247,7 +256,15 @@ function SingleAdd({ existingAppids, ctx, token, onSuccess }: SubProps) {
   }
 
   function setOv<K extends keyof OverrideState>(k: K, v: OverrideState[K]) {
-    setOverride((s) => ({ ...s, [k]: v }));
+    setOverride((s) => {
+      const next = { ...s, [k]: v };
+      if (k === "type_game" && v === "offline") {
+        next.anti_cheat = "";
+        next.anti_cheat_note = "";
+        next.is_kernel_ac = "unknown";
+      }
+      return next;
+    });
   }
 
   const overrideFieldsCount = Object.values(overrideToFields(override)).filter(
@@ -577,6 +594,8 @@ interface OverrideFieldsProps {
 function OverrideFields({ ov, setOv, disabled }: OverrideFieldsProps) {
   const { t } = useTranslation();
   const isCustomAC = !(ANTI_CHEAT_ENUM as readonly string[]).includes(ov.anti_cheat);
+  const lockAC = ov.type_game === "offline";
+  const acDisabled = disabled || lockAC;
   return (
     <>
       <div className="grid gap-3 sm:grid-cols-2">
@@ -625,8 +644,8 @@ function OverrideFields({ ov, setOv, disabled }: OverrideFieldsProps) {
               if (e.target.value === "__custom__") setOv("anti_cheat", "");
               else setOv("anti_cheat", e.target.value);
             }}
-            disabled={disabled}
-            className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm"
+            disabled={acDisabled}
+            className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm disabled:cursor-not-allowed disabled:opacity-50"
           >
             <option value="">{t("add.skipOption")}</option>
             {ANTI_CHEAT_ENUM.map((a) => (
@@ -640,7 +659,7 @@ function OverrideFields({ ov, setOv, disabled }: OverrideFieldsProps) {
             <Input
               value={ov.anti_cheat}
               onChange={(e) => setOv("anti_cheat", e.target.value)}
-              disabled={disabled}
+              disabled={acDisabled}
               placeholder={t("add.customAcName")}
               className="mt-1"
             />
@@ -657,7 +676,7 @@ function OverrideFields({ ov, setOv, disabled }: OverrideFieldsProps) {
                 size="sm"
                 variant={ov.is_kernel_ac === v ? "default" : "outline"}
                 onClick={() => setOv("is_kernel_ac", v)}
-                disabled={disabled}
+                disabled={acDisabled}
               >
                 {t(`common.${v}`)}
               </Button>
@@ -689,9 +708,14 @@ function OverrideFields({ ov, setOv, disabled }: OverrideFieldsProps) {
           id="ov-acn"
           value={ov.anti_cheat_note}
           onChange={(e) => setOv("anti_cheat_note", e.target.value)}
-          disabled={disabled}
+          disabled={acDisabled}
           rows={2}
         />
+        {lockAC && (
+          <p className="text-xs text-muted-foreground">
+            {t("edit.acLockedOffline")}
+          </p>
+        )}
       </div>
 
       <div className="space-y-1.5">

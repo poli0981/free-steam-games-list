@@ -37,6 +37,7 @@ import {
 } from "../../lib/edits";
 import { optimisticEdit, optimisticReplace } from "../../lib/optimistic";
 import { pollCommitVerification } from "../../lib/verify-commit";
+import { openExternal } from "../../lib/external-open";
 import {
   ANTI_CHEAT_ENUM,
   GENRE_ENUM,
@@ -195,7 +196,16 @@ export function EditGameDrawer({ game, onClose }: Props) {
   }
 
   function update<K extends keyof FormState>(key: K, value: FormState[K]) {
-    setForm((f) => (f ? { ...f, [key]: value } : f));
+    setForm((f) => {
+      if (!f) return f;
+      const next = { ...f, [key]: value };
+      if (key === "type_game" && value === "offline") {
+        next.anti_cheat = "";
+        next.anti_cheat_note = "";
+        next.is_kernel_ac = "unknown";
+      }
+      return next;
+    });
   }
 
   async function save() {
@@ -250,12 +260,16 @@ export function EditGameDrawer({ game, onClose }: Props) {
       const sevenSha = commit.sha.slice(0, 7);
       toast.success(t("edit.savedToast", { sha: sevenSha }), {
         id: toastId,
+        duration: 15000,
         description: ctx.willSign
           ? `${shard} · ${t("common.verifying")}`
           : `${shard} · ${t("games.unsigned")}`,
         action: {
           label: t("verify.viewCommit"),
-          onClick: () => window.open(commit.htmlUrl, "_blank"),
+          onClick: (event) => {
+            event.preventDefault();
+            void openExternal(commit.htmlUrl);
+          },
         },
       });
 
@@ -264,12 +278,16 @@ export function EditGameDrawer({ game, onClose }: Props) {
         void pollCommitVerification(commit.sha, auth.token).then((v) => {
           toast.success(t("edit.savedToast", { sha: sevenSha }), {
             id: toastId,
+            duration: 15000,
             description: v.verified
               ? `${shard} · ${t("verify.verified")}`
               : `${shard} · ${t("verify.unverifiedReason", { reason: v.reason })}`,
             action: {
               label: t("verify.viewCommit"),
-              onClick: () => window.open(commit.htmlUrl, "_blank"),
+              onClick: (event) => {
+                event.preventDefault();
+                void openExternal(commit.htmlUrl);
+              },
             },
           });
         });
@@ -453,6 +471,7 @@ interface FormFieldsProps {
 function FormFields({ form, update }: FormFieldsProps) {
   const { t } = useTranslation();
   const isCustomAC = !(ANTI_CHEAT_ENUM as readonly string[]).includes(form.anti_cheat);
+  const lockAC = form.type_game === "offline";
   return (
     <>
       <div className="grid gap-3 sm:grid-cols-2">
@@ -499,7 +518,8 @@ function FormFields({ form, update }: FormFieldsProps) {
               if (e.target.value === "__custom__") update("anti_cheat", "");
               else update("anti_cheat", e.target.value);
             }}
-            className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm"
+            disabled={lockAC}
+            className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm disabled:cursor-not-allowed disabled:opacity-50"
           >
             {ANTI_CHEAT_ENUM.map((a) => (
               <option key={a} value={a}>
@@ -512,6 +532,7 @@ function FormFields({ form, update }: FormFieldsProps) {
             <Input
               value={form.anti_cheat}
               onChange={(e) => update("anti_cheat", e.target.value)}
+              disabled={lockAC}
               placeholder={t("add.customAcName")}
               className="mt-1"
             />
@@ -528,6 +549,7 @@ function FormFields({ form, update }: FormFieldsProps) {
                 size="sm"
                 variant={form.is_kernel_ac === v ? "default" : "outline"}
                 onClick={() => update("is_kernel_ac", v)}
+                disabled={lockAC}
               >
                 {t(`common.${v}`)}
               </Button>
@@ -542,9 +564,15 @@ function FormFields({ form, update }: FormFieldsProps) {
           id="anti_cheat_note"
           value={form.anti_cheat_note}
           onChange={(e) => update("anti_cheat_note", e.target.value)}
+          disabled={lockAC}
           placeholder={t("edit.antiCheatNotePlaceholder")}
           rows={2}
         />
+        {lockAC && (
+          <p className="text-xs text-muted-foreground">
+            {t("edit.acLockedOffline")}
+          </p>
+        )}
       </div>
 
       <div className="space-y-1.5">
