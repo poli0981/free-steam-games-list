@@ -145,7 +145,8 @@
     "notesPlaceholder": "Đánh giá cá nhân hoặc comment",
     "jsonPowerMode": "Chế độ power-user: thay thế toàn bộ record. {{addedAt}} được giữ từ bản gốc; phần còn lại commit nguyên văn.",
     "noValidJsonDiff": "JSON không hợp lệ để diff.",
-    "unlockInSettingsLink": "Unlock trong Settings"
+    "unlockInSettingsLink": "Unlock trong Settings",
+    "acLockedOffline": "Trường anti-cheat bị khoá cho game offline. Đổi type sang online để chỉnh sửa."
   },
   "settings": {
     "title": "Cài đặt",

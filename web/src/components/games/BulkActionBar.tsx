@@ -21,6 +21,7 @@ import { useIsOwner } from "../../hooks/useIsOwner";
 import { bulkDeleteGames } from "../../lib/edits";
 import { optimisticBulkDelete } from "../../lib/optimistic";
 import { pollCommitVerification } from "../../lib/verify-commit";
+import { openExternal } from "../../lib/external-open";
 import { BulkEditDrawer } from "./BulkEditDrawer";
 
 interface Props {
@@ -79,24 +80,32 @@ export function BulkActionBar({ visibleAppids }: Props) {
       const sevenSha = result.commit.sha.slice(0, 7);
       toast.success(t("games.deletedToast", { count: result.removed }), {
         id: toastId,
+        duration: 15000,
         description: ctx.willSign
           ? `${sevenSha} · ${t("common.verifying")}`
           : `${sevenSha} · ${t("games.unsigned")}`,
         action: {
           label: t("verify.viewCommit"),
-          onClick: () => window.open(result.commit.htmlUrl, "_blank"),
+          onClick: (event) => {
+            event.preventDefault();
+            void openExternal(result.commit.htmlUrl);
+          },
         },
       });
       if (ctx.willSign) {
         void pollCommitVerification(result.commit.sha, auth.token).then((v) => {
           toast.success(t("games.deletedToast", { count: result.removed }), {
             id: toastId,
+            duration: 15000,
             description: v.verified
               ? `${sevenSha} · ${t("verify.verified")}`
               : `${sevenSha} · ${t("verify.unverifiedReason", { reason: v.reason })}`,
             action: {
               label: t("verify.viewCommit"),
-              onClick: () => window.open(result.commit.htmlUrl, "_blank"),
+              onClick: (event) => {
+                event.preventDefault();
+                void openExternal(result.commit.htmlUrl);
+              },
             },
           });
         });

@@ -145,7 +145,8 @@
     "notesPlaceholder": "Personal review or comment",
     "jsonPowerMode": "Power-user mode: replaces the entire record. {{addedAt}} is preserved from the original; everything else is committed verbatim.",
     "noValidJsonDiff": "No valid JSON to diff.",
-    "unlockInSettingsLink": "Unlock in Settings"
+    "unlockInSettingsLink": "Unlock in Settings",
+    "acLockedOffline": "Anti-cheat fields are disabled for offline games. Switch type to online to edit."
   },
   "settings": {
     "title": "Settings",

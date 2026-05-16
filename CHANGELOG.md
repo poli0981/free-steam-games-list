@@ -2,6 +2,31 @@
 
 All notable changes to this awesome noob repo will be documented here.
 
+## [v3.2.3] – 2026-05-17 (The "View Commit Toast + Offline AC Lock" Edition)
+
+Patch release on top of v3.2.2. Three user-reported fixes: the "View commit" action button in success toasts (now reachable + cross-platform), an editor lock that prevents anti-cheat fields from being set on offline games, and a broken `Mark dead games` workflow setup-python step. Web app + desktop bumped `1.2.2` → `1.2.3`. Repo public-facing version `3.2.2` → `3.2.3`. Tag `v3.2.3` is GPG-signed; companion desktop tag is `desktop-v1.2.3`.
+
+### 🍞 View commit toast — clickable + desktop-safe
+
+- Migrated the eight `window.open(commit.htmlUrl, "_blank")` action handlers in `EditGameDrawer.tsx` (2), `Add.tsx` (2 inside `reportToast`), `BulkEditDrawer.tsx` (2), and `BulkActionBar.tsx` (2) to `openExternal()` from `web/src/lib/external-open.ts` — completes the follow-up migration flagged in v3.2.2's CHANGELOG. The Tauri webview was silently blocking the raw `window.open(...)` for external HTTPS URLs, so "View commit" did nothing on desktop.
+- Each `toast.success(...)` with a "View commit" action now sets `duration: 15000` (was Sonner's 4 s default). On web the old toasts auto-dismissed before the user could read the description + click the action button.
+- Handler now accepts the click event and calls `event.preventDefault()` so the toast stays visible after click (Sonner's default is to dismiss on action click — undesirable when the user wants to glance at the SHA after opening the commit).
+- The fix applies to both the initial `toast.success` and the follow-up emit fired by `pollCommitVerification(...).then(...)` (same toast `id`, so `duration` must be set on the update too — otherwise the second emit rebounds to the 4 s default).
+
+### 🔒 Anti-cheat fields lock on offline games
+
+- `web/src/components/games/EditGameDrawer.tsx` — `FormFields` derives `lockAC = form.type_game === "offline"` and threads `disabled={lockAC}` to the AC `<select>`, the custom-AC `<Input>`, the three kernel `<Button>`s, and the AC note `<Textarea>`. A muted hint is rendered under the AC note when locked, explaining how to re-enable.
+- `update()` setter now auto-resets `anti_cheat=""`, `anti_cheat_note=""`, `is_kernel_ac="unknown"` when `key === "type_game" && value === "offline"`. This keeps the `formToPatch()` diff honest — switching an online game with AC populated to offline now produces an explicit AC-clear in the commit instead of orphan anti-cheat data on an offline record.
+- `web/src/pages/Add.tsx` — same pattern in `OverrideFields` + the `SingleAdd.setOv()` setter. `OverrideFields` combines the existing busy-state `disabled` prop with the new lock via `acDisabled = disabled || lockAC`, so the global "form is submitting" disable still wins. BulkAdd uses raw text / JSON input, so no UI lock needed there.
+- `type_game === ""` (unknown) deliberately does **not** lock — only an explicit `"offline"` triggers the gate. The existing `validation.ts` "kernel?" badge rule for online + missing-kernel is untouched.
+- New i18n key `edit.acLockedOffline` added to `web/src/i18n/locales/en.json` and `vi.json`, rendered as a `text-xs text-muted-foreground` hint under the AC note when `lockAC` is true.
+
+### 🪦 `Mark dead games` workflow path fix
+
+- `.github/workflows/mark-dead-games.yml` — `cache-dependency-path: scripts/requirements.txt` and the subsequent `pip install -r scripts/requirements.txt` both pointed at a path that doesn't exist. The file lives at the repo root (`requirements.txt`), consistent with the path `codeql.yml:25` already uses.
+- Fix: both lines now reference `requirements.txt` at the root. The `setup-python` cache lookup no longer errors with `No file in /home/runner/work/free-steam-games-list/free-steam-games-list matched to [scripts/requirements.txt or **/pyproject.toml]`, and the install step actually finds the deps.
+- Workflow is scheduled Mon + Thu 04:30 UTC; the next scheduled run will be the first end-to-end verification, but `workflow_dispatch` with `dry_run=true` is also available for ad-hoc validation.
+
 ## [v3.2.2] – 2026-05-11 (The "Bug Fix Quartet" Edition)
 
 Patch release on top of v3.2.1. Four user-reported bug fixes touching the Ctrl+K command palette on desktop, the Health → Games navigation flow, Tauri process-stacking on every launch, and the `type_game` scraper that was defaulting every new game to `"offline"`. Web app + desktop bumped `1.2.1` → `1.2.2`. Repo public-facing version `3.2.1` → `3.2.2`. Tag `v3.2.2` is GPG-signed; companion desktop tag is `desktop-v1.2.2`.

@@ -22,6 +22,7 @@ import { useCommitContext } from "../../hooks/useCommitContext";
 import { bulkEditGames, type EditPatch } from "../../lib/edits";
 import { optimisticBulkEdit } from "../../lib/optimistic";
 import { pollCommitVerification } from "../../lib/verify-commit";
+import { openExternal } from "../../lib/external-open";
 import {
   ANTI_CHEAT_ENUM,
   GENRE_ENUM,
@@ -138,24 +139,32 @@ export function BulkEditDrawer({ appids, onClose, onCommitted }: Props) {
       const shardsLabel = t("bulk.shardsLabel", { count: result.shardsTouched.length });
       toast.success(t("bulk.bulkEditedToast", { count: result.modified }), {
         id: toastId,
+        duration: 15000,
         description: ctx.willSign
           ? `${sevenSha} · ${shardsLabel} · ${t("common.verifying")}`
           : `${sevenSha} · ${shardsLabel} · ${t("games.unsigned")}`,
         action: {
           label: t("verify.viewCommit"),
-          onClick: () => window.open(result.commit.htmlUrl, "_blank"),
+          onClick: (event) => {
+            event.preventDefault();
+            void openExternal(result.commit.htmlUrl);
+          },
         },
       });
       if (ctx.willSign) {
         void pollCommitVerification(result.commit.sha, auth.token).then((v) => {
           toast.success(t("bulk.bulkEditedToast", { count: result.modified }), {
             id: toastId,
+            duration: 15000,
             description: v.verified
               ? `${sevenSha} · ${shardsLabel} · ${t("verify.verified")}`
               : `${sevenSha} · ${shardsLabel} · ${t("verify.unverifiedReason", { reason: v.reason })}`,
             action: {
               label: t("verify.viewCommit"),
-              onClick: () => window.open(result.commit.htmlUrl, "_blank"),
+              onClick: (event) => {
+                event.preventDefault();
+                void openExternal(result.commit.htmlUrl);
+              },
             },
           });
         });
