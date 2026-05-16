@@ -1,6 +1,6 @@
 # Card Battler Games
 
-2 games · 2026-05-16 13:47 UTC
+2 games · 2026-05-16 13:48 UTC
 
 | # | Thumb | Game | Genre | Developer | Publisher | Released | Platforms | Languages | Reviews | Players | Anti-Cheat | Metacritic | Status | Description | Link | Notes |
 |---|-------|------|-------|-----------|-----------|----------|----------|-----------|---------|---------|------------|-----------|--------|-------------|------|-------|
