@@ -1,6 +1,6 @@
 # Clicker Games
 
-29 games · 2026-05-16 13:52 UTC
+29 games · 2026-05-16 14:01 UTC
 
 | # | Thumb | Game | Genre | Developer | Publisher | Released | Platforms | Languages | Reviews | Players | Anti-Cheat | Metacritic | Status | Description | Link | Notes |
 |---|-------|------|-------|-----------|-----------|----------|----------|-----------|---------|---------|------------|-----------|--------|-------------|------|-------|
