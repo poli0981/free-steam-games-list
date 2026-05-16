@@ -1,6 +1,6 @@
 # Bullet Hell Games
 
-18 games · 2026-05-16 14:39 UTC
+18 games · 2026-05-16 16:58 UTC
 
 | # | Thumb | Game | Genre | Developer | Publisher | Released | Platforms | Languages | Reviews | Players | Anti-Cheat | Metacritic | Status | Description | Link | Notes |
 |---|-------|------|-------|-----------|-----------|----------|----------|-----------|---------|---------|------------|-----------|--------|-------------|------|-------|
