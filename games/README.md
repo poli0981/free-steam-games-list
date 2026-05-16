@@ -1,6 +1,6 @@
 # 🎮 Steam F2P Tracker
 
-**1857 games** · 2026-05-16 14:31 UTC
+**1857 games** · 2026-05-16 14:33 UTC
 
 ## 📋 Full List
 
@@ -37,7 +37,7 @@
 | Bullet Hell | 18 | [bullet-hell.md](bullet-hell.md) |
 | Card Battler | 2 | [card-battler.md](card-battler.md) |
 | Card Game | 54 | [card-game.md](card-game.md) |
-| Casual | 21 | [casual.md](casual.md) |
+| Casual | 20 | [casual.md](casual.md) |
 | City Builder | 4 | [city-builder.md](city-builder.md) |
 | Clicker | 29 | [clicker.md](clicker.md) |
 | Cooking | 1 | [cooking.md](cooking.md) |
@@ -99,7 +99,7 @@
 | Souls-like | 5 | [souls-like.md](souls-like.md) |
 | Sports | 27 | [sports.md](sports.md) |
 | Stealth | 3 | [stealth.md](stealth.md) |
-| Strategy | 54 | [strategy.md](strategy.md) |
+| Strategy | 55 | [strategy.md](strategy.md) |
 | Surreal | 1 | [surreal.md](surreal.md) |
 | Survival | 4 | [survival.md](survival.md) |
 | Tactical RPG | 1 | [tactical-rpg.md](tactical-rpg.md) |
