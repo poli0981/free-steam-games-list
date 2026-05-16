@@ -1,6 +1,6 @@
 # Roguelike Games
 
-22 games · 2026-05-16 04:35 UTC
+22 games · 2026-05-16 04:36 UTC
 
 | # | Thumb | Game | Genre | Developer | Publisher | Released | Platforms | Languages | Reviews | Players | Anti-Cheat | Metacritic | Status | Description | Link | Notes |
 |---|-------|------|-------|-----------|-----------|----------|----------|-----------|---------|---------|------------|-----------|--------|-------------|------|-------|
