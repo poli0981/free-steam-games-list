@@ -1,6 +1,6 @@
 # Strategy Games
 
-55 games · 2026-05-16 14:37 UTC
+55 games · 2026-05-16 14:39 UTC
 
 | # | Thumb | Game | Genre | Developer | Publisher | Released | Platforms | Languages | Reviews | Players | Anti-Cheat | Metacritic | Status | Description | Link | Notes |
 |---|-------|------|-------|-----------|-----------|----------|----------|-----------|---------|---------|------------|-----------|--------|-------------|------|-------|
