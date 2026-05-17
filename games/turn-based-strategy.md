@@ -1,6 +1,6 @@
 # Turn-based Strategy Games
 
-17 games · 2026-05-17 03:50 UTC
+17 games · 2026-05-17 03:53 UTC
 
 | # | Thumb | Game | Genre | Developer | Publisher | Released | Platforms | Languages | Reviews | Players | Anti-Cheat | Metacritic | Status | Description | Link | Notes |
 |---|-------|------|-------|-----------|-----------|----------|----------|-----------|---------|---------|------------|-----------|--------|-------------|------|-------|
