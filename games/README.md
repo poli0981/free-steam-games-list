@@ -1,6 +1,6 @@
 # 🎮 Steam F2P Tracker
 
-**1857 games** · 2026-05-17 04:22 UTC
+**1857 games** · 2026-05-17 04:24 UTC
 
 ## 📋 Full List
 
@@ -107,11 +107,10 @@
 | Top-down Shooter | 14 | [top-down-shooter.md](top-down-shooter.md) |
 | Top-down Survival | 1 | [top-down-survival.md](top-down-survival.md) |
 | Tower Defense | 10 | [tower-defense.md](tower-defense.md) |
-| Turn-Based Tactics | 1 | [turn-based-tactics.md](turn-based-tactics.md) |
 | Turn-based Combat | 4 | [turn-based-combat.md](turn-based-combat.md) |
 | Turn-based RPG | 6 | [turn-based-rpg.md](turn-based-rpg.md) |
 | Turn-based Strategy | 17 | [turn-based-strategy.md](turn-based-strategy.md) |
-| Turn-based Tactics | 9 | [turn-based-tactics.md](turn-based-tactics.md) |
+| Turn-based Tactics | 10 | [turn-based-tactics.md](turn-based-tactics.md) |
 | Visual Novel | 430 | [visual-novel.md](visual-novel.md) |
 | Walking Simulator | 1 | [walking-simulator.md](walking-simulator.md) |
 | Word Game | 1 | [word-game.md](word-game.md) |
