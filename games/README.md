@@ -1,6 +1,6 @@
 # 🎮 Steam F2P Tracker
 
-**1857 games** · 2026-05-17 05:59 UTC
+**1870 games** · 2026-05-17 06:02 UTC
 
 ## 📋 Full List
 
@@ -23,10 +23,10 @@
 | Action | 128 | [action.md](action.md) |
 | Action RPG | 6 | [action-rpg.md](action-rpg.md) |
 | Action-Adventure | 3 | [action-adventure.md](action-adventure.md) |
-| Adventure | 127 | [adventure.md](adventure.md) |
-| Arcade | 16 | [arcade.md](arcade.md) |
+| Adventure | 128 | [adventure.md](adventure.md) |
+| Arcade | 17 | [arcade.md](arcade.md) |
 | Arena Shooter | 8 | [arena-shooter.md](arena-shooter.md) |
-| Auto Battler | 2 | [auto-battler.md](auto-battler.md) |
+| Auto Battler | 3 | [auto-battler.md](auto-battler.md) |
 | Automation | 1 | [automation.md](automation.md) |
 | Battle Royale | 20 | [battle-royale.md](battle-royale.md) |
 | Beat 'em up | 10 | [beat-'em-up.md](beat-'em-up.md) |
@@ -40,7 +40,7 @@
 | Clicker | 30 | [clicker.md](clicker.md) |
 | Cooking | 1 | [cooking.md](cooking.md) |
 | Cozy | 4 | [cozy.md](cozy.md) |
-| Crafting | 2 | [crafting.md](crafting.md) |
+| Crafting | 3 | [crafting.md](crafting.md) |
 | Dating Sim | 10 | [dating-sim.md](dating-sim.md) |
 | Deckbuilding | 1 | [deckbuilding.md](deckbuilding.md) |
 | Dungeon Crawler | 4 | [dungeon-crawler.md](dungeon-crawler.md) |
@@ -71,10 +71,10 @@
 | Parkour | 1 | [parkour.md](parkour.md) |
 | Party Game | 7 | [party-game.md](party-game.md) |
 | Party-Based RPG | 2 | [party-based-rpg.md](party-based-rpg.md) |
-| Platformer | 86 | [platformer.md](platformer.md) |
+| Platformer | 87 | [platformer.md](platformer.md) |
 | Point & Click | 8 | [point-&-click.md](point-&-click.md) |
 | Programming | 1 | [programming.md](programming.md) |
-| Puzzle | 103 | [puzzle.md](puzzle.md) |
+| Puzzle | 108 | [puzzle.md](puzzle.md) |
 | RPG | 9 | [rpg.md](rpg.md) |
 | RTS | 8 | [rts.md](rts.md) |
 | Racing | 14 | [racing.md](racing.md) |
@@ -86,13 +86,13 @@
 | Score Attack | 1 | [score-attack.md](score-attack.md) |
 | Shoot 'em up | 5 | [shoot-'em-up.md](shoot-'em-up.md) |
 | Shooter | 4 | [shooter.md](shooter.md) |
-| Simulation | 93 | [simulation.md](simulation.md) |
+| Simulation | 94 | [simulation.md](simulation.md) |
 | Social Deduction | 2 | [social-deduction.md](social-deduction.md) |
 | Software | 1 | [software.md](software.md) |
 | Souls-like | 5 | [souls-like.md](souls-like.md) |
 | Sports | 28 | [sports.md](sports.md) |
 | Stealth | 3 | [stealth.md](stealth.md) |
-| Strategy | 56 | [strategy.md](strategy.md) |
+| Strategy | 57 | [strategy.md](strategy.md) |
 | Surreal | 1 | [surreal.md](surreal.md) |
 | Survival | 4 | [survival.md](survival.md) |
 | Tactical RPG | 1 | [tactical-rpg.md](tactical-rpg.md) |
@@ -102,7 +102,7 @@
 | Top-Down Shooter | 3 | [top-down-shooter.md](top-down-shooter.md) |
 | Top-down Shooter | 14 | [top-down-shooter.md](top-down-shooter.md) |
 | Top-down Survival | 1 | [top-down-survival.md](top-down-survival.md) |
-| Tower Defense | 10 | [tower-defense.md](tower-defense.md) |
+| Tower Defense | 11 | [tower-defense.md](tower-defense.md) |
 | Turn-based Combat | 4 | [turn-based-combat.md](turn-based-combat.md) |
 | Turn-based RPG | 6 | [turn-based-rpg.md](turn-based-rpg.md) |
 | Turn-based Strategy | 17 | [turn-based-strategy.md](turn-based-strategy.md) |
