@@ -1,6 +1,6 @@
 # Turn-based Tactics Games
 
-9 games · 2026-05-17 02:10 UTC
+9 games · 2026-05-17 02:18 UTC
 
 | # | Thumb | Game | Genre | Developer | Publisher | Released | Platforms | Languages | Reviews | Players | Anti-Cheat | Metacritic | Status | Description | Link | Notes |
 |---|-------|------|-------|-----------|-----------|----------|----------|-----------|---------|---------|------------|-----------|--------|-------------|------|-------|
