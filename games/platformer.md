@@ -1,6 +1,6 @@
 # Platformer Games
 
-87 games · 2026-05-17 06:02 UTC
+87 games · 2026-05-17 06:03 UTC
 
 | # | Thumb | Game | Genre | Developer | Publisher | Released | Platforms | Languages | Reviews | Players | Anti-Cheat | Metacritic | Status | Description | Link | Notes |
 |---|-------|------|-------|-----------|-----------|----------|----------|-----------|---------|---------|------------|-----------|--------|-------------|------|-------|
