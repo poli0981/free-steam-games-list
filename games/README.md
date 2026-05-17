@@ -1,6 +1,6 @@
 # 🎮 Steam F2P Tracker
 
-**1857 games** · 2026-05-17 04:06 UTC
+**1857 games** · 2026-05-17 04:13 UTC
 
 ## 📋 Full List
 
@@ -25,7 +25,7 @@
 | Action RPG, Gacha | 2 | [action-rpg-gacha.md](action-rpg-gacha.md) |
 | Action-Adventure | 3 | [action-adventure.md](action-adventure.md) |
 | Adventure | 127 | [adventure.md](adventure.md) |
-| Arcade | 15 | [arcade.md](arcade.md) |
+| Arcade | 16 | [arcade.md](arcade.md) |
 | Arena Shooter | 8 | [arena-shooter.md](arena-shooter.md) |
 | Auto Battler | 2 | [auto-battler.md](auto-battler.md) |
 | Automation | 1 | [automation.md](automation.md) |
@@ -37,7 +37,6 @@
 | Bullet Hell | 18 | [bullet-hell.md](bullet-hell.md) |
 | Card Battler | 2 | [card-battler.md](card-battler.md) |
 | Card Game | 55 | [card-game.md](card-game.md) |
-| Casual | 1 | [casual.md](casual.md) |
 | City Builder | 4 | [city-builder.md](city-builder.md) |
 | Clicker | 30 | [clicker.md](clicker.md) |
 | Cooking | 1 | [cooking.md](cooking.md) |
