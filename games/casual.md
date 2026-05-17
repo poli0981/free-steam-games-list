@@ -1,6 +1,6 @@
 # Casual Games
 
-5 games · 2026-05-17 03:45 UTC
+4 games · 2026-05-17 03:50 UTC
 
 | # | Thumb | Game | Genre | Developer | Publisher | Released | Platforms | Languages | Reviews | Players | Anti-Cheat | Metacritic | Status | Description | Link | Notes |
 |---|-------|------|-------|-----------|-----------|----------|----------|-----------|---------|---------|------------|-----------|--------|-------------|------|-------|
@@ -8,4 +8,3 @@
 | 2 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3607790/b6e14f8cd9c23a90b6218b669bda61b01ec6df49/capsule_184x69.jpg?t=1776086518' width='120' loading='lazy'> | Brick Breaker Maker | Casual | Unseenstone | Unseenstone | 19 Apr, 2025 | Windows | 15 langs | 98% (Very Positive) | 2 | - | N/A | ✅ | Brick Breaker Maker is a rich, element-based Arkanoid game in which you need to flexibly control the baffle to bounce th... | [Steam](https://store.steampowered.com/app/3607790/) | Not reviewed yet |
 | 3 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1453490/capsule_184x69.jpg?t=1686941870' width='120' loading='lazy'> | Deducto | Casual | Red Fox Studios | Red Fox Studios | 11 Feb, 2022 | Windows | English | 90% (Very Positive) | 3 | - | N/A | ✅ | A fun hidden role game where you backstab your co-workers and get mad at your co-workers for backstabbing you. | [Steam](https://store.steampowered.com/app/1453490/) | Có DLC trả phí |
 | 4 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/389570/capsule_184x69.jpg?t=1693794150' width='120' loading='lazy'> | Mitos.is: The Game | Casual | Freakinware Studios | Freakinware Studios | 29 Jul, 2015 | Windows, macOS | 19 langs | 81% (Very Positive) | 40 | - | N/A | ✅ | Step into the microscopic world of Mitos. | [Steam](https://store.steampowered.com/app/389570/) | Not reviewed yet |
-| 5 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4335440/8dca3ee43268b318d8b9bd649704ab065e03629c/capsule_184x69.jpg?t=1774297290' width='120' loading='lazy'> | Focus Knight: Productivity RPG | Casual | Trailwinds Studios | Trailwinds Studios | Mar 23, 2026 | Windows | 6 langs | 68% (Mixed) | 5 |  | N/A | ✅ | Focus Knight is a relaxing focus and productivity RPG. | [Steam](https://store.steampowered.com/app/4335440/) | Not reviewed yet |
