@@ -1,6 +1,6 @@
 # 🎮 Steam F2P Tracker
 
-**1857 games** · 2026-05-17 04:20 UTC
+**1857 games** · 2026-05-17 04:22 UTC
 
 ## 📋 Full List
 
@@ -51,8 +51,7 @@
 | FMV | 4 | [fmv.md](fmv.md) |
 | FPS | 36 | [fps.md](fps.md) |
 | Farming Sim | 2 | [farming-sim.md](farming-sim.md) |
-| Fighter | 1 | [fighter.md](fighter.md) |
-| Fighting | 11 | [fighting.md](fighting.md) |
+| Fighting | 12 | [fighting.md](fighting.md) |
 | Fishing | 1 | [fishing.md](fishing.md) |
 | Gambling | 3 | [gambling.md](gambling.md) |
 | Hack & Slash | 9 | [hack-&-slash.md](hack-&-slash.md) |
