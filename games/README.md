@@ -1,6 +1,6 @@
 # 🎮 Steam F2P Tracker
 
-**1870 games** · 2026-05-17 06:03 UTC
+**1870 games** · 2026-05-17 06:07 UTC
 
 ## 📋 Full List
 
@@ -19,7 +19,7 @@
 
 | Genre | # | File |
 |-------|---|------|
-| 2D Fighter | 2 | [2d-fighter.md](2d-fighter.md) |
+| 2D Fighter | 1 | [2d-fighter.md](2d-fighter.md) |
 | Action | 128 | [action.md](action.md) |
 | Action RPG | 6 | [action-rpg.md](action-rpg.md) |
 | Action-Adventure | 3 | [action-adventure.md](action-adventure.md) |
@@ -50,7 +50,7 @@
 | FMV | 4 | [fmv.md](fmv.md) |
 | FPS | 36 | [fps.md](fps.md) |
 | Farming Sim | 2 | [farming-sim.md](farming-sim.md) |
-| Fighting | 12 | [fighting.md](fighting.md) |
+| Fighting | 13 | [fighting.md](fighting.md) |
 | Fishing | 1 | [fishing.md](fishing.md) |
 | Gambling | 3 | [gambling.md](gambling.md) |
 | Hack & Slash | 9 | [hack-&-slash.md](hack-&-slash.md) |
