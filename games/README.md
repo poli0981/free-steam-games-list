@@ -1,6 +1,6 @@
 # 🎮 Steam F2P Tracker
 
-**1857 games** · 2026-05-17 02:03 UTC
+**1857 games** · 2026-05-17 02:04 UTC
 
 ## 📋 Full List
 
@@ -81,9 +81,9 @@
 | Programming | 1 | [programming.md](programming.md) |
 | Puzzle | 103 | [puzzle.md](puzzle.md) |
 | RPG | 8 | [rpg.md](rpg.md) |
-| RTS | 6 | [rts.md](rts.md) |
+| RTS | 5 | [rts.md](rts.md) |
 | Racing | 14 | [racing.md](racing.md) |
-| Real-Time Strategy | 1 | [real-time-strategy.md](real-time-strategy.md) |
+| Real-Time Strategy | 2 | [real-time-strategy.md](real-time-strategy.md) |
 | Retro | 1 | [retro.md](retro.md) |
 | Rhythm | 14 | [rhythm.md](rhythm.md) |
 | Roguelike | 22 | [roguelike.md](roguelike.md) |

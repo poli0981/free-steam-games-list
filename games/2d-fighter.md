@@ -1,6 +1,6 @@
 # 2D Fighter Games
 
-2 games · 2026-05-17 02:03 UTC
+2 games · 2026-05-17 02:04 UTC
 
 | # | Thumb | Game | Genre | Developer | Publisher | Released | Platforms | Languages | Reviews | Players | Anti-Cheat | Metacritic | Status | Description | Link | Notes |
 |---|-------|------|-------|-----------|-----------|----------|----------|-----------|---------|---------|------------|-----------|--------|-------------|------|-------|
