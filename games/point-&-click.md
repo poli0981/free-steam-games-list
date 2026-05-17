@@ -1,6 +1,6 @@
 # Point & Click Games
 
-8 games · 2026-05-17 02:05 UTC
+8 games · 2026-05-17 02:10 UTC
 
 | # | Thumb | Game | Genre | Developer | Publisher | Released | Platforms | Languages | Reviews | Players | Anti-Cheat | Metacritic | Status | Description | Link | Notes |
 |---|-------|------|-------|-----------|-----------|----------|----------|-----------|---------|---------|------------|-----------|--------|-------------|------|-------|
