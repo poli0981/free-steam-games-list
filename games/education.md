@@ -1,6 +1,6 @@
 # Education Games
 
-2 games · 2026-05-17 02:38 UTC
+2 games · 2026-05-17 02:46 UTC
 
 | # | Thumb | Game | Genre | Developer | Publisher | Released | Platforms | Languages | Reviews | Players | Anti-Cheat | Metacritic | Status | Description | Link | Notes |
 |---|-------|------|-------|-----------|-----------|----------|----------|-----------|---------|---------|------------|-----------|--------|-------------|------|-------|

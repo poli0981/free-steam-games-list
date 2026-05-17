@@ -1,6 +1,6 @@
 # 🎮 Steam F2P Tracker
 
-**1857 games** · 2026-05-17 02:38 UTC
+**1857 games** · 2026-05-17 02:46 UTC
 
 ## 📋 Full List
 
@@ -37,7 +37,7 @@
 | Bullet Hell | 18 | [bullet-hell.md](bullet-hell.md) |
 | Card Battler | 2 | [card-battler.md](card-battler.md) |
 | Card Game | 55 | [card-game.md](card-game.md) |
-| Casual | 8 | [casual.md](casual.md) |
+| Casual | 7 | [casual.md](casual.md) |
 | City Builder | 4 | [city-builder.md](city-builder.md) |
 | Clicker | 30 | [clicker.md](clicker.md) |
 | Cooking | 1 | [cooking.md](cooking.md) |
@@ -59,7 +59,7 @@
 | Hack & Slash | 9 | [hack-&-slash.md](hack-&-slash.md) |
 | Hacking | 1 | [hacking.md](hacking.md) |
 | Hero Shooter | 3 | [hero-shooter.md](hero-shooter.md) |
-| Hidden Object | 38 | [hidden-object.md](hidden-object.md) |
+| Hidden Object | 39 | [hidden-object.md](hidden-object.md) |
 | Horror | 139 | [horror.md](horror.md) |
 | Idler | 20 | [idler.md](idler.md) |
 | Interactive Fiction | 1 | [interactive-fiction.md](interactive-fiction.md) |
