@@ -1,6 +1,6 @@
 # Racing Games
 
-14 games · 2026-05-17 06:11 UTC
+14 games · 2026-05-17 11:23 UTC
 
 | # | Thumb | Game | Genre | Developer | Publisher | Released | Platforms | Languages | Reviews | Players | Anti-Cheat | Metacritic | Status | Description | Link | Notes |
 |---|-------|------|-------|-----------|-----------|----------|----------|-----------|---------|---------|------------|-----------|--------|-------------|------|-------|
@@ -17,4 +17,4 @@
 | 11 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2249600/3d23657f5a8a7cefe39d0fdaa16449f49067321e/capsule_184x69.jpg?t=1775724469' width='120' loading='lazy'> | Drag Racing 3D: Streets 2 | Racing | Code Prime FZ LLC | Code Prime FZ LLC | 28 Nov, 2024 | Windows, Linux | 4 langs | 74% (Mostly Positive) | 34 | - | N/A | ✅ | A one-of-a-kind drag racing game. | [Steam](https://store.steampowered.com/app/2249600/) | Not reviewed yet |
 | 12 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3273690/capsule_184x69.jpg?t=1766407161' width='120' loading='lazy'> | Hypercar Evolution 2025 | Racing | Petr Šimůnek | Petr Šimůnek | Dec 22, 2025 | Windows | 21 langs | 64% (Mixed) | 0 |  | N/A | ✅ | The first-ever true MMO hypercar racing game is here! Play with up to 39 friends!. | [Steam](https://store.steampowered.com/app/3273690/) | Not reviewed yet |
 | 13 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3273680/capsule_184x69.jpg?t=1767022451' width='120' loading='lazy'> | Supercar Evolution 2025 | Racing | Petr Šimůnek | Petr Šimůnek | Dec 29, 2025 | Windows | 21 langs | 57% (Mixed) | 1 |  | N/A | ✅ | The first-ever true MMO supercar racing game is here! Play with up to 39 friends!. | [Steam](https://store.steampowered.com/app/3273680/) | Not reviewed yet |
-| 14 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4384290/c32a067f7b3287e0bd42843e5e63214bb53e9db1/capsule_184x69.jpg?t=1778791571' width='120' loading='lazy'> | Rocket Cars | Racing | GenKAKR | GenKAKR | 14 May, 2026 | Windows | English | 43% (7 user reviews) | 1 | - | N/A | ✅ | Rocket-powered cars meet competitive soccer in intense 3v3 matches. | [Steam](https://store.steampowered.com/app/4384290/) | Not reviewed yet |
+| 14 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4384290/c32a067f7b3287e0bd42843e5e63214bb53e9db1/capsule_184x69.jpg?t=1778791571' width='120' loading='lazy'> | Rocket Cars | Racing | GenKAKR | GenKAKR | 14 May, 2026 | Windows | English | 57% (Mixed) | 1 | - | N/A | ✅ | Rocket-powered cars meet competitive soccer in intense 3v3 matches. | [Steam](https://store.steampowered.com/app/4384290/) | Not reviewed yet |

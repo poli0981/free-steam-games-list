@@ -1,6 +1,6 @@
 # 🎮 Steam F2P Tracker
 
-**1870 games** · 2026-05-17 06:11 UTC
+**1885 games** · 2026-05-17 11:23 UTC
 
 ## 📋 Full List
 
@@ -19,11 +19,11 @@
 
 | Genre | # | File |
 |-------|---|------|
-| Action | 128 | [action.md](action.md) |
+| Action | 132 | [action.md](action.md) |
 | Action RPG | 6 | [action-rpg.md](action-rpg.md) |
 | Action-Adventure | 3 | [action-adventure.md](action-adventure.md) |
-| Adventure | 128 | [adventure.md](adventure.md) |
-| Arcade | 17 | [arcade.md](arcade.md) |
+| Adventure | 130 | [adventure.md](adventure.md) |
+| Arcade | 18 | [arcade.md](arcade.md) |
 | Arena Shooter | 8 | [arena-shooter.md](arena-shooter.md) |
 | Auto Battler | 3 | [auto-battler.md](auto-battler.md) |
 | Automation | 1 | [automation.md](automation.md) |
@@ -55,7 +55,7 @@
 | Hack & Slash | 9 | [hack-&-slash.md](hack-&-slash.md) |
 | Hacking | 1 | [hacking.md](hacking.md) |
 | Hero Shooter | 3 | [hero-shooter.md](hero-shooter.md) |
-| Hidden Object | 39 | [hidden-object.md](hidden-object.md) |
+| Hidden Object | 41 | [hidden-object.md](hidden-object.md) |
 | Horror | 139 | [horror.md](horror.md) |
 | Idler | 20 | [idler.md](idler.md) |
 | Interactive Fiction | 1 | [interactive-fiction.md](interactive-fiction.md) |
@@ -70,10 +70,10 @@
 | Parkour | 1 | [parkour.md](parkour.md) |
 | Party Game | 7 | [party-game.md](party-game.md) |
 | Party-Based RPG | 2 | [party-based-rpg.md](party-based-rpg.md) |
-| Platformer | 87 | [platformer.md](platformer.md) |
+| Platformer | 89 | [platformer.md](platformer.md) |
 | Point & Click | 8 | [point-&-click.md](point-&-click.md) |
 | Programming | 1 | [programming.md](programming.md) |
-| Puzzle | 108 | [puzzle.md](puzzle.md) |
+| Puzzle | 109 | [puzzle.md](puzzle.md) |
 | RPG | 9 | [rpg.md](rpg.md) |
 | RTS | 8 | [rts.md](rts.md) |
 | Racing | 14 | [racing.md](racing.md) |
@@ -85,13 +85,13 @@
 | Score Attack | 1 | [score-attack.md](score-attack.md) |
 | Shoot 'em up | 5 | [shoot-'em-up.md](shoot-'em-up.md) |
 | Shooter | 4 | [shooter.md](shooter.md) |
-| Simulation | 94 | [simulation.md](simulation.md) |
+| Simulation | 95 | [simulation.md](simulation.md) |
 | Social Deduction | 2 | [social-deduction.md](social-deduction.md) |
 | Software | 1 | [software.md](software.md) |
 | Souls-like | 5 | [souls-like.md](souls-like.md) |
 | Sports | 28 | [sports.md](sports.md) |
 | Stealth | 3 | [stealth.md](stealth.md) |
-| Strategy | 57 | [strategy.md](strategy.md) |
+| Strategy | 58 | [strategy.md](strategy.md) |
 | Surreal | 1 | [surreal.md](surreal.md) |
 | Survival | 4 | [survival.md](survival.md) |
 | Tactical RPG | 1 | [tactical-rpg.md](tactical-rpg.md) |
@@ -106,7 +106,7 @@
 | Turn-based RPG | 6 | [turn-based-rpg.md](turn-based-rpg.md) |
 | Turn-based Strategy | 17 | [turn-based-strategy.md](turn-based-strategy.md) |
 | Turn-based Tactics | 10 | [turn-based-tactics.md](turn-based-tactics.md) |
-| Visual Novel | 431 | [visual-novel.md](visual-novel.md) |
+| Visual Novel | 432 | [visual-novel.md](visual-novel.md) |
 | Walking Simulator | 1 | [walking-simulator.md](walking-simulator.md) |
 | Word Game | 1 | [word-game.md](word-game.md) |
 
