@@ -1,6 +1,6 @@
 # Simulation Games
 
-92 games · 2026-05-17 02:46 UTC
+92 games · 2026-05-17 02:51 UTC
 
 | # | Thumb | Game | Genre | Developer | Publisher | Released | Platforms | Languages | Reviews | Players | Anti-Cheat | Metacritic | Status | Description | Link | Notes |
 |---|-------|------|-------|-----------|-----------|----------|----------|-----------|---------|---------|------------|-----------|--------|-------------|------|-------|
