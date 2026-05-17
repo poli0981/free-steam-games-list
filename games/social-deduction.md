@@ -1,6 +1,6 @@
 # Social Deduction Games
 
-2 games · 2026-05-17 06:07 UTC
+2 games · 2026-05-17 06:11 UTC
 
 | # | Thumb | Game | Genre | Developer | Publisher | Released | Platforms | Languages | Reviews | Players | Anti-Cheat | Metacritic | Status | Description | Link | Notes |
 |---|-------|------|-------|-----------|-----------|----------|----------|-----------|---------|---------|------------|-----------|--------|-------------|------|-------|
