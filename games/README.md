@@ -1,6 +1,6 @@
 # 🎮 Steam F2P Tracker
 
-**1857 games** · 2026-05-17 05:52 UTC
+**1857 games** · 2026-05-17 05:54 UTC
 
 ## 📋 Full List
 
@@ -79,7 +79,6 @@
 | RPG | 9 | [rpg.md](rpg.md) |
 | RTS | 8 | [rts.md](rts.md) |
 | Racing | 14 | [racing.md](racing.md) |
-| Retro | 1 | [retro.md](retro.md) |
 | Rhythm | 14 | [rhythm.md](rhythm.md) |
 | Roguelike | 22 | [roguelike.md](roguelike.md) |
 | Roguelite | 5 | [roguelite.md](roguelite.md) |
@@ -109,7 +108,7 @@
 | Turn-based RPG | 6 | [turn-based-rpg.md](turn-based-rpg.md) |
 | Turn-based Strategy | 17 | [turn-based-strategy.md](turn-based-strategy.md) |
 | Turn-based Tactics | 10 | [turn-based-tactics.md](turn-based-tactics.md) |
-| Visual Novel | 430 | [visual-novel.md](visual-novel.md) |
+| Visual Novel | 431 | [visual-novel.md](visual-novel.md) |
 | Walking Simulator | 1 | [walking-simulator.md](walking-simulator.md) |
 | Word Game | 1 | [word-game.md](word-game.md) |
 
