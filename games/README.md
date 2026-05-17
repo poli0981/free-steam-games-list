@@ -1,6 +1,6 @@
 # 🎮 Steam F2P Tracker
 
-**1857 games** · 2026-05-17 02:51 UTC
+**1857 games** · 2026-05-17 03:45 UTC
 
 ## 📋 Full List
 
@@ -37,7 +37,7 @@
 | Bullet Hell | 18 | [bullet-hell.md](bullet-hell.md) |
 | Card Battler | 2 | [card-battler.md](card-battler.md) |
 | Card Game | 55 | [card-game.md](card-game.md) |
-| Casual | 6 | [casual.md](casual.md) |
+| Casual | 5 | [casual.md](casual.md) |
 | City Builder | 4 | [city-builder.md](city-builder.md) |
 | Clicker | 30 | [clicker.md](clicker.md) |
 | Cooking | 1 | [cooking.md](cooking.md) |
@@ -113,7 +113,7 @@
 | Turn-Based Tactics | 1 | [turn-based-tactics.md](turn-based-tactics.md) |
 | Turn-based Combat | 4 | [turn-based-combat.md](turn-based-combat.md) |
 | Turn-based RPG | 6 | [turn-based-rpg.md](turn-based-rpg.md) |
-| Turn-based Strategy | 16 | [turn-based-strategy.md](turn-based-strategy.md) |
+| Turn-based Strategy | 17 | [turn-based-strategy.md](turn-based-strategy.md) |
 | Turn-based Tactics | 9 | [turn-based-tactics.md](turn-based-tactics.md) |
 | Visual Novel | 430 | [visual-novel.md](visual-novel.md) |
 | Walking Simulator | 1 | [walking-simulator.md](walking-simulator.md) |
