@@ -1,6 +1,6 @@
 # 🎮 Steam F2P Tracker
 
-**2104 games** · 2026-05-18 07:44 UTC
+**2099 games** · 2026-05-18 09:56 UTC
 
 ## 📋 Full List
 
@@ -22,7 +22,7 @@
 |-------|---|------|
 | Action | 178 | [action.md](action.md) |
 | Action RPG | 6 | [action-rpg.md](action-rpg.md) |
-| Action-Adventure | 3 | [action-adventure.md](action-adventure.md) |
+| Action-Adventure | 2 | [action-adventure.md](action-adventure.md) |
 | Adventure | 147 | [adventure.md](adventure.md) |
 | Arcade | 22 | [arcade.md](arcade.md) |
 | Arena Shooter | 9 | [arena-shooter.md](arena-shooter.md) |
@@ -48,7 +48,7 @@
 | Dungeon Crawler | 4 | [dungeon-crawler.md](dungeon-crawler.md) |
 | Education | 2 | [education.md](education.md) |
 | Exploration | 7 | [exploration.md](exploration.md) |
-| Extraction Shooter | 2 | [extraction-shooter.md](extraction-shooter.md) |
+| Extraction Shooter | 1 | [extraction-shooter.md](extraction-shooter.md) |
 | FMV | 4 | [fmv.md](fmv.md) |
 | FPS | 43 | [fps.md](fps.md) |
 | Farming Sim | 2 | [farming-sim.md](farming-sim.md) |
@@ -75,7 +75,7 @@
 | Parkour | 1 | [parkour.md](parkour.md) |
 | Party Game | 7 | [party-game.md](party-game.md) |
 | Party-Based RPG | 2 | [party-based-rpg.md](party-based-rpg.md) |
-| Platformer | 100 | [platformer.md](platformer.md) |
+| Platformer | 99 | [platformer.md](platformer.md) |
 | Point & Click | 9 | [point-&-click.md](point-&-click.md) |
 | Programming | 1 | [programming.md](programming.md) |
 | Puzzle | 130 | [puzzle.md](puzzle.md) |
@@ -84,7 +84,7 @@
 | Racing | 19 | [racing.md](racing.md) |
 | Rhythm | 15 | [rhythm.md](rhythm.md) |
 | Roguelike | 28 | [roguelike.md](roguelike.md) |
-| Roguelite | 5 | [roguelite.md](roguelite.md) |
+| Roguelite | 3 | [roguelite.md](roguelite.md) |
 | Runner | 1 | [runner.md](runner.md) |
 | Sandbox | 3 | [sandbox.md](sandbox.md) |
 | Score Attack | 1 | [score-attack.md](score-attack.md) |

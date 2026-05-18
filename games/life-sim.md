@@ -1,8 +1,8 @@
 # Life Sim Games
 
-2 games · 2026-05-18 07:44 UTC
+2 games · 2026-05-18 09:56 UTC
 
 | # | Thumb | Game | Genre | Developer | Publisher | Released | Platforms | Languages | Reviews | Players | Anti-Cheat | Metacritic | Status | Description | Link | Notes |
 |---|-------|------|-------|-----------|-----------|----------|----------|-----------|---------|---------|------------|-----------|--------|-------------|------|-------|
-| 1 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1222670/capsule_184x69.jpg?t=1773766845' width='120' loading='lazy'> | The Sims™ 4 | Life Sim | Maxis | Electronic Arts | Jun 18, 2020 | Windows | 18 langs | 87% (Very Positive) | 17,044 |  | N/A | ✅ | Play with life and discover the possibilities. | [Steam](https://store.steampowered.com/app/1222670/) | Not reviewed yet |
-| 2 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2707930/b083c84354a491693c46203f64e25eaaf7b78356/capsule_184x69.jpg?t=1747075758' width='120' loading='lazy'> | Palia | Life Sim | Singularity 6 Corporation | Singularity 6 Corporation | Mar 25, 2024 | Windows | 10 langs | 86% (Very Positive) | 9,293 |  | N/A | ✅ | Discover a welcoming world in Palia, a free-to-play fantasy life sim adventure where you can craft, explore, and create ... | [Steam](https://store.steampowered.com/app/2707930/) | Not reviewed yet |
+| 1 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1222670/capsule_184x69.jpg?t=1773766845' width='120' loading='lazy'> | The Sims™ 4 | Life Sim | Maxis | Electronic Arts | Jun 18, 2020 | Windows | 18 langs | 87% (Very Positive) | 15,094 |  | N/A | ✅ | Play with life and discover the possibilities. | [Steam](https://store.steampowered.com/app/1222670/) | Not reviewed yet |
+| 2 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2707930/b083c84354a491693c46203f64e25eaaf7b78356/capsule_184x69.jpg?t=1747075758' width='120' loading='lazy'> | Palia | Life Sim | Singularity 6 Corporation | Singularity 6 Corporation | Mar 25, 2024 | Windows | 10 langs | 86% (Very Positive) | 6,099 |  | N/A | ✅ | Discover a welcoming world in Palia, a free-to-play fantasy life sim adventure where you can craft, explore, and create ... | [Steam](https://store.steampowered.com/app/2707930/) | Not reviewed yet |

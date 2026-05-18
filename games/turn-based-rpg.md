@@ -1,6 +1,6 @@
 # Turn-based RPG Games
 
-6 games · 2026-05-18 07:44 UTC
+6 games · 2026-05-18 09:56 UTC
 
 | # | Thumb | Game | Genre | Developer | Publisher | Released | Platforms | Languages | Reviews | Players | Anti-Cheat | Metacritic | Status | Description | Link | Notes |
 |---|-------|------|-------|-----------|-----------|----------|----------|-----------|---------|---------|------------|-----------|--------|-------------|------|-------|
@@ -9,4 +9,4 @@
 | 3 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4241150/548d0481e7b8c0fadc2f1e0e2c8c5193d74d7ab4/capsule_184x69.jpg?t=1768946477' width='120' loading='lazy'> | Untold Story | Turn-based RPG | Meowsticks Games | Meowsticks Games | Jan 5, 2026 | Windows | English | 86% (Positive) | 1 |  | N/A | ✅ | A modernized turn-based RPG. | [Steam](https://store.steampowered.com/app/4241150/) | Not reviewed yet |
 | 4 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2119270/capsule_184x69.jpg?t=1758144252' width='120' loading='lazy'> | Black Reliquary | Turn-based RPG | Team Reliquary ltd. | Team Reliquary ltd. | Mar 24, 2023 | Windows, Linux | English | 81% (Very Positive) | 27 |  | N/A | ✅ | Black Reliquary is a challenging overhaul mod for Darkest Dungeon, one which makes sweeping changes to gameplay, adds a ... | [Steam](https://store.steampowered.com/app/2119270/) | Not reviewed yet |
 | 5 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2147580/capsule_184x69.jpg?t=1672792703' width='120' loading='lazy'> | 1990 | Turn-based RPG | Laxluster Games LLC | Laxluster Games LLC | Oct 3, 2022 | Windows | English | 74% (Mostly Positive) | 0 |  | N/A | ✅ | 1990 is a fun, casual RPG with turn-based combat. | [Steam](https://store.steampowered.com/app/2147580/) | Not reviewed yet |
-| 6 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3279780/capsule_184x69.jpg?t=1766028273' width='120' loading='lazy'> | Horizon Walker | Turn-based RPG | Gentlemaniac | Gentlemaniac | Aug 24, 2025 | Windows | - | 73% (Mostly Positive) | 632 | nProtect GameGuard 🔴 | N/A | ✅ | Eat God, and you will have everything—the story of a human who devoured God. | [Steam](https://store.steampowered.com/app/3279780/) | Not reviewed yet |
+| 6 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3279780/capsule_184x69.jpg?t=1766028273' width='120' loading='lazy'> | Horizon Walker | Turn-based RPG | Gentlemaniac | Gentlemaniac | Aug 24, 2025 | Windows | - | 73% (Mostly Positive) | 460 | nProtect GameGuard 🔴 | N/A | ✅ | Eat God, and you will have everything—the story of a human who devoured God. | [Steam](https://store.steampowered.com/app/3279780/) | Not reviewed yet |
