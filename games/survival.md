@@ -1,6 +1,6 @@
 # Survival Games
 
-4 games · 2026-05-18 03:44 UTC
+4 games · 2026-05-18 07:38 UTC
 
 | # | Thumb | Game | Genre | Developer | Publisher | Released | Platforms | Languages | Reviews | Players | Anti-Cheat | Metacritic | Status | Description | Link | Notes |
 |---|-------|------|-------|-----------|-----------|----------|----------|-----------|---------|---------|------------|-----------|--------|-------------|------|-------|
