@@ -1,6 +1,6 @@
 # 🎮 Steam F2P Tracker
 
-**2035 games** · 2026-05-18 00:38 UTC
+**2035 games** · 2026-05-18 03:44 UTC
 
 ## 📋 Full List
 
@@ -99,8 +99,7 @@
 | Surreal | 1 | [surreal.md](surreal.md) |
 | Survival | 4 | [survival.md](survival.md) |
 | Tactical RPG | 1 | [tactical-rpg.md](tactical-rpg.md) |
-| Third-Person Shooter | 5 | [third-person-shooter.md](third-person-shooter.md) |
-| Third-person Shooter | 8 | [third-person-shooter.md](third-person-shooter.md) |
+| Third-person Shooter | 13 | [third-person-shooter.md](third-person-shooter.md) |
 | Top-Down | 1 | [top-down.md](top-down.md) |
 | Top-Down Shooter | 4 | [top-down-shooter.md](top-down-shooter.md) |
 | Top-down Shooter | 14 | [top-down-shooter.md](top-down-shooter.md) |
