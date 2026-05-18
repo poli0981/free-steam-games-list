@@ -1,6 +1,6 @@
 # Rhythm Games
 
-15 games · 2026-05-18 07:39 UTC
+15 games · 2026-05-18 07:44 UTC
 
 | # | Thumb | Game | Genre | Developer | Publisher | Released | Platforms | Languages | Reviews | Players | Anti-Cheat | Metacritic | Status | Description | Link | Notes |
 |---|-------|------|-------|-----------|-----------|----------|----------|-----------|---------|---------|------------|-----------|--------|-------------|------|-------|
