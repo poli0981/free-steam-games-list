@@ -1,6 +1,6 @@
 # Sports Games
 
-31 games · 2026-05-17 14:03 UTC
+31 games · 2026-05-18 00:38 UTC
 
 | # | Thumb | Game | Genre | Developer | Publisher | Released | Platforms | Languages | Reviews | Players | Anti-Cheat | Metacritic | Status | Description | Link | Notes |
 |---|-------|------|-------|-----------|-----------|----------|----------|-----------|---------|---------|------------|-----------|--------|-------------|------|-------|
@@ -34,4 +34,4 @@
 | 28 | <img src='https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/4513700/6f3c77dd629dcd150f01ff675864fc74dcc8bfbe/capsule_184x69.jpg?t=1775872183' width='120' loading='lazy'> | Glider Sim Lite – Soaring Simulator | Sports | Joey Sipos | 5D Realities | 11 Apr, 2026 | Windows | English | 56% (9 user reviews) | 0 | - | N/A | ✅ | The sky is yours. | [Steam](https://store.steampowered.com/app/4513700/) | Not reviewed yet |
 | 29 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3818350/de66f7fea947a0a01b5c0aea6c4e791d91221fb7/capsule_184x69.jpg?t=1772798402' width='120' loading='lazy'> | Pro Eleven | Sports | DONTEL | DONTEL | Mar 6, 2026 | Windows | 6 langs | 55% (Mixed) | 8 | PE Server-side Anti-Cheat System 🟢 | N/A | ✅ | PRO ELEVEN is an online football game supporting full 11v11 matches. | [Steam](https://store.steampowered.com/app/3818350/) | Not reviewed yet |
 | 30 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1657880/capsule_184x69.jpg?t=1745637521' width='120' loading='lazy'> | 3Cushion Masters | Sports | spogames | wmb | Jul 18, 2021 | Windows | 4 langs | 50% (Mixed) | 10 |  | N/A | ✅ | This is a game that has signed an official license contract with a professional sports league hosted by the Professional... | [Steam](https://store.steampowered.com/app/1657880/) | Not reviewed yet |
-| 31 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/367990/capsule_184x69.jpg?t=1774031645' width='120' loading='lazy'> | 3D Paraglider | Sports | N/A | N/A | Aug 3, 2015 | Windows, macOS, Linux | English | 44% (Mixed) | 1 |  | N/A | ✅ | Do you dream of flying without restrictions, getting as close as possible to mother nature? If yes, then 3D Paraglider i... | [Steam](https://store.steampowered.com/app/367990/) | Not reviewed yet |
+| 31 | <img src='https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/367990/capsule_184x69.jpg?t=1774031645' width='120' loading='lazy'> | 3D Paraglider | Sports | N/A | N/A | Aug 3, 2015 | Windows, macOS, Linux | English | 44% (Mixed) | 0 |  | N/A | ✅ | Do you dream of flying without restrictions, getting as close as possible to mother nature? If yes, then 3D Paraglider i... | [Steam](https://store.steampowered.com/app/367990/) | Not reviewed yet |
