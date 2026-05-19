@@ -11,7 +11,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from core.constants import REMOVED_JSONL, MANUAL_FIELDS
 from core.data_store import (
     load_main, save_main, load_temp, clear_temp,
-    load_jsonl, save_jsonl,
+    load_jsonl, save_jsonl, dedup_removed,
     normalize_link, extract_appid, build_index,
     make_skeleton, merge_extension_data, now_iso, is_empty,
 )
@@ -104,8 +104,7 @@ def main():
     save_main(games)
     if rejected:
         existing = load_jsonl(REMOVED_JSONL)
-        existing.extend(rejected)
-        save_jsonl(REMOVED_JSONL, existing)
+        save_jsonl(REMOVED_JSONL, dedup_removed(existing + rejected))
     clear_temp()
 
     print(f"\n{'─'*50}")

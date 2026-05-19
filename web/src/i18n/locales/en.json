@@ -10,10 +10,12 @@
     "languages": "Languages",
     "tags": "Tags",
     "antiCheat": "Anti-Cheat",
+    "antiCheatList": "AC Index",
     "reviews": "Reviews",
     "players": "Players",
     "time": "Time",
     "drmDlc": "DRM/DLC",
+    "delisted": "Delisted",
     "manage": "Manage",
     "health": "Health",
     "activity": "Activity",
@@ -108,8 +110,17 @@
   },
   "topOnline": {
     "title": "Top online",
-    "subtitle": "Top 50 currently most-played online F2P titles.",
-    "cardTitle": "Current players · top 50"
+    "subtitle": "Top 100 currently most-played online F2P titles.",
+    "cardTitle": "Current players · top 100"
+  },
+  "antiCheatList": {
+    "title": "Anti-Cheat Index",
+    "subtitle": "{{total}} active games grouped by {{families}} anti-cheat families.",
+    "families": "Families",
+    "game": "Game",
+    "genre": "Genre",
+    "kernel": "Kernel",
+    "players": "Players"
   },
   "topOffline": {
     "title": "Top offline",
@@ -202,6 +213,12 @@
       "title": "DRM & paid DLC",
       "subtitle": "F2P shouldn't mean clean — many titles still ship with third-party DRM and/or paid DLC. This breakdown helps spot the \"truly free\" pool.",
       "drmDlcBreakdown": "DRM × paid-DLC breakdown"
+    },
+    "delisted": {
+      "title": "Delisted games",
+      "subtitle": "{{count}} games that have been removed from the catalogue — either no longer free-to-play or fully delisted from Steam. Source: scripts/removed_games.jsonl.",
+      "timeline": "Removed per month (stacked by reason)",
+      "breakdown": "Removal reason"
     },
     "languages": {
       "title": "Languages",

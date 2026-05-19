@@ -2,9 +2,9 @@
 
 All notable changes to this awesome noob repo will be documented here.
 
-## [v3.2.4] – 2026-05-19 (The "Refactor & Charts" Edition)
+## [v3.2.4] – 2026-05-20 (The "Refactor + Removed-Games + Anti-Cheat Index" Edition)
 
-Patch release on top of v3.2.3. Internal cleanup + chart additions. Two dead scripts removed (`discord_notify.py`, `migrate_to_shards.py`); the oversized `EditGameDrawer.tsx` (718 LOC) and `GamesTable.tsx` (568 LOC) split into focused sub-modules under `web/src/components/games/edit/` and `web/src/components/games/table/`. Two new ECharts components — `TopOfflineBar` (mirror of `TopOnlineBar`, drives the new `/top-offline` page) and `AddedPerMonthBar` (added to the existing Time chart page). Web app + desktop bumped `1.2.3` → `1.2.4`. Repo public-facing version `3.2.3` → `3.2.4`.
+Patch release on top of v3.2.3, landed as two PRs. **PR #74 (cleanup):** two dead scripts removed, `EditGameDrawer.tsx` (718 LOC) and `GamesTable.tsx` (568 LOC) split into focused sub-modules, two new charts (`TopOfflineBar`, `AddedPerMonthBar`) wired to a fresh `/top-offline` page and the existing `/charts/time` page. **PR #75 (features):** the `scripts/removed_games.jsonl` log now passes through a `dedup_removed()` filter on every write (a one-time migration trimmed 6 historical duplicates), Top Online leaderboard expanded `50 → 100` to match Top Offline, a generated `games/anti-cheat-list.md` plus a `/charts/anti-cheat/list` web page group active games by anti-cheat family, and a new `/charts/delisted` page renders a timeline + reason breakdown of every removed-from-catalogue title. Web app + desktop bumped `1.2.3` → `1.2.4`. Repo public-facing version `3.2.3` → `3.2.4`. Tag `v3.2.4` is GPG-signed; companion desktop tag is `desktop-v1.2.4`.
 
 ### 🧹 Dead-script removal
 
@@ -28,13 +28,41 @@ Patch release on top of v3.2.3. Internal cleanup + chart additions. Two dead scr
 - `web/src/components/charts/TopOfflineBar.tsx` — mirror of `TopOnlineBar` but with offline-tier thresholds (20k/1.5k/300) calibrated to the `top_offline.py` scale instead of the online-only 100k/10k/1k palette. Filters `type_game !== "online" && status === "active"`, top 100 by `current_players`.
 - `web/src/pages/TopOffline.tsx` — new page at `/top-offline`, layout mirror of `TopOnlinePage`, registered in `App.tsx` and `Sidebar.tsx` (Trophy icon).
 - `web/src/components/charts/AddedPerMonthBar.tsx` — aggregates `records[*].added_at` into `YYYY-MM` buckets, renders an ECharts bar. Added as a third card to the existing `charts/Time.tsx` page alongside `ReleaseYearHistogram` + `AddedCumulativeLine`.
-- i18n keys `nav.topOffline`, `topOffline.{title,subtitle,cardTitle}`, `charts.time.addedPerMonth` added to `en.json` + `vi.json`.
 
-### 📝 Docs cleanup
+### 🗑️ Removed-games dedup
+
+- `scripts/core/data_store.py` — new `dedup_removed(records)` keeps the latest entry per appid (compared by `removed_at` ISO timestamp, lexicographic order matches chronological for `YYYY-MM-DDTHH:MM:SSZ`). Records without a resolvable appid are dropped.
+- `scripts/purge_unhealthy.py:41-43` and `scripts/ingest_new.py:106-108` — both call sites now write `dedup_removed(existing + log)` instead of `existing.extend(log)`. Same `save_jsonl` atomic-rename transaction, so partial writes can't leave duplicates.
+- `scripts/dedup_removed_games.py` (new) — one-shot CLI that loads, dedups, and rewrites the file. Run once locally as part of this release; idempotent, safe to re-run.
+- Result: existing log trimmed `43 → 37` records. Verified zero duplicate appids post-migration.
+
+### 🏆 Top Online expanded 50 → 100
+
+- `scripts/core/constants.py:81` — `TOP_ONLINE_LIMIT = 100` (was 50). Top Offline already 100.
+- `games/top-online.md` regenerated with 100 rows on next workflow tick; format unchanged (10-column table preserved).
+- `web/src/pages/TopOnline.tsx` — `<TopOnlineBar limit={100} height={1800}>` to match the new row count.
+- i18n strings `topOnline.{subtitle,cardTitle}` updated `Top 50 → Top 100` in both `en.json` and `vi.json`.
+
+### 🛡️ Anti-cheat list
+
+- `scripts/generate_anti_cheat_list.py` (new) — buckets active games by canonical AC name (`ANTI_CHEAT_PATTERNS` keys), with substring-match fallback for free-text values. Unrecognised values land in an `Other` bucket with a stderr warning. Output `games/anti-cheat-list.md`: H1 + TOC + per-family H2 sections, each a 6-column table sorted by `current_players` desc.
+- `bash/anti_cheat.sh` + `.github/workflows/anti-cheat-list.yml` (new) — weekly Sunday 06:00 UTC cron + manual dispatch. Uses the same `data-write` concurrency group as the other table-generation workflows.
+- `web/src/pages/AntiCheatList.tsx` (new) — `/charts/anti-cheat/list` page mirrors the MD: collapsible per-family sections + sticky AC-name sidebar nav. Uses existing `useGames` hook; canonicalises client-side via a TS port of the Python patterns table. i18n keys `antiCheatList.*` added to en + vi.
+
+### 📉 Delisted charts
+
+- `web/src/hooks/useRemovedGames.ts` (new) — fetches `scripts/removed_games.jsonl` from raw.githubusercontent.com, parses lines, deduplicates client-side (same logic as the Python dedup). TanStack Query with 5-minute staleTime.
+- `web/src/components/charts/DelistedTimeline.tsx` (new) — ECharts stacked bar, x = `YYYY-MM` of `removed_at`, stacked by `status_code` (`not_free` / `unavailable` / fallback `other`).
+- `web/src/components/charts/DelistedReasonBreakdown.tsx` (new) — ECharts donut by `status_code`.
+- `web/src/pages/charts/Delisted.tsx` (new) — `/charts/delisted` page renders both charts. Sidebar nav link with `WifiOff` icon.
+- `web/src/components/charts/KpiCards.tsx` — new optional `removedCount` prop; when set, renders a 7th "Removed (all-time)" KPI alongside the existing in-catalog "Delisted" badge. Wired from `Dashboard.tsx` via `useRemovedGames().data?.length`. Grid bumps from `xl:grid-cols-6` to `xl:grid-cols-7`.
+
+### 📝 Docs
 
 - README: removed the duplicate "Quick Links" section (the comprehensive 11-row "Quick links" table at the top covers everything the 4-row duplicate listed).
 - README: added `🎯 Top offline (md)` row to the main Quick links table.
 - README: version badge bumped `3.2.3` → `3.2.4`.
+- i18n: combined `nav.{topOffline,antiCheatList,delisted}`, `topOffline.*`, `antiCheatList.*`, `charts.{time.addedPerMonth,delisted.*}` keys added to `en.json` + `vi.json`.
 
 ## [v3.2.3] – 2026-05-17 (The "View Commit Toast + Offline AC Lock" Edition)
 

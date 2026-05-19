@@ -3,7 +3,7 @@
 import sys, os, random, time
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from core.constants import REMOVED_JSONL, BATCH_SIZE, BATCH_PAUSE_MIN, BATCH_PAUSE_MAX
-from core.data_store import load_main, save_main, load_jsonl, save_jsonl, now_iso
+from core.data_store import load_main, save_main, load_jsonl, save_jsonl, dedup_removed, now_iso
 from core.steam_client import get_client
 from core.health_checker import check_game_health
 
@@ -39,8 +39,7 @@ def main():
         cleaned = [g for i,g in enumerate(games) if i not in remove_set]
         save_main(cleaned)
         existing = load_jsonl(REMOVED_JSONL)
-        existing.extend(log)
-        save_jsonl(REMOVED_JSONL, existing)
+        save_jsonl(REMOVED_JSONL, dedup_removed(existing + log))
         print(f"\nPurged {len(remove_set)}, remaining {len(cleaned)}")
     else:
         print("\nAll healthy.")

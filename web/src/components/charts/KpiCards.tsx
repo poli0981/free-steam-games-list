@@ -2,11 +2,12 @@ import { useMemo } from "react";
 import { Card, CardContent } from "../ui/card";
 import { formatNumber, parseIntSafe, parseReviewPercent } from "../../lib/utils";
 import type { GameRecord } from "../../lib/schema";
-import { TrendingUp, Gamepad2, Globe, Star, Wifi, WifiOff } from "lucide-react";
+import { TrendingUp, Gamepad2, Globe, Star, Wifi, WifiOff, Trash2 } from "lucide-react";
 
 interface Props {
   records: GameRecord[];
   lastUpdated?: string;
+  removedCount?: number;
 }
 
 interface Kpi {
@@ -17,7 +18,11 @@ interface Kpi {
   accent?: string;
 }
 
-function computeKpis(records: GameRecord[], lastUpdated?: string): Kpi[] {
+function computeKpis(
+  records: GameRecord[],
+  lastUpdated?: string,
+  removedCount?: number,
+): Kpi[] {
   const total = records.length;
   let online = 0;
   let offline = 0;
@@ -102,14 +107,28 @@ function computeKpis(records: GameRecord[], lastUpdated?: string): Kpi[] {
       icon: WifiOff,
       accent: "text-rose-400",
     },
+    ...(removedCount !== undefined
+      ? [
+          {
+            label: "Removed (all-time)",
+            value: formatNumber(removedCount),
+            hint: "purged from catalog",
+            icon: Trash2,
+            accent: "text-rose-500",
+          },
+        ]
+      : []),
   ];
 }
 
-export function KpiCards({ records, lastUpdated }: Props) {
-  const kpis = useMemo(() => computeKpis(records, lastUpdated), [records, lastUpdated]);
+export function KpiCards({ records, lastUpdated, removedCount }: Props) {
+  const kpis = useMemo(
+    () => computeKpis(records, lastUpdated, removedCount),
+    [records, lastUpdated, removedCount],
+  );
 
   return (
-    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-7">
       {kpis.map((k) => (
         <Card key={k.label} className="overflow-hidden">
           <CardContent className="p-4">
