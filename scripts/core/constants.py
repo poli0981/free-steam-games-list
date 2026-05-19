@@ -78,5 +78,5 @@ EXTENSION_FIELDS = frozenset({
 
 # ──────────── Table generation ────────────
 MAX_GAMES_PER_FILE = 200
-TOP_ONLINE_LIMIT   = 50
+TOP_ONLINE_LIMIT   = 100
 TOP_OFFLINE_LIMIT  = 100

@@ -18,6 +18,7 @@ import {
   Clock,
   Users,
   Lock,
+  WifiOff,
   History,
   Info,
   Heart,
@@ -46,10 +47,12 @@ const CHARTS: NavItem[] = [
   { to: "/charts/languages", i18n: "nav.languages", icon: LanguagesIcon },
   { to: "/charts/tags", i18n: "nav.tags", icon: TagsIcon },
   { to: "/charts/anti-cheat", i18n: "nav.antiCheat", icon: Shield },
+  { to: "/charts/anti-cheat/list", i18n: "nav.antiCheatList", icon: Shield },
   { to: "/charts/reviews", i18n: "nav.reviews", icon: BarChart3 },
   { to: "/charts/players", i18n: "nav.players", icon: Users },
   { to: "/charts/time", i18n: "nav.time", icon: Clock },
   { to: "/charts/drm", i18n: "nav.drmDlc", icon: Lock },
+  { to: "/charts/delisted", i18n: "nav.delisted", icon: WifiOff },
 ];
 
 interface NavItemWithOwner extends NavItem {

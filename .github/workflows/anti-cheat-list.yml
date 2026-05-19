@@ -1,0 +1,19 @@
+name: Anti-Cheat List
+on:
+  # Weekly: every Sunday at 06:00 UTC. The underlying anti_cheat field is
+  # user-edited and rarely changes, so a daily rebuild would be noise.
+  schedule: [{cron: '0 6 * * 0'}]
+  workflow_dispatch:
+permissions: {contents: write}
+concurrency:
+  group: data-write
+  cancel-in-progress: false
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: {token: '${{ secrets.GH_TOKEN }}'}
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - run: chmod +x ./bash/anti_cheat.sh && ./bash/anti_cheat.sh

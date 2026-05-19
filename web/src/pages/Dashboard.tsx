@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { useGames } from "../hooks/useGames";
+import { useRemovedGames } from "../hooks/useRemovedGames";
 import { useDocumentTitle } from "../hooks/useDocumentTitle";
 import { KpiCards } from "../components/charts/KpiCards";
 import { GenreTreemap } from "../components/charts/GenreTreemap";
@@ -12,6 +13,7 @@ export function Dashboard() {
   const { t } = useTranslation();
   useDocumentTitle("dashboard.title");
   const q = useGames();
+  const removed = useRemovedGames();
   if (q.isLoading) return <LoadingState />;
   if (q.error) return <ErrorState error={q.error} />;
   if (!q.data) return null;
@@ -27,7 +29,11 @@ export function Dashboard() {
         </p>
       </div>
 
-      <KpiCards records={records} lastUpdated={index.last_updated} />
+      <KpiCards
+        records={records}
+        lastUpdated={index.last_updated}
+        removedCount={removed.data?.length}
+      />
 
       <div className="grid gap-4 lg:grid-cols-3">
         <Card className="lg:col-span-2">

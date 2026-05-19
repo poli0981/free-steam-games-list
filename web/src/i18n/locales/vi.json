@@ -10,10 +10,12 @@
     "languages": "Ngôn ngữ",
     "tags": "Tag",
     "antiCheat": "Anti-Cheat",
+    "antiCheatList": "Danh sách AC",
     "reviews": "Đánh giá",
     "players": "Người chơi",
     "time": "Thời gian",
     "drmDlc": "DRM/DLC",
+    "delisted": "Đã gỡ",
     "manage": "Quản lý",
     "health": "Sức khoẻ",
     "activity": "Hoạt động",
@@ -108,8 +110,17 @@
   },
   "topOnline": {
     "title": "Top online",
-    "subtitle": "Top 50 game F2P online đang nhiều người chơi nhất.",
-    "cardTitle": "Người chơi hiện tại · top 50"
+    "subtitle": "Top 100 game F2P online đang nhiều người chơi nhất.",
+    "cardTitle": "Người chơi hiện tại · top 100"
+  },
+  "antiCheatList": {
+    "title": "Danh sách Anti-Cheat",
+    "subtitle": "{{total}} game active được nhóm theo {{families}} hệ anti-cheat.",
+    "families": "Hệ AC",
+    "game": "Game",
+    "genre": "Thể loại",
+    "kernel": "Kernel",
+    "players": "Người chơi"
   },
   "topOffline": {
     "title": "Top offline",
@@ -202,6 +213,12 @@
       "title": "DRM & DLC trả phí",
       "subtitle": "F2P không có nghĩa là sạch — nhiều game vẫn dùng DRM bên thứ ba và/hoặc DLC trả phí. Bảng phân tích này giúp tìm ra pool \"thực sự miễn phí\".",
       "drmDlcBreakdown": "Phân tích DRM × DLC trả phí"
+    },
+    "delisted": {
+      "title": "Game đã gỡ",
+      "subtitle": "{{count}} game đã bị gỡ khỏi catalog — không còn free-to-play hoặc đã bị Steam gỡ hẳn. Nguồn: scripts/removed_games.jsonl.",
+      "timeline": "Số game gỡ theo tháng (stacked theo lý do)",
+      "breakdown": "Lý do gỡ"
     },
     "languages": {
       "title": "Ngôn ngữ",

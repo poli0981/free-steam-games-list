@@ -24,7 +24,7 @@ export function TopOnlinePage() {
           <CardTitle>{t("topOnline.cardTitle")}</CardTitle>
         </CardHeader>
         <CardContent>
-          <TopOnlineBar records={q.data.records} limit={50} height={1100} />
+          <TopOnlineBar records={q.data.records} limit={100} height={1800} />
         </CardContent>
       </Card>
     </div>

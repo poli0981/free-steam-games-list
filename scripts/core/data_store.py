@@ -84,6 +84,26 @@ def save_jsonl(path: str, records: list[dict]):
     os.replace(tmp, path)
 
 
+def dedup_removed(records: list[dict]) -> list[dict]:
+    """Keep latest entry per appid for the removed_games.jsonl log.
+
+    Same appid can show up multiple times when a game gets repeatedly
+    re-added and re-purged. We want one row per game, with the most-recent
+    removal context. Compares ISO-8601 strings (lexicographic order matches
+    chronological order for the `YYYY-MM-DDTHH:MM:SSZ` format we emit).
+    Records without a resolvable appid are dropped.
+    """
+    latest: dict[str, dict] = {}
+    for r in records:
+        aid = r.get("appid") or extract_appid(r.get("link", ""))
+        if not aid:
+            continue
+        prev = latest.get(aid)
+        if prev is None or r.get("removed_at", "") > prev.get("removed_at", ""):
+            latest[aid] = r
+    return list(latest.values())
+
+
 # ──────────── Shard helpers ────────────
 
 def _shard_paths() -> list[str]:
