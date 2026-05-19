@@ -1,6 +1,6 @@
 # Looter Shooter Games
 
-6 games · 2026-05-19 15:13 UTC
+6 games · 2026-05-19 15:16 UTC
 
 | # | Thumb | Game | Genre | Developer | Publisher | Released | Platforms | Languages | Reviews | Players | Anti-Cheat | Metacritic | Status | Description | Link | Notes |
 |---|-------|------|-------|-----------|-----------|----------|----------|-----------|---------|---------|------------|-----------|--------|-------------|------|-------|
