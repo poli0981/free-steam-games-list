@@ -3,6 +3,7 @@
     "dashboard": "Dashboard",
     "games": "Games",
     "topOnline": "Top Online",
+    "topOffline": "Top Offline",
     "charts": "Charts",
     "genres": "Genres",
     "platforms": "Platforms",
@@ -110,6 +111,11 @@
     "subtitle": "Top 50 currently most-played online F2P titles.",
     "cardTitle": "Current players · top 50"
   },
+  "topOffline": {
+    "title": "Top offline",
+    "subtitle": "Top 100 single-player or non-online F2P titles by concurrent players.",
+    "cardTitle": "Current players · top 100"
+  },
   "edit": {
     "title": "Edit · {{name}}",
     "subtitleForm": "Manual fields only. Auto-fetched data (name, reviews, players, etc.) is updated by the daily pipeline.",
@@ -165,7 +171,8 @@
       "title": "Time",
       "subtitle": "Release-year histogram of the catalog, plus a cumulative timeline of how the dataset grew.",
       "releasesByYear": "Releases by year",
-      "catalogGrowth": "Catalog growth (added_at)"
+      "catalogGrowth": "Catalog growth (added_at)",
+      "addedPerMonth": "Games added per month"
     },
     "tags": {
       "title": "Tags",

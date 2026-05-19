@@ -1,7 +1,7 @@
 [![Games Count](https://img.shields.io/badge/Games-1.2k%2B-green?style=flat&logo=steam)](games/all-games_part1.md)
 [![Last Updated](https://img.shields.io/badge/Updated-Daily-blue?style=flat&logo=github-actions)](.github/workflows)
 [![Top Online](https://img.shields.io/badge/Top%20Online-Live%20Leaderboard-red?style=flat&logo=steam)](games/top-online.md)
-[![Version](https://img.shields.io/badge/version-3.2.3-purple?style=flat&logo=github)](https://github.com/poli0981/free-steam-games-list)
+[![Version](https://img.shields.io/badge/version-3.2.4-purple?style=flat&logo=github)](https://github.com/poli0981/free-steam-games-list)
 [![Web App](https://img.shields.io/badge/Web%20App-Live-2563eb?style=flat&logo=react)](https://poli0981.github.io/free-steam-games-list/)
 [![Desktop](https://img.shields.io/badge/Desktop-Tauri%202-FFC131?style=flat&logo=tauri)](https://github.com/poli0981/free-steam-games-list/releases)
 [![Health Check](https://img.shields.io/badge/Health%20Check-Weekly-orange?style=flat&logo=github-actions)](.github/workflows/purge-unhealthy.yml)
@@ -28,21 +28,13 @@ A **curated list** of free-to-play games on Steam — now ~1,200 of them — no 
 | 🖥️ Desktop releases  | [GitHub Releases](https://github.com/poli0981/free-steam-games-list/releases) (Win `.msi`, Mac `.dmg`, Linux `.AppImage`) |
 | 📋 All games (md)   | [games/all-games_part1.md](games/all-games_part1.md) (sorted by reviews)                                             |
 | 🏆 Top online (md)  | [games/top-online.md](games/top-online.md)                                                                           |
+| 🎯 Top offline (md) | [games/top-offline.md](games/top-offline.md)                                                                         |
 | 🏷️ By genre         | [games/](games/) — separate file per genre                                                                           |
 | 📦 Raw data         | [data/data_001.jsonl](data/data_001.jsonl) + [data/data_002.jsonl](data/data_002.jsonl) (sharded JSONL)              |
 | 📖 Index            | [games/README.md](games/README.md)                                                                                   |
 | 🛠️ About            | <https://poli0981.github.io/free-steam-games-list/#/about> (in-app)                                                 |
 | 👤 Authors          | [`AUTHORS.md`](AUTHORS.md) — maintainer + contact channels + AI-assistant disclosure                                 |
 | 🤖 Telegram bot     | [`@my_skull_bot`](https://t.me/my_skull_bot) — Scraper Info Game bot, see [`CONTRIBUTING.md`](CONTRIBUTING.md)        |
-
-### Quick Links
-
-| What          | Where                                                                    |
-|---------------|--------------------------------------------------------------------------|
-| 📋 All Games  | [Full list](games/all-games.md) (sorted by reviews, best first)          |
-| 🏷️ By Genre  | [games/](games/) – separate files per genre                              |
-| 🏆 Top Online | [top-online.md](games/top-online.md) – live players, trends, tier badges |
-| 📖 Index      | [games/README.md](games/README.md) – genre breakdown + file links        |
 
 ### What's new in v3.0.0
 
