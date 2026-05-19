@@ -3,6 +3,7 @@ import { Layout } from "./components/layout/Layout";
 import { Dashboard } from "./pages/Dashboard";
 import { GamesPage } from "./pages/Games";
 import { TopOnlinePage } from "./pages/TopOnline";
+import { TopOfflinePage } from "./pages/TopOffline";
 import { GenresPage } from "./pages/charts/Genres";
 import { PlatformsPage } from "./pages/charts/Platforms";
 import { TagsPage } from "./pages/charts/Tags";
@@ -27,6 +28,7 @@ export default function App() {
         <Route path="games" element={<GamesPage />} />
         <Route path="games/:appid" element={<GamesPage />} />
         <Route path="top-online" element={<TopOnlinePage />} />
+        <Route path="top-offline" element={<TopOfflinePage />} />
         <Route path="charts">
           <Route index element={<Navigate to="/charts/genres" replace />} />
           <Route path="genres" element={<GenresPage />} />

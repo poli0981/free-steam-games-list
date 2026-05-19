@@ -3,6 +3,7 @@
     "dashboard": "Tổng quan",
     "games": "Trò chơi",
     "topOnline": "Top Online",
+    "topOffline": "Top Offline",
     "charts": "Biểu đồ",
     "genres": "Thể loại",
     "platforms": "Nền tảng",
@@ -110,6 +111,11 @@
     "subtitle": "Top 50 game F2P online đang nhiều người chơi nhất.",
     "cardTitle": "Người chơi hiện tại · top 50"
   },
+  "topOffline": {
+    "title": "Top offline",
+    "subtitle": "Top 100 game F2P single-player / không-online theo số người chơi đồng thời.",
+    "cardTitle": "Người chơi hiện tại · top 100"
+  },
   "edit": {
     "title": "Sửa · {{name}}",
     "subtitleForm": "Chỉ các trường thủ công. Dữ liệu auto-fetch (tên, review, players...) sẽ được pipeline daily ghi đè.",
@@ -165,7 +171,8 @@
       "title": "Thời gian",
       "subtitle": "Histogram năm phát hành của catalog, kèm timeline cộng dồn cho thấy dataset đã lớn lên thế nào.",
       "releasesByYear": "Phát hành theo năm",
-      "catalogGrowth": "Catalog tăng trưởng (added_at)"
+      "catalogGrowth": "Catalog tăng trưởng (added_at)",
+      "addedPerMonth": "Số game thêm theo tháng"
     },
     "tags": {
       "title": "Tag",

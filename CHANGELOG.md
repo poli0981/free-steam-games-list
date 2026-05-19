@@ -2,6 +2,40 @@
 
 All notable changes to this awesome noob repo will be documented here.
 
+## [v3.2.4] – 2026-05-19 (The "Refactor & Charts" Edition)
+
+Patch release on top of v3.2.3. Internal cleanup + chart additions. Two dead scripts removed (`discord_notify.py`, `migrate_to_shards.py`); the oversized `EditGameDrawer.tsx` (718 LOC) and `GamesTable.tsx` (568 LOC) split into focused sub-modules under `web/src/components/games/edit/` and `web/src/components/games/table/`. Two new ECharts components — `TopOfflineBar` (mirror of `TopOnlineBar`, drives the new `/top-offline` page) and `AddedPerMonthBar` (added to the existing Time chart page). Web app + desktop bumped `1.2.3` → `1.2.4`. Repo public-facing version `3.2.3` → `3.2.4`.
+
+### 🧹 Dead-script removal
+
+- `scripts/discord_notify.py` deleted — superseded by the `poli0981/.github` reusable workflow; no `.github/workflows/*.yml` or `bash/*.sh` referenced it.
+- `scripts/migrate_to_shards.py` deleted — one-shot v2.2 migration tool, completed and unreferenced. The 10-script "unreferenced in workflows" audit confirmed the other eight (`check_dead_links`, `delete_game`, `normalize_genres`, `purge_unhealthy`, `top_offline`, `top_online`, `update_data`, `update_reviews`) all have live `bash/*.sh` wrappers and stay.
+
+### 🪓 Component splits
+
+- `web/src/components/games/EditGameDrawer.tsx` (718 LOC) → 7 focused files under `edit/`:
+  - `EditGameDrawer.tsx` keeps the save handler, dialog shell, view-toggle wiring.
+  - `EditFormFields.tsx`, `EditJsonView.tsx` (with `JsonDiff`), `EditChangePreview.tsx`, `ViewToggle.tsx` extract the four UI regions.
+  - `form-utils.ts` exports `gameToForm` + `formToPatch`; `types.ts` re-exports the `FormState` + `View` types.
+- `web/src/components/games/GamesTable.tsx` (568 LOC) → container + 5 files under `table/`:
+  - `GamesTable.tsx` keeps the virtualizer (`useVirtualizer` ownership at container level so row-height stays single-source), filters, fuzzy search, sort, and paging.
+  - `columns.tsx` extracts the `COLS: ColDef[]` array (12 columns) + `TOTAL_WIDTH` + `SELECT_COL_WIDTH` constants.
+  - `TableHeader.tsx`, `TableRow.tsx` (memoised with `React.memo`), `TableToolbar.tsx`, `ExportMenu.tsx` extract the visual regions.
+- No behaviour change — same virtual scrolling, same sort/filter wiring, same selection store.
+
+### 📊 New charts
+
+- `web/src/components/charts/TopOfflineBar.tsx` — mirror of `TopOnlineBar` but with offline-tier thresholds (20k/1.5k/300) calibrated to the `top_offline.py` scale instead of the online-only 100k/10k/1k palette. Filters `type_game !== "online" && status === "active"`, top 100 by `current_players`.
+- `web/src/pages/TopOffline.tsx` — new page at `/top-offline`, layout mirror of `TopOnlinePage`, registered in `App.tsx` and `Sidebar.tsx` (Trophy icon).
+- `web/src/components/charts/AddedPerMonthBar.tsx` — aggregates `records[*].added_at` into `YYYY-MM` buckets, renders an ECharts bar. Added as a third card to the existing `charts/Time.tsx` page alongside `ReleaseYearHistogram` + `AddedCumulativeLine`.
+- i18n keys `nav.topOffline`, `topOffline.{title,subtitle,cardTitle}`, `charts.time.addedPerMonth` added to `en.json` + `vi.json`.
+
+### 📝 Docs cleanup
+
+- README: removed the duplicate "Quick Links" section (the comprehensive 11-row "Quick links" table at the top covers everything the 4-row duplicate listed).
+- README: added `🎯 Top offline (md)` row to the main Quick links table.
+- README: version badge bumped `3.2.3` → `3.2.4`.
+
 ## [v3.2.3] – 2026-05-17 (The "View Commit Toast + Offline AC Lock" Edition)
 
 Patch release on top of v3.2.2. Three user-reported fixes: the "View commit" action button in success toasts (now reachable + cross-platform), an editor lock that prevents anti-cheat fields from being set on offline games, and a broken `Mark dead games` workflow setup-python step. Web app + desktop bumped `1.2.2` → `1.2.3`. Repo public-facing version `3.2.2` → `3.2.3`. Tag `v3.2.3` is GPG-signed; companion desktop tag is `desktop-v1.2.3`.

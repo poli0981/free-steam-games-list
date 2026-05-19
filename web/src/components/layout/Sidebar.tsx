@@ -37,6 +37,7 @@ const PRIMARY: NavItem[] = [
   { to: "/", i18n: "nav.dashboard", icon: LayoutDashboard, end: true },
   { to: "/games", i18n: "nav.games", icon: Gamepad2 },
   { to: "/top-online", i18n: "nav.topOnline", icon: Trophy },
+  { to: "/top-offline", i18n: "nav.topOffline", icon: Trophy },
 ];
 
 const CHARTS: NavItem[] = [

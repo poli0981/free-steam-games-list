@@ -3,6 +3,7 @@ import { useGames } from "../../hooks/useGames";
 import { useDocumentTitle } from "../../hooks/useDocumentTitle";
 import { ReleaseYearHistogram } from "../../components/charts/ReleaseYearHistogram";
 import { AddedCumulativeLine } from "../../components/charts/AddedCumulativeLine";
+import { AddedPerMonthBar } from "../../components/charts/AddedPerMonthBar";
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
 import { LoadingState, ErrorState } from "../../components/common/QueryState";
 
@@ -34,6 +35,14 @@ export function TimePage() {
         </CardHeader>
         <CardContent>
           <AddedCumulativeLine records={q.data.records} height={400} />
+        </CardContent>
+      </Card>
+      <Card>
+        <CardHeader>
+          <CardTitle>{t("charts.time.addedPerMonth")}</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <AddedPerMonthBar records={q.data.records} height={400} />
         </CardContent>
       </Card>
     </div>
