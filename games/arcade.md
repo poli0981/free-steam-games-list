@@ -1,6 +1,6 @@
 # Arcade Games
 
-22 games · 2026-05-19 00:40 UTC
+22 games · 2026-05-19 15:08 UTC
 
 | # | Thumb | Game | Genre | Developer | Publisher | Released | Platforms | Languages | Reviews | Players | Anti-Cheat | Metacritic | Status | Description | Link | Notes |
 |---|-------|------|-------|-----------|-----------|----------|----------|-----------|---------|---------|------------|-----------|--------|-------------|------|-------|
