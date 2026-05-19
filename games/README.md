@@ -1,6 +1,6 @@
 # 🎮 Steam F2P Tracker
 
-**2099 games** · 2026-05-19 15:16 UTC
+**2099 games** · 2026-05-19 15:48 UTC
 
 ## 📋 Full List
 
@@ -66,9 +66,8 @@
 | Life Sim | 2 | [life-sim.md](life-sim.md) |
 | Looter Shooter | 6 | [looter-shooter.md](looter-shooter.md) |
 | MMO | 14 | [mmo.md](mmo.md) |
-| MMORPG | 87 | [mmorpg.md](mmorpg.md) |
+| MMORPG | 88 | [mmorpg.md](mmorpg.md) |
 | MOBA | 12 | [moba.md](moba.md) |
-| Massively Multiplayer | 1 | [massively-multiplayer.md](massively-multiplayer.md) |
 | Match 3 | 2 | [match-3.md](match-3.md) |
 | Metroidvania | 1 | [metroidvania.md](metroidvania.md) |
 | Naval Combat | 1 | [naval-combat.md](naval-combat.md) |
