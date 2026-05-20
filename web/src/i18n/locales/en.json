@@ -54,7 +54,8 @@
     "online": "online",
     "offline": "offline",
     "active": "active",
-    "delisted": "delisted"
+    "delisted": "delisted",
+    "backToTop": "Back to top"
   },
   "topbar": {
     "searchPlaceholder": "Search by name, tag, description…",

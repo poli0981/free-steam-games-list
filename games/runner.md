@@ -1,7 +1,0 @@
-# Runner Games
-
-1 games · 2026-05-20 00:42 UTC
-
-| # | Thumb | Game | Genre | Developer | Publisher | Released | Platforms | Languages | Reviews | Players | Anti-Cheat | Metacritic | Status | Description | Link | Notes |
-|---|-------|------|-------|-----------|-----------|----------|----------|-----------|---------|---------|------------|-----------|--------|-------------|------|-------|
-| 1 | <img src='https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/4464350/7cf58ca5a37ac8880215effe96f53b4946767aeb/capsule_184x69.jpg?t=1776885720' width='120' loading='lazy'> | Ignition to Extinction | Runner | Kairos Phanos | Kairos Phanos | 23 Apr, 2026 | Windows, Linux | English | 67% (3 user reviews) | 0 | - | N/A | ✅ | A runner game about survival where you are the obstacle, and it's whatever that is on the road that gotta avoid you to s... | [Steam](https://store.steampowered.com/app/4464350/) | Not reviewed yet |

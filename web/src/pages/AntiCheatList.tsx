@@ -82,27 +82,33 @@ export function AntiCheatListPage() {
 
   const total = buckets.reduce((s, b) => s + b.games.length, 0);
 
+  function scrollToFamily(key: string) {
+    const id = key.toLowerCase().replace(/\s+/g, "-");
+    document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
   return (
     <div className="flex gap-6">
-      <aside className="hidden w-48 shrink-0 lg:block">
+      <aside className="hidden shrink-0 md:block md:w-40 lg:w-48">
         <div className="sticky top-4 space-y-1">
           <div className="px-2 pb-2 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
             {t("antiCheatList.families")}
           </div>
           {buckets.map((b) => (
-            <a
+            <button
               key={b.key}
-              href={`#${b.key.toLowerCase().replace(/\s+/g, "-")}`}
-              className="flex items-center justify-between rounded-md px-2 py-1.5 text-sm text-muted-foreground hover:bg-accent hover:text-foreground"
+              type="button"
+              onClick={() => scrollToFamily(b.key)}
+              className="flex w-full items-center justify-between rounded-md px-2 py-1.5 text-left text-sm text-muted-foreground hover:bg-accent hover:text-foreground"
             >
               <span>{b.key}</span>
               <span className="font-mono text-xs">{b.games.length}</span>
-            </a>
+            </button>
           ))}
         </div>
       </aside>
 
-      <div className="flex-1 space-y-4">
+      <div className="min-w-0 flex-1 space-y-4">
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">
             {t("antiCheatList.title")}
@@ -110,6 +116,21 @@ export function AntiCheatListPage() {
           <p className="text-sm text-muted-foreground">
             {t("antiCheatList.subtitle", { total, families: buckets.length })}
           </p>
+        </div>
+
+        {/* Mobile horizontal chip nav — < md only, replaces hidden sidebar */}
+        <div className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-2 md:hidden [&::-webkit-scrollbar]:hidden [scrollbar-width:none]">
+          {buckets.map((b) => (
+            <button
+              key={b.key}
+              type="button"
+              onClick={() => scrollToFamily(b.key)}
+              className="flex shrink-0 items-center gap-1.5 rounded-full border px-3 py-1 text-xs hover:bg-accent"
+            >
+              <span>{b.key}</span>
+              <span className="font-mono text-muted-foreground">{b.games.length}</span>
+            </button>
+          ))}
         </div>
 
         {buckets.map((b) => (

@@ -10,6 +10,7 @@ import { COLS, TOTAL_WIDTH, SELECT_COL_WIDTH } from "./table/columns";
 import { TableHeader } from "./table/TableHeader";
 import { TableRow } from "./table/TableRow";
 import { TableToolbar } from "./table/TableToolbar";
+import { MobileGameCards } from "./table/MobileGameCards";
 
 interface Props {
   records: GameRecord[];
@@ -138,9 +139,10 @@ export function GamesTable({ records, onRowOpen }: Props) {
           setPage={setPage}
         />
 
+        {/* Desktop table (≥ md) — 1318px wide, would overflow on mobile */}
         <div
           ref={containerRef}
-          className="relative h-[calc(100vh-300px)] overflow-auto [&::-webkit-scrollbar]:hidden [scrollbar-width:none]"
+          className="relative hidden h-[calc(100vh-300px)] overflow-auto md:block [&::-webkit-scrollbar]:hidden [scrollbar-width:none]"
         >
           <div style={{ width: totalWidth, minWidth: "100%" }}>
             <TableHeader sortKey={sortKey} sortDir={sortDir} toggleSort={toggleSort} />
@@ -169,6 +171,16 @@ export function GamesTable({ records, onRowOpen }: Props) {
               })}
             </div>
           </div>
+        </div>
+
+        {/* Mobile card list (< md) — vertical stack, same filter/sort state */}
+        <div className="md:hidden">
+          <MobileGameCards
+            records={paged}
+            selected={selected}
+            onSelect={toggleSelect}
+            onOpen={handleOpen}
+          />
         </div>
 
         {!onRowOpen && (
