@@ -2,6 +2,21 @@
 
 All notable changes to this awesome noob repo will be documented here.
 
+## [v3.2.6] – 2026-05-20 (The "Mobile Hotfix" Edition)
+
+Hotfix on top of v3.2.5. Two mobile-viewport regressions introduced by the v3.2.5 responsive overhaul. Web app + desktop bumped `1.2.5` → `1.2.6`. Repo public-facing version `3.2.5` → `3.2.6`. Tag `v3.2.6` is GPG-signed; companion desktop tag is `desktop-v1.2.6`.
+
+### 🐛 AC Index table — horizontal scroll on mobile
+
+- `web/src/pages/AntiCheatList.tsx` — the per-family table wrapper was `<div className="overflow-hidden rounded-md border">`. On a 390 px viewport the 5-column table (`# / Game / Genre / Kernel / Players`) is wider than the card, and `overflow-hidden` clipped the right-hand columns with no way to scroll to them.
+- Fix: `overflow-hidden` → `overflow-x-auto`. The table now scrolls horizontally when it exceeds the viewport, and the scrollbar stays hidden when it fits.
+
+### 🖼️ Mobile game cards — thumbnail fallback
+
+- `web/src/components/games/table/MobileGameCards.tsx` — the card `<img>` loads `headerToCapsule(g.header_image)` (the smaller `capsule_184x69.jpg` variant, ~10 KB vs ~50 KB). Steam's CDN doesn't host that variant for every game, so those cards rendered a blank thumbnail.
+- The desktop table column (`table/columns.tsx`) already had an `onError` handler that falls back to the original `header.jpg`; the v3.2.5 mobile card component didn't port it. `GameDetailDrawer` uses `g.header_image` directly, which is why the image always appeared once a card was tapped.
+- Fix: add the same `onError` fallback to the mobile card `<img>` — on a 404 it swaps `src` to `g.header_image`, with an `el.src !== g.header_image` guard against an infinite error loop.
+
 ## [v3.2.5] – 2026-05-20 (The "AC Nav + Mobile + Games Cleanup" Edition)
 
 Patch release on top of v3.2.4. One reported bug fix + three quality-of-life polish items. **Bug:** clicking any "Family" link in the Anti-Cheat Index sidebar redirected to the Dashboard instead of scrolling to the matching family table — `HashRouter` was treating the `<a href="#vac">` anchor as a route navigation. **Polish:** the `GamesTable` (1318 px wide) now degrades to a virtualised card list below the `md` breakpoint so mobile no longer needs horizontal scroll; the `AntiCheatList` sidebar drops to `md` instead of `lg` and exposes a horizontal chip nav on phones; `KpiCards` adds `md`/`lg` rungs to avoid uneven grid jumps. **Cleanup:** 93 per-genre markdown files in `games/` are removed (the web app's `/games?genre=X` filter has replaced them since v3.0); `generate_tables.py` now skips regeneration when game data hasn't actually changed via a `.gen-hash` checksum, cutting daily catalogue commits to roughly the days that move records. **New:** floating back-to-top button on the main scroll container, fades in past 400 px. Web app + desktop bumped `1.2.4` → `1.2.5`. Repo public-facing version `3.2.4` → `3.2.5`. Tag `v3.2.5` is GPG-signed; companion desktop tag is `desktop-v1.2.5`.
