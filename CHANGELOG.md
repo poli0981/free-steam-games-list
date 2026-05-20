@@ -2,6 +2,35 @@
 
 All notable changes to this awesome noob repo will be documented here.
 
+## [v3.2.5] – 2026-05-20 (The "AC Nav + Mobile + Games Cleanup" Edition)
+
+Patch release on top of v3.2.4. One reported bug fix + three quality-of-life polish items. **Bug:** clicking any "Family" link in the Anti-Cheat Index sidebar redirected to the Dashboard instead of scrolling to the matching family table — `HashRouter` was treating the `<a href="#vac">` anchor as a route navigation. **Polish:** the `GamesTable` (1318 px wide) now degrades to a virtualised card list below the `md` breakpoint so mobile no longer needs horizontal scroll; the `AntiCheatList` sidebar drops to `md` instead of `lg` and exposes a horizontal chip nav on phones; `KpiCards` adds `md`/`lg` rungs to avoid uneven grid jumps. **Cleanup:** 93 per-genre markdown files in `games/` are removed (the web app's `/games?genre=X` filter has replaced them since v3.0); `generate_tables.py` now skips regeneration when game data hasn't actually changed via a `.gen-hash` checksum, cutting daily catalogue commits to roughly the days that move records. **New:** floating back-to-top button on the main scroll container, fades in past 400 px. Web app + desktop bumped `1.2.4` → `1.2.5`. Repo public-facing version `3.2.4` → `3.2.5`. Tag `v3.2.5` is GPG-signed; companion desktop tag is `desktop-v1.2.5`.
+
+### 🔗 AC Index sidebar navigation fix
+
+- [web/src/pages/AntiCheatList.tsx](web/src/pages/AntiCheatList.tsx): swap `<a href="#anchor">` for `<button onClick>` that calls `document.getElementById(id).scrollIntoView({ behavior: "smooth", block: "start" })`. The `id={anchor}` attribute on each family `<Card>` stays the same — only the click target changes.
+- Root cause: `main.tsx:24` uses `HashRouter`. Anchor links inside a hash-routed page produce URLs like `#/charts/anti-cheat/list#vac`. HashRouter parses the trailing `#vac` as a fresh route, the regex doesn't match, and the `<Route path="*" element={<Navigate to="/" replace />}>` fallback in `App.tsx` sends the user to the Dashboard.
+- Same fix applied to the new mobile chip nav (below) so behaviour is uniform across viewports.
+
+### 📱 Mobile responsive
+
+- New `web/src/components/games/table/MobileGameCards.tsx` — virtualised card list rendering one card per game with thumb, name, genre/type/AC/status badges, review %, current players, and a Steam-link icon. Shares filter/sort/page state with the desktop table via the existing `useFilters` store.
+- [`GamesTable.tsx`](web/src/components/games/GamesTable.tsx) wraps the desktop scroll container in `hidden md:block` and renders `<MobileGameCards>` inside `md:hidden`. No new state, no behaviour drift between views.
+- [`AntiCheatList.tsx`](web/src/pages/AntiCheatList.tsx) sidebar changes from `hidden w-48 shrink-0 lg:block` to `hidden md:block md:w-40 lg:w-48` — visible on tablets too. Below `md`, a horizontal scrollable chip rail above the content provides the same family-jump nav.
+- [`KpiCards.tsx`](web/src/components/charts/KpiCards.tsx) grid `sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-7` → `sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7`. Inserts `md` (tablet, 3 cols) and `lg` (small laptop, 4 cols) rungs so the 7 KPIs don't double-stack awkwardly.
+
+### 🧹 `games/` cleanup + smart regen
+
+- **Deleted 93 per-genre `<genre>.md` files** (`action.md`, `fps.md`, `visual-novel.md`, …). Web app `/games?genre=X` is the canonical genre filter since v3.0; no inbound link audit hit anything beyond `games/README.md` (regenerated) and the now-stale "By Genre" section in the index. Files kept: 11 × `all-games_part*.md`, `top-online.md`, `top-offline.md`, `anti-cheat-list.md`, `README.md`.
+- [`scripts/generate_tables.py`](scripts/generate_tables.py) drops the genre loop entirely and rewrites the `games/README.md` template to point at part files + leaderboards + AC list, with a one-line note about the web-app genre filter.
+- **Smart regen via `.gen-hash`** — script computes `sha256` of sorted `(link, name, genre, reviews, current_players, anti_cheat, is_kernel_ac, status)` tuples and writes the digest to `games/.gen-hash`. Subsequent runs short-circuit (`Skip: no semantic changes (hash=...)`) when the hash is unchanged. Order-invariant, ignores timestamps embedded in MD output, so daily workflow ticks only commit when game data actually moves.
+
+### ⬆️ Back-to-top button
+
+- New `web/src/components/common/BackToTop.tsx` — a fixed-position icon button bottom-right of the viewport. Listens for `scroll` events on the passed scroll container ref (passive listener), fades in (`opacity-100`) past 400 px, becomes pointer-events-none below to avoid blocking click-through.
+- [`Layout.tsx`](web/src/components/layout/Layout.tsx) creates a `useRef<HTMLElement>` on `<main>`, passes it as `scrollRef`. Single mount, no per-page wiring.
+- i18n: `common.backToTop` added to `en.json` ("Back to top") and `vi.json` ("Lên đầu trang") for `aria-label` + `title`.
+
 ## [v3.2.4] – 2026-05-20 (The "Refactor + Removed-Games + Anti-Cheat Index" Edition)
 
 Patch release on top of v3.2.3, landed as two PRs. **PR #74 (cleanup):** two dead scripts removed, `EditGameDrawer.tsx` (718 LOC) and `GamesTable.tsx` (568 LOC) split into focused sub-modules, two new charts (`TopOfflineBar`, `AddedPerMonthBar`) wired to a fresh `/top-offline` page and the existing `/charts/time` page. **PR #75 (features):** the `scripts/removed_games.jsonl` log now passes through a `dedup_removed()` filter on every write (a one-time migration trimmed 6 historical duplicates), Top Online leaderboard expanded `50 → 100` to match Top Offline, a generated `games/anti-cheat-list.md` plus a `/charts/anti-cheat/list` web page group active games by anti-cheat family, and a new `/charts/delisted` page renders a timeline + reason breakdown of every removed-from-catalogue title. Web app + desktop bumped `1.2.3` → `1.2.4`. Repo public-facing version `3.2.3` → `3.2.4`. Tag `v3.2.4` is GPG-signed; companion desktop tag is `desktop-v1.2.4`.

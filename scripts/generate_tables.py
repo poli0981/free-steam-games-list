@@ -1,12 +1,43 @@
 #!/usr/bin/env python3
-"""Generate markdown tables v2.2."""
-import sys, os
+"""Generate markdown tables v2.4 — drops per-genre files (v3.2.5).
+
+Per-genre `<genre>.md` files were removed in v3.2.5 — the web app at
+/games?genre=X is the canonical filter UI now. We only regenerate
+`all-games_part*.md` + the index `README.md`. Top leaderboards and the
+AC list have their own scripts.
+
+Smart regen via `.gen-hash`: if game data (link/name/genre/reviews/
+players/AC/status) hasn't changed since the last run, skip generation
+entirely. This cuts daily commit spam on the catalogue when the
+underlying data is stable.
+"""
+import sys, os, hashlib, json
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from collections import defaultdict
 from datetime import datetime, timezone
 from core.constants import GAMES_DIR, MAX_GAMES_PER_FILE
 from core.data_store import load_main
+
+
+# Hash file lives inside games/ so it commits alongside the regenerated
+# markdown — the workflow bot picks up both atomically.
+_HASH_FILE = os.path.join(GAMES_DIR, ".gen-hash")
+
+
+def _content_hash(games):
+    """Hash the fields that actually affect rendered MD output. Sorting
+    makes the digest order-invariant so reshuffles inside data shards
+    don't trigger spurious regen."""
+    slim = [(
+        g.get("link"), g.get("name"), g.get("genre"),
+        g.get("reviews"), g.get("current_players"),
+        g.get("anti_cheat"), g.get("is_kernel_ac"),
+        g.get("status"),
+    ) for g in games]
+    slim.sort()
+    return hashlib.sha256(
+        json.dumps(slim, ensure_ascii=False).encode("utf-8")
+    ).hexdigest()
 
 
 def _review_pct(g):
@@ -110,10 +141,23 @@ def main():
     games = load_main()
     print(f"Loaded {len(games)} games...")
 
+    # Smart regen — skip if semantic content unchanged since last run.
+    # Spares ~80% of daily commits on a stable catalogue.
+    os.makedirs(GAMES_DIR, exist_ok=True)
+    new_hash = _content_hash(games)
+    if os.path.isfile(_HASH_FILE):
+        try:
+            with open(_HASH_FILE, encoding="utf-8") as f:
+                old_hash = f.read().strip()
+            if old_hash == new_hash:
+                print(f"Skip: no semantic changes (hash={new_hash[:12]})")
+                return
+        except OSError:
+            pass  # corrupt/missing file — proceed with regen
+
     # Sort once with cached key
     games.sort(key=_review_pct, reverse=True)
 
-    os.makedirs(GAMES_DIR, exist_ok=True)
     now = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
     total = len(games)
     num_parts = (total + MAX_GAMES_PER_FILE - 1) // MAX_GAMES_PER_FILE
@@ -133,34 +177,27 @@ def main():
             f.writelines(lines)
         part_files.append(fname)
 
-    # Genre tables
-    genres = defaultdict(list)
-    for g in games:
-        genres[g.get("genre", "Uncategorized")].append(g)
-
-    genre_files = []
-    for genre, glist in sorted(genres.items()):
-        glist.sort(key=_review_pct, reverse=True)
-        safe = genre.lower().replace(" ", "-").replace("/", "-").replace(",", "")
-        fname = f"{safe}.md"
-        lines = [f"# {genre} Games\n\n", f"{len(glist)} games · {now}\n\n", HEADER]
-        lines.extend(_row(i, g) for i, g in enumerate(glist, 1))
-        with open(f"{GAMES_DIR}/{fname}", "w", encoding="utf-8") as f:
-            f.writelines(lines)
-        genre_files.append((genre, fname, len(glist)))
-
-    # Index
+    # Index — points at part files + leaderboards + AC list.
+    # Per-genre browse moved to the web app (/games?genre=X) in v3.2.5.
     with open(f"{GAMES_DIR}/README.md", "w", encoding="utf-8") as f:
-        f.write(f"# 🎮 Steam F2P Tracker\n\n**{total} games** · {now}\n\n")
-        f.write("## 📋 Full List\n\n")
+        f.write(f"# Steam F2P Tracker\n\n**{total} games** · {now}\n\n")
+        f.write("## Full list\n\n")
         for pf in part_files:
             f.write(f"- [{pf}]({pf})\n")
-        f.write("\n## 🏷️ By Genre\n\n| Genre | # | File |\n|-------|---|------|\n")
-        for genre, fname, count in genre_files:
-            f.write(f"| {genre} | {count} | [{fname}]({fname}) |\n")
-        f.write("\n## 🏆 Leaderboard\n\n- [top-online.md](top-online.md)\n")
+        f.write("\n## Leaderboards\n\n")
+        f.write("- [top-online.md](top-online.md)\n")
+        f.write("- [top-offline.md](top-offline.md)\n")
+        f.write("- [anti-cheat-list.md](anti-cheat-list.md)\n")
+        f.write("\n## By genre\n\n")
+        f.write("Genre filtering moved to the web app: "
+                "<https://poli0981.github.io/free-steam-games-list/#/games> "
+                "(click any genre badge or use the genre filter dropdown).\n")
 
-    print(f"✓ {len(part_files)} all-games, {len(genre_files)} genres, README.")
+    # Persist hash so the next run can short-circuit.
+    with open(_HASH_FILE, "w", encoding="utf-8") as f:
+        f.write(new_hash + "\n")
+
+    print(f"OK: {len(part_files)} all-games files + README (hash={new_hash[:12]})")
 
 
 if __name__ == "__main__":

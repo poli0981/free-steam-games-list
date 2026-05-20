@@ -54,7 +54,8 @@
     "online": "online",
     "offline": "offline",
     "active": "đang có",
-    "delisted": "đã gỡ"
+    "delisted": "đã gỡ",
+    "backToTop": "Lên đầu trang"
   },
   "topbar": {
     "searchPlaceholder": "Tìm theo tên, tag, mô tả…",
