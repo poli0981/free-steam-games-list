@@ -95,6 +95,13 @@ export function MobileGameCards({ records, selected, onSelect, onOpen }: Props) 
                     width={80}
                     height={37}
                     className="h-10 w-20 rounded object-cover"
+                    onError={(e) => {
+                      // capsule_184x69 variant 404s for some games — fall
+                      // back to the original header.jpg. Guard prevents an
+                      // infinite loop if both URLs fail.
+                      const el = e.currentTarget;
+                      if (el.src !== g.header_image) el.src = g.header_image;
+                    }}
                   />
                 ) : (
                   <div className="h-10 w-20 rounded bg-muted" />

@@ -140,7 +140,7 @@ export function AntiCheatListPage() {
               <Badge variant="secondary">{b.games.length}</Badge>
             </CardHeader>
             <CardContent>
-              <div className="overflow-hidden rounded-md border">
+              <div className="overflow-x-auto rounded-md border">
                 <table className="w-full text-sm">
                   <thead className="bg-muted/40 text-xs uppercase tracking-wider text-muted-foreground">
                     <tr>
