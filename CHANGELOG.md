@@ -34,6 +34,7 @@ Maintenance release on top of v3.2.6. A small, useful batch: the Python pipeline
 ### 📄 Docs
 
 - New `docs/THIRD_PARTY.md` — documents the dev tooling above (purpose, license, where declared) and the canonical pre-publish check suite. Linked from the README "Docs" section.
+- Synced the third-party dependency lists to the removals above — `docs/ACKNOWLEDGEMENTs.md`, the in-app `/about` page (`web/src/pages/About.tsx`), and `web/README.md` no longer list the dropped Radix primitives, `@tanstack/react-table`, or `@tauri-apps/api`.
 
 ## [v3.2.6] – 2026-05-20 (The "Mobile Hotfix" Edition)
 

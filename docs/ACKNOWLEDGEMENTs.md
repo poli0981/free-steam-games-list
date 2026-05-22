@@ -44,7 +44,7 @@ The web app + desktop wrapper depend on a longer list, all linked with their lic
 - [class-variance-authority](https://cva.style/) — variant API (Apache-2.0).
 
 **UI primitives & components**
-- [Radix UI](https://www.radix-ui.com/) — headless dialog/popover/tooltip/select/scroll-area/separator/slot/switch/tabs/toast/dropdown-menu/label primitives (MIT).
+- [Radix UI](https://www.radix-ui.com/) — headless dialog/label/popover/separator/slot primitives (MIT).
 - [shadcn/ui](https://ui.shadcn.com/) — copy-and-paste component patterns layered on top of Radix (MIT).
 - [lucide-react](https://lucide.dev/) — icons (ISC).
 - [sonner](https://sonner.emilkowal.ski/) — toasts (MIT).
@@ -56,7 +56,7 @@ The web app + desktop wrapper depend on a longer list, all linked with their lic
 
 **Data & state**
 - [TanStack Query](https://tanstack.com/query) — fetching + caching (MIT).
-- [TanStack Table + Virtual](https://tanstack.com/table) — 1.2k-row virtualised table (MIT).
+- [TanStack Virtual](https://tanstack.com/virtual) — 1.2k-row virtualised table (MIT).
 - [Zustand](https://zustand-demo.pmnd.rs/) — UI state store (MIT).
 - [idb-keyval](https://github.com/jakearchibald/idb-keyval) — IndexedDB wrapper (Apache-2.0).
 - [Fuse.js](https://www.fusejs.io/) — fuzzy search (Apache-2.0).
@@ -72,13 +72,13 @@ The web app + desktop wrapper depend on a longer list, all linked with their lic
 
 **Desktop (Tauri 2)**
 - [Tauri 2](https://v2.tauri.app/) — Rust shell that wraps the same web build into a native desktop app; dual-licensed MIT/Apache-2.0.
-- [`@tauri-apps/api`](https://github.com/tauri-apps/tauri/tree/dev/packages/api) — JS bindings.
 - [`tauri-plugin-shell`](https://github.com/tauri-apps/plugins-workspace/tree/v2/plugins/shell) — open external links.
 - [`tauri-plugin-updater`](https://github.com/tauri-apps/plugins-workspace/tree/v2/plugins/updater) — auto-update.
-- [`tauri-plugin-process`](https://github.com/tauri-apps/plugins-workspace/tree/v2/plugins/process) — process control.
 - Rust crates pulled in by the desktop binary: `serde`, `serde_json`, `tauri-build` (all MIT/Apache-2.0).
 
 Full SPDX list with deep links to each project's `LICENSE` file lives at `/about` inside the web app, kept up-to-date alongside the dep list itself.
+
+Dev-only tooling (dead-code detectors, dependency auditors) isn't listed above — it ships with nothing. See [`THIRD_PARTY.md`](./THIRD_PARTY.md).
 
 ### Maintainer
 
