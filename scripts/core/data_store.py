@@ -17,7 +17,7 @@ from typing import Optional
 from .constants import (
     DATA_DIR, LEGACY_JSONL, TEMP_JSONL,
     MAX_RECORDS_PER_FILE, SHARD_PREFIX,
-    MANUAL_FIELDS, ARRAY_FIELDS, EXTENSION_FIELDS,
+    MANUAL_FIELDS, ARRAY_FIELDS,
 )
 
 # ──────────── Link helpers ────────────

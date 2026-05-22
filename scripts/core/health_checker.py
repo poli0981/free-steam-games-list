@@ -12,9 +12,10 @@ NOT_FOUND_404  = "not_found_404"
 NOT_FOUND_410  = "not_found_410"
 UNAVAILABLE    = "unavailable"
 NOT_FREE       = "not_free"
+COMING_SOON    = "coming_soon"
 NETWORK_ERROR  = "network_error"
 
-REMOVABLE = frozenset({INVALID_FORMAT, NOT_FOUND_404, NOT_FOUND_410, UNAVAILABLE, NOT_FREE})
+REMOVABLE = frozenset({INVALID_FORMAT, NOT_FOUND_404, NOT_FOUND_410, UNAVAILABLE, NOT_FREE, COMING_SOON})
 
 REASON_LABELS = {
     INVALID_FORMAT: "Invalid link format",
@@ -22,6 +23,7 @@ REASON_LABELS = {
     NOT_FOUND_410:  "Store page 410 – removed",
     UNAVAILABLE:    "Delisted / unavailable",
     NOT_FREE:       "No longer free-to-play",
+    COMING_SOON:    "Not yet released (coming soon)",
     NETWORK_ERROR:  "Network error (skipped)",
     OK:             "Healthy",
 }
@@ -65,6 +67,9 @@ def check_game_health(link: str, name: str = "",
     # api_status == "ok"
     if data:
         resolved = data.get("name", name) or name
+        # Reject unreleased games – an F2P tracker only lists playable titles.
+        if data.get("release_date", {}).get("coming_soon", False):
+            return HealthResult(COMING_SOON, appid, resolved, link)
         is_free = data.get("is_free", False)
         price = data.get("price_overview", {})
         if price:

@@ -6,7 +6,7 @@ Static web UI for browsing, analyzing, and (soon) editing the F2P games dataset 
 
 - **Vite + React 18 + TypeScript**
 - **Tailwind CSS** + shadcn/ui (Radix) primitives
-- **TanStack Query** (data fetching) + **TanStack Table / Virtual** (1,200+ row table)
+- **TanStack Query** (data fetching) + **TanStack Virtual** (1,200+ row table)
 - **Apache ECharts** (treemap, donut, bar, etc.)
 - **Zustand** (filter/UI state)
 - **idb-keyval** (IndexedDB cache)

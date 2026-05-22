@@ -2,6 +2,40 @@
 
 All notable changes to this awesome noob repo will be documented here.
 
+## [v3.2.7] – 2026-05-22 (The "Coming-Soon Guard + Dead-Code Cleanup" Edition)
+
+Maintenance release on top of v3.2.6. A small, useful batch: the Python pipeline now rejects unreleased ("coming soon") games at ingest instead of listing titles nobody can play yet; a one-time dead-code sweep across the web app and the pipeline; and three dev-tooling additions (knip, vulture, pip-audit) so future releases can run the same checks. Web app + desktop bumped `1.2.6` → `1.2.7`. Repo public-facing version `3.2.6` → `3.2.7`. Tag `v3.2.7` is GPG-signed; companion desktop tag is `desktop-v1.2.7`.
+
+### 🚧 Coming-soon games rejected at ingest
+
+- `scripts/core/health_checker.py` — new `COMING_SOON` status, added to the `REMOVABLE` set. `check_game_health()` now reads the Steam `appdetails` flag `release_date.coming_soon` right after the API response resolves (before the `is_free` check) and returns `HealthResult(COMING_SOON, …)` for unreleased titles.
+- Effect: `ingest_new.py` rejects coming-soon entries from the queue and logs them to `removed_games.jsonl` with reason "Not yet released (coming soon)" — the same path `NOT_FREE` already uses. `purge_unhealthy.py`'s weekly scan likewise evicts any coming-soon title already in the dataset.
+- Rationale: an F2P *games* tracker should list playable titles. A coming-soon game has zero players, no reviews, and an unconfirmed price (it can launch paid). The API flag is used instead of scraping the `game_area_comingsoon` HTML block — it's already fetched during the health check and is authoritative. No schema change.
+
+### 🧹 Web dead-code cleanup (knip)
+
+- New `knip` sweep (config in `web/knip.json`). Removed two unused files: `src/components/common/UpdateChecker.tsx` — the Tauri auto-update component, never wired into `Layout.tsx` since Phase 9, so the frontend update check never actually ran — and `src/components/ui/switch.tsx`, an unused shadcn primitive.
+- Removed 11 unused dependencies from `web/package.json`: 7 Radix primitives (`react-dropdown-menu`, `react-scroll-area`, `react-select`, `react-switch`, `react-tabs`, `react-toast`, `react-tooltip`), `@tanstack/react-table` (the virtualised table uses only `@tanstack/react-virtual`), and 3 Tauri packages (`@tauri-apps/api`, `@tauri-apps/plugin-process`, `@tauri-apps/plugin-updater` — the last two were referenced only by the removed `UpdateChecker`).
+- `vite.config.ts` — dropped the now-stale `@tanstack/react-table` entry from the `manualChunks.table` group.
+- knip's remaining "unused export" findings inside the `src/lib/*` port modules are intentional API surface; they're set to `warn` so `npm run knip` stays green.
+
+### 🧹 Python dead-code cleanup (vulture)
+
+- Deleted `scripts/dedup_removed_games.py` — the one-shot v3.2.4 migration, completed and now redundant (`dedup_removed()` runs inside the pipeline on every write). Same rationale as v3.2.4's removal of `migrate_to_shards.py`.
+- `scripts/core/data_store.py` — dropped the unused `EXTENSION_FIELDS` import. The constant stays defined in `constants.py` as the documented MANUAL/ARRAY/EXTENSION field-class trio (mirrored in `web/src/lib/schema.ts`).
+- `scripts/core/steam_client.py` — `__exit__(self, *a)` → `__exit__(self, *_)` (idiomatic unused-varargs name).
+
+### 🧰 Dead-code & audit tooling
+
+- **knip** — `web/package.json` devDependency + `npm run knip` script + `web/knip.json`. Finds unused files / exports / dependencies in the TypeScript SPA.
+- **vulture** + **pip-audit** — new `requirements-dev.txt`; vulture config in a new root `pyproject.toml` (`[tool.vulture]`, `min_confidence = 80`). Python dead-code detection + dependency CVE audit.
+- All three run at dev time only — nothing new ships in the pipeline, web bundle, or desktop app.
+
+### 📄 Docs
+
+- New `docs/THIRD_PARTY.md` — documents the dev tooling above (purpose, license, where declared) and the canonical pre-publish check suite. Linked from the README "Docs" section.
+- Synced the third-party dependency lists to the removals above — `docs/ACKNOWLEDGEMENTs.md`, the in-app `/about` page (`web/src/pages/About.tsx`), and `web/README.md` no longer list the dropped Radix primitives, `@tanstack/react-table`, or `@tauri-apps/api`.
+
 ## [v3.2.6] – 2026-05-20 (The "Mobile Hotfix" Edition)
 
 Hotfix on top of v3.2.5. Two mobile-viewport regressions introduced by the v3.2.5 responsive overhaul. Web app + desktop bumped `1.2.5` → `1.2.6`. Repo public-facing version `3.2.5` → `3.2.6`. Tag `v3.2.6` is GPG-signed; companion desktop tag is `desktop-v1.2.6`.

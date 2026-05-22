@@ -168,7 +168,7 @@ class SteamClient:
     def __enter__(self):
         return self
 
-    def __exit__(self, *a):
+    def __exit__(self, *_):
         self.close()
 
 
