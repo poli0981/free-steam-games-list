@@ -121,7 +121,7 @@ export default defineConfig(({ command }) => ({
         manualChunks: {
           react: ["react", "react-dom", "react-router-dom"],
           query: ["@tanstack/react-query"],
-          table: ["@tanstack/react-table", "@tanstack/react-virtual"],
+          table: ["@tanstack/react-virtual"],
           echarts: ["echarts", "echarts-for-react"],
           openpgp: ["openpgp"],
         },

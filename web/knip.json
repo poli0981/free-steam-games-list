@@ -1,0 +1,9 @@
+{
+  "$schema": "https://unpkg.com/knip@6/schema.json",
+  "entry": ["src/workers/jsonl-parser.ts"],
+  "project": ["src/**/*.{ts,tsx}"],
+  "rules": {
+    "exports": "warn",
+    "types": "warn"
+  }
+}

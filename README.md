@@ -1,7 +1,7 @@
 [![Games Count](https://img.shields.io/badge/Games-1.2k%2B-green?style=flat&logo=steam)](games/all-games_part1.md)
 [![Last Updated](https://img.shields.io/badge/Updated-Daily-blue?style=flat&logo=github-actions)](.github/workflows)
 [![Top Online](https://img.shields.io/badge/Top%20Online-Live%20Leaderboard-red?style=flat&logo=steam)](games/top-online.md)
-[![Version](https://img.shields.io/badge/version-3.2.6-purple?style=flat&logo=github)](https://github.com/poli0981/free-steam-games-list)
+[![Version](https://img.shields.io/badge/version-3.2.7-purple?style=flat&logo=github)](https://github.com/poli0981/free-steam-games-list)
 [![Web App](https://img.shields.io/badge/Web%20App-Live-2563eb?style=flat&logo=react)](https://poli0981.github.io/free-steam-games-list/)
 [![Desktop](https://img.shields.io/badge/Desktop-Tauri%202-FFC131?style=flat&logo=tauri)](https://github.com/poli0981/free-steam-games-list/releases)
 [![Health Check](https://img.shields.io/badge/Health%20Check-Weekly-orange?style=flat&logo=github-actions)](.github/workflows/purge-unhealthy.yml)
@@ -225,6 +225,7 @@ Unemployed, introvert max level, dropped out uni year 3, mooching off family. Ne
 - [EULA](docs/EULA.md) — supplemental to the MIT licence.
 - [Privacy Policy](docs/PRIVACY_POLICY.md) — zero personal data collected by the site; **Telegram-bot data flow** documented separately.
 - [Acknowledgements](docs/ACKNOWLEDGEMENTs.md) — credits, AI assistants, third-party libraries.
+- [Third-party dev tooling](docs/THIRD_PARTY.md) — dead-code / lint / audit tools + the pre-publish check suite.
 - [Contact](docs/Contact.md) — where to find the maintainer.
 - [CODE OF CONDUCT](CODE_OF_CONDUCT.md) — be chill.
 - [SECURITY](SECURITY.md) — vulnerability reporting.

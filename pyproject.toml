@@ -1,0 +1,5 @@
+# Tooling configuration only - this repo is not a pip-installable package.
+
+[tool.vulture]
+paths = ["scripts"]
+min_confidence = 80
