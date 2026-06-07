@@ -1,6 +1,6 @@
 # All Free-to-Play Games (Part 16/16)
 
-Games 3001–3074 of 3074 · Generated: 2026-06-06 00:41 UTC
+Games 3001–3074 of 3074 · Generated: 2026-06-07 00:44 UTC
 
 | # | Thumb | Game | Genre | Developer | Publisher | Released | Platforms | Languages | Reviews | Players | Anti-Cheat | Metacritic | Status | Description | Link | Notes |
 |---|-------|------|-------|-----------|-----------|----------|----------|-----------|---------|---------|------------|-----------|--------|-------------|------|-------|
