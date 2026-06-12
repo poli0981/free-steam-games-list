@@ -75,7 +75,9 @@ export function SettingsPage() {
                   variant={active ? "default" : "outline"}
                   size="sm"
                   onClick={() => {
-                    setLanguage(code);
+                    // Async: loads the locale bundle before switching. The
+                    // languageChanged listener above re-syncs local state.
+                    void setLanguage(code);
                     setLang(code);
                   }}
                 >

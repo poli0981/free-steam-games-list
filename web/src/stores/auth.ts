@@ -1,4 +1,6 @@
 import { create } from "zustand";
+import { toast } from "sonner";
+import i18n from "../i18n";
 import {
   loadAuth,
   saveAuth,
@@ -56,6 +58,20 @@ export const useAuth = create<AuthStore>((set, get) => ({
         user: null,
       });
       clearAuth();
+      // A previously-saved token failing verification = session expired
+      // (419 semantics). Toast instead of routing to #/error/419 — don't
+      // hijack whatever page the user opened. 10s duration: the default 4s
+      // is too short for a toast carrying an action button.
+      toast.error(i18n.t("errors.419.title"), {
+        description: i18n.t("errors.419.description"),
+        duration: 10000,
+        action: {
+          label: i18n.t("errors.actions.openSettings"),
+          onClick: () => {
+            window.location.hash = "#/settings";
+          },
+        },
+      });
     }
   },
 

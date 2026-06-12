@@ -74,7 +74,7 @@ export function ActivityPage() {
   }, [q.data, filter, auth.user?.login]);
 
   if (q.isLoading) return <LoadingState />;
-  if (q.error) return <ErrorState error={q.error as Error} />;
+  if (q.error) return <ErrorState error={q.error as Error} onRetry={() => void q.refetch()} />;
 
   return (
     <div className="space-y-4">
@@ -142,6 +142,8 @@ function CommitRow({ commit }: { commit: Commit }) {
           <img
             src={commit.author.avatar_url}
             alt=""
+            loading="lazy"
+            decoding="async"
             className={cn(
               "h-7 w-7 rounded-full border",
               isBot && "ring-1 ring-amber-500/40",

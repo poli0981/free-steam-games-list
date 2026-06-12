@@ -90,6 +90,7 @@ export function MobileGameCards({ records, selected, onSelect, onOpen }: Props) 
                 {g.header_image ? (
                   <img
                     loading="lazy"
+                    decoding="async"
                     src={headerToCapsule(g.header_image)}
                     alt=""
                     width={80}

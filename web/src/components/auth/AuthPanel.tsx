@@ -30,6 +30,7 @@ export function AuthPanel() {
             <img
               src={auth.user.avatar_url}
               alt=""
+              decoding="async"
               className="h-12 w-12 rounded-full border"
             />
             <div className="min-w-0 flex-1">

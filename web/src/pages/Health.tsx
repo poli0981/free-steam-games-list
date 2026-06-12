@@ -88,7 +88,7 @@ export function HealthPage() {
   const issues = useMemo(() => (q.data ? gatherIssues(q.data.records) : []), [q.data]);
 
   if (q.isLoading) return <LoadingState />;
-  if (q.error) return <ErrorState error={q.error} />;
+  if (q.error) return <ErrorState error={q.error} onRetry={() => void q.refetch()} />;
   if (!q.data) return null;
 
   const totalIssues = issues.reduce((sum, g) => sum + g.records.length, 0);

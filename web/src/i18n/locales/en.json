@@ -446,5 +446,52 @@
     "playersPeak": "(peak {{peak}})",
     "viewSteamPage": "the Steam page",
     "viewHealth": "Health"
+  },
+  "errors": {
+    "code": "ERROR {{code}}",
+    "actions": {
+      "home": "Go home",
+      "reload": "Reload",
+      "retry": "Try again",
+      "report": "Report issue",
+      "openSettings": "Open Settings"
+    },
+    "403": {
+      "title": "Access denied",
+      "description": "You don't have permission to do that. Only the repository owner can edit data — check your token in Settings."
+    },
+    "404": {
+      "title": "Page not found",
+      "description": "The page you're looking for doesn't exist or was moved."
+    },
+    "419": {
+      "title": "Session expired",
+      "description": "Your authentication token is no longer valid. Sign in again from Settings."
+    },
+    "500": {
+      "title": "Something went wrong",
+      "description": "An unexpected error occurred while rendering this page."
+    },
+    "502": {
+      "title": "Bad gateway",
+      "description": "An upstream service returned an invalid response. Try again shortly."
+    },
+    "503": {
+      "title": "Service unavailable",
+      "description": "The data source is temporarily unreachable. Cached data may still be available."
+    },
+    "504": {
+      "title": "Request timed out",
+      "description": "The server took too long to respond. Check your connection and try again."
+    },
+    "offline": {
+      "badge": "OFFLINE",
+      "title": "You're offline",
+      "description": "No network connection. Previously loaded data is still available."
+    },
+    "boundary": {
+      "chunkTitle": "Update available",
+      "chunkDescription": "A new version was deployed while you were browsing. Reload to get the latest files."
+    }
   }
 }

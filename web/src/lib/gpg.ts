@@ -11,7 +11,16 @@
  * weren't shipped alongside it, so we use the npm package instead — it
  * bundles all chunks and is tree-shakable to a similar size.
  */
-import * as openpgp from "openpgp";
+import type * as OpenPGP from "openpgp";
+
+// openpgp is ~370 KB — the single largest chunk. Type-only import above is
+// erased at build time; the value import below is dynamic and memoized, so
+// visitors without a saved key never download it at all. All exports were
+// already async, so no caller changes.
+let mod: typeof OpenPGP | null = null;
+async function pgp(): Promise<typeof OpenPGP> {
+  return (mod ??= await import("openpgp"));
+}
 
 export interface ParsedKey {
   armored: string;
@@ -30,7 +39,7 @@ function parseUserId(uid: string): { name: string; email: string } {
   return { name: m[1].trim(), email: m[2].trim() };
 }
 
-function summariseKey(key: openpgp.PrivateKey, armored: string): ParsedKey {
+function summariseKey(key: OpenPGP.PrivateKey, armored: string): ParsedKey {
   const userIds = key.getUserIDs();
   const primary = parseUserId(userIds[0] ?? "");
   const algInfo = key.getAlgorithmInfo();
@@ -53,6 +62,7 @@ function summariseKey(key: openpgp.PrivateKey, armored: string): ParsedKey {
 
 /** Parse an armored private key (does not decrypt). */
 export async function parsePrivateKey(armored: string): Promise<ParsedKey> {
+  const openpgp = await pgp();
   const key = await openpgp.readPrivateKey({ armoredKey: armored });
   return summariseKey(key, armored);
 }
@@ -60,7 +70,7 @@ export async function parsePrivateKey(armored: string): Promise<ParsedKey> {
 export interface UnlockedKey {
   parsed: ParsedKey;
   /** OpenPGP.js decrypted key — kept in memory only. */
-  key: openpgp.PrivateKey;
+  key: OpenPGP.PrivateKey;
 }
 
 /** Decrypt with passphrase. Throws if wrong passphrase. */
@@ -68,6 +78,7 @@ export async function unlockPrivateKey(
   armored: string,
   passphrase: string,
 ): Promise<UnlockedKey> {
+  const openpgp = await pgp();
   const privateKey = await openpgp.readPrivateKey({ armoredKey: armored });
   const decrypted = await openpgp.decryptKey({ privateKey, passphrase });
   return { parsed: summariseKey(decrypted, armored), key: decrypted };
@@ -93,6 +104,7 @@ export async function signCommitContent(
   unlocked: UnlockedKey,
   commitContent: string,
 ): Promise<string> {
+  const openpgp = await pgp();
   const bytes = new TextEncoder().encode(commitContent);
   const message = await openpgp.createMessage({ binary: bytes });
   // The OpenPGP.js v6.1.1 d.ts is missing this option, but it exists at
@@ -100,7 +112,7 @@ export async function signCommitContent(
   // unknown to satisfy TS without disabling strict mode.
   const signConfig = {
     nonDeterministicSignaturesViaNotation: false,
-  } as unknown as openpgp.PartialConfig;
+  } as unknown as OpenPGP.PartialConfig;
   const armored = await openpgp.sign({
     message,
     signingKeys: unlocked.key,

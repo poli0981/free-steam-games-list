@@ -56,7 +56,7 @@ export function GamesPage() {
   }, [searchParams, setSearch]);
 
   if (q.isLoading) return <LoadingState />;
-  if (q.error) return <ErrorState error={q.error} />;
+  if (q.error) return <ErrorState error={q.error} onRetry={() => void q.refetch()} />;
   if (!q.data) return null;
 
   const hasFilter = genre || typeGame || platform || status || hideDead;

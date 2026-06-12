@@ -12,7 +12,7 @@ export function TimePage() {
   useDocumentTitle("charts.time.title");
   const q = useGames();
   if (q.isLoading) return <LoadingState />;
-  if (q.error) return <ErrorState error={q.error} />;
+  if (q.error) return <ErrorState error={q.error} onRetry={() => void q.refetch()} />;
   if (!q.data) return null;
 
   return (

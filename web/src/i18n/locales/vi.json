@@ -446,5 +446,52 @@
     "playersPeak": "(peak {{peak}})",
     "viewSteamPage": "trang Steam",
     "viewHealth": "Health"
+  },
+  "errors": {
+    "code": "LỖI {{code}}",
+    "actions": {
+      "home": "Về trang chính",
+      "reload": "Tải lại",
+      "retry": "Thử lại",
+      "report": "Báo lỗi",
+      "openSettings": "Mở Cài đặt"
+    },
+    "403": {
+      "title": "Truy cập bị từ chối",
+      "description": "Bạn không có quyền thực hiện thao tác này. Chỉ chủ repo mới được sửa dữ liệu — kiểm tra token trong Cài đặt."
+    },
+    "404": {
+      "title": "Không tìm thấy trang",
+      "description": "Trang bạn tìm không tồn tại hoặc đã bị di chuyển."
+    },
+    "419": {
+      "title": "Phiên đăng nhập hết hạn",
+      "description": "Token xác thực không còn hiệu lực. Hãy đăng nhập lại trong Cài đặt."
+    },
+    "500": {
+      "title": "Đã xảy ra lỗi",
+      "description": "Có lỗi không mong muốn khi hiển thị trang này."
+    },
+    "502": {
+      "title": "Gateway lỗi",
+      "description": "Dịch vụ trung gian trả về phản hồi không hợp lệ. Thử lại sau ít phút."
+    },
+    "503": {
+      "title": "Dịch vụ không khả dụng",
+      "description": "Nguồn dữ liệu tạm thời không truy cập được. Dữ liệu đã cache có thể vẫn xem được."
+    },
+    "504": {
+      "title": "Hết thời gian chờ",
+      "description": "Server phản hồi quá lâu. Kiểm tra kết nối mạng rồi thử lại."
+    },
+    "offline": {
+      "badge": "OFFLINE",
+      "title": "Bạn đang offline",
+      "description": "Không có kết nối mạng. Dữ liệu đã tải trước đó vẫn xem được."
+    },
+    "boundary": {
+      "chunkTitle": "Có bản cập nhật mới",
+      "chunkDescription": "Phiên bản mới vừa được deploy trong lúc bạn đang duyệt. Tải lại để lấy file mới nhất."
+    }
   }
 }

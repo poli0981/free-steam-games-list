@@ -7,7 +7,7 @@ interface TauriRuntime extends Window {
   __TAURI_INTERNALS__?: unknown;
 }
 
-function isTauri(): boolean {
+export function isTauri(): boolean {
   return (
     typeof window !== "undefined" &&
     !!(window as TauriRuntime).__TAURI_INTERNALS__
