@@ -1,14 +1,24 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import { VitePWA } from "vite-plugin-pwa";
+import { visualizer } from "rollup-plugin-visualizer";
 import path from "node:path";
 
 const repoName = "free-steam-games-list";
 
-export default defineConfig(({ command }) => ({
+export default defineConfig(({ command, mode }) => ({
   base: command === "build" ? `/${repoName}/` : "/",
   plugins: [
     react(),
+    // `npm run analyze` → dist/stats.html treemap. Vite mode instead of an
+    // env var so it works cross-platform without cross-env.
+    mode === "analyze" &&
+      visualizer({
+        filename: "dist/stats.html",
+        gzipSize: true,
+        brotliSize: true,
+        template: "treemap",
+      }),
     VitePWA({
       registerType: "autoUpdate",
       injectRegister: "auto",
@@ -43,6 +53,10 @@ export default defineConfig(({ command }) => ({
         // Precache the app shell. Bigger than default to fit echarts + openpgp chunks.
         maximumFileSizeToCacheInBytes: 6 * 1024 * 1024,
         globPatterns: ["**/*.{js,css,html,svg,woff2}"],
+        // 404.html is GitHub Pages' error document for paths outside the
+        // SPA — precaching it would be wasted bytes (SW-controlled clients
+        // get navigateFallback to index.html and never see it).
+        globIgnores: ["404.html"],
         navigateFallback: command === "build" ? `/${repoName}/index.html` : "/index.html",
         runtimeCaching: [
           // Raw shard data — NetworkFirst so an edit lands on disk → next page
@@ -118,12 +132,16 @@ export default defineConfig(({ command }) => ({
     chunkSizeWarningLimit: 1200,
     rollupOptions: {
       output: {
+        // echarts/openpgp are NOT listed here on purpose: they're behind
+        // dynamic-import boundaries (LazyEChart, lib/gpg pgp()) and Rollup
+        // splits them naturally. Forcing them into manual chunks made
+        // Rollup hoist shared helpers (tslib) INTO the echarts chunk, which
+        // the eager graph then statically imported — echarts ended up
+        // modulepreloaded on first paint, nullifying the lazy boundary.
         manualChunks: {
           react: ["react", "react-dom", "react-router-dom"],
           query: ["@tanstack/react-query"],
           table: ["@tanstack/react-virtual"],
-          echarts: ["echarts", "echarts-for-react"],
-          openpgp: ["openpgp"],
         },
       },
     },

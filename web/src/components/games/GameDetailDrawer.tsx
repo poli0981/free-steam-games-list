@@ -29,7 +29,7 @@ import {
 } from "../../lib/utils";
 import { extractAppid } from "../../lib/data-store";
 import { steamProtocolUrl, steamWebUrl } from "../../lib/steam-link";
-import { webpProxyUrl } from "../../lib/image";
+import { preferWebp } from "../../lib/image";
 import type { GameRecord } from "../../lib/schema";
 import { EditGameDrawer } from "./EditGameDrawer";
 import { useIsOwner } from "../../hooks/useIsOwner";
@@ -95,20 +95,23 @@ export function GameDetailDrawer({ game, onClose, missing }: Props) {
           <div className="space-y-6">
             <DialogHeader>
               {game.header_image && (
-                <picture>
-                  <source
-                    srcSet={webpProxyUrl(game.header_image, 460)}
-                    type="image/webp"
-                  />
-                  <img
-                    loading="lazy"
-                    src={game.header_image}
-                    alt=""
-                    width={460}
-                    height={215}
-                    className="h-44 w-full rounded-md object-cover"
-                  />
-                </picture>
+                // Plain <img> instead of <picture>: a <source> only falls
+                // back on unsupported type, NOT on a failed load — a weserv
+                // outage would show a broken image. preferWebp also skips
+                // the proxy entirely on Tauri desktop.
+                <img
+                  loading="lazy"
+                  decoding="async"
+                  src={preferWebp(game.header_image, 460)}
+                  alt=""
+                  width={460}
+                  height={215}
+                  className="h-44 w-full rounded-md object-cover"
+                  onError={(e) => {
+                    const el = e.currentTarget;
+                    if (el.src !== game.header_image) el.src = game.header_image;
+                  }}
+                />
               )}
               <div className="flex items-start justify-between gap-3">
                 <DialogTitle className="text-xl">{game.name || "—"}</DialogTitle>

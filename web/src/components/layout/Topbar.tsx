@@ -129,6 +129,7 @@ export function Topbar({ onMenuToggle }: TopbarProps = {}) {
             <img
               src={auth.user.avatar_url}
               alt=""
+              decoding="async"
               className="h-5 w-5 rounded-full"
             />
             <span className="font-medium">@{auth.user.login}</span>

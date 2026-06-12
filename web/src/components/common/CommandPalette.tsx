@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useDeferredValue, useEffect, useMemo, useState } from "react";
 import { Command } from "cmdk";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -85,9 +85,12 @@ export function CommandPalette() {
     setSearch("");
   }
 
-  const gameMatches = (() => {
-    if (!games.data || search.trim().length < 2) return [];
-    const q = search.toLowerCase();
+  // Memo + deferral: the scan re-ran on every render before; now it only
+  // recomputes when the (low-priority) search value or dataset changes.
+  const deferredSearch = useDeferredValue(search);
+  const gameMatches = useMemo(() => {
+    if (!games.data || deferredSearch.trim().length < 2) return [];
+    const q = deferredSearch.toLowerCase();
     const out = [];
     for (const r of games.data.records) {
       if (r.name && r.name.toLowerCase().includes(q)) {
@@ -96,7 +99,7 @@ export function CommandPalette() {
       }
     }
     return out;
-  })();
+  }, [games.data, deferredSearch]);
 
   if (!open) return null;
 
@@ -190,6 +193,7 @@ export function CommandPalette() {
                     {r.header_image ? (
                       <img
                         loading="lazy"
+                        decoding="async"
                         src={headerToCapsule(r.header_image)}
                         alt=""
                         width={92}

@@ -77,7 +77,7 @@ export function AntiCheatListPage() {
   }, [q.data]);
 
   if (q.isLoading) return <LoadingState />;
-  if (q.error) return <ErrorState error={q.error} />;
+  if (q.error) return <ErrorState error={q.error} onRetry={() => void q.refetch()} />;
   if (!q.data) return null;
 
   const total = buckets.reduce((s, b) => s + b.games.length, 0);

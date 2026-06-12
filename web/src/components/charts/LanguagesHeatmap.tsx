@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { EChart } from "./EChart";
+import { LazyEChart as EChart } from "./LazyEChart";
 import type { GameRecord } from "../../lib/schema";
 
 interface Props {

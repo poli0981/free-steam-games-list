@@ -2,6 +2,51 @@
 
 All notable changes to this awesome noob repo will be documented here.
 
+## [v3.3.0] – 2026-06-12 (The "Lazy-Load + Error Pages" Edition)
+
+Feature release on top of v3.2.7, two themes: a web-app performance overhaul (route-level code splitting, lazy echarts/openpgp/locale chunks — first-load JS drops from ~574 KB to ~163 KB gzipped, −72%) and a proper error-page system (403/404/419/5xx/offline pages, React error boundaries, a real GitHub Pages `404.html`). Web app + desktop bumped `1.2.7` → `1.3.0`. Repo public-facing version `3.2.7` → `3.3.0`. Tag `v3.3.0` is GPG-signed; companion desktop tag is `desktop-v1.3.0`.
+
+### ⚡ Lazy-loading overhaul
+
+- **Route splitting** — [web/src/App.tsx](web/src/App.tsx): every page except `Dashboard` (the landing route) is now `React.lazy` via a new `lazyWithRetry` helper ([web/src/lib/lazy.ts](web/src/lib/lazy.ts)). The `<Suspense>` boundary sits inside [Layout.tsx](web/src/components/layout/Layout.tsx) around `<Outlet/>`, so the sidebar/topbar stay mounted during navigation; fallback reuses the existing `LoadingState`.
+- **echarts (~666 KB raw)** — new [LazyEChart.tsx](web/src/components/charts/LazyEChart.tsx) wrapper is the single dynamic boundary for `EChart.tsx` (which keeps the `echarts.use([...])` registration). All 15 chart components swap one import line; a fixed-height `animate-pulse` skeleton prevents layout shift. echarts now downloads only when a chart mounts.
+- **openpgp (~391 KB raw)** — [web/src/lib/gpg.ts](web/src/lib/gpg.ts) switches to a type-only import + memoized `await import("openpgp")`. All exports were already async, so zero caller changes; visitors without a saved GPG key never download the crypto chunk at all.
+- **Per-locale i18n** — [web/src/i18n/index.ts](web/src/i18n/index.ts): `en.json` stays bundled (it's `fallbackLng` — a missing key can never render raw), `vi.json` becomes a dynamic import. `initI18n()` preloads the detected locale before `i18n.init`, and [main.tsx](web/src/main.tsx) awaits it before first render — no flash of raw keys, verified with a hard reload under `f2p:lang=vi`. `setLanguage()` is now async and loads the bundle *before* switching. Also syncs `<html lang>` (was hardcoded `vi` for everyone).
+- **manualChunks fix** — forcing `echarts`/`openpgp` into `manualChunks` made Rollup hoist shared helpers (tslib) *into* the echarts chunk, which the eager graph then statically imported — echarts was being modulepreloaded on first paint, nullifying the lazy boundary. Both entries are removed from [vite.config.ts](web/vite.config.ts); the dynamic-import boundaries split them naturally. `dist/index.html` now modulepreloads only `react` + `query`.
+- Net effect: eager JS `~1746 KB → ~494 KB` raw (`~574 → ~163 KB` gzip). The PWA still precaches everything in the background, but first paint no longer waits for charts + crypto.
+
+### 🚦 Error pages (403 / 404 / 419 / 500 / 502 / 503 / 504 / offline)
+
+- New [web/src/pages/errors/ErrorPage.tsx](web/src/pages/errors/ErrorPage.tsx) — one config-driven component: per-code lucide icon + tone (neutral/warn/destructive, reusing the exact `ErrorState`/`PwaIndicator` palettes), mono `ERROR {{code}}` badge, i18n'd title/description, and three actions (Go home / Reload / Report issue → GitHub Issues). Full `errors.*` key blocks added to both [en.json](web/src/i18n/locales/en.json) and [vi.json](web/src/i18n/locales/vi.json). Kept in the eager bundle on purpose — error UI must not live in a lazy chunk.
+- Routing — `#/error/:code` deep links via `ErrorCodeRoute` (unknown codes render 404 in place, no redirect), and the catch-all `<Route path="*">` now shows a real 404 page instead of silently redirecting to the Dashboard.
+- **GitHub Pages `404.html`** — new [web/public/404.html](web/public/404.html): standalone dark page (inline CSS, no JS deps), bilingual via a one-liner that respects the app's own `f2p:lang`, `noindex`, absolute link back to `/free-steam-games-list/#/`. Excluded from the SW precache via `globIgnores` in [vite.config.ts](web/vite.config.ts) — SW-controlled clients get `navigateFallback` and never see it.
+
+### 🛡️ Error boundaries + stale-deploy resilience
+
+- New [ErrorBoundary.tsx](web/src/components/common/ErrorBoundary.tsx) (own ~40-line class, no new dep) with a `resetKey` prop — navigating away clears a stuck error *without* remounting the page subtree on every navigation (which `key` would do, destroying table scroll/selection state).
+- Two mounts: route-level inside `Layout` (chunk-load error → 503 page with "new version deployed, reload" copy; render crash → 500 page, error message shown in dev only), and a top-level [AppErrorBoundary](web/src/components/common/AppErrorBoundary.tsx) outside the router with inline styles + hardcoded bilingual strings — immune to i18n/Tailwind/router failures.
+- `lazyWithRetry` handles the deploy-mid-session case: a chunk 404 triggers ONE auto-reload per tab (`sessionStorage` flag, try/catch-guarded for lockdown webviews) which also picks up the waiting service worker; a second failure throws to the boundary.
+
+### 🔌 Real error flows wired in
+
+- [QueryState.tsx](web/src/components/common/QueryState.tsx) `ErrorState` upgraded in place (contract preserved): offline detection swaps in the `errors.offline.*` copy + `WifiOff` icon, plus Retry / Report-issue action buttons. All 17 call sites now pass `onRetry={() => void q.refetch()}`.
+- Expired/revoked token on session restore ([stores/auth.ts](web/src/stores/auth.ts) `hydrate()` catch) now fires a Sonner toast with the shared `errors.419.*` copy and an "Open Settings" action (10 s duration — the 4 s default is too short for action toasts). Deliberately a toast, not a redirect: don't hijack whatever page the user opened. Auth gating on `/add` stays as-is.
+
+### 🖼️ Images
+
+- `decoding="async"` added to every `<img>` (10 sites: table thumbs, mobile cards, command palette, detail drawer, avatars, About QRs) — keeps image decode off the main thread during virtualised scrolling.
+- Detail drawer header image now goes through a new `preferWebp()` ([web/src/lib/image.ts](web/src/lib/image.ts)): weserv WebP transcode (~50 KB → ~20 KB) on web, **direct Steam URL on Tauri desktop** (no third-party calls from the bundled app), with an `onError` fallback to the original. Replaces the old `<picture><source>` markup, which only falls back on unsupported *type* — a weserv outage would have shown a broken image. Thumbnails intentionally stay on direct Steam capsules (~10 KB, SW-cached); `webpProxyUrl` is no longer exported.
+
+### ⌨️ Search responsiveness
+
+- [GamesTable.tsx](web/src/components/games/GamesTable.tsx): the Fuse.js search input is wrapped in `useDeferredValue` — typing stays per-keystroke responsive while filtering ~1.2k records lags at React's low priority. No debounce timer (deferral only delays when the machine is actually busy). Same treatment + `useMemo` for the command palette's game scan.
+
+### 🧰 Tooling & misc
+
+- `rollup-plugin-visualizer` devDependency + `npm run analyze` (`vite build --mode analyze` → `dist/stats.html` treemap, gzip/brotli sizes).
+- [index.html](web/index.html): `preconnect` hints for `raw.githubusercontent.com` (shard fetches, crossorigin) and `shared.akamai.steamstatic.com` (thumbnails).
+- `npm audit fix` — react-router open-redirect advisory GHSA-2j2x-hqr9-3h42 (`react-router-dom` 6.30.x patch line); `npm audit` and `pip-audit` both report 0 known vulnerabilities.
+
 ## [v3.2.7] – 2026-05-22 (The "Coming-Soon Guard + Dead-Code Cleanup" Edition)
 
 Maintenance release on top of v3.2.6. A small, useful batch: the Python pipeline now rejects unreleased ("coming soon") games at ingest instead of listing titles nobody can play yet; a one-time dead-code sweep across the web app and the pipeline; and three dev-tooling additions (knip, vulture, pip-audit) so future releases can run the same checks. Web app + desktop bumped `1.2.6` → `1.2.7`. Repo public-facing version `3.2.6` → `3.2.7`. Tag `v3.2.7` is GPG-signed; companion desktop tag is `desktop-v1.2.7`.

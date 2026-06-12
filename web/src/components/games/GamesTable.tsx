@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState, useEffect } from "react";
+import { useDeferredValue, useMemo, useRef, useState, useEffect } from "react";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import Fuse from "fuse.js";
 import { useFilters } from "../../stores/filters";
@@ -19,7 +19,11 @@ interface Props {
 }
 
 export function GamesTable({ records, onRowOpen }: Props) {
-  const search = useFilters((s) => s.search);
+  // Deferred: the Topbar input stays per-keystroke responsive while the
+  // Fuse search over ~1.2k records lags behind at React's low priority.
+  // No debounce timer — deferral only delays when the machine is busy.
+  const searchRaw = useFilters((s) => s.search);
+  const search = useDeferredValue(searchRaw);
   const genre = useFilters((s) => s.genre);
   const typeGame = useFilters((s) => s.type_game);
   const platform = useFilters((s) => s.platform);

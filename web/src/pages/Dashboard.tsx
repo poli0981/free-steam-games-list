@@ -15,7 +15,7 @@ export function Dashboard() {
   const q = useGames();
   const removed = useRemovedGames();
   if (q.isLoading) return <LoadingState />;
-  if (q.error) return <ErrorState error={q.error} />;
+  if (q.error) return <ErrorState error={q.error} onRetry={() => void q.refetch()} />;
   if (!q.data) return null;
 
   const { records, index } = q.data;

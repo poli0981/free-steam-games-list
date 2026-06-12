@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#0f172a">
+  <title>404 — Steam F2P Tracker</title>
+  <!--
+    Served by GitHub Pages for paths outside the SPA (the app itself routes
+    behind #/, so in-app 404s are handled by the router's NotFound page).
+    Standalone on purpose: no JS deps, inline CSS, bilingual via one-liner.
+    Excluded from the service worker precache (workbox globIgnores).
+  -->
+  <style>
+    body{margin:0;min-height:100vh;display:grid;place-items:center;background:#0f172a;color:#e2e8f0;font-family:Inter,system-ui,sans-serif}
+    .card{text-align:center;max-width:420px;padding:32px;border:1px solid #1e293b;border-radius:12px;background:#111c33}
+    .code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;letter-spacing:.3em;color:#64748b}
+    h1{font-size:20px;margin:.5em 0}
+    p{font-size:14px;color:#94a3b8;line-height:1.5}
+    code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;color:#cbd5e1}
+    a.btn{display:inline-block;margin-top:20px;padding:8px 20px;border-radius:8px;background:#2563eb;color:#fff;text-decoration:none;font-size:14px}
+    [data-l]{display:none}
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="code">ERROR 404</div>
+    <h1 data-l="en">Page not found</h1>
+    <h1 data-l="vi">Không tìm thấy trang</h1>
+    <p data-l="en">This page doesn't exist. The app lives behind the <code>#/</code> router.</p>
+    <p data-l="vi">Trang này không tồn tại. Ứng dụng chạy sau bộ định tuyến <code>#/</code>.</p>
+    <a class="btn" href="/free-steam-games-list/#/" data-l="en">Go to app</a>
+    <a class="btn" href="/free-steam-games-list/#/" data-l="vi">Về trang chính</a>
+  </div>
+  <script>
+    // Same-origin: respect the app's own language choice, then the browser's.
+    var l="en";
+    try{l=((localStorage.getItem("f2p:lang")||navigator.language||"en").slice(0,2)==="vi")?"vi":"en"}catch(e){}
+    document.documentElement.lang=l;
+    document.querySelectorAll('[data-l="'+l+'"]').forEach(function(e){e.style.display="block"});
+  </script>
+</body>
+</html>

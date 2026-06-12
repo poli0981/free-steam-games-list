@@ -295,6 +295,7 @@ export function AboutPage() {
                     width={32}
                     height={32}
                     loading="lazy"
+                    decoding="async"
                     className="h-8 w-8 rounded bg-white p-0.5"
                     title="Scan to open in Telegram"
                   />
@@ -391,6 +392,7 @@ export function AboutPage() {
                 width={200}
                 height={200}
                 loading="lazy"
+                decoding="async"
                 className="h-40 w-40 rounded bg-white p-2"
               />
               <div className="text-center">
@@ -410,6 +412,7 @@ export function AboutPage() {
                 width={200}
                 height={200}
                 loading="lazy"
+                decoding="async"
                 className="h-40 w-40 rounded bg-white p-2"
               />
               <div className="text-center">

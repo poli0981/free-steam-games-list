@@ -6,6 +6,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="theme-color" content="#0f172a" />
 
+    <!-- Shave a DNS+TLS handshake off the first shard fetch / thumbnails.
+         raw.githubusercontent is fetched with CORS, hence crossorigin. -->
+    <link rel="preconnect" href="https://raw.githubusercontent.com" crossorigin />
+    <link rel="preconnect" href="https://shared.akamai.steamstatic.com" />
+
     <title>Steam F2P Tracker</title>
     <meta
       name="description"
