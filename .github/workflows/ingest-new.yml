@@ -1,6 +1,9 @@
 name : Ingest New Game Links
 on :
-  push : { paths : [ 'scripts/temp_info.jsonl' ] }
+  # branches filter is REQUIRED: without it every v*/desktop-v* tag push
+  # matches the paths filter (tag pushes compare against an empty base),
+  # fires the ingest on a detached HEAD, and dies with exit 128 on push.
+  push : { branches : [ main ], paths : [ 'scripts/temp_info.jsonl' ] }
   workflow_dispatch :
 permissions : { contents : write }
 concurrency :
