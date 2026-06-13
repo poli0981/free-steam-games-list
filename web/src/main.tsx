@@ -5,6 +5,7 @@ import { HashRouter } from "react-router-dom";
 import { Toaster } from "sonner";
 import App from "./App";
 import { AppErrorBoundary } from "./components/common/AppErrorBoundary";
+import { ConsentGate } from "./components/common/ConsentGate";
 import { initI18n } from "./i18n";
 import "./index.css";
 
@@ -25,7 +26,9 @@ function renderApp() {
       <AppErrorBoundary>
         <QueryClientProvider client={queryClient}>
           <HashRouter>
-            <App />
+            <ConsentGate>
+              <App />
+            </ConsentGate>
             <Toaster
               richColors
               closeButton

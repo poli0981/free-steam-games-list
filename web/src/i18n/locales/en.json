@@ -1,4 +1,15 @@
 {
+  "consent": {
+    "title": "Before you continue",
+    "intro": "By using this site you accept and agree to be bound by the documents below. Open any of them to read the full text.",
+    "docsLabel": "Legal documents",
+    "checkboxLabel": "I have read and accept the License, EULA, Privacy Policy, Disclaimer, and Terms of Use.",
+    "continue": "Continue",
+    "decline": "Decline",
+    "declinedTitle": "You need to accept the terms",
+    "declinedBody": "You must accept the License, EULA, Privacy Policy, Disclaimer, and Terms of Use to use F2P Tracker.",
+    "back": "Back"
+  },
   "nav": {
     "dashboard": "Dashboard",
     "games": "Games",
