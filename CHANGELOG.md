@@ -2,6 +2,31 @@
 
 All notable changes to this awesome noob repo will be documented here.
 
+## [v3.4.0] – 2026-06-13 (The "Legal Consent Gate" Edition)
+
+Feature release on top of v3.3.0 adding an explicit, up-front acceptance of the project's legal documents on both surfaces: a first-run consent gate in the app (web + desktop) and a real license-agreement page in the Windows installer. No backend, no cookies — acceptance is a single `localStorage` flag, versioned so it can re-prompt when the terms change, and naturally fresh in incognito/private tabs. Web app + desktop bumped `1.3.0` → `1.4.0`. Repo public-facing version `3.3.0` → `3.4.0`. Tag `v3.4.0` is GPG-signed; companion desktop tag is `desktop-v1.4.0`.
+
+### ⚖️ First-run consent gate (web + desktop)
+
+- New [ConsentGate.tsx](web/src/components/common/ConsentGate.tsx) — a full-screen card (styled like the error pages, eager bundle, no flash) that blocks the main UI until the user ticks a checkbox and clicks **Continue**. Mounted inside `AppErrorBoundary` + `HashRouter` in [main.tsx](web/src/main.tsx), wrapping `<App/>` (the `<Toaster/>` stays a sibling). A gate crash is still caught by the top-level boundary.
+- **Decline path** — explicit **Decline** button: on desktop (Tauri) it quits the app via `getCurrentWindow().close()`; on web it shows a blocking "you need to accept" notice with a way back to the gate.
+- **Persistence** — new [stores/consent.ts](web/src/stores/consent.ts) (Zustand, same pattern as `stores/gpg.ts`): `localStorage` key `f2p:legal_consent` holding `{ version, acceptedAt }`. A `TERMS_VERSION` constant gates validity — bump it when the legal docs change materially and everyone is re-prompted. Incognito tabs get a fresh storage partition, so the gate re-shows there with zero extra code. No cookie is used anywhere (there is no server to read one).
+- **Error routes pass through** — the gate lets `#/error/*` render even before consent, so a mid-session chunk-load 503, the Pages `404.html` redirect, or an `#/error/:code` deep link still reaches the user instead of being swallowed.
+- **Doc links** — the gate's five binding documents (MIT License, EULA, Privacy Policy, Disclaimer, Terms of Use) open through the existing [external-open.ts](web/src/lib/external-open.ts) `openExternal()` helper, so they work inside the Tauri webview (which blocks `window.open` to external HTTPS) as well as on the web.
+- **Shared legal list** — the `LEGAL_DOCS` array (label / path / hint) was lifted out of [About.tsx](web/src/pages/About.tsx) into a reusable [lib/legal.ts](web/src/lib/legal.ts) (`LEGAL_DOCS`, `CONSENT_DOCS`, `legalDocUrl()`); About now imports it instead of holding a private copy.
+- New `consent.*` i18n keys added to both [en.json](web/src/i18n/locales/en.json) and [vi.json](web/src/i18n/locales/vi.json). Long-form legal copy stays English (the doc labels come from `LEGAL_DOCS`); only the gate chrome is bilingual.
+
+### 🪟 Windows installer license page
+
+- [tauri.conf.json](web/src-tauri/tauri.conf.json) now sets `bundle.licenseFile` to a new [LICENSE_AGREEMENT.rtf](web/src-tauri/LICENSE_AGREEMENT.rtf). Tauri v2 surfaces this as a mandatory "I Agree" license page in **both** Windows targets built by `targets: "all"` — the NSIS `-setup.exe` (MUI license page) and the WiX `.msi` (which requires RTF). The RTF is plain ASCII with no BOM to avoid the known NSIS license-encoding bug.
+- The installer gate (install-time, desktop-only) and the in-app gate (first-run, web + desktop, re-promptable) are intentionally both kept: the auto-updater replaces the binary without re-running the installer, so the in-app `TERMS_VERSION` mechanism is the only way to re-prompt updated installs.
+- Desktop window-close on decline needs the `core:window:allow-close` permission, now added to [capabilities/default.json](web/src-tauri/capabilities/default.json). New dependency `@tauri-apps/api` (official, lazy-imported only on the desktop decline path — no web-bundle bloat).
+
+### 🧰 Tooling & misc
+
+- Version bumped across the three desktop files ([web/package.json](web/package.json), [tauri.conf.json](web/src-tauri/tauri.conf.json), [Cargo.toml](web/src-tauri/Cargo.toml)) → `1.4.0`; the stale README version badge corrected `3.2.7` → `3.4.0`.
+- Pre-publish suite (`typecheck`, `knip`, `npm audit`, `vulture`, `pip-audit`) re-run clean.
+
 ## [v3.3.0] – 2026-06-12 (The "Lazy-Load + Error Pages" Edition)
 
 Feature release on top of v3.2.7, two themes: a web-app performance overhaul (route-level code splitting, lazy echarts/openpgp/locale chunks — first-load JS drops from ~574 KB to ~163 KB gzipped, −72%) and a proper error-page system (403/404/419/5xx/offline pages, React error boundaries, a real GitHub Pages `404.html`). Web app + desktop bumped `1.2.7` → `1.3.0`. Repo public-facing version `3.2.7` → `3.3.0`. Tag `v3.3.0` is GPG-signed; companion desktop tag is `desktop-v1.3.0`.

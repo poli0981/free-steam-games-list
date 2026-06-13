@@ -27,6 +27,7 @@ import { Separator } from "../components/ui/separator";
 import { useGames } from "../hooks/useGames";
 import { useDocumentTitle } from "../hooks/useDocumentTitle";
 import { REPO_OWNER, REPO_NAME } from "../lib/schema";
+import { LEGAL_DOCS } from "../lib/legal";
 import { formatNumber } from "../lib/utils";
 
 const REPO_URL = `https://github.com/${REPO_OWNER}/${REPO_NAME}`;
@@ -101,22 +102,6 @@ const ISSUE_TEMPLATES = [
   { id: "add_games", label: "Add games", icon: PlusCircle, color: "text-emerald-400" },
   { id: "delete_game", label: "Delete game", icon: Shield, color: "text-violet-400" },
   { id: "feedback", label: "Feedback", icon: MessageCircle, color: "text-blue-400" },
-];
-
-interface LegalDoc {
-  label: string;
-  path: string;
-  hint: string;
-}
-
-const LEGAL_DOCS: LegalDoc[] = [
-  { label: "MIT License", path: "LICENSE", hint: "the actual binding terms — short and friendly" },
-  { label: "Disclaimer", path: "docs/DISCLAIMER.md", hint: "no warranty, accuracy caveats, liability shrug" },
-  { label: "Terms of Use", path: "docs/ToS.md", hint: "what you agree to by using the repo / site" },
-  { label: "EULA", path: "docs/EULA.md", hint: "redundant with MIT but exists for paranoia" },
-  { label: "Privacy Policy", path: "docs/PRIVACY_POLICY.md", hint: "no data collected by the site itself" },
-  { label: "Acknowledgements", path: "docs/ACKNOWLEDGEMENTs.md", hint: "credits to AI assistants + contributors" },
-  { label: "Contact", path: "docs/Contact.md", hint: "where to find me" },
 ];
 
 export function AboutPage() {

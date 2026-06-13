@@ -1,4 +1,15 @@
 {
+  "consent": {
+    "title": "Trước khi tiếp tục",
+    "intro": "Khi sử dụng trang này, bạn chấp nhận và đồng ý tuân thủ các văn bản dưới đây. Bấm vào từng mục để đọc toàn văn.",
+    "docsLabel": "Văn bản pháp lý",
+    "checkboxLabel": "Tôi đã đọc và chấp nhận License, EULA, Chính sách bảo mật, Tuyên bố miễn trừ và Điều khoản sử dụng.",
+    "continue": "Tiếp tục",
+    "decline": "Từ chối",
+    "declinedTitle": "Bạn cần chấp nhận điều khoản",
+    "declinedBody": "Bạn phải chấp nhận License, EULA, Chính sách bảo mật, Tuyên bố miễn trừ và Điều khoản sử dụng để dùng F2P Tracker.",
+    "back": "Quay lại"
+  },
   "nav": {
     "dashboard": "Tổng quan",
     "games": "Trò chơi",
