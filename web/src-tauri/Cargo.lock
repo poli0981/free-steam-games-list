@@ -1002,7 +1002,7 @@ dependencies = [
 
 [[package]]
 name = "f2p-tracker"
-version = "1.4.1"
+version = "1.4.2"
 dependencies = [
  "serde",
  "serde_json",

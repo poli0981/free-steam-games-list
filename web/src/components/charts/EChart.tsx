@@ -41,6 +41,40 @@ echarts.use([
   CanvasRenderer,
 ]);
 
+// Touch devices (phones, the Android webview) report `pointer: coarse`. Only
+// there do we add an inside dataZoom, so many-category charts can be pinch-
+// zoomed/panned. Desktop (`pointer: fine`) is left untouched — no mouse-wheel
+// zoom hijacking the page scroll.
+const IS_TOUCH =
+  typeof window !== "undefined" &&
+  typeof window.matchMedia === "function" &&
+  window.matchMedia("(pointer: coarse)").matches;
+
+function axisType(axis: unknown): string | undefined {
+  if (Array.isArray(axis)) return (axis[0] as { type?: string } | undefined)?.type;
+  return (axis as { type?: string } | undefined)?.type;
+}
+
+/**
+ * On touch, give cartesian charts an inside dataZoom on their *category* axis
+ * (the one prone to cramped ticks). No-op for pie/treemap/wordcloud (no axes)
+ * and for charts that already declare a dataZoom of their own.
+ */
+function withTouchZoom(option: EChartsCoreOption): EChartsCoreOption {
+  if (!IS_TOUCH) return option;
+  const o = option as Record<string, unknown>;
+  if (o.dataZoom) return option;
+  if (!o.xAxis && !o.yAxis) return option; // pie / treemap / wordcloud
+  const yIsCategory = axisType(o.yAxis) === "category";
+  const xIsCategory = axisType(o.xAxis) === "category";
+  // Horizontal bars carry the category on Y; everything else on X.
+  const zoom =
+    yIsCategory && !xIsCategory
+      ? { type: "inside", yAxisIndex: 0, filterMode: "none" }
+      : { type: "inside", xAxisIndex: 0, filterMode: "none" };
+  return { ...option, dataZoom: [zoom] };
+}
+
 interface Props {
   option: EChartsCoreOption;
   height?: number | string;
@@ -50,7 +84,7 @@ interface Props {
 export function EChart({ option, height = 360, className }: Props) {
   const opts = useMemo(
     () => ({
-      ...option,
+      ...withTouchZoom(option),
       backgroundColor: "transparent",
       textStyle: {
         fontFamily: "Inter, system-ui, sans-serif",

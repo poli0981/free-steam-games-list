@@ -89,6 +89,11 @@
     "installed": "Installed",
     "installedBody": "F2P Tracker is now available as a standalone app."
   },
+  "appUpdate": {
+    "available": "New version available ({{version}})",
+    "body": "Tap to download the latest APK from GitHub Releases.",
+    "download": "Download"
+  },
   "dashboard": {
     "title": "Dashboard",
     "subtitle": "Overview of {{count}} F2P Steam games tracked in this repository.",

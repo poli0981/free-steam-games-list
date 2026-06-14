@@ -1,6 +1,6 @@
 [package]
 name = "f2p-tracker"
-version = "1.4.1"
+version = "1.4.2"
 description = "Desktop wrapper around the Steam F2P Tracker web app"
 authors = ["poli0981"]
 license = "MIT"
