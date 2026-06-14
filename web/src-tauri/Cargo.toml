@@ -35,6 +35,12 @@ serde_json = "1"
 serde = { version = "1", features = ["derive"] }
 tauri = { version = "2", features = [] }
 tauri-plugin-shell = "2"
+# Native HTTP (reqwest) so the GitHub OAuth Device Flow endpoints — which send
+# no CORS headers — can be called from the webview on every platform. The
+# Android System WebView enforces CORS strictly (unlike desktop), so a plain
+# `fetch` to github.com/login/* is blocked there; this plugin routes the call
+# through Rust instead. Works on desktop + mobile, so it's an unconditional dep.
+tauri-plugin-http = "2"
 
 # Auto-updater and single-instance plugins are desktop-only — Tauri rejects
 # both at compile time on mobile, so we gate the deps behind

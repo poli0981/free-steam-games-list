@@ -27,6 +27,11 @@ pub fn run() {
 
     builder = builder.plugin(tauri_plugin_shell::init());
 
+    // Native HTTP bridge for the GitHub OAuth Device Flow (CORS-less endpoints).
+    // All platforms — the Android webview enforces CORS, so the frontend routes
+    // those calls through here. Scope is locked to github.com in capabilities.
+    builder = builder.plugin(tauri_plugin_http::init());
+
     // The updater plugin only ships on desktop. Tauri rejects it at compile
     // time for iOS / Android, and we gate the Cargo dep the same way in
     // Cargo.toml so mobile builds don't pull it in.

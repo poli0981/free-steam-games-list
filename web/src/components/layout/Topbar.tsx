@@ -1,4 +1,4 @@
-import { Search, Sun, Moon, Monitor, ShieldCheck, Unlock, Menu } from "lucide-react";
+import { Search, Sun, Moon, Monitor, ShieldCheck, Unlock, Menu, Command } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
@@ -6,6 +6,7 @@ import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { Badge } from "../ui/badge";
 import { PwaIndicator } from "../common/PwaIndicator";
+import { openCommandPalette } from "../common/CommandPalette";
 import { GpgQuickUnlock } from "../auth/GpgQuickUnlock";
 import { useFilters } from "../../stores/filters";
 import { useGames } from "../../hooks/useGames";
@@ -86,6 +87,15 @@ export function Topbar({ onMenuToggle }: TopbarProps = {}) {
         <kbd className="pointer-events-none absolute right-2 top-1/2 hidden h-5 -translate-y-1/2 select-none items-center rounded border bg-muted px-1.5 font-mono text-[10px] text-muted-foreground md:inline-flex">
           ⌘K
         </kbd>
+        {/* Touch equivalent of ⌘K — the soft keyboard can't send the chord. */}
+        <button
+          type="button"
+          aria-label={t("cmdk.placeholder")}
+          onClick={openCommandPalette}
+          className="absolute right-1.5 top-1/2 inline-flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded text-muted-foreground hover:text-foreground md:hidden"
+        >
+          <Command className="h-4 w-4" />
+        </button>
       </div>
 
       <div className="hidden items-center gap-3 text-xs text-muted-foreground md:flex">

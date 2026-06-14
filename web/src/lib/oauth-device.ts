@@ -28,16 +28,37 @@
  * Browser CORS gotcha:
  *   The Device Flow endpoints (`github.com/login/device/code`,
  *   `github.com/login/oauth/access_token`) do not send `Access-Control-
- *   Allow-Origin` for browser callers. So we route through a known CORS
- *   proxy or — preferred — a small fetch helper baked into the desktop
- *   build (Tauri can call them natively). On the web build we fall back to
- *   `https://cors-anywhere.example/...` only if the maintainer wires one
- *   up; otherwise the UI shows "Use the desktop app for OAuth Device Flow"
- *   and links back to PAT input.
+ *   Allow-Origin` for browser callers. Inside Tauri (desktop AND Android) we
+ *   route the request through the native HTTP plugin (`@tauri-apps/plugin-http`,
+ *   scoped to github.com in capabilities), which performs it in Rust and
+ *   bypasses webview CORS entirely. This matters on Android: unlike desktop,
+ *   its System WebView enforces CORS, so a plain `fetch` to github.com/login/*
+ *   would be blocked. On the plain web build we fall back to `window.fetch`
+ *   plus an optional `VITE_GH_OAUTH_PROXY`; without a proxy the browser will
+ *   block the call and the UI points users at the PAT input instead.
  */
+
+import { isTauri } from "./external-open";
 
 export const OAUTH_CLIENT_ID =
   (import.meta.env.VITE_GH_OAUTH_CLIENT_ID as string | undefined) ?? "";
+
+/**
+ * `fetch` that bypasses webview CORS when running inside Tauri by going through
+ * the native HTTP plugin (Rust/reqwest). On the web build it's the plain
+ * `window.fetch`. The plugin export is a drop-in `fetch` with the same shape,
+ * lazy-imported so the web bundle never pulls the Tauri module.
+ */
+async function corsFreeFetch(
+  input: string,
+  init?: RequestInit,
+): Promise<Response> {
+  if (isTauri()) {
+    const { fetch: tauriFetch } = await import("@tauri-apps/plugin-http");
+    return tauriFetch(input, init);
+  }
+  return fetch(input, init);
+}
 
 /** Whether the surrounding Authorize-via-Device-Flow UI should render at all. */
 export function isOAuthConfigured(): boolean {
@@ -59,11 +80,10 @@ export interface AccessTokenResponse {
 }
 
 /**
- * Browser-friendly wrapper around POST /login/device/code.
+ * Wrapper around POST /login/device/code.
  *
- * Tauri builds skip the proxy — `fetch` from a Tauri webview isn't subject
- * to browser CORS, so the call hits github.com directly. Browser-only
- * builds need a CORS proxy; we expose a hook for that via
+ * Inside Tauri the call goes through the native HTTP plugin (no webview CORS),
+ * so it hits github.com directly. Browser-only builds need a CORS proxy via
  * `VITE_GH_OAUTH_PROXY` (no default — leave UI gated until configured).
  */
 export async function requestDeviceCode(): Promise<DeviceCodeResponse> {
@@ -71,7 +91,7 @@ export async function requestDeviceCode(): Promise<DeviceCodeResponse> {
     throw new Error("CLIENT_ID is not configured for OAuth Device Flow.");
   }
   const url = oauthUrl("/login/device/code");
-  const res = await fetch(url, {
+  const res = await corsFreeFetch(url, {
     method: "POST",
     headers: { Accept: "application/json", "Content-Type": "application/json" },
     body: JSON.stringify({ client_id: OAUTH_CLIENT_ID, scope: "repo workflow" }),
@@ -91,7 +111,7 @@ export interface PollAttempt {
 export async function pollAccessToken(
   device_code: string,
 ): Promise<PollAttempt> {
-  const res = await fetch(oauthUrl("/login/oauth/access_token"), {
+  const res = await corsFreeFetch(oauthUrl("/login/oauth/access_token"), {
     method: "POST",
     headers: { Accept: "application/json", "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -121,13 +141,11 @@ export async function pollAccessToken(
 }
 
 function oauthUrl(path: string): string {
-  // Tauri can hit github.com directly; browsers need a CORS proxy.
-  const isTauri =
-    typeof window !== "undefined" &&
-    !!(window as { __TAURI_INTERNALS__?: unknown }).__TAURI_INTERNALS__;
+  // Inside Tauri the request goes through the native HTTP plugin (no CORS), so
+  // hit github.com directly. Browsers use a CORS proxy if one is configured.
   const proxy = (import.meta.env.VITE_GH_OAUTH_PROXY as string | undefined) ?? "";
   const base = "https://github.com";
-  if (isTauri || !proxy) return base + path;
+  if (isTauri() || !proxy) return base + path;
   // proxy is e.g. "https://my-proxy.fly.dev" → result "https://my-proxy.fly.dev/https://github.com/..."
   return proxy.replace(/\/$/, "") + "/" + base + path;
 }
