@@ -13,6 +13,17 @@ val tauriProperties = Properties().apply {
     }
 }
 
+// Release signing. keystore.properties (and the .jks it points to) live at the
+// gen/android root and are gitignored; they're present locally or generated in
+// CI from secrets. On a plain checkout the file is absent, so `release` stays
+// unsigned and unsigned/debug builds still work.
+val keystorePropertiesFile = rootProject.file("keystore.properties")
+val keystoreProperties = Properties().apply {
+    if (keystorePropertiesFile.exists()) {
+        keystorePropertiesFile.inputStream().use { load(it) }
+    }
+}
+
 android {
     compileSdk = 36
     namespace = "io.github.poli0981.f2p_tracker"
@@ -23,6 +34,18 @@ android {
         targetSdk = 36
         versionCode = tauriProperties.getProperty("tauri.android.versionCode", "1").toInt()
         versionName = tauriProperties.getProperty("tauri.android.versionName", "1.0")
+    }
+    signingConfigs {
+        create("release") {
+            // Populated only when keystore.properties exists (see top of file),
+            // so a keyless checkout still configures cleanly.
+            if (keystorePropertiesFile.exists()) {
+                keyAlias = keystoreProperties["keyAlias"] as String
+                keyPassword = keystoreProperties["keyPassword"] as String
+                storeFile = file(keystoreProperties["storeFile"] as String)
+                storePassword = keystoreProperties["storePassword"] as String
+            }
+        }
     }
     buildTypes {
         getByName("debug") {
@@ -43,6 +66,12 @@ android {
                     .plus(getDefaultProguardFile("proguard-android-optimize.txt"))
                     .toList().toTypedArray()
             )
+            // Sign with the release key when keystore.properties is present;
+            // otherwise the release build stays unsigned (won't install, but
+            // still compiles for CI dry-runs / size checks).
+            if (keystorePropertiesFile.exists()) {
+                signingConfig = signingConfigs.getByName("release")
+            }
         }
     }
     kotlinOptions {

@@ -1,0 +1,135 @@
+name: Release Android App
+
+# Builds a signed, universal release APK and attaches it to a (draft) GitHub
+# Release. Triggered by pushing an `android-v*` tag, or manually.
+#
+# Required repo secrets (Settings → Secrets and variables → Actions):
+#   ANDROID_KEYSTORE_BASE64    base64 of the release keystore (.jks):
+#                                `base64 -w0 release.jks` (Linux/macOS) or
+#                                `[Convert]::ToBase64String([IO.File]::ReadAllBytes("release.jks"))` (PowerShell)
+#   ANDROID_KEYSTORE_PASSWORD  store password
+#   ANDROID_KEY_ALIAS          key alias
+#   ANDROID_KEY_PASSWORD       key password
+# Without these, the build can't sign and this workflow fails on purpose — an
+# unsigned APK can't be installed. KEEP THE KEYSTORE + PASSWORDS BACKED UP:
+# every future update must be signed with the SAME key or users must uninstall.
+
+on:
+  push:
+    tags:
+      - 'android-v*'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag name (e.g. android-v1.4.1). Created if missing.'
+        required: true
+        default: 'android-v1.4.1'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '24'
+          cache: 'npm'
+          cache-dependency-path: web/package-lock.json
+
+      - name: Install Rust toolchain + Android targets
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-linux-android,armv7-linux-androideabi,i686-linux-android,x86_64-linux-android
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: 'web/src-tauri -> target'
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Set up Android NDK
+        id: setup-ndk
+        uses: nttld/setup-ndk@v1
+        with:
+          ndk-version: r27
+          link-to-sdk: true
+          local-cache: true
+
+      - name: Export NDK_HOME
+        run: echo "NDK_HOME=${{ steps.setup-ndk.outputs.ndk-path }}" >> "$GITHUB_ENV"
+
+      - name: Install web dependencies
+        working-directory: web
+        run: npm ci || npm install
+
+      - name: Configure release keystore
+        working-directory: web/src-tauri/gen/android
+        env:
+          KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          STORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          if [ -z "$KEYSTORE_BASE64" ]; then
+            echo "::error::ANDROID_KEYSTORE_BASE64 secret is not set — cannot sign the release APK."
+            exit 1
+          fi
+          echo "$KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/release.jks"
+          # Guard against a truncated/corrupt base64 secret silently yielding
+          # an invalid keystore that fails opaquely later.
+          if [ "$(stat -c%s "$RUNNER_TEMP/release.jks")" -lt 1000 ]; then
+            echo "::error::Decoded keystore is suspiciously small — check the base64 secret."
+            exit 1
+          fi
+          {
+            echo "storeFile=$RUNNER_TEMP/release.jks"
+            echo "storePassword=$STORE_PASSWORD"
+            echo "keyAlias=$KEY_ALIAS"
+            echo "keyPassword=$KEY_PASSWORD"
+          } > keystore.properties
+
+      - name: Make gradlew executable
+        run: chmod +x web/src-tauri/gen/android/gradlew
+
+      - name: Build signed release APK
+        working-directory: web
+        # Universal APK (all 4 ABIs) — one file installs on any device. Swap to
+        # `--split-per-abi` if smaller per-architecture downloads are preferred.
+        run: npm run tauri -- android build --apk
+
+      - name: Publish APK to GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.event.inputs.tag || github.ref_name }}
+          name: F2P Tracker Android ${{ github.event.inputs.tag || github.ref_name }}
+          draft: true
+          prerelease: false
+          fail_on_unmatched_files: true
+          files: web/src-tauri/gen/android/app/build/outputs/apk/universal/release/app-universal-release.apk
+          body: |
+            Android build of the F2P Tracker — the same web UI as the desktop app
+            and https://poli0981.github.io/free-steam-games-list/, packaged as a
+            sideloadable APK.
+
+            **Install**
+            1. Download `app-universal-release.apk`.
+            2. On your phone, allow "Install unknown apps" for your browser/file
+               manager when prompted, then open the APK.
+            3. Updates: install a newer APK over the top — same signing key, so no
+               uninstall needed.
+
+            Min Android 7.0 (API 24). Reads data live from `raw.githubusercontent.com`;
+            no telemetry. See `docs/DISCLAIMER.md` for accuracy caveats.
+
+            Built from commit `${{ github.sha }}`.
