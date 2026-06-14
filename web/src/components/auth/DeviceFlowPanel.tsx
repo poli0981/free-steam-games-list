@@ -9,6 +9,7 @@ import {
   pollAccessToken,
   type DeviceCodeResponse,
 } from "../../lib/oauth-device";
+import { openExternal } from "../../lib/external-open";
 import { toast } from "sonner";
 
 /**
@@ -74,8 +75,8 @@ export function DeviceFlowPanel() {
     try {
       const dc = await requestDeviceCode();
       setCode(dc);
-      // Open verification page automatically.
-      window.open(dc.verification_uri, "_blank");
+      // Open verification page automatically (system browser under Tauri).
+      void openExternal(dc.verification_uri);
       toast.success("Device code generated", {
         description: `Enter ${dc.user_code} on the GitHub page that just opened.`,
       });

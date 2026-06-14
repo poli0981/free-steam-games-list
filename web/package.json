@@ -7,13 +7,17 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "build:desktop": "tsc -b && vite build --base /",
+    "build:mobile": "tsc -b && vite build --base /",
     "analyze": "vite build --mode analyze",
     "preview": "vite preview",
     "typecheck": "tsc -b --noEmit",
     "knip": "knip",
     "tauri": "tauri",
     "tauri:dev": "tauri dev",
-    "tauri:build": "tauri build"
+    "tauri:build": "tauri build",
+    "tauri:android:init": "tauri android init",
+    "tauri:android:dev": "tauri android dev",
+    "tauri:android:build": "tauri android build --apk"
   },
   "dependencies": {
     "@radix-ui/react-dialog": "^1.1.2",

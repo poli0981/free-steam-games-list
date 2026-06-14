@@ -1,12 +1,11 @@
 {
   "$schema": "../gen/schemas/desktop-schema.json",
   "identifier": "default",
-  "description": "Capabilities for the main window. Frontend is a static SPA fetching from raw.githubusercontent.com / api.github.com — only shell:open and updater are needed for native bridges.",
+  "description": "Cross-platform capabilities for the main window. Frontend is a static SPA fetching from raw.githubusercontent.com / api.github.com — only shell:open is needed as a native bridge here. The desktop-only updater lives in updater.json so the Android/iOS build (which doesn't compile the updater plugin) doesn't fail ACL resolution.",
   "windows": ["main"],
   "permissions": [
     "core:default",
     "core:window:allow-close",
-    "shell:allow-open",
-    "updater:default"
+    "shell:allow-open"
   ]
 }

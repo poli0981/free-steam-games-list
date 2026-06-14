@@ -1,6 +1,10 @@
 # Tauri build artefacts
 target/
-gen/
+# Only the auto-generated ACL schema cache — NOT gen/android, which is the
+# committed Tauri-mobile Gradle project. Build artefacts inside gen/android
+# (build/, .gradle, jniLibs *.so, keystore.properties, tauri.properties, …)
+# are excluded by the nested .gitignore files that `tauri android init` wrote.
+gen/schemas/
 WixTools/
 
 # Minisign signing keys — stored under ~/.tauri/, never in repo. This guard

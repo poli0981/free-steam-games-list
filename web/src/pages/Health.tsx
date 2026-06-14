@@ -21,6 +21,7 @@ import { useDocumentTitle } from "../hooks/useDocumentTitle";
 import { useAuth } from "../stores/auth";
 import { LoadingState, ErrorState } from "../components/common/QueryState";
 import { dispatchWorkflow } from "../lib/github-api";
+import { openExternal } from "../lib/external-open";
 import { isEmpty } from "../lib/data-store";
 import type { GameRecord } from "../lib/schema";
 import { formatNumber, formatRelativeDate } from "../lib/utils";
@@ -107,9 +108,8 @@ export function HealthPage() {
         action: {
           label: t("health.viewRuns"),
           onClick: () =>
-            window.open(
+            void openExternal(
               `https://github.com/poli0981/free-steam-games-list/actions/workflows/${file}`,
-              "_blank",
             ),
         },
       });
