@@ -33,7 +33,7 @@ The web app + desktop wrapper depend on a longer list, all linked with their lic
 **Runtime & build**
 - [React 18](https://react.dev/) + [react-dom](https://react.dev/) — UI runtime (MIT).
 - [TypeScript 5](https://www.typescriptlang.org/) — type system (Apache-2.0).
-- [Vite 7](https://vitejs.dev/) + [`@vitejs/plugin-react`](https://github.com/vitejs/vite-plugin-react) — build + dev server (MIT).
+- [Vite 8](https://vitejs.dev/) + [`@vitejs/plugin-react`](https://github.com/vitejs/vite-plugin-react) — build + dev server, powered by the [Rolldown](https://rolldown.rs/) bundler (MIT).
 - [PostCSS](https://postcss.org/) + [autoprefixer](https://github.com/postcss/autoprefixer) — CSS post-processing (MIT).
 
 **Styling**

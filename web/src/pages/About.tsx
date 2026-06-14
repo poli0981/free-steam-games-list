@@ -68,7 +68,8 @@ interface Dep {
 const DEPS: Dep[] = [
   { name: "React 18", role: "UI runtime", href: "https://react.dev/", license: "MIT", licenseHref: "https://github.com/facebook/react/blob/main/LICENSE" },
   { name: "TypeScript 5", role: "type system", href: "https://www.typescriptlang.org/", license: "Apache-2.0", licenseHref: "https://github.com/microsoft/TypeScript/blob/main/LICENSE.txt" },
-  { name: "Vite 7", role: "build + dev server", href: "https://vitejs.dev/", license: "MIT", licenseHref: "https://github.com/vitejs/vite/blob/main/LICENSE" },
+  { name: "Vite 8", role: "build + dev server (Rolldown)", href: "https://vitejs.dev/", license: "MIT", licenseHref: "https://github.com/vitejs/vite/blob/main/LICENSE" },
+  { name: "Rolldown", role: "Rust bundler powering Vite 8", href: "https://rolldown.rs/", license: "MIT", licenseHref: "https://github.com/rolldown/rolldown/blob/main/LICENSE" },
   { name: "Tailwind CSS 3", role: "styling", href: "https://tailwindcss.com/", license: "MIT", licenseHref: "https://github.com/tailwindlabs/tailwindcss/blob/main/LICENSE" },
   { name: "Radix UI", role: "headless UI primitives", href: "https://www.radix-ui.com/", license: "MIT", licenseHref: "https://github.com/radix-ui/primitives/blob/main/LICENSE" },
   { name: "react-router-dom", role: "client-side routing", href: "https://reactrouter.com/", license: "MIT", licenseHref: "https://github.com/remix-run/react-router/blob/main/LICENSE.md" },
