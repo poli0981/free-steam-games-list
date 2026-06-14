@@ -132,16 +132,34 @@ export default defineConfig(({ command, mode }) => ({
     chunkSizeWarningLimit: 1200,
     rollupOptions: {
       output: {
-        // echarts/openpgp are NOT listed here on purpose: they're behind
-        // dynamic-import boundaries (LazyEChart, lib/gpg pgp()) and Rollup
-        // splits them naturally. Forcing them into manual chunks made
-        // Rollup hoist shared helpers (tslib) INTO the echarts chunk, which
-        // the eager graph then statically imported — echarts ended up
-        // modulepreloaded on first paint, nullifying the lazy boundary.
-        manualChunks: {
-          react: ["react", "react-dom", "react-router-dom"],
-          query: ["@tanstack/react-query"],
-          table: ["@tanstack/react-virtual"],
+        // echarts/openpgp are NOT grouped here on purpose: they're behind
+        // dynamic-import boundaries (LazyEChart, lib/gpg pgp()) and the
+        // bundler splits them into async chunks naturally. Forcing them into
+        // a manual chunk made the bundler hoist shared helpers (tslib) INTO
+        // the echarts chunk, which the eager graph then statically imported —
+        // echarts ended up modulepreloaded on first paint, nullifying the
+        // lazy boundary.
+        //
+        // Vite 8 uses Rolldown, which dropped the object form of
+        // `manualChunks`. `advancedChunks.groups` is the replacement: each
+        // group `test`s a module id and only the three vendor groups below
+        // are captured; everything else (incl. echarts/openpgp) falls back to
+        // Rolldown's default code splitting, preserving the lazy boundaries.
+        advancedChunks: {
+          groups: [
+            {
+              name: "react",
+              test: /[\\/]node_modules[\\/](react|react-dom|react-router-dom|react-router|scheduler)[\\/]/,
+            },
+            {
+              name: "query",
+              test: /[\\/]node_modules[\\/]@tanstack[\\/]react-query[\\/]/,
+            },
+            {
+              name: "table",
+              test: /[\\/]node_modules[\\/]@tanstack[\\/]react-virtual[\\/]/,
+            },
+          ],
         },
       },
     },
