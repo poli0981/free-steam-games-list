@@ -16,7 +16,11 @@ import {
   VisualMapComponent,
 } from "echarts/components";
 import { CanvasRenderer } from "echarts/renderers";
-import ReactEChartsCore from "echarts-for-react/lib/core";
+// ESM build (esm/), NOT lib/ (CommonJS): under Vite 8 / Rolldown the CJS
+// default-interop wrapped lib/core's `module.exports = class` into a
+// namespace object, so `<ReactEChartsCore/>` rendered an object → React
+// error #130. The esm/ build has a clean `export default`, fixing it.
+import ReactEChartsCore from "echarts-for-react/esm/core";
 import { useMemo } from "react";
 import type { EChartsCoreOption } from "echarts/core";
 import "echarts-wordcloud";

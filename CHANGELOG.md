@@ -2,6 +2,19 @@
 
 All notable changes to this awesome noob repo will be documented here.
 
+## [v3.4.1] – 2026-06-14 (The "Chart Hotfix" Edition)
+
+Patch release fixing a production regression introduced by the Vite 8 / Rolldown deploy hotfix (#95): every chart tab threw a blank **React error #130** and failed to render. Web app + desktop bumped `1.4.0` → `1.4.1`; repo public-facing version `3.4.0` → `3.4.1`.
+
+### 🐛 Charts render again (React #130)
+
+- [EChart.tsx](web/src/components/charts/EChart.tsx) imported the chart wrapper from `echarts-for-react/lib/core` — the **CommonJS** build. Under Vite 8's Rolldown bundler the CJS default-interop wraps `module.exports = class` into a namespace object, so `<ReactEChartsCore/>` received an object instead of a component → React error #130 on **every** chart page (all [pages/charts/*](web/src/pages/charts) + the [Dashboard](web/src/pages/Dashboard.tsx)). Switched the import to the **ESM** build `echarts-for-react/esm/core`, which has a clean `export default`. echarts core and echarts-wordcloud were already ESM, so this single import was the only offender.
+- Verified at **runtime against the production (Rolldown) build** (the step skipped in #95): bar, pie/donut, line, treemap, heatmap and wordcloud charts all render with zero console errors. `echarts`/`openpgp` remain lazy async chunks (not eager-preloaded in `index.html`).
+
+### ⚠️ glib advisory (Linux desktop) — acknowledged, no upstream fix
+
+- The Dependabot alert for the `glib` crate ([GHSA-wrw7-89jp-8q8g](https://github.com/advisories/GHSA-wrw7-89jp-8q8g), medium, Linux-only) cannot be resolved within Tauri 2.x: the latest `webkit2gtk` crate (2.0.2) pins `glib ^0.18`, `tao`/`wry` pin `gtk ^0.18`, and Tauri 3 is not released. Only the Linux build links glib (Windows = WebView2, macOS = Cocoa) and the app does not call the affected API, so the alert is dismissed as tolerable risk. Will revisit when the upstream stack adopts gtk-rs 0.20. See [TAURI.md](web/src-tauri/TAURI.md).
+
 ## [v3.4.0] – 2026-06-13 (The "Legal Consent Gate" Edition)
 
 Feature release on top of v3.3.0 adding an explicit, up-front acceptance of the project's legal documents on both surfaces: a first-run consent gate in the app (web + desktop) and a real license-agreement page in the Windows installer. No backend, no cookies — acceptance is a single `localStorage` flag, versioned so it can re-prompt when the terms change, and naturally fresh in incognito/private tabs. Web app + desktop bumped `1.3.0` → `1.4.0`. Repo public-facing version `3.3.0` → `3.4.0`. Tag `v3.4.0` is GPG-signed; companion desktop tag is `desktop-v1.4.0`.

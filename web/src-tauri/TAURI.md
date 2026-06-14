@@ -84,6 +84,10 @@ It runs the build matrix (Win / macOS-universal / Linux), uploads installers as 
 - **macOS universal binary** — ensure both `aarch64-apple-darwin` and `x86_64-apple-darwin` targets are added (`rustup target add ...`). CI does this in the `dtolnay/rust-toolchain` step.
 - **Updater silent on sideloaded copies** — sideloaded installs have a different bundle identifier; only the official MSI/DMG/AppImage receive update prompts.
 
+## Known advisories
+
+- **`glib` (GHSA-wrw7-89jp-8q8g, medium, Linux-only)** — accepted, no upstream fix available. The gtk-rs binding stack is pinned at `glib 0.18` by the latest `webkit2gtk` crate (2.0.2, which requires `glib ^0.18`) and by `tao`/`wry` (`gtk ^0.18`). The patched `glib 0.20` needs a gtk-rs 0.20 stack that no released Tauri 2.x ships, and Tauri 3 is not out yet. Only the **Linux** build links glib (Windows uses WebView2, macOS uses Cocoa), and the app does not exercise the affected API, so the Dependabot alert is dismissed as *tolerable risk*. Re-check when `tauri`/`wry`/`webkit2gtk` adopt gtk-rs 0.20, then `cargo update` and re-enable the alert.
+
 ## Related
 
 - [`../../docs/dev_env.md`](../../docs/dev_env.md) — IDE + toolchain
