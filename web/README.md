@@ -4,7 +4,7 @@ Static web UI for browsing, analyzing, and (soon) editing the F2P games dataset 
 
 ## Stack
 
-- **Vite + React 18 + TypeScript**
+- **Vite 8 (Rolldown bundler) + React 18 + TypeScript**
 - **Tailwind CSS** + shadcn/ui (Radix) primitives
 - **TanStack Query** (data fetching) + **TanStack Virtual** (1,200+ row table)
 - **Apache ECharts** (treemap, donut, bar, etc.)
