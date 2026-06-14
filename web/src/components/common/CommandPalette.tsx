@@ -30,6 +30,13 @@ import { headerToCapsule } from "../../lib/image";
 import { openExternal } from "../../lib/external-open";
 import "./command-palette.css";
 
+// Lets non-keyboard UI (the mobile topbar button) open the palette without
+// threading open/setOpen state through the layout. ⌘K still works on desktop.
+export const CMDK_OPEN_EVENT = "f2p:open-cmdk";
+export function openCommandPalette(): void {
+  window.dispatchEvent(new Event(CMDK_OPEN_EVENT));
+}
+
 interface NavCmd {
   label: string;
   to: string;
@@ -75,8 +82,15 @@ export function CommandPalette() {
         setOpen(false);
       }
     }
+    function onOpenEvent() {
+      setOpen(true);
+    }
     document.addEventListener("keydown", onKey);
-    return () => document.removeEventListener("keydown", onKey);
+    window.addEventListener(CMDK_OPEN_EVENT, onOpenEvent);
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      window.removeEventListener(CMDK_OPEN_EVENT, onOpenEvent);
+    };
   }, [open]);
 
   function go(to: string) {

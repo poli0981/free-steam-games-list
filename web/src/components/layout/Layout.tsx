@@ -18,7 +18,20 @@ export function Layout() {
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const mainRef = useRef<HTMLElement>(null);
   return (
-    <div className="flex h-screen overflow-hidden">
+    // Safe-area insets: Android 15+/targetSdk 36 forces edge-to-edge, so the
+    // webview draws under the status bar and gesture nav. env(safe-area-inset-*)
+    // (enabled by viewport-fit=cover) keeps the chrome out of those zones; the
+    // values are 0 on web/desktop, so this is a no-op off mobile. Padding sits
+    // inside the 100vh via border-box, so content height = 100vh − insets.
+    <div
+      className="flex h-screen overflow-hidden"
+      style={{
+        paddingTop: "env(safe-area-inset-top)",
+        paddingBottom: "env(safe-area-inset-bottom)",
+        paddingLeft: "env(safe-area-inset-left)",
+        paddingRight: "env(safe-area-inset-right)",
+      }}
+    >
       <Sidebar />
       <div className="flex min-w-0 flex-1 flex-col">
         <Topbar onMenuToggle={() => setMobileNavOpen(true)} />

@@ -1,6 +1,6 @@
-# Tauri 2 desktop build
+# Tauri 2 desktop + Android build
 
-This file documents how to build and run the desktop wrapper around the React web app. CI builds use the same recipe via [`.github/workflows/release-desktop.yml`](../../.github/workflows/release-desktop.yml).
+This file documents how to build and run the Tauri wrapper around the React web app — both the **desktop** bundles and the sideloadable **Android** APK. CI builds use the same recipes via [`.github/workflows/release-desktop.yml`](../../.github/workflows/release-desktop.yml) and [`.github/workflows/release-android.yml`](../../.github/workflows/release-android.yml).
 
 ## Prerequisites
 
@@ -76,6 +76,62 @@ From v1.0 onwards the app polls the GitHub Releases page on launch and offers to
 - Manual `workflow_dispatch` with a tag input
 
 It runs the build matrix (Win / macOS-universal / Linux), uploads installers as draft Release assets, and emits `latest.json` for the auto-updater (`includeUpdaterJson: true`).
+
+## Android build
+
+The same web app packages as a sideloadable Android APK via Tauri 2 mobile. The Gradle project is committed under [`gen/android/`](gen/android) (generated once with `tauri android init`); the build artefacts inside it are gitignored. CI: [`.github/workflows/release-android.yml`](../../.github/workflows/release-android.yml).
+
+### Prerequisites (in addition to Node + Rust above)
+
+| Tool | Notes |
+| ---- | ----- |
+| Android Studio | Brings the SDK + a bundled JDK (JBR). |
+| Android SDK | Platform-Tools, Build-Tools, a recent Platform — Gradle auto-installs missing ones. |
+| Android NDK | "Side by side"; any recent r26/r27/r30 works (built here with r30). |
+| JDK | 17 recommended; the bundled JBR 21 also builds. |
+| Rust targets | `rustup target add aarch64-linux-android armv7-linux-androideabi i686-linux-android x86_64-linux-android` |
+
+Env vars (Windows example — set the NDK to the exact versioned folder):
+```powershell
+$env:ANDROID_HOME = "$env:LOCALAPPDATA\Android\Sdk"
+$env:NDK_HOME     = "$env:ANDROID_HOME\ndk\<version>"
+$env:JAVA_HOME    = "<Android Studio>\jbr"
+```
+
+### Build
+
+```bash
+cd web
+npm run tauri:android:build                                   # signed universal release APK (all ABIs)
+npm run tauri:android:dev                                     # run on emulator / connected device
+npm run tauri -- android build --apk --debug --target aarch64 # fast debug build, single ABI
+```
+
+Output: `gen/android/app/build/outputs/apk/universal/release/app-universal-release.apk`. Minimum Android 7.0 (API 24).
+
+### Signing
+
+Release APKs sign from `gen/android/keystore.properties` (gitignored), pointing at a keystore you generate once:
+
+```bash
+keytool -genkeypair -v -keystore f2p-tracker-release.jks \
+  -alias f2p-tracker -keyalg RSA -keysize 2048 -validity 10000
+```
+`keystore.properties` has four lines: `storeFile` (absolute path, forward slashes), `storePassword`, `keyAlias`, `keyPassword`. **Back up the keystore + passwords** — every future update must reuse the same key, or users have to uninstall first. Without the file the release build stays unsigned (and won't install).
+
+### CI
+
+`release-android.yml` triggers on `android-v*` tags (or manual dispatch), decodes the keystore from repo Secrets, builds a signed universal APK, and attaches it to a draft Release. Required Secrets:
+
+- `ANDROID_KEYSTORE_BASE64` — `base64 -w0 f2p-tracker-release.jks` (or PowerShell `[Convert]::ToBase64String([IO.File]::ReadAllBytes("f2p-tracker-release.jks"))`)
+- `ANDROID_KEYSTORE_PASSWORD`, `ANDROID_KEY_ALIAS`, `ANDROID_KEY_PASSWORD`
+
+### Notes
+
+- **No auto-updater on Android** — `tauri-plugin-updater` is desktop-only. Updates are manual: install a newer APK over the top (same signing key → no uninstall).
+- **Edge-to-edge** — targetSdk 36 forces it; the layout uses `env(safe-area-inset-*)` to dodge the status / gesture-nav bars.
+- **OAuth Device Flow** routes through `@tauri-apps/plugin-http` because the Android System WebView enforces CORS on the `github.com/login/*` endpoints (desktop's webview doesn't). PAT sign-in needs no native bridge.
+- **Kotlin cross-drive warning** — if the Cargo registry (`C:`) and the project (`E:`) are on different drives, Kotlin incremental compilation falls back to non-incremental every build (slower, harmless). Move `CARGO_HOME` to the project's drive, or set `kotlin.incremental=false` in `gen/android/gradle.properties`, to avoid it.
 
 ## Troubleshooting
 

@@ -7,6 +7,7 @@ import App from "./App";
 import { AppErrorBoundary } from "./components/common/AppErrorBoundary";
 import { ConsentGate } from "./components/common/ConsentGate";
 import { initI18n } from "./i18n";
+import { installExternalLinkInterceptor } from "./lib/external-link-interceptor";
 import "./index.css";
 
 const queryClient = new QueryClient({
@@ -48,6 +49,11 @@ function renderApp() {
     </React.StrictMode>,
   );
 }
+
+// Route external <a>/links through the system browser when running inside the
+// Tauri webview (no-op on web). Attach before render so the first paint's
+// links are already covered.
+installExternalLinkInterceptor();
 
 // Await i18n (incl. the lazy locale bundle) before first render so t() never
 // flashes raw keys. `.finally` guarantees render even if init rejects — en
