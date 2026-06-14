@@ -14,6 +14,14 @@ export function isTauri(): boolean {
   );
 }
 
+/** Running on Android (used to gate the Android-only in-app update check — the
+ *  Tauri updater plugin is desktop-only). */
+export function isAndroid(): boolean {
+  return (
+    typeof navigator !== "undefined" && /Android/i.test(navigator.userAgent)
+  );
+}
+
 export async function openExternal(url: string): Promise<void> {
   if (isTauri()) {
     try {

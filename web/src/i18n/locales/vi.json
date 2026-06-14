@@ -89,6 +89,11 @@
     "installed": "Đã cài",
     "installedBody": "F2P Tracker giờ chạy được như app riêng."
   },
+  "appUpdate": {
+    "available": "Có bản mới ({{version}})",
+    "body": "Chạm để tải APK mới nhất từ GitHub Releases.",
+    "download": "Tải về"
+  },
   "dashboard": {
     "title": "Tổng quan",
     "subtitle": "Tổng hợp {{count}} game F2P trên Steam được track trong repo.",

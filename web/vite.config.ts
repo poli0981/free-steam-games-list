@@ -3,11 +3,20 @@ import react from "@vitejs/plugin-react";
 import { VitePWA } from "vite-plugin-pwa";
 import { visualizer } from "rollup-plugin-visualizer";
 import path from "node:path";
+import { readFileSync } from "node:fs";
 
 const repoName = "free-steam-games-list";
+// Version sourced from package.json (single source of truth, matches the Android
+// versionName) and exposed to the bundle as `__APP_VERSION__` for the update check.
+const appVersion = JSON.parse(
+  readFileSync(path.resolve(__dirname, "package.json"), "utf-8"),
+).version as string;
 
 export default defineConfig(({ command, mode }) => ({
   base: command === "build" ? `/${repoName}/` : "/",
+  define: {
+    __APP_VERSION__: JSON.stringify(appVersion),
+  },
   plugins: [
     react(),
     // `npm run analyze` → dist/stats.html treemap. Vite mode instead of an
