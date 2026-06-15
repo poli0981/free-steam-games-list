@@ -30,7 +30,13 @@ android {
     defaultConfig {
         manifestPlaceholders["usesCleartextTraffic"] = "false"
         applicationId = "io.github.poli0981.f2p_tracker"
-        minSdk = 24
+        // Android 11 (API 30). PackageManager refuses to install the APK below
+        // this (INSTALL_FAILED_OLDER_SDK), so it doubles as the OS-level version
+        // gate. Why 11 and not lower: Android 7-10 are deeply end-of-life (no
+        // Google OS security backports) and tend to ship an outdated System
+        // WebView that breaks the app's modern ES/React 19 bundle. See
+        // docs/android-support.md for the rationale + version stats.
+        minSdk = 30
         targetSdk = 36
         versionCode = tauriProperties.getProperty("tauri.android.versionCode", "1").toInt()
         versionName = tauriProperties.getProperty("tauri.android.versionName", "1.0")

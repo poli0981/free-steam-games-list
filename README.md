@@ -1,9 +1,10 @@
 [![Games Count](https://img.shields.io/badge/Games-1.2k%2B-green?style=flat&logo=steam)](games/all-games_part1.md)
 [![Last Updated](https://img.shields.io/badge/Updated-Daily-blue?style=flat&logo=github-actions)](.github/workflows)
 [![Top Online](https://img.shields.io/badge/Top%20Online-Live%20Leaderboard-red?style=flat&logo=steam)](games/top-online.md)
-[![Version](https://img.shields.io/badge/version-3.4.1-purple?style=flat&logo=github)](https://github.com/poli0981/free-steam-games-list)
+[![Version](https://img.shields.io/badge/version-3.4.2-purple?style=flat&logo=github)](https://github.com/poli0981/free-steam-games-list)
 [![Web App](https://img.shields.io/badge/Web%20App-Live-2563eb?style=flat&logo=react)](https://poli0981.github.io/free-steam-games-list/)
 [![Desktop](https://img.shields.io/badge/Desktop-Tauri%202-FFC131?style=flat&logo=tauri)](https://github.com/poli0981/free-steam-games-list/releases)
+[![Android](https://img.shields.io/badge/Android-11%2B%20APK-3DDC84?style=flat&logo=android)](https://github.com/poli0981/free-steam-games-list/releases)
 [![Health Check](https://img.shields.io/badge/Health%20Check-Weekly-orange?style=flat&logo=github-actions)](.github/workflows/purge-unhealthy.yml)
 ![Visitors](https://visitor-badge.laobi.icu/badge?page_id=poli0981.free-steam-games-list)
 [![Sponsor](https://img.shields.io/badge/Sponsor-Buy%20me%20a%20coffee-ff5f5f?style=flat&logo=buy-me-a-coffee)](.github/FUNDING.yml)
@@ -26,6 +27,7 @@ A **curated list** of free-to-play games on Steam — now ~1,200 of them — no 
 | -------------------- | -------------------------------------------------------------------------------------------------------------------- |
 | 🌐 Web app          | <https://poli0981.github.io/free-steam-games-list/>                                                                  |
 | 🖥️ Desktop releases  | [GitHub Releases](https://github.com/poli0981/free-steam-games-list/releases) (Win `.msi`, Mac `.dmg`, Linux `.AppImage`) |
+| 📱 Android APK      | [GitHub Releases](https://github.com/poli0981/free-steam-games-list/releases) (sideload `.apk`, **Android 11+** — see [`docs/android-support.md`](docs/android-support.md)) |
 | 📋 All games (md)   | [games/all-games_part1.md](games/all-games_part1.md) (sorted by reviews)                                             |
 | 🏆 Top online (md)  | [games/top-online.md](games/top-online.md)                                                                           |
 | 🎯 Top offline (md) | [games/top-offline.md](games/top-offline.md)                                                                         |

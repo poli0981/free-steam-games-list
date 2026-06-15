@@ -129,7 +129,12 @@ jobs:
             3. Updates: install a newer APK over the top — same signing key, so no
                uninstall needed.
 
-            Min Android 7.0 (API 24). Reads data live from `raw.githubusercontent.com`;
-            no telemetry. See `docs/DISCLAIMER.md` for accuracy caveats.
+            **Requires Android 11 (API 30) or newer** — older devices are blocked
+            at install (`INSTALL_FAILED_OLDER_SDK`). Why this floor + worldwide
+            version stats: `docs/android-support.md`. Tested on emulator 11–16 and
+            a real vivo 1907 (Android 12).
+
+            Reads data live from `raw.githubusercontent.com`; no telemetry. See
+            `docs/DISCLAIMER.md` for accuracy caveats.
 
             Built from commit `${{ github.sha }}`.

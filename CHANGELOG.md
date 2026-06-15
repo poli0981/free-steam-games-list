@@ -2,6 +2,28 @@
 
 All notable changes to this awesome noob repo will be documented here.
 
+## [v3.4.2] – 2026-06-15 (The "Android Floor" Edition)
+
+Android-focused release that raises the APK's minimum OS, hides a desktop-only
+affordance on phones, and documents the support policy with sourced numbers. Web
+app + desktop/Android bumped `1.4.3` → `1.4.4`; repo public-facing version
+`3.4.1` → `3.4.2`. Tag `v3.4.2` is GPG-signed; the Android APK ships from
+`android-v1.4.4`.
+
+### 🤖 Minimum Android raised to 11 (API 30)
+
+- [build.gradle.kts](web/src-tauri/gen/android/app/build.gradle.kts) `minSdk` `24` → `30`. Android's package installer refuses to install the APK below this (`INSTALL_FAILED_OLDER_SDK`), so the version floor doubles as the OS-level install gate — no in-app check, no bypass. Don't re-run `tauri android init` (it would reset it).
+- **Why 11, not lower:** Android 7–10 are deeply end-of-life — Google ships OS security backports only for 14/15/16 as of mid-2026 — and tend to carry an outdated System WebView that breaks the modern ES2022 / React 19 output of the Vite 8 / Rolldown bundle. A `minSdk 30` floor still reaches ~87% of active Android devices (StatCounter, May 2026) while dropping only the dead tail. Android 11–13 install but no longer get Google OS patches — called out explicitly in the docs.
+
+### 📱 "Steam Desktop" button hidden on mobile
+
+- The `steam://` "Steam Desktop" button in [GameDetailDrawer.tsx](web/src/components/games/GameDetailDrawer.tsx) can't reach a Steam client on a phone, so it's now hidden on the Android app **or** a sub-768px viewport; the "Web" button stays. Gated by a new reactive [useIsMobile.ts](web/src/hooks/useIsMobile.ts) hook (`useSyncExternalStore` + `matchMedia("(max-width: 767px)")`, OR the existing `isAndroid()` from [external-open.ts](web/src/lib/external-open.ts)) — re-renders on resize / rotation. No new i18n strings.
+
+### 📚 Docs & transparency
+
+- New [docs/android-support.md](docs/android-support.md) (+ Vietnamese mirror [i18n/vi/android-support.md](docs/i18n/vi/android-support.md)): minimum requirement, full rationale (security/EOL, WebView/React compatibility, edge-to-edge), tested-device matrix (emulator Android 11→16, real **vivo 1907** on Android 12), and a worldwide version-share + security-EOL table with **cited sources** ([apilevels.com](https://apilevels.com/), [StatCounter](https://gs.statcounter.com/android-version-market-share/mobile/worldwide/), [endoflife.date](https://endoflife.date/android), [Android Security Bulletins](https://source.android.com/docs/security/bulletin)). Reused as the GitHub Discussion announcement.
+- Updated [TAURI.md](web/src-tauri/TAURI.md), [pc_spec.md](docs/pc_spec.md) (+ VN mirror) with the new Android test-device section, the [release-android.yml](.github/workflows/release-android.yml) release-notes template, and the [README](README.md) (version badge `3.4.1`→`3.4.2`, new Android 11+ badge + Quick-links row).
+
 ## [v3.4.1] – 2026-06-14 (The "Chart Hotfix" Edition)
 
 Patch release fixing a production regression introduced by the Vite 8 / Rolldown deploy hotfix (#95): every chart tab threw a blank **React error #130** and failed to render. Web app + desktop bumped `1.4.0` → `1.4.1`; repo public-facing version `3.4.0` → `3.4.1`.

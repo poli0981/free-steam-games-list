@@ -33,6 +33,7 @@ import { preferWebp } from "../../lib/image";
 import type { GameRecord } from "../../lib/schema";
 import { EditGameDrawer } from "./EditGameDrawer";
 import { useIsOwner } from "../../hooks/useIsOwner";
+import { useIsMobile } from "../../hooks/useIsMobile";
 
 interface Props {
   game: GameRecord | null;
@@ -64,6 +65,9 @@ function Field({
 export function GameDetailDrawer({ game, onClose, missing }: Props) {
   const { t } = useTranslation();
   const isOwner = useIsOwner();
+  // The steam:// "Steam Desktop" button is desktop-only — it can't reach a
+  // Steam client on a phone. Hide it on the Android app / mobile viewport.
+  const isMobile = useIsMobile();
   const [editing, setEditing] = useState(false);
 
   return (
@@ -137,15 +141,17 @@ export function GameDetailDrawer({ game, onClose, missing }: Props) {
                       const web = appid ? steamWebUrl(appid) : game.link;
                       return (
                         <>
-                          <Button asChild size="sm" variant="default">
-                            <a
-                              href={protocol}
-                              title={t("detail.openOnSteamDesktopHint")}
-                            >
-                              <Monitor className="mr-1 h-3 w-3" />
-                              {t("detail.openOnSteamDesktop")}
-                            </a>
-                          </Button>
+                          {!isMobile && (
+                            <Button asChild size="sm" variant="default">
+                              <a
+                                href={protocol}
+                                title={t("detail.openOnSteamDesktopHint")}
+                              >
+                                <Monitor className="mr-1 h-3 w-3" />
+                                {t("detail.openOnSteamDesktop")}
+                              </a>
+                            </Button>
+                          )}
                           <Button asChild size="sm" variant="outline">
                             <a href={web} target="_blank" rel="noopener noreferrer">
                               <ExternalLink className="mr-1 h-3 w-3" />

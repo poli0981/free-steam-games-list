@@ -107,7 +107,7 @@ npm run tauri:android:dev                                     # run on emulator 
 npm run tauri -- android build --apk --debug --target aarch64 # fast debug build, single ABI
 ```
 
-Output: `gen/android/app/build/outputs/apk/universal/release/app-universal-release.apk`. Minimum Android 7.0 (API 24).
+Output: `gen/android/app/build/outputs/apk/universal/release/app-universal-release.apk`. Minimum **Android 11 (API 30)** — see [`docs/android-support.md`](../../docs/android-support.md) for the requirement + rationale.
 
 ### Signing
 
@@ -128,6 +128,7 @@ keytool -genkeypair -v -keystore f2p-tracker-release.jks \
 
 ### Notes
 
+- **Minimum Android 11 (API 30)** — `minSdk = 30` in [`gen/android/app/build.gradle.kts`](gen/android/app/build.gradle.kts). Android's installer blocks the APK below that (`INSTALL_FAILED_OLDER_SDK`), so it's also the OS-level version gate — no in-app check needed. Floor chosen for security (Android 7–10 are EOL with no Google OS patches and old WebViews) over raw reach; tested on emulator 11→16 + a real vivo 1907 (Android 12). Full rationale + version stats: [`docs/android-support.md`](../../docs/android-support.md). Don't re-run `tauri android init` — it would reset this.
 - **No auto-updater on Android** — `tauri-plugin-updater` is desktop-only. Updates are manual: install a newer APK over the top (same signing key → no uninstall).
 - **Edge-to-edge** — targetSdk 36 forces it; the layout uses `env(safe-area-inset-*)` to dodge the status / gesture-nav bars.
 - **OAuth Device Flow** routes through `@tauri-apps/plugin-http` because the Android System WebView enforces CORS on the `github.com/login/*` endpoints (desktop's webview doesn't). PAT sign-in needs no native bridge.
