@@ -2,7 +2,7 @@
 
 File này ghi cấu hình máy mà maintainer (poli0981 / SkullMute) thực sự đang dùng để phát triển, build và test repo này. Bản tiếng Anh ở [`../../pc_spec.md`](../../pc_spec.md).
 
-Đây **không phải** yêu cầu hệ thống cho user — web app chạy trên mọi browser hiện đại, còn desktop app chỉ cần Tauri 2 platform deps (xem [`../../../web/src-tauri/TAURI.md`](../../../web/src-tauri/TAURI.md)).
+Đây **không phải** yêu cầu hệ thống cho user — web app chạy trên mọi browser hiện đại, còn desktop app chỉ cần Tauri 2 platform deps (xem [`../../../web/src-tauri/TAURI.md`](../../../web/src-tauri/TAURI.md)). **APK Android** là bề mặt duy nhất có ngưỡng thật — **Android 11+** (xem [`android-support.md`](android-support.md)).
 
 ## Máy dev chính
 
@@ -25,6 +25,15 @@ Web app + desktop build được smoke-test trên:
 - **Desktop browser** — Chrome, Edge, Firefox, Brave (Windows 11)
 
 Ngoài danh sách trên là best-effort. Nếu render lỗi ở chỗ lạ, mở [bug report](https://github.com/poli0981/free-steam-games-list/issues/new?template=bug_report.yml) — kèm browser + OS + screenshot.
+
+## Thiết bị test (app Android)
+
+APK sideload yêu cầu **Android 11 (API 30)** trở lên (máy cũ hơn bị chặn ngay khi cài). Đã smoke-test trên:
+
+- **Emulator** — Android Studio AVD, **Android 11 → 16** (API 30–36)
+- **Máy thật** — **vivo 1907**, Android 12 (API 31)
+
+Xem [`android-support.md`](android-support.md) để biết lý do chọn ngưỡng + thị phần các phiên bản Android.
 
 ## Liên quan
 

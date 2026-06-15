@@ -2,7 +2,7 @@
 
 This file documents the hardware the maintainer (poli0981 / SkullMute) actually uses to develop, build, and test this repo. It is mirrored in Vietnamese at [`i18n/vi/pc_spec.md`](i18n/vi/pc_spec.md).
 
-It is **not** a system requirement for users — the web app runs in any modern browser, and the desktop app only needs the Tauri 2 platform deps (see [`../web/src-tauri/TAURI.md`](../web/src-tauri/TAURI.md)).
+It is **not** a system requirement for users — the web app runs in any modern browser, and the desktop app only needs the Tauri 2 platform deps (see [`../web/src-tauri/TAURI.md`](../web/src-tauri/TAURI.md)). The **Android APK** is the one surface with a real floor — **Android 11+** (see [`android-support.md`](android-support.md)).
 
 ## Developer machine (primary)
 
@@ -25,6 +25,15 @@ The web app + desktop builds are smoke-tested on:
 - **Desktop browsers** — Chrome, Edge, Firefox, Brave (Windows 11)
 
 Anything outside this set is best-effort. File a [bug report](https://github.com/poli0981/free-steam-games-list/issues/new?template=bug_report.yml) if rendering breaks somewhere unusual — include browser + OS + screenshot.
+
+## Test devices (Android app)
+
+The sideloadable APK requires **Android 11 (API 30)** or newer (older devices are blocked at install time). Smoke-tested on:
+
+- **Emulator** — Android Studio AVD, **Android 11 → 16** (API 30–36)
+- **Real phone** — **vivo 1907**, Android 12 (API 31)
+
+See [`android-support.md`](android-support.md) for the minimum-version rationale + worldwide version stats.
 
 ## Related
 
