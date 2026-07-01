@@ -1,108 +1,108 @@
 # 🎮 Top Online – Live Leaderboard
 
-> 2026-06-28 04:53 UTC | 1234 games | 2,782,916 players
+> 2026-07-01 04:54 UTC | 1285 games | 2,331,165 players
 
 | # | Game | Players | Trend | Tier | Rating | Genre | AC | Peak | Link |
 |---|------|---------|-------|------|--------|-------|----|------|------|
-| 1 | Counter-Strike 2 | 664,437 | ↑+13% | 🔥 Mega | ★★★★☆ | FPS | VAC | 763,284 | [Steam](https://store.steampowered.com/app/730/) |
-| 2 | TBH: Task Bar Hero | 466,270 | → | 🔥 Mega | ★★☆☆☆ | Idler | - | 482,841 | [Steam](https://store.steampowered.com/app/3678970/) |
-| 3 | Dota 2 | 446,182 | 📈+24% | 🔥 Mega | ★★★★☆ | MOBA | VAC | 446,182 | [Steam](https://store.steampowered.com/app/570/) |
-| 4 | PUBG: BATTLEGROUNDS | 256,280 | 📈+30% | 🔥 Mega | ★★☆☆☆ | Battle Royale | Krafton Security Services🔴 | 302,790 | [Steam](https://store.steampowered.com/app/578080/) |
-| 5 | Apex Legends™ | 95,629 | 📈+36% | ⭐ Hot | ★★☆☆☆ | FPS | EAC🔴 | 136,178 | [Steam](https://store.steampowered.com/app/1172470/) |
-| 6 | Marvel Rivals | 94,675 | ↑+7% | ⭐ Hot | ★★★☆☆ | FPS | NetEase Game Security | 129,731 | [Steam](https://store.steampowered.com/app/2767030/) |
-| 7 | Destiny 2 | 93,783 | 📈+26% | ⭐ Hot | ★★★☆☆ | Looter Shooter |  | 130,973 | [Steam](https://store.steampowered.com/app/1085660/) |
-| 8 | Warframe | 67,561 | 📈+23% | ⭐ Hot | ★★★★☆ | Looter Shooter |  | 74,375 | [Steam](https://store.steampowered.com/app/230410/) |
-| 9 | Overwatch® | 65,571 | 📈+16% | ⭐ Hot | ★☆☆☆☆ | Hero Shooter |  | 74,504 | [Steam](https://store.steampowered.com/app/2357570/) |
-| 10 | Tom Clancy's Rainbow Six Siege | 61,926 | ↑+11% | ⭐ Hot | ★★★★☆ | FPS |  | 88,007 | [Steam](https://store.steampowered.com/app/359550/) |
-| 11 | War Thunder | 48,799 | 📈+25% | ⭐ Hot | ★★★☆☆ | MMO | BattlEye🔴 | 51,790 | [Steam](https://store.steampowered.com/app/236390/) |
-| 12 | Limbus Company | 47,056 | ↑+3% | ⭐ Hot | ★★★★☆ | Turn-based Tactics |  | 65,031 | [Steam](https://store.steampowered.com/app/1973530/) |
-| 13 | Team Fortress 2 | 32,396 | → | ⭐ Hot | ★★★★☆ | FPS | VAC | 57,573 | [Steam](https://store.steampowered.com/app/440/) |
-| 14 | The Sims™ 4 | 22,952 | 📈+21% | 🟢 Healthy | ★★★★☆ | Life Sim |  | 23,503 | [Steam](https://store.steampowered.com/app/1222670/) |
-| 15 | Wuthering Waves | 15,502 | 📈+42% | 🟢 Healthy | ★★★★☆ | Action | EAC🔴 | 24,488 | [Steam](https://store.steampowered.com/app/3513350/) |
-| 16 | Where Winds Meet | 14,093 | 📈+17% | 🟢 Healthy | ★★★★☆ | MMORPG |  | 21,519 | [Steam](https://store.steampowered.com/app/3564740/) |
-| 17 | Once Human | 11,205 | 📈+34% | 🟢 Healthy | ★★★☆☆ | Survival |  | 13,176 | [Steam](https://store.steampowered.com/app/2139460/) |
-| 18 | MIR4 | 10,978 | → | 🟢 Healthy | ★★☆☆☆ | MMORPG | - | 12,000 | [Steam](https://store.steampowered.com/app/1623660/) |
-| 19 | THE FINALS | 10,674 | ↑+8% | 🟢 Healthy | ★★★☆☆ | FPS |  | 16,640 | [Steam](https://store.steampowered.com/app/2073850/) |
-| 20 | Russian Fishing 4 | 10,272 | 📈+22% | 🟢 Healthy | ★★☆☆☆ | Fishing |  | 12,151 | [Steam](https://store.steampowered.com/app/766570/) |
-| 21 | Brawlhalla | 9,312 | → | 🟡 Stable | ★★★★☆ | Fighting |  | 11,923 | [Steam](https://store.steampowered.com/app/291550/) |
-| 22 | Shadowverse: Worlds Beyond | 8,318 | 📈+41% | 🟡 Stable | ★☆☆☆☆ | Card Game |  | 16,585 | [Steam](https://store.steampowered.com/app/2584990/) |
-| 23 | Eternal Return | 7,881 | 📈+55% | 🟡 Stable | ★★★☆☆ | Battle Royale |  | 9,184 | [Steam](https://store.steampowered.com/app/1049590/) |
-| 24 | Umamusume: Pretty Derby | 7,560 | ↓-13% | 🟡 Stable | ★★★★☆ | Gambling | CrackProof®🔴 | 12,670 | [Steam](https://store.steampowered.com/app/3224770/) |
-| 25 | Off The Grid | 7,428 | → | 🟡 Stable | ★★☆☆☆ | Battle Royale | EAC🔴 | 8,637 | [Steam](https://store.steampowered.com/app/3659280/) |
-| 26 | SMITE 2 | 7,048 | 📈+27% | 🟡 Stable | ★★☆☆☆ | MOBA |  | 7,315 | [Steam](https://store.steampowered.com/app/2437170/) |
-| 27 | World of Warships | 6,774 | 📈+25% | 🟡 Stable | ★★★☆☆ | MMO |  | 54,809 | [Steam](https://store.steampowered.com/app/552990/) |
-| 28 | Albion Online | 6,549 | 📈+22% | 🟡 Stable | ★★★☆☆ | MMORPG |  | 7,811 | [Steam](https://store.steampowered.com/app/761890/) |
-| 29 | Summoners War | 5,647 | ↑+7% | 🟡 Stable | ★★★☆☆ | Turn-based Strategy |  | 8,779 | [Steam](https://store.steampowered.com/app/2426960/) |
-| 30 | Guild Wars 2® | 5,378 | 📈+24% | 🟡 Stable | ★★★★☆ | MMORPG |  | 5,635 | [Steam](https://store.steampowered.com/app/1284210/) |
-| 31 | Palia | 5,305 | ↑+14% | 🟡 Stable | ★★★★☆ | Life Sim |  | 13,059 | [Steam](https://store.steampowered.com/app/2707930/) |
-| 32 | KARDS - Карточная игра о Второй миров... | 5,229 | 📈+34% | 🟡 Stable | ★★☆☆☆ | Card Game |  | 6,826 | [Steam](https://store.steampowered.com/app/544810/) |
-| 33 | MY HERO ULTRA RUMBLE | 4,772 | 📈+21% | 🟡 Stable | ★★☆☆☆ | Battle Royale |  | 6,567 | [Steam](https://store.steampowered.com/app/1607250/) |
-| 34 | Play Together | 4,700 | ↓-9% | 🟡 Stable | ★★★☆☆ | Action | - | 5,647 | [Steam](https://store.steampowered.com/app/3198850/) |
-| 35 | Blood Strike | 4,587 | 📈+16% | 🟡 Stable | ★★★★☆ | Battle Royale |  | 5,307 | [Steam](https://store.steampowered.com/app/3199170/) |
-| 36 | STALCRAFT: X | 4,500 | ↑+9% | 🟡 Stable | ★★★☆☆ | MMORPG | EXENS | 6,666 | [Steam](https://store.steampowered.com/app/1818450/) |
-| 37 | The Seven Deadly Sins: Origin | 4,239 | ↓-12% | 🟡 Stable | ★★☆☆☆ | Action | - | 19,877 | [Steam](https://store.steampowered.com/app/3679080/) |
-| 38 | STAR WARS™: The Old Republic™ | 4,236 | ↑+15% | 🟡 Stable | ★★★★☆ | MMORPG |  | 5,951 | [Steam](https://store.steampowered.com/app/1286830/) |
-| 39 | Supermarket Together | 4,134 | ↑+13% | 🟡 Stable | ★★★★☆ | Simulation |  | 4,883 | [Steam](https://store.steampowered.com/app/2709570/) |
-| 40 | The First Descendant | 4,063 | 📈+25% | 🟡 Stable | ★★☆☆☆ | Looter Shooter |  | 5,899 | [Steam](https://store.steampowered.com/app/2074920/) |
-| 41 | EVE Online | 3,607 | ↑+10% | 🟡 Stable | ★★★☆☆ | MMORPG |  | 4,018 | [Steam](https://store.steampowered.com/app/8500/) |
-| 42 | World of Tanks | 2,968 | 📈+35% | 🟠 Low | ★★★★☆ | MMO |  | 4,171 | [Steam](https://store.steampowered.com/app/1407200/) |
-| 43 | Halo Infinite | 2,951 | 📈+32% | 🟠 Low | ★★☆☆☆ | FPS | Easy Anti-Cheat🔴 | 3,164 | [Steam](https://store.steampowered.com/app/1240440/) |
-| 44 | Conqueror's Blade | 2,780 | 📈+2889% | 🟠 Low | ★★☆☆☆ | MMORPG |  | 3,020 | [Steam](https://store.steampowered.com/app/835570/) |
-| 45 | Myth of Empires: Throne | 2,697 | 📈+715% | 🟠 Low | ★★☆☆☆ | Action | nProtect🔴 | 4,519 | [Steam](https://store.steampowered.com/app/4510830/) |
-| 46 | Sky: Children of the Light | 2,681 | ↑+5% | 🟠 Low | ★★★★☆ | Adventure |  | 3,451 | [Steam](https://store.steampowered.com/app/2325290/) |
-| 47 | Astral Party  | 2,525 | ↓-13% | 🟠 Low | ★★☆☆☆ | Board Game |  | 2,993 | [Steam](https://store.steampowered.com/app/2622000/) |
-| 48 | World of Tanks Blitz | 2,438 | 📈+25% | 🟠 Low | ★★★☆☆ | MMO |  | 2,980 | [Steam](https://store.steampowered.com/app/444200/) |
-| 49 | GrandChase | 2,311 | 📈+31% | 🟠 Low | ★★☆☆☆ | Action RPG |  | 3,012 | [Steam](https://store.steampowered.com/app/985810/) |
-| 50 | Enlisted | 2,300 | 📈+25% | 🟠 Low | ★★★★☆ | MMO | BattlEye🔴 | 2,300 | [Steam](https://store.steampowered.com/app/2051620/) |
-| 51 | Predecessor | 2,058 | 📈+31% | 🟠 Low | ★★★☆☆ | MOBA | - | 2,601 | [Steam](https://store.steampowered.com/app/961200/) |
-| 52 | Goose Goose Duck | 2,022 | 📈+43% | 🟠 Low | ★★★★☆ | Social Deduction | Easy Anti-Cheat🔴 | 3,036 | [Steam](https://store.steampowered.com/app/1568590/) |
-| 53 | Knight Online | 1,866 | → | 🟠 Low | ★★☆☆☆ | Action | - | 2,045 | [Steam](https://store.steampowered.com/app/389430/) |
-| 54 | skate. | 1,795 | ↑+12% | 🟠 Low | ★★☆☆☆ | Sports | EA Javelin AntiCheat🔴 | 3,161 | [Steam](https://store.steampowered.com/app/3354750/) |
-| 55 | RuneScape ® | 1,709 | ↑+13% | 🟠 Low | ★★★★☆ | MMORPG |  | 2,404 | [Steam](https://store.steampowered.com/app/1343400/) |
-| 56 | MARVEL SNAP | 1,707 | → | 🟠 Low | ★★★☆☆ | Card Game |  | 1,897 | [Steam](https://store.steampowered.com/app/1997040/) |
-| 57 | Soul Land: Awakening World | 1,679 | 📈+31% | 🟠 Low | ★★☆☆☆ | MMORPG | 37GAMES | 3,629 | [Steam](https://store.steampowered.com/app/4584110/) |
-| 58 | Kathana | 1,663 | ↑+4% | 🟠 Low | ★★★☆☆ | MMORPG | EAC🔴 | 1,663 | [Steam](https://store.steampowered.com/app/2081880/) |
-| 59 | Morimens | 1,660 | 📈+17% | 🟠 Low | ★★★★☆ | Card Game | - | 2,966 | [Steam](https://store.steampowered.com/app/3052450/) |
-| 60 | Wizardry Variants Daphne | 1,640 | 📈+48% | 🟠 Low | ★★☆☆☆ | Dungeon Crawler | CrackProof🔴 | 2,325 | [Steam](https://store.steampowered.com/app/2379740/) |
-| 61 | RISK: Global Domination | 1,602 | 📈+15% | 🟠 Low | ★★★☆☆ | Board Game |  | 1,941 | [Steam](https://store.steampowered.com/app/1128810/) |
-| 62 | Granado Espada | 1,577 | ↑+13% | 🟠 Low | ★★☆☆☆ | MMORPG | - | 1,819 | [Steam](https://store.steampowered.com/app/663090/) |
-| 63 | World of Sea Battle | 1,508 | 📈+24% | 🟠 Low | ★★★☆☆ | MMORPG |  | 2,298 | [Steam](https://store.steampowered.com/app/2948190/) |
-| 64 | Strinova | 1,436 | 📈+23% | 🟠 Low | ★★★☆☆ | Hero Shooter | ACE🔴 | 1,583 | [Steam](https://store.steampowered.com/app/1282270/) |
-| 65 | SMITE® | 1,343 | 📈+16% | 🟠 Low | ★★★☆☆ | MOBA | EAC🔴 | 1,736 | [Steam](https://store.steampowered.com/app/386360/) |
-| 66 | Warborne Above Ashes | 1,324 | 📈+7688% | 🟠 Low | ★☆☆☆☆ | MMORPG | - | 1,324 | [Steam](https://store.steampowered.com/app/3142050/) |
-| 67 | Old School RuneScape | 1,296 | 📈+35% | 🟠 Low | ★★★★☆ | MMORPG | - | 1,296 | [Steam](https://store.steampowered.com/app/1343370/) |
-| 68 | ヘブンバーンズレッド | 1,270 | 📈+35% | 🟠 Low | ★★☆☆☆ | Turn-based Tactics | CrackProof🔴 | 2,629 | [Steam](https://store.steampowered.com/app/1973710/) |
-| 69 | War Robots | 1,240 | ↑+14% | 🟠 Low | ★★☆☆☆ | Arena Shooter |  | 1,519 | [Steam](https://store.steampowered.com/app/767560/) |
-| 70 | Fallout Shelter | 1,230 | ↑+8% | 🟠 Low | ★★★★☆ | Simulation |  | 1,964 | [Steam](https://store.steampowered.com/app/588430/) |
-| 71 | Starward | 1,196 | 📈+95% | 🟠 Low | ★★☆☆☆ | Fighting |  | 1,933 | [Steam](https://store.steampowered.com/app/2764370/) |
-| 72 | DRAGON BALL GEKISHIN SQUADRA | 1,089 | ↑+6% | 🟠 Low | ★★☆☆☆ | MOBA |  | 1,758 | [Steam](https://store.steampowered.com/app/2072560/) |
-| 73 | Infinity Nikki | 1,032 | → | 🟠 Low | ★★☆☆☆ | Simulation | Anti-Cheat Expert (ACE)🔴 | 2,189 | [Steam](https://store.steampowered.com/app/3164330/) |
-| 74 | Realm of the Mad God Exalt | 1,027 | ↑+6% | 🟠 Low | ★★★★☆ | MMORPG | - | 1,323 | [Steam](https://store.steampowered.com/app/200210/) |
-| 75 | ONE PIECE Bounty Rush | 996 | 📈+27% | 🟠 Low | ★★☆☆☆ | Fighting |  | 1,528 | [Steam](https://store.steampowered.com/app/2918150/) |
-| 76 | War of the Three Kingdoms | 974 | ↑+5% | 🟠 Low | ★☆☆☆☆ | Card Game | - | 1,326 | [Steam](https://store.steampowered.com/app/1180320/) |
-| 77 | Dungeon Crusher: Soul Hunters | 921 | ↑+8% | 🟠 Low | ★★☆☆☆ | MMORPG | - | 1,180 | [Steam](https://store.steampowered.com/app/842980/) |
-| 78 | MLB 9 Innings Rivals 26 | 916 | 📈+21% | 🟠 Low | ★★★☆☆ | Sports | nProtect | 947 | [Steam](https://store.steampowered.com/app/2569510/) |
-| 79 | LoveCraft | 914 | → | 🟠 Low | ★★★☆☆ | MMO |  | 977 | [Steam](https://store.steampowered.com/app/2692440/) |
-| 80 | Meow My Crop! | 909 | 📉-37% | 🟠 Low | ★★★★☆ | Idler | - | 1,577 | [Steam](https://store.steampowered.com/app/4201710/) |
-| 81 | Star Trek Online | 876 | → | 🟠 Low | ★★★☆☆ | MMORPG |  | 1,296 | [Steam](https://store.steampowered.com/app/9900/) |
-| 82 | MU: Dark Epoch | 848 | ↑+9% | 🟠 Low | ★★☆☆☆ | MMORPG | 37GAMES | 901 | [Steam](https://store.steampowered.com/app/3953520/) |
-| 83 | Evitania Online - Idle RPG | 827 | ↓-3% | 🟠 Low | ★★★☆☆ | MMORPG | - | 1,202 | [Steam](https://store.steampowered.com/app/4119420/) |
-| 84 | Trackmania | 801 | ↑+9% | 🟠 Low | ★★★☆☆ | Racing |  | 1,249 | [Steam](https://store.steampowered.com/app/2225070/) |
-| 85 | DDNet | 801 | ↑+11% | 🟠 Low | ★★★★☆ | Platformer | - | 1,165 | [Steam](https://store.steampowered.com/app/412220/) |
-| 86 | Action Taimanin | 796 | 📈+28% | 🟠 Low | ★★★★☆ | Hack & Slash |  | 974 | [Steam](https://store.steampowered.com/app/1335200/) |
-| 87 | My Singing Monsters | 757 | ↑+6% | 🟠 Low | ★★★★☆ | Simulation |  | 1,009 | [Steam](https://store.steampowered.com/app/1419170/) |
-| 88 | Horizon Walker | 755 | 📈+22% | 🟠 Low | ★★★☆☆ | Turn-based RPG | nProtect GameGuard🔴 | 1,187 | [Steam](https://store.steampowered.com/app/3279780/) |
-| 89 | Muck | 745 | 📈+38% | 🟠 Low | ★★★★☆ | Roguelike | - | 1,174 | [Steam](https://store.steampowered.com/app/1625450/) |
-| 90 | Lords Mobile: Kingdom Wars | 725 | ↑+13% | 🟠 Low | ★★☆☆☆ | RTS | - | 798 | [Steam](https://store.steampowered.com/app/1041320/) |
-| 91 | Catan Universe | 720 | ↑+14% | 🟠 Low | ★☆☆☆☆ | Strategy | - | 795 | [Steam](https://store.steampowered.com/app/544730/) |
-| 92 | Dead Frontier 2 | 716 | ↑+11% | 🟠 Low | ★★★☆☆ | Action | - | 865 | [Steam](https://store.steampowered.com/app/744900/) |
-| 93 | Paladins® | 715 | 📈+27% | 🟠 Low | ★★★★☆ | Action | - | 819 | [Steam](https://store.steampowered.com/app/444090/) |
-| 94 | Pixel Gun 3D: PC Edition | 711 | 📈+17% | 🟠 Low | ★★☆☆☆ | FPS |  | 1,202 | [Steam](https://store.steampowered.com/app/2524890/) |
-| 95 | Stay Out | 697 | 📈+21% | 🟠 Low | ★★☆☆☆ | MMORPG | - | 1,027 | [Steam](https://store.steampowered.com/app/1180380/) |
-| 96 | Toram Online | 681 | 📈+21% | 🟠 Low | ★★★☆☆ | MMORPG | - | 946 | [Steam](https://store.steampowered.com/app/1827180/) |
-| 97 | Wizard101 | 674 | ↑+12% | 🟠 Low | ★★★★☆ | MMORPG | - | 717 | [Steam](https://store.steampowered.com/app/799960/) |
-| 98 | STRAFTAT | 659 | ↑+14% | 🟠 Low | ★★★★★ | Action | - | 921 | [Steam](https://store.steampowered.com/app/2386720/) |
-| 99 | Gems of War - Puzzle RPG | 652 | ↑+9% | 🟠 Low | ★★★☆☆ | Action | - | 687 | [Steam](https://store.steampowered.com/app/329110/) |
-| 100 | Throne of Desire | 636 | 📈+25% | 🟠 Low | ★★☆☆☆ | MMORPG | - | 883 | [Steam](https://store.steampowered.com/app/4496710/) |
+| 1 | Counter-Strike 2 | 602,293 | ↓-9% | 🔥 Mega | ★★★★☆ | FPS | VAC | 763,284 | [Steam](https://store.steampowered.com/app/730/) |
+| 2 | TBH: Task Bar Hero | 418,488 | ↓-10% | 🔥 Mega | ★★☆☆☆ | Idler | - | 482,841 | [Steam](https://store.steampowered.com/app/3678970/) |
+| 3 | Dota 2 | 356,100 | 📉-20% | 🔥 Mega | ★★★★☆ | MOBA | VAC | 446,182 | [Steam](https://store.steampowered.com/app/570/) |
+| 4 | PUBG: BATTLEGROUNDS | 169,560 | 📉-34% | 🔥 Mega | ★★☆☆☆ | Battle Royale | Krafton Security Services🔴 | 302,790 | [Steam](https://store.steampowered.com/app/578080/) |
+| 5 | Marvel Rivals | 79,106 | 📉-16% | ⭐ Hot | ★★★☆☆ | FPS | NetEase Game Security | 129,731 | [Steam](https://store.steampowered.com/app/2767030/) |
+| 6 | Destiny 2 | 77,979 | 📉-17% | ⭐ Hot | ★★★☆☆ | Looter Shooter |  | 130,973 | [Steam](https://store.steampowered.com/app/1085660/) |
+| 7 | Apex Legends™ | 74,086 | 📉-23% | ⭐ Hot | ★★☆☆☆ | FPS | EAC🔴 | 136,178 | [Steam](https://store.steampowered.com/app/1172470/) |
+| 8 | Overwatch® | 54,692 | 📉-17% | ⭐ Hot | ★☆☆☆☆ | Hero Shooter |  | 74,504 | [Steam](https://store.steampowered.com/app/2357570/) |
+| 9 | Tom Clancy's Rainbow Six Siege | 52,193 | 📉-16% | ⭐ Hot | ★★★★☆ | FPS |  | 88,007 | [Steam](https://store.steampowered.com/app/359550/) |
+| 10 | Warframe | 49,825 | 📉-26% | ⭐ Hot | ★★★★☆ | Looter Shooter |  | 74,375 | [Steam](https://store.steampowered.com/app/230410/) |
+| 11 | Limbus Company | 37,118 | 📉-21% | ⭐ Hot | ★★★★☆ | Turn-based Tactics |  | 65,031 | [Steam](https://store.steampowered.com/app/1973530/) |
+| 12 | War Thunder | 37,045 | 📉-24% | ⭐ Hot | ★★★☆☆ | MMO | BattlEye🔴 | 51,790 | [Steam](https://store.steampowered.com/app/236390/) |
+| 13 | Team Fortress 2 | 33,747 | ↑+4% | ⭐ Hot | ★★★★☆ | FPS | VAC | 57,573 | [Steam](https://store.steampowered.com/app/440/) |
+| 14 | The Sims™ 4 | 17,877 | 📉-22% | 🟢 Healthy | ★★★★☆ | Life Sim |  | 23,503 | [Steam](https://store.steampowered.com/app/1222670/) |
+| 15 | Shadowverse: Worlds Beyond | 13,126 | 📈+58% | 🟢 Healthy | ★☆☆☆☆ | Card Game |  | 16,585 | [Steam](https://store.steampowered.com/app/2584990/) |
+| 16 | MIR4 | 10,735 | → | 🟢 Healthy | ★★☆☆☆ | MMORPG | - | 12,000 | [Steam](https://store.steampowered.com/app/1623660/) |
+| 17 | Wuthering Waves | 10,711 | 📉-31% | 🟢 Healthy | ★★★★☆ | Action | EAC🔴 | 24,488 | [Steam](https://store.steampowered.com/app/3513350/) |
+| 18 | Where Winds Meet | 9,868 | 📉-30% | 🟡 Stable | ★★★★☆ | MMORPG |  | 21,519 | [Steam](https://store.steampowered.com/app/3564740/) |
+| 19 | THE FINALS | 8,944 | 📉-16% | 🟡 Stable | ★★★☆☆ | FPS |  | 16,640 | [Steam](https://store.steampowered.com/app/2073850/) |
+| 20 | Russian Fishing 4 | 8,713 | 📉-15% | 🟡 Stable | ★★☆☆☆ | Fishing |  | 12,151 | [Steam](https://store.steampowered.com/app/766570/) |
+| 21 | Brawlhalla | 8,451 | ↓-9% | 🟡 Stable | ★★★★☆ | Fighting |  | 11,923 | [Steam](https://store.steampowered.com/app/291550/) |
+| 22 | Once Human | 8,277 | 📉-26% | 🟡 Stable | ★★★☆☆ | Survival |  | 13,176 | [Steam](https://store.steampowered.com/app/2139460/) |
+| 23 | Summoners War | 6,540 | 📈+16% | 🟡 Stable | ★★★☆☆ | Turn-based Strategy |  | 8,779 | [Steam](https://store.steampowered.com/app/2426960/) |
+| 24 | Off The Grid | 6,424 | ↓-14% | 🟡 Stable | ★★☆☆☆ | Battle Royale | EAC🔴 | 8,637 | [Steam](https://store.steampowered.com/app/3659280/) |
+| 25 | SMITE 2 | 6,218 | ↓-12% | 🟡 Stable | ★★☆☆☆ | MOBA |  | 7,315 | [Steam](https://store.steampowered.com/app/2437170/) |
+| 26 | Albion Online | 5,351 | 📉-18% | 🟡 Stable | ★★★☆☆ | MMORPG |  | 7,811 | [Steam](https://store.steampowered.com/app/761890/) |
+| 27 | Zenless Zone Zero | 5,195 | 📉-35% | 🟡 Stable | ★★★★☆ | Action | HoYoKProtect🔴 | 7,965 | [Steam](https://store.steampowered.com/app/4162040/) |
+| 28 | World of Warships | 5,172 | 📉-24% | 🟡 Stable | ★★★☆☆ | MMO |  | 54,809 | [Steam](https://store.steampowered.com/app/552990/) |
+| 29 | Eternal Return | 5,057 | 📉-36% | 🟡 Stable | ★★★☆☆ | Battle Royale |  | 9,184 | [Steam](https://store.steampowered.com/app/1049590/) |
+| 30 | KARDS - Карточная игра о Второй миров... | 4,804 | ↓-8% | 🟡 Stable | ★★☆☆☆ | Card Game |  | 6,826 | [Steam](https://store.steampowered.com/app/544810/) |
+| 31 | Palia | 4,613 | ↓-13% | 🟡 Stable | ★★★★☆ | Life Sim |  | 13,059 | [Steam](https://store.steampowered.com/app/2707930/) |
+| 32 | Play Together | 4,579 | → | 🟡 Stable | ★★★☆☆ | Action | - | 5,647 | [Steam](https://store.steampowered.com/app/3198850/) |
+| 33 | Guild Wars 2® | 4,147 | 📉-23% | 🟡 Stable | ★★★★☆ | MMORPG |  | 5,635 | [Steam](https://store.steampowered.com/app/1284210/) |
+| 34 | STALCRAFT: X | 3,896 | ↓-13% | 🟡 Stable | ★★★☆☆ | MMORPG | EXENS | 6,666 | [Steam](https://store.steampowered.com/app/1818450/) |
+| 35 | Blood Strike | 3,676 | 📉-20% | 🟡 Stable | ★★★★☆ | Battle Royale |  | 5,307 | [Steam](https://store.steampowered.com/app/3199170/) |
+| 36 | Supermarket Together | 3,622 | ↓-12% | 🟡 Stable | ★★★★☆ | Simulation |  | 4,883 | [Steam](https://store.steampowered.com/app/2709570/) |
+| 37 | MY HERO ULTRA RUMBLE | 3,340 | 📉-30% | 🟡 Stable | ★★☆☆☆ | Battle Royale |  | 6,567 | [Steam](https://store.steampowered.com/app/1607250/) |
+| 38 | STAR WARS™: The Old Republic™ | 3,322 | 📉-22% | 🟡 Stable | ★★★★☆ | MMORPG |  | 5,951 | [Steam](https://store.steampowered.com/app/1286830/) |
+| 39 | EVE Online | 3,102 | ↓-14% | 🟡 Stable | ★★★☆☆ | MMORPG |  | 4,018 | [Steam](https://store.steampowered.com/app/8500/) |
+| 40 | The Seven Deadly Sins: Origin | 2,756 | 📉-35% | 🟠 Low | ★★☆☆☆ | Action | - | 19,877 | [Steam](https://store.steampowered.com/app/3679080/) |
+| 41 | The First Descendant | 2,599 | 📉-36% | 🟠 Low | ★★☆☆☆ | Looter Shooter |  | 5,899 | [Steam](https://store.steampowered.com/app/2074920/) |
+| 42 | Sky: Children of the Light | 2,353 | ↓-12% | 🟠 Low | ★★★★☆ | Adventure |  | 3,451 | [Steam](https://store.steampowered.com/app/2325290/) |
+| 43 | World of Tanks | 2,275 | 📉-23% | 🟠 Low | ★★★★☆ | MMO |  | 4,171 | [Steam](https://store.steampowered.com/app/1407200/) |
+| 44 | Myth of Empires: Throne | 2,150 | 📉-20% | 🟠 Low | ★★☆☆☆ | Action | nProtect🔴 | 4,519 | [Steam](https://store.steampowered.com/app/4510830/) |
+| 45 | Halo Infinite | 2,128 | 📉-28% | 🟠 Low | ★★☆☆☆ | FPS | Easy Anti-Cheat🔴 | 3,164 | [Steam](https://store.steampowered.com/app/1240440/) |
+| 46 | Predecessor | 1,972 | ↓-4% | 🟠 Low | ★★★☆☆ | MOBA | - | 2,601 | [Steam](https://store.steampowered.com/app/961200/) |
+| 47 | World of Tanks Blitz | 1,907 | 📉-22% | 🟠 Low | ★★★☆☆ | MMO |  | 2,980 | [Steam](https://store.steampowered.com/app/444200/) |
+| 48 | Conqueror's Blade | 1,883 | 📉-32% | 🟠 Low | ★★☆☆☆ | MMORPG |  | 3,020 | [Steam](https://store.steampowered.com/app/835570/) |
+| 49 | Gloria Victis: Medieval MMORPG | 1,857 | 📉-18% | 🟠 Low | ★★☆☆☆ | MMORPG | - | 2,268 | [Steam](https://store.steampowered.com/app/327070/) |
+| 50 | Knight Online | 1,824 | → | 🟠 Low | ★★☆☆☆ | Action | - | 2,045 | [Steam](https://store.steampowered.com/app/389430/) |
+| 51 | Enlisted | 1,695 | 📉-26% | 🟠 Low | ★★★★☆ | MMO | BattlEye🔴 | 2,300 | [Steam](https://store.steampowered.com/app/2051620/) |
+| 52 | Kathana | 1,637 | → | 🟠 Low | ★★★☆☆ | MMORPG | EAC🔴 | 1,663 | [Steam](https://store.steampowered.com/app/2081880/) |
+| 53 | Goose Goose Duck | 1,636 | 📉-19% | 🟠 Low | ★★★★☆ | Social Deduction | Easy Anti-Cheat🔴 | 3,036 | [Steam](https://store.steampowered.com/app/1568590/) |
+| 54 | skate. | 1,622 | ↓-10% | 🟠 Low | ★★☆☆☆ | Sports | EA Javelin AntiCheat🔴 | 3,161 | [Steam](https://store.steampowered.com/app/3354750/) |
+| 55 | MARVEL SNAP | 1,616 | ↓-5% | 🟠 Low | ★★★☆☆ | Card Game |  | 1,897 | [Steam](https://store.steampowered.com/app/1997040/) |
+| 56 | Morimens | 1,559 | ↓-6% | 🟠 Low | ★★★★☆ | Card Game | - | 2,966 | [Steam](https://store.steampowered.com/app/3052450/) |
+| 57 | RuneScape ® | 1,530 | ↓-10% | 🟠 Low | ★★★★☆ | MMORPG |  | 2,404 | [Steam](https://store.steampowered.com/app/1343400/) |
+| 58 | Astral Party  | 1,464 | 📉-42% | 🟠 Low | ★★☆☆☆ | Board Game |  | 2,993 | [Steam](https://store.steampowered.com/app/2622000/) |
+| 59 | RISK: Global Domination | 1,392 | ↓-13% | 🟠 Low | ★★★☆☆ | Board Game |  | 1,941 | [Steam](https://store.steampowered.com/app/1128810/) |
+| 60 | Meow My Crop! | 1,367 | 📈+50% | 🟠 Low | ★★★★☆ | Idler | - | 1,577 | [Steam](https://store.steampowered.com/app/4201710/) |
+| 61 | World of Sea Battle | 1,230 | 📉-18% | 🟠 Low | ★★★☆☆ | MMORPG |  | 2,298 | [Steam](https://store.steampowered.com/app/2948190/) |
+| 62 | War Robots | 1,224 | → | 🟠 Low | ★★☆☆☆ | Arena Shooter |  | 1,519 | [Steam](https://store.steampowered.com/app/767560/) |
+| 63 | Warborne Above Ashes | 1,152 | ↓-13% | 🟠 Low | ★☆☆☆☆ | MMORPG | - | 1,324 | [Steam](https://store.steampowered.com/app/3142050/) |
+| 64 | Soul Land: Awakening World | 1,143 | 📉-32% | 🟠 Low | ★★☆☆☆ | MMORPG | 37GAMES | 3,629 | [Steam](https://store.steampowered.com/app/4584110/) |
+| 65 | Old School RuneScape | 1,105 | ↓-15% | 🟠 Low | ★★★★☆ | MMORPG | - | 1,296 | [Steam](https://store.steampowered.com/app/1343370/) |
+| 66 | Fallout Shelter | 1,101 | ↓-10% | 🟠 Low | ★★★★☆ | Simulation |  | 1,964 | [Steam](https://store.steampowered.com/app/588430/) |
+| 67 | SMITE® | 1,077 | 📉-20% | 🟠 Low | ★★★☆☆ | MOBA | EAC🔴 | 1,736 | [Steam](https://store.steampowered.com/app/386360/) |
+| 68 | Strinova | 1,062 | 📉-26% | 🟠 Low | ★★★☆☆ | Hero Shooter | ACE🔴 | 1,583 | [Steam](https://store.steampowered.com/app/1282270/) |
+| 69 | Granado Espada | 1,051 | 📉-33% | 🟠 Low | ★★☆☆☆ | MMORPG | - | 1,819 | [Steam](https://store.steampowered.com/app/663090/) |
+| 70 | ONE PIECE Bounty Rush | 1,014 | → | 🟠 Low | ★★☆☆☆ | Fighting |  | 1,528 | [Steam](https://store.steampowered.com/app/2918150/) |
+| 71 | War of the Three Kingdoms | 1,012 | ↑+4% | 🟠 Low | ★☆☆☆☆ | Card Game | - | 1,326 | [Steam](https://store.steampowered.com/app/1180320/) |
+| 72 | Wizardry Variants Daphne | 980 | 📉-40% | 🟠 Low | ★★☆☆☆ | Dungeon Crawler | CrackProof🔴 | 2,325 | [Steam](https://store.steampowered.com/app/2379740/) |
+| 73 | Dungeon Crusher: Soul Hunters | 957 | ↑+4% | 🟠 Low | ★★☆☆☆ | MMORPG | - | 1,180 | [Steam](https://store.steampowered.com/app/842980/) |
+| 74 | Infinity Nikki | 915 | ↓-11% | 🟠 Low | ★★☆☆☆ | Simulation | Anti-Cheat Expert (ACE)🔴 | 2,189 | [Steam](https://store.steampowered.com/app/3164330/) |
+| 75 | DRAGON BALL GEKISHIN SQUADRA | 890 | 📉-18% | 🟠 Low | ★★☆☆☆ | MOBA |  | 1,758 | [Steam](https://store.steampowered.com/app/2072560/) |
+| 76 | Star Trek Online | 886 | → | 🟠 Low | ★★★☆☆ | MMORPG |  | 1,296 | [Steam](https://store.steampowered.com/app/9900/) |
+| 77 | Realm of the Mad God Exalt | 886 | ↓-14% | 🟠 Low | ★★★★☆ | MMORPG | - | 1,323 | [Steam](https://store.steampowered.com/app/200210/) |
+| 78 | LoveCraft | 795 | ↓-13% | 🟠 Low | ★★★☆☆ | MMO |  | 977 | [Steam](https://store.steampowered.com/app/2692440/) |
+| 79 | Trackmania | 790 | → | 🟠 Low | ★★★☆☆ | Racing |  | 1,249 | [Steam](https://store.steampowered.com/app/2225070/) |
+| 80 | DDNet | 767 | ↓-4% | 🟠 Low | ★★★★☆ | Platformer | - | 1,165 | [Steam](https://store.steampowered.com/app/412220/) |
+| 81 | Lords Mobile: Kingdom Wars | 762 | ↑+5% | 🟠 Low | ★★☆☆☆ | RTS | - | 798 | [Steam](https://store.steampowered.com/app/1041320/) |
+| 82 | Evitania Online - Idle RPG | 759 | ↓-8% | 🟠 Low | ★★★☆☆ | MMORPG | - | 1,202 | [Steam](https://store.steampowered.com/app/4119420/) |
+| 83 | MU: Dark Epoch | 755 | ↓-11% | 🟠 Low | ★★☆☆☆ | MMORPG | 37GAMES | 901 | [Steam](https://store.steampowered.com/app/3953520/) |
+| 84 | Dead Frontier 2 | 741 | ↑+3% | 🟠 Low | ★★★☆☆ | Action | - | 865 | [Steam](https://store.steampowered.com/app/744900/) |
+| 85 | MLB 9 Innings Rivals 26 | 728 | 📉-21% | 🟠 Low | ★★★☆☆ | Sports | nProtect | 947 | [Steam](https://store.steampowered.com/app/2569510/) |
+| 86 | My Singing Monsters | 722 | ↓-5% | 🟠 Low | ★★★★☆ | Simulation |  | 1,009 | [Steam](https://store.steampowered.com/app/1419170/) |
+| 87 | Catan Universe | 663 | ↓-8% | 🟠 Low | ★☆☆☆☆ | Strategy | - | 795 | [Steam](https://store.steampowered.com/app/544730/) |
+| 88 | Umamusume: Pretty Derby | 653 | 📉-91% | 🟠 Low | ★★★★☆ | Gambling | CrackProof®🔴 | 12,670 | [Steam](https://store.steampowered.com/app/3224770/) |
+| 89 | ヘブンバーンズレッド | 645 | 📉-49% | 🟠 Low | ★★☆☆☆ | Turn-based Tactics | CrackProof🔴 | 2,629 | [Steam](https://store.steampowered.com/app/1973710/) |
+| 90 | Idle Clans | 630 | → | 🟠 Low | ★★★☆☆ | MMORPG | - | 717 | [Steam](https://store.steampowered.com/app/2103530/) |
+| 91 | Pixel Gun 3D: PC Edition | 629 | ↓-12% | 🟠 Low | ★★☆☆☆ | FPS |  | 1,202 | [Steam](https://store.steampowered.com/app/2524890/) |
+| 92 | Muck | 617 | 📉-17% | 🟠 Low | ★★★★☆ | Roguelike | - | 1,174 | [Steam](https://store.steampowered.com/app/1625450/) |
+| 93 | Super Animal Royale | 615 | 📈+35% | 🟠 Low | ★★★★☆ | Battle Royale | - | 615 | [Steam](https://store.steampowered.com/app/843380/) |
+| 94 | Toram Online | 605 | ↓-11% | 🟠 Low | ★★★☆☆ | MMORPG | - | 946 | [Steam](https://store.steampowered.com/app/1827180/) |
+| 95 | Wizard101 | 598 | ↓-11% | 🟠 Low | ★★★★☆ | MMORPG | - | 717 | [Steam](https://store.steampowered.com/app/799960/) |
+| 96 | Gems of War - Puzzle RPG | 596 | ↓-9% | 🟠 Low | ★★★☆☆ | Action | - | 687 | [Steam](https://store.steampowered.com/app/329110/) |
+| 97 | Horizon Walker | 590 | 📉-22% | 🟠 Low | ★★★☆☆ | Turn-based RPG | nProtect GameGuard🔴 | 1,187 | [Steam](https://store.steampowered.com/app/3279780/) |
+| 98 | Action Taimanin | 578 | 📉-27% | 🟠 Low | ★★★★☆ | Hack & Slash |  | 974 | [Steam](https://store.steampowered.com/app/1335200/) |
+| 99 | Crab Game | 578 | ↓-7% | 🟠 Low | ★★★★☆ | Battle Royale | - | 961 | [Steam](https://store.steampowered.com/app/1782210/) |
+| 100 | Texas Hold'em Poker: Pokerist | 569 | ↓-7% | 🟠 Low | ★★☆☆☆ | Gambling | - | 751 | [Steam](https://store.steampowered.com/app/3174070/) |
 
-*+1134 more (921 <50 players)*
+*+1185 more (984 <50 players)*
