@@ -1,6 +1,6 @@
 # All Free-to-Play Games (Part 8/18)
 
-Games 1401–1600 of 3426 · Generated: 2026-08-10 01:18 UTC
+Games 1401–1600 of 3424 · Generated: 2026-08-10 08:00 UTC
 
 | # | Thumb | Game | Genre | Developer | Publisher | Released | Platforms | Languages | Reviews | Players | Anti-Cheat | Metacritic | Status | Description | Link | Notes |
 |---|-------|------|-------|-----------|-----------|----------|----------|-----------|---------|---------|------------|-----------|--------|-------------|------|-------|
