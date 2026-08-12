@@ -1,6 +1,6 @@
 # Steam F2P Tracker
 
-**3424 games** · 2026-08-10 08:00 UTC
+**3424 games** · 2026-08-12 01:25 UTC
 
 ## Full list
 
