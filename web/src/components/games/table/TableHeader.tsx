@@ -1,6 +1,6 @@
 import { ArrowUp, ArrowDown } from "lucide-react";
 import { cn } from "../../../lib/utils";
-import { COLS, SELECT_COL_WIDTH } from "./columns";
+import { COLS } from "./columns";
 import type { SortDir } from "../../../stores/filters";
 
 interface Props {
@@ -12,10 +12,6 @@ interface Props {
 export function TableHeader({ sortKey, sortDir, toggleSort }: Props) {
   return (
     <div className="sticky top-0 z-10 flex border-b bg-card/95 backdrop-blur">
-      <div
-        className="flex h-10 items-center justify-center"
-        style={{ width: SELECT_COL_WIDTH, minWidth: SELECT_COL_WIDTH }}
-      />
       {COLS.map((c) => {
         const active = sortKey === c.key;
         return (

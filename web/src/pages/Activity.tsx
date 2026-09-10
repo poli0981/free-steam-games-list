@@ -14,7 +14,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card"
 import { Badge } from "../components/ui/badge";
 import { Button } from "../components/ui/button";
 import { LoadingState, ErrorState } from "../components/common/QueryState";
-import { useAuth } from "../stores/auth";
 import { useDocumentTitle } from "../hooks/useDocumentTitle";
 import { REPO_OWNER, REPO_NAME, DEFAULT_BRANCH } from "../lib/schema";
 import { formatRelativeDate } from "../lib/utils";
@@ -32,14 +31,17 @@ interface Commit {
   committer: { login: string; avatar_url: string } | null;
 }
 
-type Filter = "all" | "mine" | "bot";
+// "mine" is gone with sign-in: with no signed-in identity there is no
+// "me" to filter against.
+type Filter = "all" | "bot";
 
-async function fetchCommits(token: string | null): Promise<Commit[]> {
+async function fetchCommits(): Promise<Commit[]> {
+  // Unauthenticated. The commit list is public; the lower anonymous rate limit
+  // is fine for a feed that refetches on focus with a 60s stale time.
   const headers: HeadersInit = {
     Accept: "application/vnd.github+json",
     "X-GitHub-Api-Version": "2022-11-28",
   };
-  if (token) (headers as Record<string, string>).Authorization = `Bearer ${token}`;
   const res = await fetch(
     `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/commits?per_page=80&sha=${DEFAULT_BRANCH}`,
     { headers },
@@ -51,27 +53,23 @@ async function fetchCommits(token: string | null): Promise<Commit[]> {
 export function ActivityPage() {
   const { t } = useTranslation();
   useDocumentTitle("activity.title");
-  const auth = useAuth();
   const [filter, setFilter] = useState<Filter>("all");
 
   const q = useQuery({
-    queryKey: ["activity", auth.user?.login ?? null],
-    queryFn: () => fetchCommits(auth.token),
+    queryKey: ["activity"],
+    queryFn: fetchCommits,
     refetchOnWindowFocus: true,
     staleTime: 60_000,
   });
 
   const filtered = useMemo(() => {
     if (!q.data) return [];
-    const login = auth.user?.login ?? null;
     return q.data.filter((c) => {
       const isBot = c.author?.login === "github-actions[bot]";
-      const isMine = login != null && c.author?.login === login;
-      if (filter === "mine") return isMine;
       if (filter === "bot") return isBot;
       return true;
     });
-  }, [q.data, filter, auth.user?.login]);
+  }, [q.data, filter]);
 
   if (q.isLoading) return <LoadingState />;
   if (q.error) return <ErrorState error={q.error as Error} onRetry={() => void q.refetch()} />;
@@ -87,7 +85,7 @@ export function ActivityPage() {
         </div>
         <div className="flex items-center gap-1.5 rounded-md border bg-card p-1 text-xs">
           <Filter className="ml-1 h-3 w-3 text-muted-foreground" />
-          {(["all", "mine", "bot"] as const).map((f) => (
+          {(["all", "bot"] as const).map((f) => (
             <Button
               key={f}
               size="sm"
@@ -95,11 +93,7 @@ export function ActivityPage() {
               className="h-6 text-xs"
               onClick={() => setFilter(f)}
             >
-              {f === "mine"
-                ? t("activity.filterMe")
-                : f === "bot"
-                  ? t("activity.filterBots")
-                  : t("activity.filterAll")}
+              {f === "bot" ? t("activity.filterBots") : t("activity.filterAll")}
             </Button>
           ))}
         </div>

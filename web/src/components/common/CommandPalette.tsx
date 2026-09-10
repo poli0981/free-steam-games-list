@@ -16,16 +16,14 @@ import {
   BarChart3,
   Languages as LanguagesIcon,
   Clock,
-  Users,
   Lock,
-  Unlock,
+  Users,
   ExternalLink,
   Search,
   History,
   Info,
 } from "lucide-react";
 import { useGames } from "../../hooks/useGames";
-import { useGpg } from "../../stores/gpg";
 import { headerToCapsule } from "../../lib/image";
 import { openExternal } from "../../lib/external-open";
 import "./command-palette.css";
@@ -71,7 +69,6 @@ export function CommandPalette() {
   const [search, setSearch] = useState("");
   const navigate = useNavigate();
   const games = useGames();
-  const gpg = useGpg();
 
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
@@ -164,33 +161,6 @@ export function CommandPalette() {
                 </Command.Item>
               ))}
             </Command.Group>
-
-            {gpg.parsed && (
-              <Command.Group heading={t("cmdk.groupGpg")} className="cmdk-group">
-                {gpg.unlocked ? (
-                  <Command.Item
-                    onSelect={() => {
-                      gpg.lock();
-                      setOpen(false);
-                    }}
-                    className="cmdk-item"
-                    value={t("cmdk.lockGpgKey")}
-                  >
-                    <Lock className="h-3.5 w-3.5" />
-                    {t("cmdk.lockGpgKey")}
-                  </Command.Item>
-                ) : (
-                  <Command.Item
-                    onSelect={() => go("/settings")}
-                    className="cmdk-item"
-                    value={t("cmdk.unlockGpgSettings")}
-                  >
-                    <Unlock className="h-3.5 w-3.5" />
-                    {t("cmdk.unlockGpgSettings")}
-                  </Command.Item>
-                )}
-              </Command.Group>
-            )}
 
             {gameMatches.length > 0 && (
               <Command.Group heading={t("cmdk.groupGames")} className="cmdk-group">

@@ -210,4 +210,3 @@ export const COLS: ColDef[] = [
 ];
 
 export const TOTAL_WIDTH = COLS.reduce((s, c) => s + c.width, 0);
-export const SELECT_COL_WIDTH = 36;

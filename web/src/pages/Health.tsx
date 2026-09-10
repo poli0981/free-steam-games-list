@@ -1,27 +1,17 @@
-import { useMemo, useState } from "react";
-import { toast } from "sonner";
+import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import {
-  Loader2,
   AlertTriangle,
-  RefreshCcw,
   Trash2,
-  Trophy,
   HeartPulse,
-  Link as LinkIcon,
   Calendar,
-  Sparkles,
   ShieldQuestion,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "../components/ui/card";
-import { Button } from "../components/ui/button";
 import { Badge } from "../components/ui/badge";
 import { useGames } from "../hooks/useGames";
 import { useDocumentTitle } from "../hooks/useDocumentTitle";
-import { useAuth } from "../stores/auth";
 import { LoadingState, ErrorState } from "../components/common/QueryState";
-import { dispatchWorkflow } from "../lib/github-api";
-import { openExternal } from "../lib/external-open";
 import { isEmpty } from "../lib/data-store";
 import type { GameRecord } from "../lib/schema";
 import { formatNumber, formatRelativeDate } from "../lib/utils";
@@ -83,8 +73,6 @@ export function HealthPage() {
   const { t } = useTranslation();
   useDocumentTitle("health.title");
   const q = useGames();
-  const auth = useAuth();
-  const [busy, setBusy] = useState<string | null>(null);
 
   const issues = useMemo(() => (q.data ? gatherIssues(q.data.records) : []), [q.data]);
 
@@ -93,34 +81,6 @@ export function HealthPage() {
   if (!q.data) return null;
 
   const totalIssues = issues.reduce((sum, g) => sum + g.records.length, 0);
-
-  async function trigger(nameKey: string, file: string) {
-    const localizedName = t(nameKey);
-    if (!auth.token) {
-      toast.error(t("health.signInFirst"));
-      return;
-    }
-    setBusy(file);
-    try {
-      await dispatchWorkflow(file, auth.token);
-      toast.success(t("health.triggeredToast", { name: localizedName }), {
-        description: file,
-        action: {
-          label: t("health.viewRuns"),
-          onClick: () =>
-            void openExternal(
-              `https://github.com/poli0981/free-steam-games-list/actions/workflows/${file}`,
-            ),
-        },
-      });
-    } catch (err) {
-      toast.error(t("health.failedToast", { name: localizedName }), {
-        description: err instanceof Error ? err.message : String(err),
-      });
-    } finally {
-      setBusy(null);
-    }
-  }
 
   return (
     <div className="space-y-6">
@@ -177,123 +137,6 @@ export function HealthPage() {
         ))}
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Sparkles className="h-4 w-4" /> {t("health.maintenanceTriggers")}
-          </CardTitle>
-          <CardDescription>
-            {t("health.maintenanceDesc", { scope: "workflow" })}
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
-          <TriggerButton
-            label={t("health.triggerUpdateJson")}
-            description={t("health.triggerUpdateJsonDesc")}
-            file="update-json.yml"
-            icon={RefreshCcw}
-            busy={busy}
-            disabled={!auth.isAuthenticated}
-            onClick={() => trigger("health.triggerUpdateJson", "update-json.yml")}
-          />
-          <TriggerButton
-            label={t("health.triggerUpdateReviews")}
-            description={t("health.triggerUpdateReviewsDesc")}
-            file="update-reviews.yml"
-            icon={RefreshCcw}
-            busy={busy}
-            disabled={!auth.isAuthenticated}
-            onClick={() => trigger("health.triggerUpdateReviews", "update-reviews.yml")}
-          />
-          <TriggerButton
-            label={t("health.triggerTopOnline")}
-            description={t("health.triggerTopOnlineDesc")}
-            file="top-online.yml"
-            icon={Trophy}
-            busy={busy}
-            disabled={!auth.isAuthenticated}
-            onClick={() => trigger("health.triggerTopOnline", "top-online.yml")}
-          />
-          <TriggerButton
-            label={t("health.triggerTopOffline")}
-            description={t("health.triggerTopOfflineDesc")}
-            file="top-offline.yml"
-            icon={Trophy}
-            busy={busy}
-            disabled={!auth.isAuthenticated}
-            onClick={() => trigger("health.triggerTopOffline", "top-offline.yml")}
-          />
-          <TriggerButton
-            label={t("health.triggerCheckLinks")}
-            description={t("health.triggerCheckLinksDesc")}
-            file="check-dead-links.yml"
-            icon={LinkIcon}
-            busy={busy}
-            disabled={!auth.isAuthenticated}
-            onClick={() => trigger("health.triggerCheckLinks", "check-dead-links.yml")}
-          />
-          <TriggerButton
-            label={t("health.triggerPurge")}
-            description={t("health.triggerPurgeDesc")}
-            file="purge-unhealthy.yml"
-            icon={Trash2}
-            busy={busy}
-            disabled={!auth.isAuthenticated}
-            onClick={() => trigger("health.triggerPurge", "purge-unhealthy.yml")}
-          />
-          <TriggerButton
-            label={t("health.triggerGenerate")}
-            description={t("health.triggerGenerateDesc")}
-            file="update-daily.yml"
-            icon={Sparkles}
-            busy={busy}
-            disabled={!auth.isAuthenticated}
-            onClick={() => trigger("health.triggerGenerate", "update-daily.yml")}
-          />
-        </CardContent>
-      </Card>
     </div>
-  );
-}
-
-interface TriggerProps {
-  label: string;
-  description: string;
-  file: string;
-  icon: React.ComponentType<{ className?: string }>;
-  busy: string | null;
-  disabled: boolean;
-  onClick: () => void;
-}
-
-function TriggerButton({
-  label,
-  description,
-  file,
-  icon: Icon,
-  busy,
-  disabled,
-  onClick,
-}: TriggerProps) {
-  const isBusy = busy === file;
-  return (
-    <Button
-      variant="outline"
-      className="h-auto justify-start py-3 text-left"
-      disabled={disabled || isBusy}
-      onClick={onClick}
-    >
-      <div className="flex w-full items-start gap-2">
-        {isBusy ? (
-          <Loader2 className="mt-0.5 h-4 w-4 shrink-0 animate-spin" />
-        ) : (
-          <Icon className="mt-0.5 h-4 w-4 shrink-0" />
-        )}
-        <div className="min-w-0 flex-1">
-          <div className="font-medium">{label}</div>
-          <div className="text-xs font-normal text-muted-foreground">{description}</div>
-        </div>
-      </div>
-    </Button>
   );
 }

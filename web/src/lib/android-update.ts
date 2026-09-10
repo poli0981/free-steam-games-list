@@ -4,7 +4,6 @@
 // silent — this is a best-effort nicety, not a critical path).
 
 import { REPO_OWNER, REPO_NAME } from "./schema";
-import { loadAuth } from "./github-api";
 
 const API_BASE = "https://api.github.com";
 
@@ -48,8 +47,9 @@ export async function checkAndroidUpdate(): Promise<AndroidUpdate | null> {
   };
   // Use the signed-in token if present (raises the API rate limit); the
   // releases list is public so an anonymous call works too.
-  const token = loadAuth().token;
-  if (token) headers.Authorization = `Bearer ${token}`;
+  // Unauthenticated: the release list is public, and there is no sign-in to
+  // borrow a token from any more. The lower rate limit is ample for a check
+  // that runs once per app launch.
 
   const res = await fetch(
     `${API_BASE}/repos/${REPO_OWNER}/${REPO_NAME}/releases?per_page=30`,

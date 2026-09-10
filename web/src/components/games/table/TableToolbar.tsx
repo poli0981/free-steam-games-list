@@ -9,7 +9,6 @@ import type { GameRecord } from "../../../lib/schema";
 interface Props {
   totalRecords: number;
   filteredCount: number;
-  selectedCount: number;
   sorted: GameRecord[];
   pageSize: PageSize;
   setPageSize: (n: PageSize) => void;
@@ -21,7 +20,6 @@ interface Props {
 export function TableToolbar({
   totalRecords,
   filteredCount,
-  selectedCount,
   sorted,
   pageSize,
   setPageSize,
@@ -35,11 +33,6 @@ export function TableToolbar({
       <span>
         <strong className="text-foreground">{formatNumber(filteredCount)}</strong>{" "}
         {t("games.ofTotalGames", { total: formatNumber(totalRecords) })}
-        {selectedCount > 0 && (
-          <span className="ml-2 text-primary">
-            · {formatNumber(selectedCount)} {t("common.selected")}
-          </span>
-        )}
       </span>
 
       <div className="flex flex-wrap items-center gap-1.5">

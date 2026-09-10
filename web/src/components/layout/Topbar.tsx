@@ -1,17 +1,12 @@
-import { Search, Sun, Moon, Monitor, ShieldCheck, Unlock, Menu, Command } from "lucide-react";
+import { Search, Sun, Moon, Monitor, Menu, Command } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Link } from "react-router-dom";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
-import { Badge } from "../ui/badge";
 import { PwaIndicator } from "../common/PwaIndicator";
 import { openCommandPalette } from "../common/CommandPalette";
-import { GpgQuickUnlock } from "../auth/GpgQuickUnlock";
 import { useFilters } from "../../stores/filters";
 import { useGames } from "../../hooks/useGames";
-import { useAuth } from "../../stores/auth";
-import { useGpg } from "../../stores/gpg";
 import { formatNumber } from "../../lib/utils";
 
 type Theme = "light" | "dark" | "system";
@@ -37,11 +32,6 @@ export function Topbar({ onMenuToggle }: TopbarProps = {}) {
   const search = useFilters((s) => s.search);
   const setSearch = useFilters((s) => s.setSearch);
   const games = useGames();
-  const auth = useAuth();
-  const gpgParsed = useGpg((s) => s.parsed);
-  const gpgUnlocked = useGpg((s) => s.unlocked);
-  const gpgLock = useGpg((s) => s.lock);
-  const gpgHydrate = useGpg((s) => s.hydrate);
   const [theme, setTheme] = useState<Theme>(
     (localStorage.getItem("f2p:theme") as Theme) ?? "dark",
   );
@@ -50,16 +40,6 @@ export function Topbar({ onMenuToggle }: TopbarProps = {}) {
     applyTheme(theme);
     localStorage.setItem("f2p:theme", theme);
   }, [theme]);
-
-  useEffect(() => {
-    if (auth.token && !auth.user && !auth.isVerifying) {
-      void auth.hydrate();
-    }
-  }, [auth.token, auth.user, auth.isVerifying, auth]);
-
-  useEffect(() => {
-    void gpgHydrate();
-  }, [gpgHydrate]);
 
   const total = games.data?.records.length ?? 0;
   const lastUpdated = games.data?.index.last_updated ?? "";
@@ -115,46 +95,6 @@ export function Topbar({ onMenuToggle }: TopbarProps = {}) {
       </div>
 
       <PwaIndicator />
-
-      {auth.isAuthenticated && auth.user ? (
-        <div className="hidden items-center gap-2 md:flex">
-          {gpgParsed &&
-            (gpgUnlocked ? (
-              <button
-                onClick={gpgLock}
-                title={t("system.gpgUnlockedTooltip", { id: gpgParsed.primaryEmail || gpgParsed.keyId })}
-                className="inline-flex items-center gap-1 rounded-md border border-emerald-500/30 bg-emerald-500/10 px-2 py-1 text-xs text-emerald-300 hover:bg-emerald-500/15"
-              >
-                <Unlock className="h-3 w-3" />
-                <span>{t("topbar.signed")}</span>
-              </button>
-            ) : (
-              <GpgQuickUnlock />
-            ))}
-          <Link
-            to="/settings"
-            className="flex items-center gap-2 rounded-md border bg-card px-2 py-1 text-xs hover:bg-accent"
-            title={t("system.signedInAsTooltip", { login: auth.user.login })}
-          >
-            <img
-              src={auth.user.avatar_url}
-              alt=""
-              decoding="async"
-              className="h-5 w-5 rounded-full"
-            />
-            <span className="font-medium">@{auth.user.login}</span>
-            <Badge variant="success" className="px-1.5 py-0">
-              <ShieldCheck className="h-3 w-3" />
-            </Badge>
-          </Link>
-        </div>
-      ) : (
-        <Link to="/settings">
-          <Button variant="outline" size="sm" className="hidden md:inline-flex">
-            {t("topbar.signIn")}
-          </Button>
-        </Link>
-      )}
 
       <div className="flex items-center gap-1">
         <Button

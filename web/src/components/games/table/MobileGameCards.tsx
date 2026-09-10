@@ -11,15 +11,13 @@ import type { GameRecord } from "../../../lib/schema";
 
 interface Props {
   records: GameRecord[];
-  selected: Set<string>;
-  onSelect: (aid: string) => void;
   onOpen: (g: GameRecord) => void;
 }
 
 // Mobile-only card list. Mirrors GamesTable filtering/paging — caller passes
 // the already-paged `records`. Virtualised for parity with the desktop table
 // (1.2k+ records would otherwise stall scroll on touch devices).
-export function MobileGameCards({ records, selected, onSelect, onOpen }: Props) {
+export function MobileGameCards({ records, onOpen }: Props) {
   const { t } = useTranslation();
   const containerRef = useRef<HTMLDivElement>(null);
   const virtualizer = useVirtualizer({
@@ -44,7 +42,6 @@ export function MobileGameCards({ records, selected, onSelect, onOpen }: Props) 
         {virtualizer.getVirtualItems().map((vrow) => {
           const g = records[vrow.index];
           const aid = extractAppid(g.link) ?? "";
-          const isSelected = selected.has(aid);
           const issues = recordIssues(g);
           const pct = parseReviewPercent(g.reviews);
           const reviewColor =
@@ -60,7 +57,6 @@ export function MobileGameCards({ records, selected, onSelect, onOpen }: Props) 
               key={vrow.key}
               className={cn(
                 "absolute left-0 top-0 flex w-full cursor-pointer items-start gap-3 border-b border-border/50 px-3 py-2 hover:bg-accent/40",
-                isSelected && "bg-primary/10 hover:bg-primary/15",
               )}
               style={{
                 transform: `translateY(${vrow.start}px)`,
@@ -69,22 +65,6 @@ export function MobileGameCards({ records, selected, onSelect, onOpen }: Props) 
               onClick={() => onOpen(g)}
               data-appid={aid}
             >
-              {/* Selection checkbox */}
-              <div
-                className="pt-1"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  if (aid) onSelect(aid);
-                }}
-              >
-                <input
-                  type="checkbox"
-                  checked={isSelected}
-                  onChange={() => {}}
-                  className="h-4 w-4 rounded border-input bg-transparent accent-primary"
-                />
-              </div>
-
               {/* Thumb */}
               <div className="shrink-0">
                 {g.header_image ? (

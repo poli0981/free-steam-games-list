@@ -1,13 +1,11 @@
 import { NavLink, useLocation } from "react-router-dom";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { useIsOwner } from "../../hooks/useIsOwner";
 import {
   LayoutDashboard,
   Gamepad2,
   Trophy,
   HeartPulse,
-  PlusCircle,
   Settings,
   BarChart3,
   PieChart,
@@ -55,14 +53,9 @@ const CHARTS: NavItem[] = [
   { to: "/charts/delisted", i18n: "nav.delisted", icon: WifiOff },
 ];
 
-interface NavItemWithOwner extends NavItem {
-  ownerOnly?: boolean;
-}
-
-const SECONDARY: NavItemWithOwner[] = [
+const SECONDARY: NavItem[] = [
   { to: "/health", i18n: "nav.health", icon: HeartPulse },
   { to: "/activity", i18n: "nav.activity", icon: History },
-  { to: "/add", i18n: "nav.add", icon: PlusCircle, ownerOnly: true },
   { to: "/about", i18n: "nav.about", icon: Info },
   { to: "/donate", i18n: "nav.donate", icon: Heart },
   { to: "/settings", i18n: "nav.settings", icon: Settings },
@@ -102,8 +95,6 @@ interface SidebarBodyProps {
 /** Inner content shared between desktop sidebar + mobile drawer. */
 function SidebarBody({ onSelect }: SidebarBodyProps) {
   const { t } = useTranslation();
-  const isOwner = useIsOwner();
-  const visibleSecondary = SECONDARY.filter((i) => !i.ownerOnly || isOwner);
   return (
     <>
       <div className="flex h-14 items-center gap-2 border-b px-4">
@@ -139,7 +130,7 @@ function SidebarBody({ onSelect }: SidebarBodyProps) {
             {t("nav.manage")}
           </div>
           <div className="space-y-1">
-            {visibleSecondary.map((i) => (
+            {SECONDARY.map((i) => (
               <Item key={i.to} item={i} onSelect={onSelect} />
             ))}
           </div>

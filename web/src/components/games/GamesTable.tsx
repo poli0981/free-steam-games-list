@@ -2,11 +2,9 @@ import { useDeferredValue, useMemo, useRef, useState, useEffect } from "react";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import Fuse from "fuse.js";
 import { useFilters } from "../../stores/filters";
-import { extractAppid } from "../../lib/data-store";
 import type { GameRecord } from "../../lib/schema";
 import { GameDetailDrawer } from "./GameDetailDrawer";
-import { BulkActionBar } from "./BulkActionBar";
-import { COLS, TOTAL_WIDTH, SELECT_COL_WIDTH } from "./table/columns";
+import { COLS, TOTAL_WIDTH } from "./table/columns";
 import { TableHeader } from "./table/TableHeader";
 import { TableRow } from "./table/TableRow";
 import { TableToolbar } from "./table/TableToolbar";
@@ -34,8 +32,6 @@ export function GamesTable({ records, onRowOpen }: Props) {
   const setSort = useFilters((s) => s.setSort);
   const pageSize = useFilters((s) => s.pageSize);
   const setPageSize = useFilters((s) => s.setPageSize);
-  const selected = useFilters((s) => s.selected);
-  const toggleSelect = useFilters((s) => s.toggleSelect);
   const [detail, setDetail] = useState<GameRecord | null>(null);
   const [page, setPage] = useState(1);
 
@@ -108,33 +104,21 @@ export function GamesTable({ records, onRowOpen }: Props) {
     containerRef.current?.scrollTo({ top: 0 });
   }, [safePage, pageSize, sortKey, sortDir]);
 
-  const visibleAppids = useMemo(() => {
-    const out: string[] = [];
-    for (const g of paged) {
-      const aid = extractAppid(g.link);
-      if (aid) out.push(aid);
-    }
-    return out;
-  }, [paged]);
-
   function toggleSort(key: string) {
     if (sortKey !== key) return setSort(key, "desc");
     if (sortDir === "desc") return setSort(key, "asc");
     return setSort(null, null);
   }
 
-  const totalWidth = TOTAL_WIDTH + SELECT_COL_WIDTH;
+  const totalWidth = TOTAL_WIDTH;
   const handleOpen = onRowOpen ?? setDetail;
 
   return (
     <div className="space-y-3">
-      <BulkActionBar visibleAppids={visibleAppids} />
-
       <div className="rounded-lg border bg-card">
         <TableToolbar
           totalRecords={records.length}
           filteredCount={sorted.length}
-          selectedCount={selected.size}
           sorted={sorted}
           pageSize={pageSize}
           setPageSize={setPageSize}
@@ -160,15 +144,12 @@ export function GamesTable({ records, onRowOpen }: Props) {
             >
               {rowVirtualizer.getVirtualItems().map((vrow) => {
                 const g = paged[vrow.index];
-                const aid = extractAppid(g.link) ?? "";
                 return (
                   <TableRow
                     key={vrow.key}
                     game={g}
-                    isSelected={selected.has(aid)}
                     translateY={vrow.start}
                     height={vrow.size}
-                    onSelect={toggleSelect}
                     onOpen={handleOpen}
                   />
                 );
@@ -181,8 +162,6 @@ export function GamesTable({ records, onRowOpen }: Props) {
         <div className="md:hidden">
           <MobileGameCards
             records={paged}
-            selected={selected}
-            onSelect={toggleSelect}
             onOpen={handleOpen}
           />
         </div>

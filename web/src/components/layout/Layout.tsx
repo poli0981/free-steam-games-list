@@ -9,11 +9,9 @@ import { ErrorBoundary } from "../common/ErrorBoundary";
 import { LoadingState } from "../common/QueryState";
 import { ErrorPage } from "../../pages/errors/ErrorPage";
 import { isChunkLoadError } from "../../lib/lazy";
-import { useGpgAutolock } from "../../hooks/useGpgAutolock";
 import { useAndroidUpdateCheck } from "../../hooks/useAndroidUpdateCheck";
 
 export function Layout() {
-  useGpgAutolock();
   useAndroidUpdateCheck();
   const { t } = useTranslation();
   const location = useLocation();

@@ -58,9 +58,6 @@ const HealthPage = lazyWithRetry(() =>
 const ActivityPage = lazyWithRetry(() =>
   import("./pages/Activity").then((m) => ({ default: m.ActivityPage })),
 );
-const AddPage = lazyWithRetry(() =>
-  import("./pages/Add").then((m) => ({ default: m.AddPage })),
-);
 const AboutPage = lazyWithRetry(() =>
   import("./pages/About").then((m) => ({ default: m.AboutPage })),
 );
@@ -114,7 +111,6 @@ export default function App() {
         </Route>
         <Route path="health" element={<HealthPage />} />
         <Route path="activity" element={<ActivityPage />} />
-        <Route path="add" element={<AddPage />} />
         <Route path="about" element={<AboutPage />} />
         <Route path="donate" element={<DonatePage />} />
         <Route path="settings" element={<SettingsPage />} />

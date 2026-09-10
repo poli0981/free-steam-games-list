@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   Dialog,
@@ -18,7 +17,6 @@ import {
   Shield,
   Globe,
   Tag,
-  Pencil,
   Monitor,
 } from "lucide-react";
 import {
@@ -31,8 +29,6 @@ import { extractAppid } from "../../lib/data-store";
 import { steamProtocolUrl, steamWebUrl } from "../../lib/steam-link";
 import { preferWebp } from "../../lib/image";
 import type { GameRecord } from "../../lib/schema";
-import { EditGameDrawer } from "./EditGameDrawer";
-import { useIsOwner } from "../../hooks/useIsOwner";
 import { useIsMobile } from "../../hooks/useIsMobile";
 
 interface Props {
@@ -64,11 +60,9 @@ function Field({
 
 export function GameDetailDrawer({ game, onClose, missing }: Props) {
   const { t } = useTranslation();
-  const isOwner = useIsOwner();
   // The steam:// "Steam Desktop" button is desktop-only — it can't reach a
   // Steam client on a phone. Hide it on the Android app / mobile viewport.
   const isMobile = useIsMobile();
-  const [editing, setEditing] = useState(false);
 
   return (
     <Dialog open={!!game || !!missing} onOpenChange={(o) => !o && onClose()}>
@@ -117,18 +111,7 @@ export function GameDetailDrawer({ game, onClose, missing }: Props) {
                   }}
                 />
               )}
-              <div className="flex items-start justify-between gap-3">
-                <DialogTitle className="text-xl">{game.name || "—"}</DialogTitle>
-                {isOwner && (
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => setEditing(true)}
-                  >
-                    <Pencil className="mr-1 h-3 w-3" /> {t("common.edit")}
-                  </Button>
-                )}
-              </div>
+              <DialogTitle className="text-xl">{game.name || "—"}</DialogTitle>
               <DialogDescription asChild>
                 <div className="space-y-1.5">
                   <div className="text-xs text-muted-foreground">
@@ -294,9 +277,6 @@ export function GameDetailDrawer({ game, onClose, missing }: Props) {
           </div>
         )}
       </DialogContent>
-      {editing && (
-        <EditGameDrawer game={game} onClose={() => setEditing(false)} />
-      )}
     </Dialog>
   );
 }
