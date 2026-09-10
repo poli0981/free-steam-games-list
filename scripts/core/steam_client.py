@@ -150,6 +150,44 @@ class SteamClient:
             return None
         return resp.text
 
+    def fetch_search_page(self, start: int, count: int = 100) -> Optional[dict]:
+        """Store search: free games, newest first. Returns the parsed JSON
+        ({'success', 'results_html', 'total_count', 'start'}) or None.
+
+        This is the ONLY discovery-capable method on this client - every other
+        one needs an appid you already have. It deliberately shares
+        _throttle_store with fetch_app_details_full so search pages and
+        appdetails calls draw on ONE rate budget rather than two.
+
+        Measured: the server caps page size at 100 regardless of `count`, and a
+        `start` past the end returns zero rows rather than an error, so a paging
+        loop terminates naturally.
+        """
+        resp = self._get(
+            "https://store.steampowered.com/search/results/",
+            params={
+                "query": "",
+                "start": start,
+                "count": count,
+                "maxprice": "free",
+                "category1": 998,      # "Games" - excludes DLC/soundtracks/videos/software
+                "supportedlang": "english",
+                "sort_by": "Released_DESC",
+                "infinite": 1,
+            },
+            throttle_fn=self._throttle_store,
+            timeout=20,
+        )
+        # _get hands back the response for 404/410, so an explicit status check
+        # is required here - same as fetch_store_page above.
+        if not resp or resp.status_code != 200:
+            return None
+        try:
+            body = resp.json()
+        except ValueError:
+            return None
+        return body if body.get("success") else None
+
     def check_store_page(self, appid: str) -> int:
         """HEAD request only – lightweight dead link check."""
         self._throttle_store()

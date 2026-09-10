@@ -1,0 +1,121 @@
+name: Backfill Discovery (TEMPORARY)
+
+# >>> TEMPORARY. DELETE THIS FILE AND scripts/backfill_discover.py ONCE THE
+# >>> HISTORICAL BACKLOG HAS BEEN WORKED THROUGH.
+#
+# Measured 2026-09-10: Steam lists 16,668 free games matching the catalogue's
+# own filters; data/ holds 3,424. This workflow chews through that gap one
+# release window at a time. `Discover New Games` covers everything from today
+# forward and is permanent -- this one is not.
+#
+# Same propose-only contract as the daily job: `contents: read`, and the same
+# guard step asserting no dataset-writing helper is reachable.
+
+on:
+  schedule:
+    # Sundays 17:30 UTC -- a different day AND a different hour from the daily
+    # discovery run (05:00), because both draw on the same per-IP Steam budget.
+    - cron: '30 17 * * 0'
+  workflow_dispatch:
+    inputs:
+      year:
+        description: 'Release year to sweep'
+        required: true
+      quarter:
+        description: 'Quarter (1-4). Leave blank to sweep the whole year.'
+        required: false
+        default: ''
+      limit:
+        description: 'Max candidates to propose in one run'
+        required: false
+        default: '250'
+      dry_run:
+        description: 'Find candidates but do not POST them'
+        type: boolean
+        required: false
+        default: false
+
+# The window the SCHEDULED run sweeps. Dispatch runs use their own inputs.
+#
+# Bump this as windows complete: the job prints "candidates: N" at the end, and
+# a window is done when a re-run reports 0. Working newest-first keeps the most
+# relevant games arriving first. When you reach the end of the backlog, delete
+# this workflow rather than leaving it grinding over swept ground.
+env:
+  SWEEP_YEAR: '2026'
+  SWEEP_QUARTER: '2'
+
+permissions:
+  contents: read
+
+concurrency:
+  # Shares the `discovery` group with the daily job on purpose: two sweeps
+  # hammering Steam's search from the same runner pool is the one way to earn a
+  # rate limit that hurts both.
+  group: discovery
+  cancel-in-progress: false
+
+jobs:
+  backfill:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+
+      - name: Assert discovery cannot write the dataset
+        run: |
+          if grep -nE '\b(save_main|save_jsonl|clear_temp|fetch_full)\b' \
+               scripts/discover_new.py scripts/backfill_discover.py; then
+            echo "::error::A discovery script imports a dataset-writing helper."
+            echo "Discovery must only PROPOSE candidates to the review queue."
+            exit 1
+          fi
+          echo "OK: no dataset-writing helpers referenced."
+
+      - name: Check ingest credentials
+        env:
+          WORKER_BASE_URL: ${{ secrets.WORKER_BASE_URL }}
+          CF_ACCESS_CLIENT_ID: ${{ secrets.CF_ACCESS_CLIENT_ID }}
+          CF_ACCESS_CLIENT_SECRET: ${{ secrets.CF_ACCESS_CLIENT_SECRET }}
+        run: |
+          missing=0
+          for v in WORKER_BASE_URL CF_ACCESS_CLIENT_ID CF_ACCESS_CLIENT_SECRET; do
+            if [ -z "${!v}" ]; then echo "::error::missing secret $v"; missing=1; fi
+          done
+          if [ "$missing" = "1" ]; then
+            echo "See docs/ADMIN.md for the Access service token setup."
+            exit 1
+          fi
+
+      - run: pip install --quiet -r requirements.txt
+
+      - name: Backfill
+        env:
+          WORKER_BASE_URL: ${{ secrets.WORKER_BASE_URL }}
+          CF_ACCESS_CLIENT_ID: ${{ secrets.CF_ACCESS_CLIENT_ID }}
+          CF_ACCESS_CLIENT_SECRET: ${{ secrets.CF_ACCESS_CLIENT_SECRET }}
+          YEAR: ${{ inputs.year }}
+          QUARTER: ${{ inputs.quarter }}
+          LIMIT: ${{ inputs.limit || '250' }}
+          DRY: ${{ inputs.dry_run && '--dry-run' || '' }}
+        run: |
+          # An absent YEAR means this is the scheduled run, so both env defaults
+          # apply. Do NOT fold this into a `${{ a || b }}` expression: `year` is
+          # required on dispatch but `quarter` is deliberately blankable, and an
+          # expression fallback cannot tell "blank, meaning whole year" from
+          # "absent, meaning use the default" -- it would silently narrow an
+          # explicit whole-year request down to SWEEP_QUARTER.
+          if [ -z "$YEAR" ]; then
+            YEAR="$SWEEP_YEAR"
+            QUARTER="$SWEEP_QUARTER"
+          fi
+          # A blank quarter must be omitted from argv, not passed as an empty
+          # string: argparse rejects '' as an invalid choice.
+          args="--year $YEAR --limit $LIMIT"
+          if [ -n "$QUARTER" ]; then args="$args --quarter $QUARTER"; fi
+          echo "backfill_discover.py $args $DRY"
+          python scripts/backfill_discover.py $args $DRY

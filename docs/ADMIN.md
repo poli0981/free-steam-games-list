@@ -151,11 +151,114 @@ Confirm the database is on a paid plan before depending on it: since
 2026-09-01, queries that exceed the free daily row limits **fail** rather than
 throttle, including the queries you would use to diagnose the problem.
 
+## 7. A service token for the discovery pipeline
+
+`Discover New Games` runs on a GitHub Actions runner. There is no browser and
+no human, so it cannot pass an email policy — it needs a **service token**.
+
+**Zero Trust → Access controls → Service auth → Create Service Token.**
+
+| Field | Value |
+|---|---|
+| Name | `f2p-discovery` |
+
+The name is not cosmetic. `web/wrangler.jsonc` pins
+`INGEST_SERVICE_PRINCIPAL: "f2p-discovery"`, and the Worker rejects any other
+principal on `/api/ingest/*`. Rename the token and discovery stops working.
+
+The client secret is shown **once**. Copy both halves now.
+
+Then add a third Access application covering `free-steam-games.win/api/ingest`,
+with a policy of Action *Service Auth*, rule *Service Token* → `f2p-discovery`.
+
+> Use a *Service Auth* policy, not *Allow*. An `Allow` policy with a service
+> token rule still admits the interactive identities on your other policies.
+
+Finally, add three repository secrets (**Settings → Secrets and variables →
+Actions**):
+
+| Secret | Value |
+|---|---|
+| `WORKER_BASE_URL` | `https://free-steam-games.win` |
+| `CF_ACCESS_CLIENT_ID` | the token's Client ID |
+| `CF_ACCESS_CLIENT_SECRET` | the token's Client Secret |
+
+Verify it end to end without touching the queue:
+
+```bash
+gh workflow run "Discover New Games" -f dry_run=true
+```
+
+### What the token can and cannot do
+
+`/api/ingest/*` writes rows with `status='pending'` and nothing else. It cannot
+approve, cannot commit, and cannot reach the repository. A leaked discovery
+token buys an attacker a cluttered review screen. The workflows reinforce this
+with `permissions: contents: read` and a grep step that fails the run if a
+discovery script so much as references a dataset-writing helper.
+
+The two credentials are also pinned apart: `verifyAccessJwt` accepts any
+configured AUD, so the Worker additionally checks that `/api/ingest/*` is a
+service token named `f2p-discovery` and that `/api/admin/*` is not. Without
+that pinning, either credential would satisfy the other's routes.
+
+## 8. Working through the backlog
+
+Measured 2026-09-10: Steam lists **16,668** free games matching the
+catalogue's own filters (`category1=998`, `maxprice=free`,
+`supportedlang=english`); `data/` holds **3,424**.
+
+Two jobs close that gap, and they are not the same kind of thing:
+
+| Workflow | Schedule | Lifetime |
+|---|---|---|
+| `Discover New Games` | daily 05:00 UTC | permanent |
+| `Backfill Discovery (TEMPORARY)` | Sundays 17:30 UTC | **delete when the backlog is done** |
+
+For the recent gap — the catalogue's newest record was added 2026-06-30 — run
+the daily job once with a deeper sweep:
+
+```bash
+gh workflow run "Discover New Games" -f max_pages=10
+```
+
+For older windows, dispatch the backfill a quarter at a time:
+
+```bash
+gh workflow run "Backfill Discovery (TEMPORARY)" -f year=2026 -f quarter=1
+```
+
+It locates the window by binary search over search offsets rather than walking
+from page 0 (the store sort is `Released_DESC`, so offset *is* the date axis) —
+about 8 page fetches instead of 90 for an old window. A window is finished when
+a re-run reports `candidates: 0`; the scheduled run's window is the
+`SWEEP_YEAR`/`SWEEP_QUARTER` block at the top of the workflow file, which you
+bump as you go.
+
+When the backlog is closed, delete `scripts/backfill_discover.py`, delete
+`.github/workflows/backfill-discover.yml`, and drop
+`"Backfill Discovery (TEMPORARY)"` from the allowlist in
+`.github/workflows/notify-ci-failure.yml`.
+
 ---
 
 ## What is not built yet
 
-The Access application, the GitHub App and the D1 tables are the prerequisites.
-The `/admin` UI, the queue schema and the approve-to-commit path are still to
-come; `/admin` currently returns 404 by design rather than serving the public
-app shell.
+The Access applications, the GitHub App, the D1 tables and the discovery
+pipeline are in place: candidates now arrive in `ingest_queue` on their own.
+
+Still to come is everything on the *human* side of the queue — the `/admin` UI,
+and the approve-to-commit path that turns an approved row into a line in
+`scripts/temp_info.jsonl`. Until then `/admin` returns a plain-text
+confirmation of who you are signed in as, and the queue is read with:
+
+```bash
+npx wrangler d1 execute f2p-admin --remote --command "SELECT appid, name, release_date, status FROM ingest_queue ORDER BY first_seen_at DESC LIMIT 40"
+```
+
+Note that approval must **not** be recorded as `ingest_decisions('approved')`
+at the moment the commit is made. A commit is a request, not an outcome: the
+row is only genuinely decided once the appid is observed in `data/` or
+`removed_games.jsonl`. Recording it earlier makes a failed ingest permanently
+invisible to the next sweep, because `/api/ingest/known` would report it as
+already handled.

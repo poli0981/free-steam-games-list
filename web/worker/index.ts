@@ -12,6 +12,7 @@ import { handleImg } from "./routes/img";
 import { jsonError } from "./lib/http";
 import { verifyAccessJwt } from "./lib/access";
 import { handleAdminApi } from "./routes/admin";
+import { handleIngestApi } from "./routes/ingest";
 
 export default {
   async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
@@ -32,9 +33,10 @@ export default {
     // check is what keeps the repo-write credential safe if that policy is
     // ever misconfigured.
     const isAdminApi = pathname.startsWith("/api/admin/");
+    const isIngestApi = pathname.startsWith("/api/ingest/");
     const isAdminPage = pathname === "/admin" || pathname.startsWith("/admin/");
 
-    if (isAdminApi || isAdminPage) {
+    if (isAdminApi || isIngestApi || isAdminPage) {
       const who = await verifyAccessJwt(request, env);
       if (!who) {
         // The client response is deliberately opaque, which makes this hard to
@@ -47,7 +49,7 @@ export default {
         // 404, not 401: an unauthenticated caller learns nothing about what
         // exists here, and Access has already redirected real humans to a
         // login before the request ever arrived.
-        return isAdminApi
+        return isAdminApi || isIngestApi
           ? jsonError(404, "not found")
           : new Response("Not found", {
               status: 404,
@@ -58,6 +60,24 @@ export default {
             });
       }
 
+      // CSRF. access.ts accepts the JWT from the CF_Authorization cookie, so a
+      // cross-origin HTML form POST would carry it and Access would forward the
+      // request with the assertion header attached. Same-origin browser
+      // requests send Sec-Fetch-Site; non-browser callers (curl, CI) send
+      // neither header, and must stay allowed — a curl against these endpoints
+      // is the only way to prove the stack works from outside.
+      if (request.method !== "GET" && request.method !== "HEAD") {
+        const site = request.headers.get("Sec-Fetch-Site");
+        const origin = request.headers.get("Origin");
+        const browserish = site !== null || origin !== null;
+        const sameOrigin = site === "same-origin" || origin === env.SITE_ORIGIN;
+        if (browserish && !sameOrigin) {
+          console.warn("admin: cross-site request rejected", { path: pathname, site, origin });
+          return jsonError(404, "not found");
+        }
+      }
+
+      if (isIngestApi) return handleIngestApi(request, url, env, who);
       if (isAdminApi) return handleAdminApi(request, url, env, who);
 
       // The admin UI is not built yet. Answer explicitly rather than falling

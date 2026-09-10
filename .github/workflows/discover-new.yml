@@ -1,0 +1,93 @@
+name: Discover New Games
+
+# Finds newly-released free-to-play titles on Steam and PROPOSES them to the
+# admin review queue in D1. It cannot add a game to the catalogue: publication
+# stays a human decision made under /admin.
+#
+# The `permissions: contents: read` below is the enforcement, not a formality.
+# Every other data workflow in this repo declares `contents: write`; this one
+# must not, because a discovery job that could also commit would collapse the
+# propose/approve split that the whole ingest design rests on.
+
+on:
+  schedule:
+    # 05:00 UTC. Deliberately clear of `Auto Update JSON Data` (00:00) and of
+    # Backfill Discovery (Sundays 17:30) so the three never contend for the
+    # Steam rate budget, which is per-IP and therefore shared across runners.
+    - cron: '0 5 * * *'
+  workflow_dispatch:
+    inputs:
+      max_pages:
+        description: 'Search pages to walk (100 rows each). Use ~10 for the initial catch-up sweep.'
+        required: false
+        default: '5'
+      dry_run:
+        description: 'Find candidates but do not POST them'
+        type: boolean
+        required: false
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  # Its own group, NOT `data-write`: this job writes nothing to the repo, so
+  # queueing it behind the ~115-minute data jobs would delay discovery for no
+  # benefit. Two overlapping discovery runs are the only real hazard, and this
+  # covers that.
+  group: discovery
+  cancel-in-progress: false
+
+jobs:
+  discover:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+
+      # Belt-and-braces for the propose-only guarantee above. `contents: read`
+      # already blocks a push, but this fails the job at the point the intent is
+      # violated rather than at the point the token is refused -- and it names
+      # the reason, which a 403 from git does not.
+      - name: Assert discovery cannot write the dataset
+        run: |
+          if grep -nE '\b(save_main|save_jsonl|clear_temp|fetch_full)\b' \
+               scripts/discover_new.py scripts/backfill_discover.py; then
+            echo "::error::A discovery script imports a dataset-writing helper."
+            echo "Discovery must only PROPOSE candidates to the review queue."
+            exit 1
+          fi
+          echo "OK: no dataset-writing helpers referenced."
+
+      - name: Check ingest credentials
+        env:
+          WORKER_BASE_URL: ${{ secrets.WORKER_BASE_URL }}
+          CF_ACCESS_CLIENT_ID: ${{ secrets.CF_ACCESS_CLIENT_ID }}
+          CF_ACCESS_CLIENT_SECRET: ${{ secrets.CF_ACCESS_CLIENT_SECRET }}
+        run: |
+          missing=0
+          for v in WORKER_BASE_URL CF_ACCESS_CLIENT_ID CF_ACCESS_CLIENT_SECRET; do
+            if [ -z "${!v}" ]; then echo "::error::missing secret $v"; missing=1; fi
+          done
+          if [ "$missing" = "1" ]; then
+            echo "Create a Cloudflare Access service token named 'f2p-discovery'"
+            echo "and an Access application covering /api/ingest/*, then add the"
+            echo "client id/secret as repository secrets. See docs/ADMIN.md."
+            exit 1
+          fi
+
+      - run: pip install --quiet -r requirements.txt
+
+      - name: Discover
+        env:
+          WORKER_BASE_URL: ${{ secrets.WORKER_BASE_URL }}
+          CF_ACCESS_CLIENT_ID: ${{ secrets.CF_ACCESS_CLIENT_ID }}
+          CF_ACCESS_CLIENT_SECRET: ${{ secrets.CF_ACCESS_CLIENT_SECRET }}
+        run: |
+          python scripts/discover_new.py \
+            --max-pages "${{ inputs.max_pages || '5' }}" \
+            ${{ inputs.dry_run && '--dry-run' || '' }}
