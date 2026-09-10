@@ -7,8 +7,8 @@ interface __BaseEnv_Env {
 	SITE_ORIGIN: "https://free-steam-games.win";
 	IMG_TRANSFORM: "false";
 	ACCESS_TEAM_DOMAIN: "polished-hall-48fd.cloudflareaccess.com";
-	INGEST_SERVICE_PRINCIPAL: "f2p-discovery";
-	ACCESS_AUD: "ca93cf2c7444c20f13b0667a3063d4ac37f702a802e712721da53abb510f9194,a15d6e938cf3109651473e37c0c0fdf84a851248d8f57fdfda26808b40d3c3cb";
+	ACCESS_AUD_ADMIN: "ca93cf2c7444c20f13b0667a3063d4ac37f702a802e712721da53abb510f9194,a15d6e938cf3109651473e37c0c0fdf84a851248d8f57fdfda26808b40d3c3cb";
+	ACCESS_AUD_INGEST: "bd54655abb62f1bb72f8541177ef2406a066007a4c5ac60eb654f90f6ea88754";
 }
 declare namespace Cloudflare {
 	interface GlobalProps {
@@ -21,7 +21,7 @@ type StringifyValues<EnvType extends Record<string, unknown>> = {
 	[Binding in keyof EnvType]: EnvType[Binding] extends string ? EnvType[Binding] : string;
 };
 declare namespace NodeJS {
-	interface ProcessEnv extends StringifyValues<Pick<Cloudflare.Env, "SITE_ORIGIN" | "IMG_TRANSFORM" | "ACCESS_TEAM_DOMAIN" | "INGEST_SERVICE_PRINCIPAL" | "ACCESS_AUD">> {}
+	interface ProcessEnv extends StringifyValues<Pick<Cloudflare.Env, "SITE_ORIGIN" | "IMG_TRANSFORM" | "ACCESS_TEAM_DOMAIN" | "ACCESS_AUD_ADMIN" | "ACCESS_AUD_INGEST">> {}
 }
 
 // Begin runtime types

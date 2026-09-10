@@ -75,6 +75,16 @@ function decodeJson(part: string): Record<string, unknown> {
 export async function verifyAccessJwt(
   request: Request,
   env: Env,
+  /**
+   * Comma-separated AUDs acceptable FOR THIS ROUTE. Passed in per call rather
+   * than read from one global list: this Worker sits behind three Access
+   * applications, and a single union list means any of the three credentials
+   * satisfies any route — an admin session could drive /api/ingest/*, and the
+   * unattended discovery token could drive /api/admin/*, which holds a
+   * repository-write credential. Scoping the AUD to the route makes that
+   * crossing impossible rather than merely checked for afterwards.
+   */
+  allowedAud: string,
 ): Promise<AccessIdentity | null> {
   const token =
     request.headers.get("Cf-Access-Jwt-Assertion") ??
@@ -110,12 +120,11 @@ export async function verifyAccessJwt(
     // minted for any other application in the same Access organisation would
     // be accepted here.
     //
-    // ACCESS_AUD is a comma-separated LIST because each Access application has
-    // its own AUD tag, and this Worker sits behind two: one for /admin and one
-    // for /api/admin/*. Configuring only the first made every API call fail
-    // verification while the page itself worked — and both failures surfaced
-    // as an identical 404.
-    const allowed = env.ACCESS_AUD.split(",").map((a) => a.trim()).filter(Boolean);
+    // Each Access application has its own AUD tag, so this is a list even for
+    // one route group. Configuring only /admin's tag once made every API call
+    // fail verification while the page itself worked — and both failures
+    // surfaced as an identical 404.
+    const allowed = allowedAud.split(",").map((a) => a.trim()).filter(Boolean);
     const aud = claims.aud;
     const audList = (Array.isArray(aud) ? aud : [aud]).filter(
       (a): a is string => typeof a === "string",

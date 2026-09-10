@@ -5,6 +5,13 @@
  * Authenticated by a Cloudflare Access SERVICE TOKEN, not a human login. The
  * caller is a GitHub Actions job, so there is no browser and no session.
  *
+ * The caller is pinned by AUD in worker/index.ts: only tokens minted by the
+ * Access application whose sole policy is the `f2p-discovery` service token
+ * reach here. That is why this file does not re-check the principal by name —
+ * Access reports a service token's identity as its opaque Client ID, not its
+ * friendly name, so a name comparison here would be both wrong and weaker
+ * than the AUD it duplicates.
+ *
  * IMPORTANT: this surface can only ever PROPOSE. It writes rows with
  * status='pending' and cannot approve, commit, or otherwise reach the
  * repository. A stolen service token buys an attacker a filled review queue,
@@ -33,27 +40,6 @@ function json(body: unknown, status = 200): Response {
       ...SECURITY_HEADERS,
     },
   });
-}
-
-/**
- * Only the discovery pipeline's own service token may use this surface.
- *
- * verifyAccessJwt accepts a token bearing ANY configured AUD, so without this
- * an admin session would satisfy the ingest routes and — far worse — the
- * ingest token would satisfy the admin routes. Pinning the principal on both
- * sides is what stops the two credentials crossing.
- */
-function isIngestPrincipal(who: AccessIdentity, env: Env): boolean {
-  if (!who.isServiceToken) return false;
-  // Comma-separated. Cloudflare does not document whether `common_name` on a
-  // service-token JWT carries the token's friendly NAME or its Client ID, and
-  // the two are indistinguishable from this side, so the pin accepts either
-  // spelling of the same one token rather than guessing wrong and 404ing a
-  // correctly-configured caller.
-  return env.INGEST_SERVICE_PRINCIPAL.split(",")
-    .map((p) => p.trim())
-    .filter(Boolean)
-    .includes(who.email);
 }
 
 interface CandidateIn {
@@ -142,18 +128,6 @@ export async function handleIngestApi(
   env: Env,
   who: AccessIdentity,
 ): Promise<Response> {
-  if (!isIngestPrincipal(who, env)) {
-    // The identity Access actually handed us. Without this the rejection is a
-    // bare 404 indistinguishable from "no Access application covers the path",
-    // and the only way to learn the real principal is to guess at it.
-    console.warn("ingest: principal not allowed", {
-      got: who.email,
-      isServiceToken: who.isServiceToken,
-      expected: env.INGEST_SERVICE_PRINCIPAL,
-    });
-    return jsonError(404, "not found");
-  }
-
   const route = url.pathname.slice("/api/ingest/".length);
 
   // Cheap reachability probe. discover_new.py calls this BEFORE spending any

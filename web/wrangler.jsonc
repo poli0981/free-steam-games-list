@@ -82,24 +82,22 @@
     // vars so the Worker can verify tokens itself rather than trusting that a
     // request reached it through the Access-protected path.
     "ACCESS_TEAM_DOMAIN": "polished-hall-48fd.cloudflareaccess.com",
-    // The Access service-token name the discovery pipeline authenticates as.
-    // Pinned so the ingest token cannot use /api/admin/* and an admin session
-    // cannot use /api/ingest/* — verifyAccessJwt alone would accept either.
-    "INGEST_SERVICE_PRINCIPAL": "f2p-discovery",
-
-    // Comma-separated: one AUD per Access application. This Worker sits behind
-    // three, and each has its own tag:
-    //   ca93cf2c…  /admin          (email policy)
-    //   a15d6e93…  /api/admin/*    (email policy)
-    //   bd54655a…  /api/ingest/*   (service auth, token f2p-discovery)
+    // AUDs are grouped BY ROUTE, not pooled into one list. verifyAccessJwt is
+    // called with only the group a route accepts, so the unattended discovery
+    // token cannot reach /api/admin/* (which holds a repository-write
+    // credential) and an admin session cannot reach /api/ingest/*.
     //
-    // ADD A TAG HERE whenever another Access application is pointed at this
-    // Worker. Forgetting fails only AFTER the application starts working, and
-    // the two failures look nothing alike in `wrangler tail`:
-    //   hasHeader: false, hasCookie: false  → no Access app covers the path
-    //   access: aud mismatch                → app exists, this list is stale
-    // Read a tag without the dashboard: an Access-covered path 302s to the
-    // login URL carrying its AUD as the `kid=` query parameter.
-    "ACCESS_AUD": "ca93cf2c7444c20f13b0667a3063d4ac37f702a802e712721da53abb510f9194,a15d6e938cf3109651473e37c0c0fdf84a851248d8f57fdfda26808b40d3c3cb,bd54655abb62f1bb72f8541177ef2406a066007a4c5ac60eb654f90f6ea88754"
+    // These are not secrets: any Access-covered path 302s to a login URL
+    // carrying its own AUD as the `kid=` query parameter, readable with an
+    // unauthenticated curl. Add a tag here whenever another Access application
+    // is pointed at this Worker, or every request through it is refused with
+    // `access: aud mismatch` in `wrangler tail`.
+    //
+    //   ca93cf2c...  /admin        (email policy)
+    //   a15d6e93...  /api/admin/*  (email policy)
+    "ACCESS_AUD_ADMIN": "ca93cf2c7444c20f13b0667a3063d4ac37f702a802e712721da53abb510f9194,a15d6e938cf3109651473e37c0c0fdf84a851248d8f57fdfda26808b40d3c3cb",
+
+    //   bd54655a...  /api/ingest/* (Service Auth, token f2p-discovery)
+    "ACCESS_AUD_INGEST": "bd54655abb62f1bb72f8541177ef2406a066007a4c5ac60eb654f90f6ea88754"
   }
 }

@@ -37,7 +37,15 @@ export default {
     const isAdminPage = pathname === "/admin" || pathname.startsWith("/admin/");
 
     if (isAdminApi || isIngestApi || isAdminPage) {
-      const who = await verifyAccessJwt(request, env);
+      // The ingest surface is machine-only and the admin surface is
+      // human-only, and they are separate Access applications with separate
+      // AUDs. Choosing the AUD set here is what stops either credential
+      // reaching the other's routes.
+      const who = await verifyAccessJwt(
+        request,
+        env,
+        isIngestApi ? env.ACCESS_AUD_INGEST : env.ACCESS_AUD_ADMIN,
+      );
       if (!who) {
         // The client response is deliberately opaque, which makes this hard to
         // debug from outside — so say what happened in Workers Logs.
@@ -58,6 +66,17 @@ export default {
                 "Cache-Control": "no-store",
               },
             });
+      }
+
+      // Belt and braces on top of the per-route AUD. A service token must
+      // never drive the admin surface (it is unattended and cannot be
+      // challenged), and a human session must never drive ingest.
+      if (isIngestApi !== who.isServiceToken) {
+        console.warn("access: wrong credential class for route", {
+          path: pathname,
+          isServiceToken: who.isServiceToken,
+        });
+        return jsonError(404, "not found");
       }
 
       // CSRF. access.ts accepts the JWT from the CF_Authorization cookie, so a
