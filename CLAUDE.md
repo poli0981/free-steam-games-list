@@ -38,10 +38,14 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
   bumping it and every browser keeps serving pre-edit records. Anything that
   writes a shard must also bump it.
 
-- **`index.json` must be updated by spreading, never by reconstruction.**
-  `bumpedIndexFile()` in `web/src/lib/edits.ts` previously rebuilt the object
-  from a hardcoded key list, silently deleting every other key on write. Keep
-  it additive.
+- **`index.json` is rebuilt from scratch on every save.** `_save_index()` in
+  `scripts/core/data_store.py` writes it from a fixed set of keys, so any key
+  added to that file by anything else is silently dropped the next time the
+  pipeline runs. Add a key there or not at all.
+
+  (The browser-side `bumpedIndexFile()` that used to have the same flaw is
+  gone: `web/src/lib/edits.ts` was deleted along with sign-in and in-app
+  editing. The public app no longer writes anything.)
 
 - **`web/src/lib/schema.ts` mirrors `scripts/core/constants.py`.** `MANUAL_FIELDS`,
   `ARRAY_FIELDS`, `EXTENSION_FIELDS` and the record shape exist in both. Change

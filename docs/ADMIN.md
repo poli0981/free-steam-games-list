@@ -298,23 +298,101 @@ When the backlog is closed, delete `scripts/backfill_discover.py`, delete
 
 ---
 
-## What is not built yet
+## 9. Reviewing the queue
 
-The Access applications, the GitHub App, the D1 tables and the discovery
-pipeline are in place: candidates now arrive in `ingest_queue` on their own.
+`/admin` is the review screen. It is served by the Worker, not by the SPA:
+the public app has no sign-in and no editing, so admin markup and admin
+endpoint names never enter the bundle visitors download, and `/admin` cannot
+fall through to the public app shell if a route changes.
 
-Still to come is everything on the *human* side of the queue — the `/admin` UI,
-and the approve-to-commit path that turns an approved row into a line in
-`scripts/temp_info.jsonl`. Until then `/admin` returns a plain-text
-confirmation of who you are signed in as, and the queue is read with:
+Tabs across the top are the row's status, with live counts:
+
+| Status | Meaning |
+|---|---|
+| `pending` | proposed by the discovery sweep, awaiting a decision |
+| `deferred` | set aside; still blocks the appid from being re-proposed |
+| `approved` | committed to the queue file, waiting for the pipeline |
+| `committed` | observed in `data/` — genuinely published |
+| `failed` | the pipeline looked at it and refused it |
+| `rejected` | you refused it; never proposed again |
+
+Select with the checkboxes (or *Select all on this page*, 60 at a time), then
+choose an action. The action bar appears only when something is selected.
+
+### The three actions are not symmetric
+
+**Reject** is final and purely local. It writes `ingest_decisions('rejected')`,
+which is what stops tomorrow's sweep offering the game again — the partial
+unique index only covers *open* rows, so that table is what makes a rejection
+stick. The reason box is kept with the decision.
+
+**Defer** just parks the row. It stays open, so the appid remains blocked from
+re-proposal and nothing durable is recorded.
+
+**Approve does not publish.** It appends one `{"link": ...}` line per game to
+`scripts/temp_info.jsonl` and stops there. What happens next is out of the
+Worker's hands: `scripts/ingest_new.py` re-checks each game and can still
+refuse it as a duplicate, delisted, not actually free, or unreachable.
+
+That is why an approved row goes to `approved`, not `committed`, and why
+nothing writes `ingest_decisions('approved')` at that moment. A commit is a
+*request*, not an outcome. Recording it as decided would make a failed ingest
+permanently invisible to every future sweep, because `/api/ingest/known`
+reports decided appids to the discovery pipeline — the game would vanish with
+no error anywhere.
+
+The commit is made with the GraphQL `createCommitOnBranch` mutation, so GitHub
+signs it and it shows as **Verified**. It carries `expectedHeadOid`, so if the
+pipeline commits between the read and the write the mutation is rejected and
+retried against the newer file rather than overwriting it. The file is
+**appended** to, never replaced — the issue workflow and the Telegram bot write
+to it too.
+
+Because the commit comes from a GitHub App installation token rather than
+`GITHUB_TOKEN`, it **does** trigger workflows, so `Ingest New Game Links` starts
+on its own. (It also runs every three hours as orphan recovery.)
+
+### How a row reaches `committed`
+
+A Worker cron runs every 15 minutes and promotes `approved` rows it can observe
+in the published dataset, writing `ingest_decisions('approved')` only then. The
+**Reconcile** button runs the same pass immediately, for when you have just
+watched the pipeline finish.
+
+A row the pipeline refused becomes `failed` rather than rejected — deliberately,
+so one bad day (a delisting, a Steam outage) does not permanently hide a game.
+On the `failed` tab the middle button becomes **Send back to pending**.
+
+A tick with nothing approved costs one indexed D1 query and no fetches, so the
+schedule is close to free.
+
+### If something goes wrong
+
+Every action writes to `audit_log`, and every approval writes a `commit_jobs`
+row *before* the commit is attempted, so a Worker that dies mid-flight leaves a
+`pending` job as evidence rather than silence:
+
+```bash
+npx wrangler d1 execute f2p-admin --remote --command "SELECT status, target_path, commit_sha, error, requested_by, created_at FROM commit_jobs ORDER BY created_at DESC LIMIT 10"
+```
+
+If a commit fails the rows are left untouched, on purpose: a row marked
+approved with no commit behind it is invisible to both the queue and the
+reconciler. Re-approving is safe — already-queued links are skipped.
+
+Read the queue directly with:
 
 ```bash
 npx wrangler d1 execute f2p-admin --remote --command "SELECT appid, name, release_date, status FROM ingest_queue ORDER BY first_seen_at DESC LIMIT 40"
 ```
 
-Note that approval must **not** be recorded as `ingest_decisions('approved')`
-at the moment the commit is made. A commit is a request, not an outcome: the
-row is only genuinely decided once the appid is observed in `data/` or
-`removed_games.jsonl`. Recording it earlier makes a failed ingest permanently
-invisible to the next sweep, because `/api/ingest/known` would report it as
-already handled.
+---
+
+## What is not built yet
+
+Editing existing games through the admin screen. The queue covers *new*
+games only; corrections to published records still go through Git directly.
+
+`audit_log` has no pruning job yet. It grows only with admin actions, so it is
+not urgent, but it is unbounded — decide a retention window and make it agree
+with `docs/PRIVACY_POLICY.md` before that matters.

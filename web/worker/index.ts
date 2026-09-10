@@ -13,6 +13,8 @@ import { jsonError } from "./lib/http";
 import { verifyAccessJwt } from "./lib/access";
 import { handleAdminApi } from "./routes/admin";
 import { handleIngestApi } from "./routes/ingest";
+import { adminPage } from "./routes/admin-ui";
+import { reconcileApproved } from "./lib/reconcile";
 
 export default {
   async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
@@ -99,13 +101,9 @@ export default {
       if (isIngestApi) return handleIngestApi(request, url, env, who);
       if (isAdminApi) return handleAdminApi(request, url, env, who);
 
-      // The admin UI is not built yet. Answer explicitly rather than falling
-      // through to the SPA handler, which would serve the PUBLIC app shell at
-      // an admin URL.
-      return new Response(`Signed in as ${who.email}. Admin UI not built yet.`, {
-        status: 200,
-        headers: { "Content-Type": "text/plain; charset=utf-8", "Cache-Control": "no-store" },
-      });
+      // Served from the Worker, never from ASSETS. Falling through to the SPA
+      // handler here would serve the PUBLIC app shell at an admin URL.
+      return adminPage(who.email);
     }
 
     if (pathname.startsWith("/api/")) {
@@ -113,5 +111,35 @@ export default {
     }
 
     return env.ASSETS.fetch(request);
+  },
+
+  /**
+   * Reconcile approvals against the published dataset.
+   *
+   * An approval commits only a REQUEST; scripts/ingest_new.py decides whether
+   * the game is publishable. Something has to observe that outcome, and it
+   * cannot be the approve handler - by the time the pipeline has run, that
+   * request finished minutes ago. reconcileApproved() returns immediately when
+   * nothing is awaiting publication, so a tick with no work costs one indexed
+   * D1 query and no fetches.
+   */
+  async scheduled(_event: ScheduledController, env: Env, ctx: ExecutionContext) {
+    ctx.waitUntil(
+      reconcileApproved(env)
+        .then((out) => {
+          // Log only what is worth reading. reconcileApproved RESOLVES (it does
+          // not throw) when GitHub is unreachable, so without this an outage
+          // that stops every reconcile would emit nothing at all. The idle skip
+          // is excluded because it is the normal state ~96 times a day.
+          if (out.skipped && out.skipped !== "nothing approved") {
+            console.warn("reconcile skipped", out);
+          } else if (out.published || out.removed || out.stale) {
+            console.log("reconcile", out);
+          }
+        })
+        .catch((err) => {
+          console.error("reconcile failed", err instanceof Error ? err.message : String(err));
+        }),
+    );
   },
 } satisfies ExportedHandler<Env>;

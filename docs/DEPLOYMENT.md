@@ -15,10 +15,11 @@ push to main
                                                 ├─ static assets from web/dist
                                                 ├─ /api/data/*  → proxies GitHub raw
                                                 ├─ /img/*       → proxies Valve's CDN
-                                                └─ /admin       → Access-gated (not built yet)
+                                                ├─ /admin       → Access-gated review UI
+                                                └─ /api/ingest/* → Access service token
 ```
 
-`web/wrangler.jsonc` is the only deployment config. Two fields in it are
+`web/wrangler.jsonc` is the only deployment config. Several fields in it are
 load-bearing and easy to break:
 
 - **`name` must stay `free-steam-games-list`.** That is the Worker holding the
@@ -28,6 +29,15 @@ load-bearing and easy to break:
 - **`assets.directory` must be `./dist`, not `.`.** Pointing it at the source
   directory serves an unbuilt `index.html` that references `/src/main.tsx` —
   a blank page — and publishes the whole source tree. This happened.
+- **`triggers.crons` drives the reconciler.** Remove it and approvals never
+  leave the `approved` state: nothing else promotes a row to `committed`, and
+  nothing else ages out an approval the pipeline silently dropped. The queue
+  keeps working and the failure is invisible until someone opens /admin.
+- **`vars.ACCESS_AUD_ADMIN` / `vars.ACCESS_AUD_INGEST` are per-route
+  allowlists.** Every Access application has its own AUD; add one without
+  listing it here and every request through it is refused with
+  `access: aud mismatch`. They are scoped by route on purpose — see
+  docs/ADMIN.md.
 
 ## Data does not redeploy the site
 
@@ -46,7 +56,8 @@ curl -sI https://free-steam-games.win/ | head -3
 curl -s  https://free-steam-games.win/ | grep -o '<html lang="[a-z]*"'
 curl -so /dev/null -w '%{http_code}\n' https://free-steam-games.win/api/data/data/index.json
 curl -so /dev/null -w '%{http_code} %{size_download}b\n' https://free-steam-games.win/img/t/570/header.jpg
-curl -so /dev/null -w '%{http_code}\n' https://free-steam-games.win/admin   # expect 404
+curl -so /dev/null -w '%{http_code}\n' https://free-steam-games.win/admin   # expect 302 to Access
+curl -so /dev/null -w '%{http_code}\n' https://free-steam-games.win/api/ingest/ping  # expect 302 to Access
 ```
 
 The image should come back around 3–4 KB: the Worker prefers Steam's small

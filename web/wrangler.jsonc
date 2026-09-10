@@ -68,6 +68,14 @@
     }
   ],
 
+  // Reconcile approvals against the published dataset. Every 15 minutes rather
+  // than hourly because the gap between approving and seeing it land is the
+  // one moment a reviewer is actually watching; a tick with nothing approved
+  // costs one indexed D1 query and returns before any fetch.
+  "triggers": {
+    "crons": ["*/15 * * * *"]
+  },
+
   "vars": {
     "SITE_ORIGIN": "https://free-steam-games.win",
 
