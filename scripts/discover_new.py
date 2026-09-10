@@ -14,12 +14,14 @@ Usage:
     python scripts/discover_new.py --mode daily --dry-run
 """
 import argparse
+import base64
 import html
 import json
 import os
 import re
 import sys
 import urllib.error
+import urllib.parse
 import urllib.request
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -141,6 +143,55 @@ def catalogue_appids():
     return out
 
 
+class _NoRedirect(urllib.request.HTTPRedirectHandler):
+    """Surface Access redirects instead of silently following them.
+
+    urlopen follows the 302 to the Access login page and hands back HTTP 200
+    text/html, which reads as "the endpoint returned the wrong content type"
+    when the real fact is "Access refused the credential". Stopping at the
+    redirect keeps the actual failure visible.
+    """
+
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        return None
+
+
+_OPENER = urllib.request.build_opener(_NoRedirect)
+
+
+def _describe_access_redirect(location):
+    """Explain an Access login redirect, using its own meta JWT."""
+    host = urllib.parse.urlparse(location).hostname or ""
+    if not host.endswith("cloudflareaccess.com"):
+        return f"unexpected redirect to {location[:120]}"
+
+    # The login URL carries a `meta` JWT whose claims say what Access decided.
+    # service_token_status is the one that matters: false means the service
+    # token was not accepted for this application.
+    detail = ""
+    try:
+        meta = urllib.parse.parse_qs(urllib.parse.urlparse(location).query).get("meta", [""])[0]
+        payload = meta.split(".")[1]
+        payload += "=" * (-len(payload) % 4)
+        claims = json.loads(base64.urlsafe_b64decode(payload))
+        detail = (f" [aud={str(claims.get('aud'))[:12]}... "
+                  f"service_token_status={claims.get('service_token_status')} "
+                  f"auth_status={claims.get('auth_status')}]")
+    except Exception:
+        pass
+
+    return chr(10).join([
+        "Cloudflare Access redirected to its LOGIN PAGE instead of accepting "
+        "the service token" + detail + ".",
+        "  The application covering this path exists, but its policy does not "
+        "admit service tokens.",
+        "  Fix: give that application a policy with Action = 'Service Auth' and "
+        "a 'Service Token' rule naming the token.",
+        "  An 'Allow' policy carrying only an Emails rule serves the "
+        "interactive login page to a service token - exactly this symptom.",
+    ])
+
+
 def worker_get(base, path, token_id, token_secret, timeout=30):
     req = urllib.request.Request(
         base.rstrip("/") + path,
@@ -151,12 +202,15 @@ def worker_get(base, path, token_id, token_secret, timeout=30):
             "User-Agent": "f2p-discover",
         },
     )
-    with urllib.request.urlopen(req, timeout=timeout) as resp:
+    try:
+        resp = _OPENER.open(req, timeout=timeout)
+    except urllib.error.HTTPError as e:
+        if e.code in (301, 302, 303, 307, 308):
+            raise RuntimeError(_describe_access_redirect(e.headers.get("Location", "")))
+        raise
+    with resp:
         ctype = resp.headers.get("Content-Type", "")
         raw = resp.read()
-        # An Access login redirect answers 200 with HTML. Treating that as
-        # success is how a misconfigured token turns into a confusing parse
-        # error twenty minutes into a sweep.
         if "application/json" not in ctype:
             raise RuntimeError(
                 f"expected JSON from {path}, got {ctype or 'no content-type'} "
