@@ -10,14 +10,17 @@
     "build:mobile": "tsc -b && vite build --base /",
     "analyze": "vite build --mode analyze",
     "preview": "vite preview",
-    "typecheck": "tsc -b --noEmit",
+    "typecheck": "tsc -b --noEmit && tsc -p tsconfig.worker.json",
     "knip": "knip",
     "tauri": "tauri",
     "tauri:dev": "tauri dev",
     "tauri:build": "tauri build",
     "tauri:android:init": "tauri android init",
     "tauri:android:dev": "tauri android dev",
-    "tauri:android:build": "tauri android build --apk"
+    "tauri:android:build": "tauri android build --apk",
+    "typecheck:worker": "tsc -p tsconfig.worker.json",
+    "cf:types": "wrangler types",
+    "cf:check": "wrangler deploy --dry-run"
   },
   "dependencies": {
     "@radix-ui/react-dialog": "^1.1.2",

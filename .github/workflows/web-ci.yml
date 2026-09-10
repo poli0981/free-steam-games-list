@@ -43,11 +43,20 @@ jobs:
       - name: Install
         run: npm ci
 
+      # Covers BOTH tsconfigs. tsconfig.json only includes ["src",
+      # "vite.config.ts"], so before tsconfig.worker.json existed the Worker
+      # source would have shipped completely untyped.
       - name: Type check
         run: npm run typecheck
 
       - name: Build
         run: npm run build
+
+      # Bundles the Worker and resolves every binding in wrangler.jsonc without
+      # deploying or needing credentials. Catches a broken config here rather
+      # than in the Cloudflare dashboard after a push.
+      - name: Worker build check
+        run: npx wrangler deploy --dry-run
 
       # knip.json is warn-only, so this reports dead code without failing the
       # build. Flip the rules in knip.json to error when the backlog is clear.
