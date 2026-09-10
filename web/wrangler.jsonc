@@ -61,7 +61,10 @@
     {
       "binding": "DB",
       "database_name": "f2p-admin",
-      "database_id": "31b570e2-1863-4ccd-a019-dee4eadc3921"
+      "database_id": "31b570e2-1863-4ccd-a019-dee4eadc3921",
+      // Without this wrangler looks in web/migrations and reports "no
+      // migrations present" while the files sit here.
+      "migrations_dir": "./worker/migrations"
     }
   ],
 
@@ -72,6 +75,13 @@
     // month free, then a distinct Images subscription) and Cloudflare has no
     // spend cap. Ship OFF, read real /img/* volume from Workers Logs, then
     // decide. Passthrough still gets edge caching.
-    "IMG_TRANSFORM": "false"
+    "IMG_TRANSFORM": "false",
+
+    // Cloudflare Access. Neither value is a secret: the team domain appears in
+    // the login redirect and the AUD tag identifies the application. They are
+    // vars so the Worker can verify tokens itself rather than trusting that a
+    // request reached it through the Access-protected path.
+    "ACCESS_TEAM_DOMAIN": "polished-hall-48fd.cloudflareaccess.com",
+    "ACCESS_AUD": "ca93cf2c7444c20f13b0667a3063d4ac37f702a802e712721da53abb510f9194"
   }
 }

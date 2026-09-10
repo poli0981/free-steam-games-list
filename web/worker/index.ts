@@ -10,6 +10,8 @@
 import { handleData } from "./routes/data";
 import { handleImg } from "./routes/img";
 import { jsonError } from "./lib/http";
+import { verifyAccessJwt } from "./lib/access";
+import { handleAdminApi } from "./routes/admin";
 
 export default {
   async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
@@ -24,13 +26,38 @@ export default {
       return handleImg(request, url, env, ctx);
     }
 
-    // /admin and /api/admin/* are reserved for the Access-gated admin surface.
-    // They are already in run_worker_first so that the SPA fallback cannot
-    // quietly serve the public shell here; until that surface exists, answer
-    // explicitly rather than leaking the public app at an admin URL.
-    if (pathname === "/admin" || pathname.startsWith("/admin/")) {
-      return new Response("Not found", {
-        status: 404,
+    // Everything below is admin surface. Authenticate ONCE, here, before any
+    // dispatch — not inside each handler, where the next one added is the one
+    // that forgets. Cloudflare Access also gates these paths at the edge; this
+    // check is what keeps the repo-write credential safe if that policy is
+    // ever misconfigured.
+    const isAdminApi = pathname.startsWith("/api/admin/");
+    const isAdminPage = pathname === "/admin" || pathname.startsWith("/admin/");
+
+    if (isAdminApi || isAdminPage) {
+      const who = await verifyAccessJwt(request, env);
+      if (!who) {
+        // 404, not 401: an unauthenticated caller learns nothing about what
+        // exists here, and Access has already redirected real humans to a
+        // login before the request ever arrived.
+        return isAdminApi
+          ? jsonError(404, "not found")
+          : new Response("Not found", {
+              status: 404,
+              headers: {
+                "Content-Type": "text/plain; charset=utf-8",
+                "Cache-Control": "no-store",
+              },
+            });
+      }
+
+      if (isAdminApi) return handleAdminApi(request, url, env, who);
+
+      // The admin UI is not built yet. Answer explicitly rather than falling
+      // through to the SPA handler, which would serve the PUBLIC app shell at
+      // an admin URL.
+      return new Response(`Signed in as ${who.email}. Admin UI not built yet.`, {
+        status: 200,
         headers: { "Content-Type": "text/plain; charset=utf-8", "Cache-Control": "no-store" },
       });
     }
