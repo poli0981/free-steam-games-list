@@ -1,4 +1,4 @@
-[![Games Count](https://img.shields.io/badge/Games-3.4k%2B-green?style=flat&logo=steam)](games/all-games_part1.md)
+[![Games Count](https://img.shields.io/badge/Games-3.4k%2B-green?style=flat&logo=steam)](data/)
 [![Last Updated](https://img.shields.io/badge/Updated-Daily-blue?style=flat&logo=github-actions)](.github/workflows)
 [![Top Online](https://img.shields.io/badge/Top%20Online-Live%20Leaderboard-red?style=flat&logo=steam)](games/top-online.md)
 [![Version](https://img.shields.io/badge/version-3.4.2-purple?style=flat&logo=github)](https://github.com/poli0981/free-steam-games-list)
@@ -28,12 +28,9 @@ A **curated list** of free-to-play games on Steam — now ~3,400 of them — no 
 | 🌐 Web app          | <https://free-steam-games.win/>                                                                  |
 | 🖥️ Desktop releases  | [GitHub Releases](https://github.com/poli0981/free-steam-games-list/releases) (Win `.msi`, Mac `.dmg`, Linux `.AppImage`) |
 | 📱 Android APK      | [GitHub Releases](https://github.com/poli0981/free-steam-games-list/releases) (sideload `.apk`, **Android 11+** — see [`docs/android-support.md`](docs/android-support.md)) |
-| 📋 All games (md)   | [games/all-games_part1.md](games/all-games_part1.md) (sorted by reviews)                                             |
 | 🏆 Top online (md)  | [games/top-online.md](games/top-online.md)                                                                           |
 | 🎯 Top offline (md) | [games/top-offline.md](games/top-offline.md)                                                                         |
-| 🏷️ By genre         | [games/](games/) — separate file per genre                                                                           |
 | 📦 Raw data         | [data/data_001.jsonl](data/data_001.jsonl) … `data_005.jsonl` (5 sharded JSONL files)              |
-| 📖 Index            | [games/README.md](games/README.md)                                                                                   |
 | 🛠️ About            | <https://free-steam-games.win/#/about> (in-app)                                                 |
 | 👤 Authors          | [`AUTHORS.md`](AUTHORS.md) — maintainer + contact channels + AI-assistant disclosure                                 |
 | 🤖 Telegram bot     | [`@my_skull_bot`](https://t.me/my_skull_bot) — Scraper Info Game bot, see [`CONTRIBUTING.md`](CONTRIBUTING.md)        |
@@ -104,10 +101,9 @@ The Python pipeline that powered v2 is untouched and runs daily as before:
 │   ├── data_002.jsonl … 005    # the rest
 │   └── index.json              # last_updated, totals, shard manifest
 │
-├── games/                      # Auto-generated markdown tables
-│   ├── all-games_part*.md      # split into ~200/file
+├── games/                      # The two generated leaderboards
 │   ├── top-online.md           # live leaderboard
-│   └── {genre}.md              # per-genre files
+│   └── top-offline.md          # most-played offline-capable
 │
 ├── scripts/                    # Python data pipeline
 │   ├── core/
@@ -117,7 +113,7 @@ The Python pipeline that powered v2 is untouched and runs daily as before:
 │   │   ├── fetcher.py          # batch processor
 │   │   ├── scraper.py          # HTML page parser
 │   │   └── health_checker.py   # status detection
-│   ├── ingest_new.py / update_data.py / generate_tables.py / …
+│   ├── ingest_new.py / update_data.py / discover_new.py / …
 │   └── temp_info.jsonl         # ingest queue
 │
 ├── web/                        # React/Vite/Tauri front-end
@@ -152,7 +148,6 @@ scripts/
 ├── check_dead_links.py     # HEAD-request 404/410 scanner
 ├── purge_unhealthy.py      # Remove delisted/not-free/invalid
 ├── top_online.py           # Live leaderboard with trends
-├── generate_tables.py      # Markdown tables + genre files + index
 ├── refetch_all.py          # Force re-fetch ALL (manual only)
 └── delete_game.py          # Interactive delete
 ```

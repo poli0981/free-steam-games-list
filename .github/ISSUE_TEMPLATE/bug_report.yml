@@ -16,8 +16,7 @@ body:
       label: Where did you see it?
       description: Helps me figure out which layer to look at first.
       options:
-        - "Web app — https://poli0981.github.io/free-steam-games-list/"
-        - "GitHub markdown — games/*.md"
+        - "Web app — https://free-steam-games.win/"
         - "Top online — games/top-online.md"
         - "Raw data — data/data_*.jsonl"
         - "API / direct fetch"

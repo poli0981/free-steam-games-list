@@ -5,9 +5,6 @@ echo "── Force re-fetch ALL games (v2.1 schema) ──"
 pip install --quiet -r requirements.txt
 python scripts/refetch_all.py
 
-# Regenerate tables with fresh data
-python scripts/generate_tables.py
-
 git config --global user.name  'github-actions[bot]'
 git config --global user.email '41898282+github-actions[bot]@users.noreply.github.com'
 git add .

@@ -11,7 +11,6 @@ on:
     # notifications silently break.
     workflows:
       - "Auto Update JSON Data"
-      - "Generate Markdown Tables"
       - "Top Online Leaderboard"
       - "Update Reviews"
       - "Check Dead Links"

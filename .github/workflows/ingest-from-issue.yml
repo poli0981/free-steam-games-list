@@ -103,7 +103,6 @@ jobs :
         run : |
           pip install --quiet -r requirements.txt
           python scripts/ingest_new.py
-          python scripts/generate_tables.py
         env : { STEAM_API_KEY : '${{ secrets.STEAM_API_KEY }}' }
       -
         run : |

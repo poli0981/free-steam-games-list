@@ -146,8 +146,8 @@ export function AboutPage() {
               </a>
             </Button>
             <Button asChild variant="outline" size="sm">
-              <a href={`${REPO_URL}/blob/main/games/all-games_part1.md`} target="_blank" rel="noreferrer">
-                <FileText className="mr-1 h-3 w-3" /> All games (markdown)
+              <a href={`${REPO_URL}/tree/main/data`} target="_blank" rel="noreferrer">
+                <FileText className="mr-1 h-3 w-3" /> Raw data (JSONL)
               </a>
             </Button>
             <Button asChild variant="outline" size="sm">

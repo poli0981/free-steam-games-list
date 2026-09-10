@@ -60,8 +60,3 @@ jobs:
             git push
           fi
 
-      - name: Trigger markdown rebuild
-        if: ${{ inputs.dry_run != true && success() }}
-        run: gh workflow run "Generate Markdown Tables"
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

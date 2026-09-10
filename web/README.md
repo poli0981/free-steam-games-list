@@ -137,4 +137,4 @@ The signed commit-object bytes match Git's wire format exactly — `tree HEX\npa
 
 ## Contributing
 
-This app sits inside a Python-pipeline repo. The 9 existing workflows (update-json, update-daily, top-online, …) only run on cron or `workflow_dispatch`, so there is no collision. Do **not** reimplement `scripts/generate_tables.py` in JS — Phase 2 will trigger it via `workflow_dispatch` instead.
+This app sits inside a Python-pipeline repo. The data workflows (update-json, top-online, discover-new, …) run on cron or `workflow_dispatch` and share a `data-write` concurrency group, so there is no collision. The bulk markdown tables that used to live in `games/` are gone — the web app is the way to browse the catalogue, and only the two leaderboards are still generated.
