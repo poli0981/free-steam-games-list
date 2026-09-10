@@ -44,7 +44,16 @@ function json(body: unknown, status = 200): Response {
  * sides is what stops the two credentials crossing.
  */
 function isIngestPrincipal(who: AccessIdentity, env: Env): boolean {
-  return who.isServiceToken && who.email === env.INGEST_SERVICE_PRINCIPAL;
+  if (!who.isServiceToken) return false;
+  // Comma-separated. Cloudflare does not document whether `common_name` on a
+  // service-token JWT carries the token's friendly NAME or its Client ID, and
+  // the two are indistinguishable from this side, so the pin accepts either
+  // spelling of the same one token rather than guessing wrong and 404ing a
+  // correctly-configured caller.
+  return env.INGEST_SERVICE_PRINCIPAL.split(",")
+    .map((p) => p.trim())
+    .filter(Boolean)
+    .includes(who.email);
 }
 
 interface CandidateIn {
@@ -133,7 +142,17 @@ export async function handleIngestApi(
   env: Env,
   who: AccessIdentity,
 ): Promise<Response> {
-  if (!isIngestPrincipal(who, env)) return jsonError(404, "not found");
+  if (!isIngestPrincipal(who, env)) {
+    // The identity Access actually handed us. Without this the rejection is a
+    // bare 404 indistinguishable from "no Access application covers the path",
+    // and the only way to learn the real principal is to guess at it.
+    console.warn("ingest: principal not allowed", {
+      got: who.email,
+      isServiceToken: who.isServiceToken,
+      expected: env.INGEST_SERVICE_PRINCIPAL,
+    });
+    return jsonError(404, "not found");
+  }
 
   const route = url.pathname.slice("/api/ingest/".length);
 
