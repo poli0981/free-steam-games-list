@@ -1,5 +1,8 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
+// Tailwind 4 runs as a Vite plugin instead of a PostCSS plugin;
+// tailwind.config.ts and postcss.config.js no longer exist.
+import tailwindcss from "@tailwindcss/vite";
 import { VitePWA } from "vite-plugin-pwa";
 import { visualizer } from "rollup-plugin-visualizer";
 import path from "node:path";
@@ -19,6 +22,7 @@ export default defineConfig(({ command, mode }) => ({
   },
   plugins: [
     react(),
+    tailwindcss(),
     // `npm run analyze` → dist/stats.html treemap. Vite mode instead of an
     // env var so it works cross-platform without cross-env.
     mode === "analyze" &&
