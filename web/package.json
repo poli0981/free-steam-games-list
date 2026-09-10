@@ -66,5 +66,10 @@
     "vite": "^8.0.16",
     "vite-plugin-pwa": "^1.0.3",
     "workbox-window": "^7.3.0"
+  },
+  "overrides": {
+    "echarts-wordcloud": {
+      "echarts": "$echarts"
+    }
   }
 }
