@@ -7,7 +7,10 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
 
-  "name": "f2p-tracker",
+  // MUST match the existing Worker that holds the free-steam-games.win
+  // custom domain. Deploying under any other name creates a second,
+  // domainless Worker and leaves the live site on the old build.
+  "name": "free-steam-games-list",
   "main": "./worker/index.ts",
   "compatibility_date": "2026-09-10",
 
