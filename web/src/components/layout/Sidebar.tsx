@@ -24,7 +24,7 @@ import {
   Heart,
 } from "lucide-react";
 import { cn } from "../../lib/utils";
-import { Sheet, SheetContent } from "../ui/sheet";
+import { Sheet, SheetContent, SheetTitle } from "../ui/sheet";
 
 interface NavItem {
   to: string;
@@ -179,6 +179,7 @@ interface MobileSidebarProps {
  * change so tapping a nav item works as expected without an extra X click.
  */
 export function MobileSidebar({ open, onOpenChange }: MobileSidebarProps) {
+  const { t } = useTranslation();
   const location = useLocation();
   useEffect(() => {
     if (open) onOpenChange(false);
@@ -188,7 +189,16 @@ export function MobileSidebar({ open, onOpenChange }: MobileSidebarProps) {
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side="left" className="flex w-72 flex-col p-0">
+      {/* aria-describedby={undefined} tells Radix this drawer intentionally has
+          no description; without it Radix warns about the missing association.
+          The title is sr-only because the drawer is visually self-evident but
+          a screen reader still needs it announced. */}
+      <SheetContent
+        side="left"
+        className="flex w-72 flex-col p-0"
+        aria-describedby={undefined}
+      >
+        <SheetTitle className="sr-only">{t("nav.menu")}</SheetTitle>
         <SidebarBody onSelect={() => onOpenChange(false)} />
       </SheetContent>
     </Sheet>

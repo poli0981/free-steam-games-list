@@ -65,7 +65,8 @@
     "add": "Add",
     "about": "About",
     "donate": "Donate",
-    "settings": "Settings"
+    "settings": "Settings",
+    "menu": "Navigation"
   },
   "common": {
     "save": "Save",
