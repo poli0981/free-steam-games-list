@@ -162,9 +162,15 @@ no human, so it cannot pass an email policy — it needs a **service token**.
 |---|---|
 | Name | `f2p-discovery` |
 
-The name is not cosmetic. `web/wrangler.jsonc` pins
-`INGEST_SERVICE_PRINCIPAL: "f2p-discovery"`, and the Worker rejects any other
-principal on `/api/ingest/*`. Rename the token and discovery stops working.
+The name still matters, but on the Cloudflare side only: it is what the Access
+policy's *Service Token* rule refers to. Rename the token in Zero Trust without
+updating that rule and discovery stops working.
+
+The Worker no longer checks the token's name. It cannot: Access reports a
+service token's identity as its opaque Client ID (`<32 hex>.access`), never its
+friendly name — undocumented, and established here only by reading
+`wrangler tail`. The caller is pinned by AUD instead, which is both correct and
+stronger; see the AUD section below.
 
 The client secret is shown **once**. Copy both halves now.
 
@@ -186,8 +192,8 @@ They all look like "the endpoint is broken". They are not the same problem:
 |---|---|---|
 | `404`, no redirect | No Access application covers the path | Create the application |
 | Redirect to the login page, `service_token_status=False` | Application exists, policy Action is not *Service Auth* | Change the policy Action |
-| `access: aud mismatch` in `wrangler tail` | Application exists, `ACCESS_AUD` is stale | Add its AUD, redeploy |
-| `ingest: principal not allowed` in `wrangler tail` | Access authenticated it, but the JWT identity is not in `INGEST_SERVICE_PRINCIPAL` | Copy the logged `got:` value into that var |
+| `access: aud mismatch` in `wrangler tail` | Application exists, but its AUD is not in the var for that route | Add its AUD, redeploy |
+| `access: wrong credential class for route` in `wrangler tail` | A human session hit `/api/ingest/*`, or a service token hit the admin routes | Use the right credential; the two are pinned apart on purpose |
 
 `scripts/discover_new.py` decodes the first two from Access's own `meta` JWT and
 prints them; the last two only appear in `wrangler tail`.
@@ -199,15 +205,28 @@ bare, and `verifyAccessJwt` returns 404. The symptom is a plain `404` with no
 redirect, and it is indistinguishable from a routing bug until you look at the
 Worker log.
 
-### Every new Access application needs its AUD added to `ACCESS_AUD`
+### Every new Access application needs its AUD added to the var for its route
 
 Easy to miss, and it fails *after* the application starts working - which
 makes it look like a different problem entirely.
 
-Each Access application gets its **own** AUD tag. `web/wrangler.jsonc` carries
-`ACCESS_AUD` as a **comma-separated allowlist**, and the Worker refuses any
-token whose `aud` is not in it. Add an application without extending that list
-and every request through it is rejected with `access: aud mismatch`.
+Each Access application gets its **own** AUD tag, and `web/wrangler.jsonc`
+carries two **comma-separated allowlists** — one per route group:
+
+| var | routes it admits |
+|---|---|
+| `ACCESS_AUD_ADMIN` | `/admin`, `/api/admin/*` |
+| `ACCESS_AUD_INGEST` | `/api/ingest/*` |
+
+Add the AUD to the one matching the route the application covers. They are
+split rather than pooled deliberately: with a single list any of the three
+credentials satisfied any route, so the unattended discovery token would have
+satisfied `/api/admin/*`, which holds a credential that can write to this
+repository. A token minted for the wrong application now fails verification
+outright rather than being caught afterwards.
+
+Add an application without extending the right list and every request through
+it is rejected with `access: aud mismatch`.
 
 You do not need the dashboard to read an AUD. An uncovered path 404s; a
 covered one redirects to the login URL with the AUD in its `kid` parameter:
@@ -217,9 +236,9 @@ curl -s -o /dev/null -w '%{http_code} %{redirect_url}\n' https://free-steam-game
 ```
 
 A `404` with no redirect means no application covers the path. A `302` whose
-`kid=` value is absent from `ACCESS_AUD` means the application exists but the
-Worker will refuse it - add the value and redeploy (`ACCESS_AUD` is a `var`,
-not a secret, so a push touching `web/` is enough).
+`kid=` value is absent from the matching list means the application exists but
+the Worker will refuse it - add the value and redeploy (both are `vars`, not
+secrets, so a push touching `web/` is enough).
 
 From the Worker's own side:
 
@@ -228,7 +247,8 @@ cd web && npx wrangler tail --format pretty
 ```
 
 `hasHeader: false, hasCookie: false` means Access never ran - no application
-covers the path. `access: aud mismatch` means it ran and `ACCESS_AUD` is stale.
+covers the path. `access: aud mismatch` means it ran and the allowlist for that
+route is stale.
 
 Finally, add three repository secrets (**Settings → Secrets and variables →
 Actions**):
@@ -313,7 +333,7 @@ Tabs across the top are the row's status, with live counts:
 | `deferred` | set aside; still blocks the appid from being re-proposed |
 | `approved` | committed to the queue file, waiting for the pipeline |
 | `committed` | observed in `data/` — genuinely published |
-| `failed` | the pipeline looked at it and refused it |
+| `failed` | the pipeline refused it, **or** nothing observed it within 12h and it aged out — read `reject_reason` |
 | `rejected` | you refused it; never proposed again |
 
 Select with the checkboxes (or *Select all on this page*, 60 at a time), then
@@ -362,6 +382,19 @@ watched the pipeline finish.
 A row the pipeline refused becomes `failed` rather than rejected — deliberately,
 so one bad day (a delisting, a Steam outage) does not permanently hide a game.
 On the `failed` tab the middle button becomes **Send back to pending**.
+
+`reject_reason` says which of three things happened:
+
+| `reject_reason` | meaning |
+|---|---|
+| `rejected by ingest pipeline` | it reached `removed_games.jsonl` after you approved it — not free, delisted, or unreachable |
+| `never appeared in data/ or removed_games.jsonl - approve again to retry` | 12h passed and nothing observed it. `ingest_new.py` silently skips an entry that hits a network error and then clears the queue file regardless, so the request is simply gone. **Approve it again** — that re-commits the link |
+| `superseded by a duplicate approval` | another row for the same appid was approved instead |
+
+That middle case is why the age-out exists at all. Without it the row would sit
+in `approved` forever, and because `/api/ingest/known` counts `approved` as
+known, the discovery sweep would never offer that appid again — the game would
+be lost silently and permanently.
 
 A tick with nothing approved costs one indexed D1 query and no fetches, so the
 schedule is close to free.

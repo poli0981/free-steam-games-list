@@ -426,10 +426,18 @@ $("reconcile").addEventListener("click", async () => {
   say("Checking data/ for approved games…");
   try {
     const out = await api("reconcile", { method: "POST" });
+    // "ok" was outside the ternary, so a hard dependency failure ("index
+    // unreachable", "shard unreachable") painted the GREEN success banner.
+    // Split on the COUNT rather than the message: bail() always reports
+    // checked >= 1, while the benign idle skip reports checked === 0, so this
+    // does not drift when the wording changes.
+    const bad = out.skipped && out.checked > 0;
     say(out.skipped
       ? "Reconcile: " + out.skipped
       : "Reconcile: checked " + out.checked + ", published " + out.published +
-        ", rejected by pipeline " + out.removed, "ok");
+        ", rejected by pipeline " + out.removed +
+        (out.stale ? ", " + out.stale + " aged out to failed - approve again to retry" : ""),
+      bad ? "err" : "ok");
     await load(true);
   } catch (e) { say(String(e.message || e), "err"); }
 });

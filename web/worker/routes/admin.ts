@@ -19,7 +19,16 @@ import { reconcileApproved } from "../lib/reconcile";
  */
 const MAX_DECIDE = 100;
 
-/** Statuses a row may be decided FROM. A committed row is finished. */
+/**
+ * Statuses a row may be decided FROM. A committed row is finished.
+ *
+ * Enforced TWICE on purpose: once when the rows are read, and again in the
+ * WHERE clause of every UPDATE. The read-then-write gap is real — an admin
+ * page held open across a reconcile, or two reviewers acting at once — and
+ * without the second check a stale page could reject a game whose approval had
+ * already been committed to Git, or one the pipeline had already published.
+ * Every branch below carries the guard; do not add one that skips it.
+ */
 const DECIDABLE = ["pending", "deferred", "failed"];
 
 function json(body: unknown, status = 200): Response {
@@ -304,7 +313,7 @@ export async function handleAdminApi(
           env.DB.prepare(
             `UPDATE ingest_queue
                 SET status='rejected', decided_by=?, decided_at=?, reject_reason=?
-              WHERE id=?`,
+              WHERE id=? AND status IN ('pending','deferred','failed')`,
           ).bind(who.email, now, reason || null, r.id),
           // Durable, so tomorrow's sweep does not offer it again. The partial
           // unique index only covers OPEN rows, so this table is what makes a
@@ -332,7 +341,8 @@ export async function handleAdminApi(
     await env.DB.batch(
       rows.map((r) =>
         env.DB.prepare(
-          "UPDATE ingest_queue SET status=?, reject_reason=NULL WHERE id=?",
+          `UPDATE ingest_queue SET status=?, reject_reason=NULL
+            WHERE id=? AND status IN ('pending','deferred','failed')`,
         ).bind(target, r.id),
       ),
     );

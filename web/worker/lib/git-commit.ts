@@ -34,6 +34,9 @@ interface GraphQlResponse<T> {
   errors?: { message: string; type?: string }[];
 }
 
+/** Error carrying GitHub's machine-readable error types. */
+type GraphQlError = Error & { types?: string[] };
+
 function b64encode(text: string): string {
   // btoa() is byte-oriented; game names are routinely non-Latin, so the string
   // has to be UTF-8 encoded before it is base64'd or the commit body is
@@ -52,7 +55,13 @@ async function graphql<T>(env: Env, query: string, variables: unknown): Promise<
   });
   const body = (await res.json()) as GraphQlResponse<T>;
   if (body.errors?.length) {
-    throw new Error(body.errors.map((e) => e.message).join("; "));
+    // Carry the machine-readable types onto the Error. GitHub answers a stale
+    // expectedHeadOid with type "STALE_DATA" and the prose "Expected branch to
+    // point to ... but it did not." -- the type is stable, the prose is not,
+    // and throwing only the message discards the reliable half.
+    const err = new Error(body.errors.map((e) => e.message).join("; ")) as GraphQlError;
+    err.types = body.errors.map((e) => e.type).filter((t): t is string => !!t);
+    throw err;
   }
   if (!res.ok || !body.data) throw new Error(`graphql HTTP ${res.status}`);
   return body.data;
@@ -202,12 +211,34 @@ export async function appendLinks(
       };
     } catch (err) {
       lastError = err instanceof Error ? err.message : String(err);
-      // Only a head-moved rejection is worth retrying; anything else (bad
-      // permissions, a protected branch) will fail identically every time and
-      // retrying just delays the error the operator needs to see.
-      if (!/expected.*oid|stale|not.*fast.forward|Ref cannot be updated/i.test(lastError)) {
-        throw err;
+      if (attempt === MAX_ATTEMPTS) throw err;
+
+      // Classify by FACT, not by prose.
+      //
+      // This used to match GitHub's error message against a regex, which meant
+      // guessing at undocumented wording. GitHub answers a stale
+      // expectedHeadOid with "Expected branch to point to ..." -- no substring
+      // the old pattern required -- so the retry never fired and MAX_ATTEMPTS
+      // was dead code: every lost race surfaced to the reviewer as a failed
+      // approval they had to repeat by hand.
+      //
+      // Re-reading the head settles it without depending on any string. If the
+      // branch moved under us we lost a race and retrying is exactly right. If
+      // it did not move, the failure is something else -- bad permissions, a
+      // protected branch, a malformed payload -- and will repeat identically,
+      // so it belongs in front of the operator now rather than four attempts
+      // later. Costs one extra read, and only on the failure path.
+      // Fast path: GitHub labels this case "STALE_DATA". Trusting the type
+      // costs nothing and avoids a round trip.
+      let moved = ((err as GraphQlError).types ?? []).includes("STALE_DATA");
+      if (!moved) {
+        try {
+          moved = (await readHeadAndFile(env)).oid !== oid;
+        } catch {
+          // Cannot establish it either way; do not paper over the original error.
+        }
       }
+      if (!moved) throw err;
     }
   }
 
