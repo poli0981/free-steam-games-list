@@ -96,3 +96,95 @@ export async function findOverride(appid: string): Promise<Record<string, unknow
     return null;
   }
 }
+
+
+/**
+ * Every genre in use, with how many games carry it.
+ *
+ * Extracted by regex rather than by parsing 3,400 records: the value is only
+ * needed to populate a dropdown, and a full JSON.parse of ~6 MB to count one
+ * string field would be several seconds of Worker CPU for nothing.
+ */
+export async function genreCounts(): Promise<{ genre: string; count: number }[]> {
+  const names = await shardNames();
+  const counts = new Map<string, number>();
+  // Non-greedy over an escaped-string body, so a genre containing an escaped
+  // quote still terminates in the right place.
+  const re = /"genre"\s*:\s*"((?:[^"\\]|\\.)*)"/g;
+
+  for (const name of names) {
+    const text = await fetchText(`data/${name}`, SHARD_TTL);
+    if (!text) continue;
+    let m: RegExpExecArray | null;
+    while ((m = re.exec(text)) !== null) {
+      let g: string;
+      try {
+        g = JSON.parse(`"${m[1]}"`) as string;
+      } catch {
+        continue;
+      }
+      if (!g) continue;
+      counts.set(g, (counts.get(g) ?? 0) + 1);
+    }
+  }
+  return [...counts.entries()]
+    .map(([genre, count]) => ({ genre, count }))
+    .sort((a, b) => b.count - a.count || a.genre.localeCompare(b.genre));
+}
+
+export interface GameSummary {
+  appid: string;
+  name: string;
+  genre: string;
+  header_image: string;
+  release_date: string;
+}
+
+/**
+ * Games carrying exactly `genre`, for the bulk-retag screen.
+ *
+ * Candidate lines are found by substring first and only then parsed, so the
+ * cost is proportional to how many games share the genre rather than to the
+ * size of the catalogue.
+ */
+export async function listByGenre(
+  genre: string,
+  limit: number,
+  offset: number,
+): Promise<{ total: number; items: GameSummary[] }> {
+  const names = await shardNames();
+  const needle = `"genre": ${JSON.stringify(genre)}`;
+  const alt = `"genre":${JSON.stringify(genre)}`; // in case a writer omits the space
+  const items: GameSummary[] = [];
+  let total = 0;
+
+  for (const name of names) {
+    const text = await fetchText(`data/${name}`, SHARD_TTL);
+    if (!text) continue;
+    for (const line of text.split("\n")) {
+      if (!line || (!line.includes(needle) && !line.includes(alt))) continue;
+      let rec: Record<string, unknown>;
+      try {
+        rec = JSON.parse(line) as Record<string, unknown>;
+      } catch {
+        continue;
+      }
+      // The substring can appear inside a description; only an exact field
+      // match counts.
+      if (rec.genre !== genre) continue;
+      total++;
+      if (total <= offset || items.length >= limit) continue;
+      const link = typeof rec.link === "string" ? rec.link : "";
+      const appid = link.match(/\/app\/(\d+)/)?.[1];
+      if (!appid) continue;
+      items.push({
+        appid,
+        name: typeof rec.name === "string" ? rec.name : "",
+        genre,
+        header_image: typeof rec.header_image === "string" ? rec.header_image : "",
+        release_date: typeof rec.release_date === "string" ? rec.release_date : "",
+      });
+    }
+  }
+  return { total, items };
+}

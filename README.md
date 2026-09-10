@@ -33,7 +33,6 @@ A **curated list** of free-to-play games on Steam — now ~3,400 of them — no 
 | 📦 Raw data         | [data/data_001.jsonl](data/data_001.jsonl) … `data_005.jsonl` (5 sharded JSONL files)              |
 | 🛠️ About            | <https://free-steam-games.win/#/about> (in-app)                                                 |
 | 👤 Authors          | [`AUTHORS.md`](AUTHORS.md) — maintainer + contact channels + AI-assistant disclosure                                 |
-| 🤖 Telegram bot     | [`@my_skull_bot`](https://t.me/my_skull_bot) — Scraper Info Game bot, see [`CONTRIBUTING.md`](CONTRIBUTING.md)        |
 
 ### What's new in v3.0.0
 
@@ -84,7 +83,7 @@ npm run tauri:build    # release binary into web/src-tauri/target/release/bundle
 The Python pipeline that powered v2 is untouched and runs daily as before:
 
 - Schema v2.2 (23 + manual fields per record), CC BY 4.0 (see [LICENSE-DATA](LICENSE-DATA)), sharded data in `data/data_*.jsonl` (cap 800 records/shard, current total 3,424) plus a `data/index.json` manifest.
-- Extension-compatible: the [Chrome extension](https://github.com/poli0981/free-steam-games-list-extension) pushes pre-fetched rich data straight into `scripts/temp_info.jsonl`; the ingest workflow merges and dedupes.
+- Extension-compatible: the [Chrome extension](https://github.com/poli0981/steam-f2p-extension) pushes pre-fetched rich data straight into `scripts/temp_info.jsonl`; the ingest workflow merges and dedupes.
 - HTML scraper for accurate language tables, DLC pricing, and user tags — single GET per game.
 - Health-checked: dead-link sweep every 5 days, full purge every Monday.
 - Reviews-only refresh every 2 days; full refresh daily.
@@ -123,7 +122,7 @@ The Python pipeline that powered v2 is untouched and runs daily as before:
 │   └── dist/                   # build artefacts (PWA + desktop)
 │
 ├── docs/                       # Legal + acknowledgements + contact
-├── .github/workflows/          # 24 workflows: data pipeline + CI + desktop/Android release
+├── .github/workflows/          # 23 workflows: data pipeline + CI + desktop/Android release
 ├── LICENSE                     # MIT — code
 └── LICENSE-DATA                # CC BY 4.0 — dataset
 ```
@@ -165,10 +164,8 @@ scripts/
 | Check Dead Links      | Every 5 days 04:00 UTC           | HEAD-request 404/410 scanner                              |
 | Purge Unhealthy       | Weekly Mon 05:00 UTC             | Full health scan + removal                                |
 | Ingest New            | On `scripts/temp_info.jsonl` push | Add new games (web app + extension queue here)           |
-| Ingest from Issue     | On `[add-game]` issue            | Parse issue → ingest → auto-close                         |
 | Force Re-fetch        | Manual only                      | Re-fetch ALL games                                        |
 | **Mark Dead Games**   | Mon + Thu 04:30 UTC              | Online + >1y + 0 players ≥14d → `is_dead=true` + 💀 note |
-| **Bot Ingest**        | Telegram bot dispatch            | Add games via `@my_skull_bot` (whitelist required)        |
 | **Deploy Web**        | On `web/**` or `data/**` change  | Build + deploy SPA to GitHub Pages                        |
 | **Release Desktop**   | On `desktop-v*` tag              | Matrix-build Tauri installers (Win/Mac/Linux) → Releases |
 | **Top Offline**       | 1st + 15th of month 05:00 UTC    | Bi-weekly leaderboard for single-player F2P concurrents   |
@@ -176,13 +173,20 @@ scripts/
 
 ### Contribute
 
-**The easy way — open an issue.** Pick the [Add games](.github/ISSUE_TEMPLATE/add_games.yml) template and paste up to 15 Steam links. Workflow auto-ingests, validates, health-checks, fetches metadata, and closes the issue with a status comment. The [Bug report](.github/ISSUE_TEMPLATE/bug_report.yml), [Feature request](.github/ISSUE_TEMPLATE/feature_request.yml), [Delete game](.github/ISSUE_TEMPLATE/delete_game.yml), and [Feedback](.github/ISSUE_TEMPLATE/feedback.yml) templates are also pre-filled.
+**The browser extension.** The companion [Chrome extension](https://github.com/poli0981/steam-f2p-extension) detects
+free-to-play games on Steam store pages and pushes pre-fetched metadata straight
+to `scripts/temp_info.jsonl`; `Ingest New Game Links` merges and dedupes on push.
+This is the only submission route.
 
-**The web app way — sign in.** If you have repo write access, sign into the web app with a Classic GitHub PAT (scopes: `repo` + `workflow`) and use the Add or Edit drawers. Optionally unlock a GPG key in Settings to get **Verified ✓** commits.
+Most new games arrive on their own: `Discover New Games` sweeps the Steam store
+daily into a review queue, and the maintainer approves them at `/admin`.
+Discovery only proposes — publication is always a human decision.
 
-**The Telegram bot way — `@my_skull_bot`.** No GitHub PAT needed. One-time: DM the maintainer privately with your Telegram `user_id` (NEVER post it in public Discord / Telegram groups / GitHub issues — see [`CONTRIBUTING.md`](CONTRIBUTING.md)) → maintainer adds you to the whitelist → chat with the bot when it's online (~2–5 hrs/day, runs in Docker locally) and follow its prompts. QR codes for the bot and DM live at [`assets/qr/`](assets/qr/).
-
-**The extension way.** The companion Chrome extension detects F2P games on Steam store pages and pushes pre-fetched metadata to `scripts/temp_info.jsonl`.
+**Issues** are for reports, not submissions:
+[Bug report](.github/ISSUE_TEMPLATE/bug_report.yml),
+[Feature request](.github/ISSUE_TEMPLATE/feature_request.yml),
+[Delete game](.github/ISSUE_TEMPLATE/delete_game.yml) and
+[Feedback](.github/ISSUE_TEMPLATE/feedback.yml). All reviewed by hand.
 
 **The manual way.** Fork, append to `scripts/temp_info.jsonl`, and push:
 
@@ -215,7 +219,6 @@ Unemployed, introvert max level, dropped out uni year 3, mooching off family. Ne
 - [PC spec](docs/pc_spec.md) ([VI](docs/i18n/vi/pc_spec.md)) — maintainer's dev hardware + test devices.
 - [Dev environment](docs/dev_env.md) ([VI](docs/i18n/vi/dev_env.md)) — IDE, toolchains (Python 3.12 / Node 24 / Rust stable / Tauri 2), workflow.
 - [Tauri build](web/src-tauri/TAURI.md) — desktop build prerequisites + signing + auto-update.
-- [Telegram bot](docs/telegram-bot.md) — pointer to the external bot user guide + how it integrates with this repo.
 - [DISCLAIMER](docs/DISCLAIMER.md) — accuracy caveats, no-warranty, the broke-maintainer note.
 - [Terms of Use](docs/ToS.md) — usage agreement, contributions, governing law, **rules for sharing your Telegram `user_id`**.
 - [EULA](docs/EULA.md) — plain-language commentary on both licences.

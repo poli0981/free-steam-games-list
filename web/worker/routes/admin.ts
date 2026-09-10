@@ -69,7 +69,7 @@ export async function handleAdminApi(
 
   // Corrections to already-published games live in their own module; they
   // write data/overrides/, never data/ and never the queue.
-  if (route === "game" || route === "edit") {
+  if (route === "game" || route === "edit" || route === "genres" || route === "by-genre") {
     return handleEditApi(request, url, env, who);
   }
 

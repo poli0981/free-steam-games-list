@@ -3,7 +3,6 @@ import {
   ExternalLink,
   Heart,
   Bug,
-  PlusCircle,
   Lightbulb,
   Shield,
   FileText,
@@ -15,7 +14,6 @@ import {
   Sparkles,
   AlertTriangle,
   Send,
-  Bot,
   QrCode,
   Mail,
 } from "lucide-react";
@@ -42,7 +40,6 @@ interface Social {
 }
 
 const SOCIALS: Social[] = [
-  { icon: Bot, label: "Telegram bot", handle: "@my_skull_bot", href: "https://t.me/my_skull_bot", qr: "qr/telegram-bot.png" },
   { icon: Send, label: "Telegram (DM)", handle: "@SkullMute0011", href: "https://t.me/SkullMute0011", qr: "qr/telegram-user.png" },
   { icon: Twitter, label: "X / Twitter", handle: "@SkullMute0011", href: "https://x.com/SkullMute0011" },
   { icon: Youtube, label: "YouTube", handle: "@SkullMute", href: "https://www.youtube.com/@SkullMute" },
@@ -100,7 +97,6 @@ const DEPS: Dep[] = [
 const ISSUE_TEMPLATES = [
   { id: "bug_report", label: "Bug report", icon: Bug, color: "text-rose-400" },
   { id: "feature_request", label: "Feature request", icon: Lightbulb, color: "text-amber-400" },
-  { id: "add_games", label: "Add games", icon: PlusCircle, color: "text-emerald-400" },
   { id: "delete_game", label: "Delete game", icon: Shield, color: "text-violet-400" },
   { id: "feedback", label: "Feedback", icon: MessageCircle, color: "text-blue-400" },
 ];
@@ -290,71 +286,18 @@ export function AboutPage() {
               </a>
             ))}
           </div>
-          <Separator />
-          <div className="rounded-md border border-amber-500/30 bg-amber-500/5 p-3 text-xs text-muted-foreground">
-            <div className="mb-1 flex items-center gap-1.5 font-semibold text-amber-400">
-              <Shield className="h-3.5 w-3.5" /> Privacy note for Telegram contributors
-            </div>
-            <p>
-              The bot adds you to a whitelist by your Telegram <code>user_id</code>. To
-              send your <code>user_id</code>, DM the maintainer privately on Telegram or
-              another channel — <strong>do not</strong> post it in public Discord channels,
-              public Telegram groups, or repo issues. See <a href={`${REPO_URL}/blob/main/CONTRIBUTING.md`} className="text-primary hover:underline" target="_blank" rel="noreferrer">CONTRIBUTING.md</a> for the full flow.
-            </p>
-          </div>
-          <div className="rounded-md border bg-card p-3 text-xs text-muted-foreground">
-            <div className="mb-1 flex items-center gap-1.5 font-semibold text-foreground">
-              <Bot className="h-3.5 w-3.5" /> Bot user guide & source
-            </div>
-            <ul className="list-disc space-y-0.5 pl-5">
-              <li>
-                Full user guide:{" "}
-                <a
-                  href="https://github.com/poli0981/telegram-scraper-bot/blob/main/docs/USER_GUIDE.md"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="text-primary hover:underline"
-                >
-                  USER_GUIDE.md
-                </a>{" "}
-                — command reference, edge cases, troubleshooting.
-              </li>
-              <li>
-                Bot source:{" "}
-                <a
-                  href="https://github.com/poli0981/telegram-scraper-bot"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="text-primary hover:underline"
-                >
-                  poli0981/telegram-scraper-bot
-                </a>
-              </li>
-              <li>
-                In-repo summary:{" "}
-                <a
-                  href={`${REPO_URL}/blob/main/docs/telegram-bot.md`}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="text-primary hover:underline"
-                >
-                  docs/telegram-bot.md
-                </a>
-              </li>
-            </ul>
-          </div>
         </CardContent>
       </Card>
 
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <QrCode className="h-4 w-4" /> Telegram QR codes
+            <QrCode className="h-4 w-4" /> Telegram QR code
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
           <p className="text-sm text-muted-foreground">
-            Scan to open the bot or DM directly. Source PNGs live at{" "}
+            Scan to DM the maintainer directly. The source PNG lives at{" "}
             <a
               href={`${REPO_URL}/tree/main/assets/qr`}
               target="_blank"
@@ -365,27 +308,7 @@ export function AboutPage() {
             </a>{" "}
             in the repo.
           </p>
-          <div className="grid gap-3 sm:grid-cols-2">
-            <a
-              href="https://t.me/my_skull_bot"
-              target="_blank"
-              rel="noreferrer"
-              className="flex flex-col items-center gap-2 rounded-md border bg-card p-3 transition-colors hover:bg-accent"
-            >
-              <img
-                src="qr/telegram-bot.png"
-                alt="Telegram bot QR code"
-                width={200}
-                height={200}
-                loading="lazy"
-                decoding="async"
-                className="h-40 w-40 rounded bg-white p-2"
-              />
-              <div className="text-center">
-                <div className="font-medium">@my_skull_bot</div>
-                <div className="text-xs text-muted-foreground">Scraper Info Game bot</div>
-              </div>
-            </a>
+          <div className="grid gap-3">
             <a
               href="https://t.me/SkullMute0011"
               target="_blank"
@@ -403,7 +326,7 @@ export function AboutPage() {
               />
               <div className="text-center">
                 <div className="font-medium">@SkullMute0011</div>
-                <div className="text-xs text-muted-foreground">DM (whitelist requests)</div>
+                <div className="text-xs text-muted-foreground">Direct message</div>
               </div>
             </a>
           </div>

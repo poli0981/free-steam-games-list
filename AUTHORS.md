@@ -16,8 +16,7 @@ This file lives at the repo root so the author can be found without digging into
 | Discord (repo) | [#general invite](https://discord.gg/2aNR3aVt) |
 | Discord (game) | [#general invite](https://discord.gg/kDM9GMu5vm) |
 | Steam | [profile](https://steamcommunity.com/profiles/76561199544666292/) |
-| Telegram bot | [@my_skull_bot](https://t.me/my_skull_bot) — Scraper Info Game bot, see [CONTRIBUTING.md](CONTRIBUTING.md) |
-| Telegram user | [@SkullMute0011](https://t.me/SkullMute0011) — DM for whitelist requests, do **not** post your Telegram ID in public channels |
+| Telegram user | [@SkullMute0011](https://t.me/SkullMute0011) — DM for anything that should not be public |
 | Patreon / Ko-fi | [skullmute](https://ko-fi.com/skullmute) |
 | Email | `lopop05905@proton.me` (checked weekly) |
 

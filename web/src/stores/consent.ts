@@ -16,7 +16,7 @@ const KEY = "f2p:legal_consent";
 // edge logging where the previous one claimed there was no server at all.
 // That is a material change, so everyone re-consents rather than being
 // silently moved onto different terms.
-const TERMS_VERSION = 2;
+const TERMS_VERSION = 3;
 
 interface StoredConsent {
   version: number;

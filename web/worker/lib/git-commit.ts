@@ -140,10 +140,11 @@ export interface CommitResult {
 /**
  * Append one `{"link": ...}` line per appid to the queue file.
  *
- * APPEND, never replace. This file has several producers — the issue workflow,
- * the Telegram bot, and now this — and overwriting it silently discards
- * whatever the others queued. That exact bug has already been fixed once in
- * .github/workflows/ingest-from-issue.yml; do not reintroduce it here.
+ * APPEND, never replace. This file has two producers — the browser extension
+ * (poli0981/steam-f2p-extension pushes to it directly) and this Worker — and
+ * overwriting it silently discards whatever the other queued. That exact bug
+ * was found and fixed once already, in the since-removed issue-ingest
+ * workflow; do not reintroduce it here.
  */
 export async function appendLinks(
   env: Env,
@@ -268,29 +269,92 @@ export async function appendLinks(
 
 
 /**
- * Replace one allowlisted file, retrying if the branch moves under us.
+ * Branch head plus the current text of SEVERAL files, in one query.
  *
- * `build` receives the file's CURRENT text (empty when it does not exist) and
- * returns the new text, or null to abandon without committing. It is called
- * again on every retry, so it must derive its result from the text it is given
- * rather than from anything captured earlier — that is what makes a retry
- * merge with the newer content instead of clobbering it.
+ * Aliased fields rather than N round trips, and — more importantly — one oid
+ * covering every file read, so expectedHeadOid still means what it says when a
+ * commit changes ten files at once.
  */
-export async function commitFile(
+async function readHeadAndFiles(
   env: Env,
-  path: string,
+  paths: string[],
+): Promise<{ oid: string; texts: string[] }> {
+  const aliases = paths
+    .map((_, i) => `f${i}: object(expression: $e${i}) { ... on Blob { text isBinary } }`)
+    .join("\n         ");
+  const params = paths.map((_, i) => `$e${i}:String!`).join(", ");
+
+  const vars: Record<string, string> = { owner: REPO_OWNER, name: REPO_NAME };
+  paths.forEach((path, i) => {
+    vars[`e${i}`] = `${BRANCH}:${path}`;
+  });
+
+  const data = await graphql<Record<string, any>>(
+    env,
+    `query($owner:String!, $name:String!, ${params}) {
+       repository(owner:$owner, name:$name) {
+         defaultBranchRef { target { oid } }
+         ${aliases}
+       }
+     }`,
+    vars,
+  );
+
+  const repo = data.repository;
+  const oid = repo?.defaultBranchRef?.target?.oid;
+  if (!oid) throw new Error(`cannot read ${BRANCH} head`);
+
+  const texts = paths.map((path, i) => {
+    const obj = repo[`f${i}`];
+    if (obj?.isBinary) throw new Error(`${path} is not text`);
+    return (obj?.text ?? "") as string;
+  });
+  return { oid, texts };
+}
+
+export interface FileEdit {
+  path: string;
+  /**
+   * Receives the file's CURRENT text (empty when it does not exist) and returns
+   * the new text, or null to leave the file alone. Called again on every retry,
+   * so it must derive its result from the text it is given rather than from
+   * anything captured earlier — that is what makes a retry merge with newer
+   * content instead of clobbering it.
+   */
+  build: (current: string) => string | null;
+}
+
+/**
+ * Replace one or more allowlisted files in a SINGLE commit, retrying if the
+ * branch moves under us.
+ *
+ * One commit rather than one per file: editing ten games is one decision, and
+ * ten commits would be ten pushes, ten workflow triggers, and ten chances to
+ * land half a change.
+ */
+export async function commitFiles(
+  env: Env,
+  edits: FileEdit[],
   headline: string,
   body: string,
-  build: (current: string) => string | null,
 ): Promise<string | null> {
-  assertWritable(path);
+  if (!edits.length) return null;
+  for (const e of edits) assertWritable(e.path);
   let lastError = "";
 
   for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
-    const { oid, text } = await readHeadAndFile(env, path);
-    const next = build(text);
-    if (next === null) return null;
-    if (next === text) return null; // nothing to say; do not make an empty commit
+    const paths = edits.map((e) => e.path);
+    const { oid, texts } = await readHeadAndFiles(env, paths);
+
+    const additions: { path: string; contents: string }[] = [];
+    edits.forEach((e, i) => {
+      const next = e.build(texts[i]);
+      if (next !== null && next !== texts[i]) {
+        additions.push({ path: e.path, contents: b64encode(next) });
+      }
+    });
+    // Every file already said what it needed to; an empty commit is noise.
+    if (!additions.length) return null;
 
     try {
       const data = await graphql<{ createCommitOnBranch: { commit: { oid: string } } }>(
@@ -306,7 +370,7 @@ export async function commitFile(
             },
             message: { headline, body },
             expectedHeadOid: oid,
-            fileChanges: { additions: [{ path, contents: b64encode(next) }] },
+            fileChanges: { additions },
           },
         },
       );
@@ -319,7 +383,7 @@ export async function commitFile(
       let moved = ((err as GraphQlError).types ?? []).includes("STALE_DATA");
       if (!moved) {
         try {
-          moved = (await readHeadAndFile(env, path)).oid !== oid;
+          moved = (await readHeadAndFile(env, paths[0])).oid !== oid;
         } catch {
           /* cannot tell; surface the original error */
         }
@@ -329,4 +393,15 @@ export async function commitFile(
   }
 
   throw new Error(`branch moved under ${MAX_ATTEMPTS} attempts: ${lastError}`);
+}
+
+/** The one-file case. */
+export function commitFile(
+  env: Env,
+  path: string,
+  headline: string,
+  body: string,
+  build: (current: string) => string | null,
+): Promise<string | null> {
+  return commitFiles(env, [{ path, build }], headline, body);
 }

@@ -82,10 +82,15 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
 
 - `update_data.py` only **enriches existing records**. It does not discover new
   games.
-- `ingest_new.py` only reads `scripts/temp_info.jsonl`, which is filled by a
-  human path (issue template, Telegram bot, browser extension, or the `/add`
-  page). **There is no automatic discovery of new F2P games** — `steam_client.py`
-  has no endpoint that works without an `appid` you already have.
+- `ingest_new.py` only reads `scripts/temp_info.jsonl`. It has exactly two
+  producers now: the browser extension (`poli0981/steam-f2p-extension`, which
+  pushes to the file directly) and the `/admin` approve flow (the Worker
+  appends via `createCommitOnBranch`). The issue-template and Telegram paths
+  were removed. Both producers APPEND; anything that overwrites this file
+  destroys whatever the other queued.
+- New games ARE discovered automatically now, by `scripts/discover_new.py`
+  into the D1 review queue — but discovery only PROPOSES. Publication stays a
+  human decision made in `/admin`.
 - Every workflow that writes to `data/` shares `concurrency: {group: data-write}`.
   A new data-writing workflow without it will race jobs that run ~2 hours.
 - Workflows push with the built-in `GITHUB_TOKEN`; each declares

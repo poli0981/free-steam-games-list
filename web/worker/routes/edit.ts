@@ -16,8 +16,17 @@
  */
 import { jsonError, SECURITY_HEADERS } from "../lib/http";
 import type { AccessIdentity } from "../lib/access";
-import { commitFile } from "../lib/git-commit";
-import { findOverride, findRecord } from "../lib/records";
+import { commitFiles } from "../lib/git-commit";
+import { findOverride, findRecord, genreCounts, listByGenre } from "../lib/records";
+
+/**
+ * Games one request may change.
+ *
+ * Bounds the GraphQL read (one aliased field per file), the size of a single
+ * commit, and how much one mis-click can do. Ten is the maintainer's number,
+ * and it is small enough that a reviewer can still read what they selected.
+ */
+const MAX_EDIT = 10;
 
 /** Mirrors MANUAL_FIELDS in scripts/core/constants.py. */
 export const MANUAL_FIELDS = [
@@ -135,16 +144,47 @@ export async function handleEditApi(
     });
   }
 
+  // Genres actually in use, most-used first. Populates the dropdown, and the
+  // counts are the point: they are how the maintainer spots the vague buckets
+  // worth breaking up.
+  if (route === "genres" && request.method === "GET") {
+    return json({ genres: await genreCounts() });
+  }
+
+  // The games carrying one genre, for bulk retagging.
+  if (route === "by-genre" && request.method === "GET") {
+    const genre = url.searchParams.get("genre") ?? "";
+    if (!genre || genre.length > 100) return jsonError(400, "genre required");
+    const limit = Math.min(Number(url.searchParams.get("limit") ?? 60) || 60, 200);
+    const offset = Math.max(Number(url.searchParams.get("offset") ?? 0) || 0, 0);
+    const out = await listByGenre(genre, limit, offset);
+    return json({ genre, limit, offset, ...out });
+  }
+
   if (route === "edit" && request.method === "POST") {
-    let body: { appid?: unknown; set?: unknown; retire?: unknown; reason?: unknown };
+    let body: {
+      appid?: unknown; appids?: unknown;
+      set?: unknown; retire?: unknown; reason?: unknown;
+    };
     try {
       body = (await request.json()) as typeof body;
     } catch {
       return jsonError(400, "invalid json");
     }
 
-    const appid = typeof body.appid === "string" ? body.appid : "";
-    if (!/^\d{1,10}$/.test(appid)) return jsonError(400, "appid must be 1-10 digits");
+    // `appid` (singular) is still accepted so the one-game form stays simple;
+    // everything below works on the list.
+    const raw = Array.isArray(body.appids)
+      ? body.appids
+      : typeof body.appid === "string"
+        ? [body.appid]
+        : [];
+    const appids = [...new Set(raw.filter((a): a is string => typeof a === "string"))];
+    if (!appids.length) return jsonError(400, "appid or appids is required");
+    if (appids.length > MAX_EDIT) return jsonError(400, `at most ${MAX_EDIT} games at once`);
+    for (const a of appids) {
+      if (!/^\d{1,10}$/.test(a)) return jsonError(400, `${a}: appid must be 1-10 digits`);
+    }
 
     const set = (body.set && typeof body.set === "object" ? body.set : {}) as Record<string, unknown>;
     const retire = Array.isArray(body.retire)
@@ -165,85 +205,98 @@ export async function handleEditApi(
       }
     }
 
-    // Read the record server-side. `was` must be the value the catalogue
-    // actually holds, not something the client asserts — it is what a later
-    // retire restores, so a client-supplied `was` would let a bad request
-    // rewrite history.
-    const record = await findRecord(appid);
-    if (!record) return jsonError(404, "not in the catalogue");
+    // Read every record server-side. `was` must be the value the catalogue
+    // actually holds for THAT game, not something the client asserts — it is
+    // what a later retire restores, so a client-supplied `was` would let a
+    // crafted request rewrite history. It is also why a bulk edit cannot just
+    // reuse one `was` across games.
+    const records = await Promise.all(appids.map((a) => findRecord(a)));
+    const missing = appids.filter((_, i) => !records[i]);
+    if (missing.length) {
+      return jsonError(404, `not in the catalogue: ${missing.join(", ")}`);
+    }
 
     const now = new Date().toISOString();
     const touched = [...Object.keys(set), ...retire];
+    const first = records[0]!;
 
-    const sha = await commitFile(
+    const headline =
+      appids.length === 1
+        ? `override: ${first.name || appids[0]} (${touched.join(", ")})`
+        : `override: ${appids.length} games (${touched.join(", ")})`;
+
+    const sha = await commitFiles(
       env,
-      `data/overrides/${appid}.json`,
-      touched.length === 1
-        ? `override: ${record.name || appid} (${touched[0]})`
-        : `override: ${record.name || appid} (${touched.length} fields)`,
+      appids.map((appid, i) => {
+        const record = records[i]!;
+        return {
+          path: `data/overrides/${appid}.json`,
+          // Rebuilt from the file's CURRENT text on every attempt, so a retry
+          // merges with whatever landed in between rather than clobbering it.
+          build: (current: string) => {
+            let existing: unknown = null;
+            if (current.trim()) {
+              try {
+                existing = JSON.parse(current);
+              } catch {
+                // Refuse rather than overwrite something we cannot read.
+                throw new Error(`existing override for ${appid} is not valid JSON`);
+              }
+            }
+            const doc = asDoc(existing, appid, record.link, record.name ?? "");
+
+            for (const [field, value] of Object.entries(set)) {
+              // `was` is captured the FIRST time a field is overridden and
+              // never rewritten: it is the pre-human value, and retiring
+              // restores it.
+              const prior = doc.fields[field];
+              const was = prior && "was" in prior ? prior.was : (record[field] ?? null);
+              doc.fields[field] = { value, was, set_by: who.email, set_at: now, reason };
+              delete doc.retired[field];
+            }
+
+            for (const field of retire) {
+              const entry = doc.fields[field];
+              if (!entry) continue;
+              delete doc.fields[field];
+              doc.retired[field] = {
+                value: entry.value,
+                was: entry.was,
+                retired_by: who.email,
+                retired_at: now,
+              };
+            }
+
+            if (!Object.keys(doc.fields).length && !Object.keys(doc.retired).length) {
+              return null; // nothing to record for this game
+            }
+            // 2-space indent + trailing newline, byte-identical to what
+            // scripts/core/overrides.py::save_override() writes, so the two
+            // producers never fight over formatting in the diff.
+            return JSON.stringify(doc, null, 2) + "\n";
+          },
+        };
+      }),
+      headline,
       `Edited in /admin by ${who.email}.${reason ? `\n\nReason: ${reason}` : ""}\n\n` +
         `Standing instruction re-applied by save_main() on every write to data/. ` +
         `See scripts/core/overrides.py.`,
-      // Rebuilt from the file's CURRENT text on every attempt, so a retry
-      // merges with whatever landed in between rather than clobbering it.
-      (current) => {
-        let existing: unknown = null;
-        if (current.trim()) {
-          try {
-            existing = JSON.parse(current);
-          } catch {
-            // Refuse rather than overwrite something we cannot read.
-            throw new Error(`existing override for ${appid} is not valid JSON`);
-          }
-        }
-        const doc = asDoc(existing, appid, record.link, record.name ?? "");
-
-        for (const [field, value] of Object.entries(set)) {
-          // `was` is captured the FIRST time a field is overridden and never
-          // rewritten: it is the pre-human value, and retiring restores it.
-          const prior = doc.fields[field];
-          const was = prior && "was" in prior ? prior.was : (record[field] ?? null);
-          doc.fields[field] = {
-            value,
-            was,
-            set_by: who.email,
-            set_at: now,
-            reason,
-          };
-          delete doc.retired[field];
-        }
-
-        for (const field of retire) {
-          const entry = doc.fields[field];
-          if (!entry) continue;
-          delete doc.fields[field];
-          doc.retired[field] = {
-            value: entry.value,
-            was: entry.was,
-            retired_by: who.email,
-            retired_at: now,
-          };
-        }
-
-        if (!Object.keys(doc.fields).length && !Object.keys(doc.retired).length) {
-          return null; // nothing to record
-        }
-        // 2-space indent + trailing newline, byte-identical to what
-        // scripts/core/overrides.py::save_override() writes, so the two
-        // producers never fight over formatting in the diff.
-        return JSON.stringify(doc, null, 2) + "\n";
-      },
     );
 
     await env.DB.prepare(
       `INSERT INTO audit_log (actor, action, target, detail_json, created_at)
        VALUES (?, 'override', ?, ?, ?)`,
     )
-      .bind(who.email, appid, JSON.stringify({ set: Object.keys(set), retire, sha, reason }), now)
+      .bind(
+        who.email,
+        appids.join(","),
+        JSON.stringify({ appids, set: Object.keys(set), retire, sha, reason }),
+        now,
+      )
       .run();
 
     return json({
-      appid,
+      appids,
       commit: sha,
       set: Object.keys(set),
       retired: retire,

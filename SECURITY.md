@@ -10,7 +10,7 @@ wrong on every count, so here is the real picture:
   admin path — a credential that can write to this repository
 - a **React single-page app** with a few dozen npm dependencies
 - a **Tauri 2 desktop and Android app**, signed, with an auto-updater
-- a **Python pipeline** run by 24 GitHub Actions workflows, several holding
+- a **Python pipeline** run by 23 GitHub Actions workflows, several holding
   secrets that can push to `main`
 
 There is genuinely something to attack here. Hence a real policy.
