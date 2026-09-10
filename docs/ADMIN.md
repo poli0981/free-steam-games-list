@@ -421,10 +421,65 @@ npx wrangler d1 execute f2p-admin --remote --command "SELECT appid, name, releas
 
 ---
 
+## 10. Correcting an existing game
+
+The review queue covers *new* games. Corrections to games already published —
+a wrong genre, a note to add, anti-cheat details — go through **overrides**.
+
+An override is not a one-time edit. It is a standing instruction stored at
+`data/overrides/<appid>.json`, and `save_main()` re-imposes it on every write
+to `data/`. That matters because `MANUAL_FIELDS` are otherwise protected only
+by fill-if-empty, which cannot tell a human correction from scraper output —
+`normalize_genres.py --apply` rewrites `genre` for every game and would revert
+your fix with no error anywhere.
+
+```bash
+# what does the catalogue say right now?
+python scripts/edit_game.py 730 --show
+
+# correct it, with a reason (kept in the file and visible in git log)
+python scripts/edit_game.py 730 --set genre="Tactical Shooter" \
+    --reason "Steam's genre list is too coarse" --by you@example.com
+
+# undo: restores the pre-edit value, then permanently stops acting
+python scripts/edit_game.py 730 --retire genre
+
+python scripts/edit_game.py --list    # every override
+python scripts/edit_game.py --check   # validate them (this runs in CI)
+```
+
+The command writes only the override file. `data/` changes on the next
+pipeline run, or immediately with `--apply`.
+
+### Three things that will surprise you
+
+**You cannot blank a field with an override.** Setting it to `""` is refused.
+The next scrape would refill it and this layer would blank it again, rewriting
+shards on every run forever. Use `--retire` to clear.
+
+**Retiring is not the same as deleting the file.** Delete it and the field
+stays pinned to your value, because fill-if-empty never brings the old one
+back. `--retire` keeps the pre-edit value and writes it back once.
+
+**Editing `notes` keeps the pipeline's own markers.** `notes` is shared: the
+pipeline appends `Dead game`, `Delisted` and `No longer free!` segments to it,
+and those appends are one-way — once a game is flagged dead the marker is never
+re-added. Your text is combined with them rather than replacing them.
+
+### Why this is not in `/admin` yet
+
+Deliberately. The whole durability guarantee is ~200 lines of Python with no
+Worker, no D1 and no new credential; a UI adds none of it. Run it from the
+command line first — everything a `/admin/edit` screen would eventually do
+lands in the same override file, so nothing is thrown away when it arrives.
+
+---
+
 ## What is not built yet
 
-Editing existing games through the admin screen. The queue covers *new*
-games only; corrections to published records still go through Git directly.
+A `/admin/edit` screen. Corrections work today through
+`scripts/edit_game.py` (section 10) and land in the same `data/overrides/`
+files a UI would write, so the UI is presentation, not mechanism.
 
 `audit_log` has no pruning job yet. It grows only with admin actions, so it is
 not urgent, but it is unbounded — decide a retention window and make it agree

@@ -10,6 +10,7 @@ TEMP_JSONL     = "scripts/temp_info.jsonl"
 DEAD_LINKS_LOG = "scripts/dead_links.log"
 REMOVED_JSONL  = "scripts/removed_games.jsonl"
 GAMES_DIR      = "games"
+OVERRIDES_DIR  = "data/overrides"   # one <appid>.json per human-edited game
 
 # ──────────── Sharding ────────────
 MAX_RECORDS_PER_FILE = 800
@@ -64,6 +65,16 @@ MANUAL_FIELDS = frozenset({
     "anti_cheat", "anti_cheat_note", "is_kernel_ac",
     "notes", "type_game", "safe", "genre",
 })
+
+# Segments the PIPELINE appends to `notes`. A human override of `notes`
+# re-attaches any of these it would otherwise drop: the appends are
+# one-way (mark_dead_games only appends while is_dead is False), so a
+# stripped marker would never come back. See core/overrides.py.
+MACHINE_NOTE_MARKERS = (
+    "💀 Dead game",
+    "💀 Delisted",
+    "⚠ No longer free!",
+)
 ARRAY_FIELDS = frozenset({
     "platforms", "languages", "language_details", "tags",
     "developer", "publisher",
@@ -76,7 +87,5 @@ EXTENSION_FIELDS = frozenset({
     "notes", "safe",
 })
 
-# ──────────── Table generation ────────────
-MAX_GAMES_PER_FILE = 200
 TOP_ONLINE_LIMIT   = 100
 TOP_OFFLINE_LIMIT  = 100

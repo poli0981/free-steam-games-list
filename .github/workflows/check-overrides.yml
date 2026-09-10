@@ -1,0 +1,45 @@
+name: Check Overrides
+
+# Human edits live in data/overrides/<appid>.json and are re-applied by
+# save_main() on every write to data/. A malformed or invalid override is
+# SKIPPED at apply time rather than raised - deliberately, so one bad file
+# cannot abort a two-hour scrape - which means a typo would otherwise fail
+# silently and the edit would simply never take effect. This is the check that
+# makes that silence loud.
+
+on:
+  pull_request:
+    paths:
+      - 'data/overrides/**'
+      - 'scripts/core/overrides.py'
+      - 'scripts/edit_game.py'
+      - '.github/workflows/check-overrides.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'data/overrides/**'
+      - 'scripts/core/overrides.py'
+      - 'scripts/edit_game.py'
+      - '.github/workflows/check-overrides.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  # NOT data-write: this reads the dataset and writes nothing, so queueing it
+  # behind the long data jobs would delay the feedback for no reason.
+  group: check-overrides-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - run: pip install --quiet -r requirements.txt
+      - name: Validate every override
+        run: python scripts/edit_game.py --check

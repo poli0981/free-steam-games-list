@@ -21,12 +21,39 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
   `current_players: "492,197"`, `reviews: "86% (Very Positive)"`,
   `metacritic: "N/A"`. Parse before comparing or sorting.
 
-- **`MANUAL_FIELDS` are human judgements and are never overwritten by a
-  refetch.** They are `anti_cheat`, `anti_cheat_note`, `is_kernel_ac`, `notes`,
-  `type_game`, `safe`, `genre`. The guard is `scripts/core/data_store.py`
-  (merge fills them only when currently empty) and `scripts/ingest_new.py`
-  (re-applies them as overrides). A scraper that clobbers these destroys work
-  that cannot be re-derived.
+- **`MANUAL_FIELDS` are human judgements.** They are `anti_cheat`,
+  `anti_cheat_note`, `is_kernel_ac`, `notes`, `type_game`, `safe`, `genre`.
+  Two mechanisms protect them, and they are not the same thing:
+
+  1. *Fill-if-empty*, in `merge_extension_data()` and `apply_details()`: a
+     scrape will not overwrite a non-empty value. This is weak — it cannot
+     tell a human correction from earlier scraper output, so
+     `normalize_genres.py --apply`, which rewrites `genre` for every game,
+     silently reverts corrections.
+  2. *Overrides*, below. This is the durable one.
+
+- **`data/overrides/<appid>.json` is human intent, and it is permanent.**
+  `apply_overrides()` is called from inside `save_main()` — the single choke
+  point through which all 11 data-writing scripts pass, and the only code that
+  writes `data/data_*.jsonl`. An override is therefore re-imposed as the last
+  act of every write, so it survives `refetch_all.py` and
+  `normalize_genres.py --apply` without either script knowing it exists. Add a
+  new dataset writer and it inherits this for free — provided it goes through
+  `save_main()`, which it must.
+
+  Three rules that are not obvious:
+  - **An override may not set a field empty.** The next scrape would refill it
+    (fill-if-empty) and this layer would blank it again, flip-flopping shards
+    on every run. To clear a field, *retire* the override.
+  - **Retiring is not deleting.** Deleting the file leaves the field pinned to
+    the human value forever, because fill-if-empty never restores the old one.
+    A retired entry keeps `was` and writes it back once, then permanently
+    no-ops because the values no longer match.
+  - **`notes` is a hybrid field.** The pipeline appends its own segments to it
+    (`MACHINE_NOTE_MARKERS`), and those appends are one-way —
+    `mark_dead_games.py` only appends while `is_dead` is False, so a stripped
+    marker is never re-added. `preserve_machine_notes()` re-attaches them; do
+    not bypass it.
 
 - **Shard assignment is unstable.** `save_main()` re-chunks the entire record
   list into 800-record files from scratch on every run and deletes leftovers.

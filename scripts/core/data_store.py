@@ -148,8 +148,25 @@ def load_main() -> list[dict]:
     return []
 
 
-def save_main(records: list[dict]):
-    """Save records to sharded JSONL files (MAX_RECORDS_PER_FILE per shard)."""
+def save_main(records: list[dict], apply_human_overrides: bool = True):
+    """Save records to sharded JSONL files (MAX_RECORDS_PER_FILE per shard).
+
+    Human overrides are re-imposed here, immediately before the write. This is
+    the single choke point for the dataset - all 11 data-writing scripts call
+    save_main() and nothing else writes data/data_*.jsonl - so applying them
+    here is what makes a correction survive refetch_all.py and
+    normalize_genres.py --apply without either script knowing this layer
+    exists. See core/overrides.py.
+
+    apply_human_overrides=False exists for tooling that must see the
+    un-overridden values (an audit report). Never pass it from the pipeline.
+    """
+    if apply_human_overrides:
+        # Imported here, not at module scope: overrides.py imports from this
+        # module, so a top-level import would be circular.
+        from .overrides import apply_overrides
+        apply_overrides(records)
+
     os.makedirs(DATA_DIR, exist_ok=True)
 
     chunks = []
