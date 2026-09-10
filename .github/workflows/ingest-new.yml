@@ -4,6 +4,14 @@ on :
   # matches the paths filter (tag pushes compare against an empty base),
   # fires the ingest on a detached HEAD, and dies with exit 128 on push.
   push : { branches : [ main ], paths : [ 'scripts/temp_info.jsonl' ] }
+  # Orphan recovery, not a poll. `data-write` keeps at most ONE run pending and
+  # cancels the older one, so a push here that queues behind a ~115-minute data
+  # job is silently evicted the moment any OTHER data-write workflow queues --
+  # and nothing retries it, leaving approved games sitting in temp_info.jsonl
+  # until the next unrelated push. Re-running on a clear file is free:
+  # ingest_new.py returns immediately and `git diff --staged --quiet` skips the
+  # commit, so this is idempotent by construction.
+  schedule : [ { cron : '0 */3 * * *' } ]
   workflow_dispatch :
 permissions : { contents : write }
 concurrency :

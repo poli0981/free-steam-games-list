@@ -16,11 +16,12 @@ jobs :
     runs-on : ubuntu-latest
     steps :
       -
-        uses : actions/checkout@v4
+        uses : actions/checkout@v6
       -
-        uses : actions/setup-python@v5
+        uses : actions/setup-python@v6
         with : { python-version : '3.12' }
       -
+        id : queue
         uses : actions/github-script@v7
         with :
           script : |
@@ -41,12 +42,16 @@ jobs :
             // json.loads failure and returns only what it had, after which
             // clear_temp() truncates the file - so one pretty-printed block
             // pasted into an issue would eat every line after it.
-            const lines = [];
+            const lines = [], appids = [];
             for (const raw of m[1].trim().split(/\r?\n/)) {
               const t = raw.trim();
               if (!t) continue;
               try {
-                lines.push(JSON.stringify(JSON.parse(t)));
+                const obj = JSON.parse(t);
+                lines.push(JSON.stringify(obj));
+                const link = typeof obj === 'string' ? obj : (obj && obj.link) || '';
+                const hit = String(link).match(/\/app\/(\d{1,8})/);
+                if (hit) appids.push(hit[1]);
               } catch {
                 core.setFailed(
                   'Each line of the json block must be one complete JSON object ' +
@@ -61,6 +66,39 @@ jobs :
             const sep = prev && !prev.endsWith('\n') ? '\n' : '';
             fs.appendFileSync(path, sep + lines.join('\n') + '\n');
             core.info(`appended ${lines.length} entr(ies) to ${path}`);
+            core.setOutput('appids', appids.join(' '));
+
+            // Snapshot which appids the catalogue ALREADY holds. Without this
+            // the report step cannot tell "we added it" from "it was already
+            // there" - both look identical in the post-run dataset, so a
+            // duplicate request would be answered with a confident "Added!".
+            let before = '';
+            for (const f of fs.readdirSync('data')) {
+              if (f.endsWith('.jsonl')) before += fs.readFileSync('data/' + f, 'utf8');
+            }
+            core.setOutput('already',
+              appids.filter(a => before.includes('/app/' + a + '/')).join(' '));
+      -
+        name : Configure git
+        run : |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email '41898282+github-actions[bot]@users.noreply.github.com'
+      -
+        # Commit the QUEUE ENTRY before attempting the ingest, not after.
+        #
+        # Previously the only commit came after `python scripts/ingest_new.py`,
+        # so a transient Steam failure there aborted the job with the appended
+        # line living nowhere but the runner's disk — the request vanished with
+        # no record and no retry, and the reporting step below never ran to say
+        # so. Committing first makes the request durable: if the ingest step
+        # then fails, `Ingest New Game Links` picks the entry up on its next
+        # scheduled run.
+        name : Commit queue entry
+        run : |
+          git add scripts/temp_info.jsonl
+          git diff --staged --quiet && echo "queue unchanged" || \
+            git commit -m "queue: ingest request from #${{ github.event.issue.number }}"
+          git push
       -
         run : |
           pip install --quiet -r requirements.txt
@@ -69,19 +107,51 @@ jobs :
         env : { STEAM_API_KEY : '${{ secrets.STEAM_API_KEY }}' }
       -
         run : |
-          git config --global user.name 'github-actions[bot]'
-          git config --global user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add .
           git diff --staged --quiet && echo "No changes" || (git commit -m "Ingest #${{ github.event.issue.number }}" && git push)
       -
+        # always(): the whole point is to report failures, and every earlier
+        # step here can fail. Without this the issue was only ever answered on
+        # the happy path.
+        if : always()
         uses : actions/github-script@v7
         with :
           script : |
-            const n = context.payload.issue.number;
             const fs = require('fs');
-            let t = ''; try { t = fs.readFileSync('scripts/temp_info.jsonl','utf8').trim(); } catch {}
-            const ok = t === '';
-            await github.rest.issues.createComment({owner:context.repo.owner,repo:context.repo.repo,issue_number:n,
-              body: ok ? '✅ Game added!' : '❌ Ingest failed or skipped. Check logs.'});
-            await github.rest.issues.update({owner:context.repo.owner,repo:context.repo.repo,issue_number:n,
-              state:'closed', labels:['add-game', ok ? 'completed' : 'rejected']});
+            const n = context.payload.issue.number;
+            const appids = '${{ steps.queue.outputs.appids }}'.split(' ').filter(Boolean);
+
+            // Ask the dataset, not the queue file. The previous check was
+            // `temp_info.jsonl === ''`, but clear_temp() empties that file at
+            // the end of EVERY ingest_new.py run — including one where all
+            // entries were rejected as duplicate, dead, or unreachable. It
+            // reported "Game added!" for games that were never added.
+            let blob = '';
+            for (const f of fs.readdirSync('data')) {
+              if (f.endsWith('.jsonl')) blob += fs.readFileSync('data/' + f, 'utf8');
+            }
+            const already = '${{ steps.queue.outputs.already }}'.split(' ').filter(Boolean);
+            const present = appids.filter(a => blob.includes('/app/' + a + '/'));
+            const added = present.filter(a => !already.includes(a));
+            const missing = appids.filter(a => !present.includes(a));
+            const ok = appids.length > 0 && missing.length === 0;
+
+            const body = ok
+              ? [
+                  added.length ? `Added ${added.length} game(s): ${added.join(', ')}` : null,
+                  already.length ? `Already in the catalogue: ${already.join(', ')}` : null,
+                ].filter(Boolean).join('\n')
+              : `❌ Not added: ${missing.join(', ') || 'no appid parsed'}\n\n` +
+                `The request is committed to \`scripts/temp_info.jsonl\`, so ` +
+                `\`Ingest New Game Links\` will retry it on its next scheduled run. ` +
+                `If it keeps failing the game is likely a duplicate, delisted, or ` +
+                `not free — check this run's logs.`;
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner, repo: context.repo.repo,
+              issue_number: n, body,
+            });
+            await github.rest.issues.update({
+              owner: context.repo.owner, repo: context.repo.repo, issue_number: n,
+              state: 'closed', labels: ['add-game', ok ? 'completed' : 'rejected'],
+            });
