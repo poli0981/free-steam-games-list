@@ -1,6 +1,6 @@
 #!/bin/bash
 set -euo pipefail
-pip install --quiet requests
+pip install --quiet -r requirements.txt
 python scripts/top_offline.py
 git config --global user.name 'github-actions[bot]'
 git config --global user.email '41898282+github-actions[bot]@users.noreply.github.com'

@@ -14,14 +14,22 @@ import { lazy, type ComponentType, type LazyExoticComponent } from "react";
 
 const RELOAD_FLAG = "f2p:chunk-reload";
 
-/** Detects "failed to fetch dynamically imported module" / chunk 404s. */
+/**
+ * Detects a stale-chunk import failure.
+ *
+ * The first three patterns cover an outright network failure or 404 on the
+ * chunk. The MIME-type patterns cover a subtler case that a host with an SPA
+ * fallback produces: a request for a deleted hashed chunk does not 404, it
+ * returns index.html with HTTP 200 and Content-Type: text/html. The browser
+ * then rejects it for the MIME type rather than the status, and the message
+ * looks nothing like a fetch failure — so without these the reload-once
+ * recovery silently stops working and the user just sees a broken route.
+ */
+const CHUNK_LOAD_ERROR_RE =
+  /failed to fetch dynamically imported module|importing a module script failed|error loading dynamically imported module|failed to load module script|expected a javascript module script/i;
+
 export function isChunkLoadError(err: unknown): boolean {
-  return (
-    err instanceof Error &&
-    /failed to fetch dynamically imported module|importing a module script failed|error loading dynamically imported module/i.test(
-      err.message,
-    )
-  );
+  return err instanceof Error && CHUNK_LOAD_ERROR_RE.test(err.message);
 }
 
 // Tauri webviews / lockdown modes can block sessionStorage — degrade to

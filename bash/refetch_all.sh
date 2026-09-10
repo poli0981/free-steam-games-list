@@ -2,7 +2,7 @@
 set -euo pipefail
 echo "── Force re-fetch ALL games (v2.1 schema) ──"
 
-pip install --quiet requests
+pip install --quiet -r requirements.txt
 python scripts/refetch_all.py
 
 # Regenerate tables with fresh data

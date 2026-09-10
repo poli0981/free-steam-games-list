@@ -46,7 +46,7 @@ jobs :
 
       -
         name : Install deps
-        run : pip install --quiet requests
+        run : pip install --quiet -r requirements.txt
 
       -
         name : Append links to temp_info.jsonl

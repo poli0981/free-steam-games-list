@@ -1,4 +1,4 @@
 # Development-only tooling - not required to run the data pipeline.
 # Install with:  pip install -r requirements-dev.txt
-vulture>=2.11
-pip-audit>=2.6
+vulture==2.16
+pip-audit==2.10.1
