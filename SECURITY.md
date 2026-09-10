@@ -10,6 +10,10 @@ wrong on every count, so here is the real picture:
   admin path — a credential that can write to this repository
 - a **React single-page app** with a few dozen npm dependencies
 - a **Tauri 2 desktop and Android app**, signed, with an auto-updater
+Operational hardening — headers, HSTS, rate limiting, WAF — is documented in
+[`docs/SECURITY_SETUP.md`](docs/SECURITY_SETUP.md), with a check command for
+each item.
+
 - a **Python pipeline** run by 23 GitHub Actions workflows, several holding
   secrets that can push to `main`
 

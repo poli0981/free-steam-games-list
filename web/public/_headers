@@ -1,0 +1,32 @@
+# Headers for STATIC ASSETS only.
+#
+# Worker-generated responses do NOT inherit these — worker/lib/http.ts applies
+# its own set, and the /admin pages build a stricter per-response CSP with a
+# nonce. Anything added here that must also hold for API responses has to be
+# added there too.
+#
+# Verified against the built app in a browser rather than assumed: the only
+# inline <script> in dist/index.html is a `type="application/ld+json"` data
+# block, which is not executed and so is not governed by script-src.
+
+/*
+  # Radix (via shadcn/ui) positions popovers, dialogs and tooltips with inline
+  # style attributes, and ECharts sizes its canvas the same way, so
+  # 'unsafe-inline' is load-bearing for style-src. It is also low risk here:
+  # the app renders no user-supplied HTML, and script-src stays strict, which
+  # is the directive that actually stops code execution.
+  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://shared.akamai.steamstatic.com https://shared.fastly.steamstatic.com https://cdn.akamai.steamstatic.com; font-src 'self'; connect-src 'self' https://api.github.com; worker-src 'self'; manifest-src 'self'; media-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  X-Frame-Options: DENY
+  # No camera, mic, geolocation or payment anywhere in this app; deny them so a
+  # future dependency cannot quietly start asking.
+  Permissions-Policy: accelerometer=(), autoplay=(), camera=(), display-capture=(), encrypted-media=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), midi=(), payment=(), usb=(), xr-spatial-tracking=()
+  Cross-Origin-Opener-Policy: same-origin
+  Cross-Origin-Resource-Policy: same-site
+
+# Hashed build output is immutable by construction — the filename changes when
+# the content does — so it can be cached hard. Everything else stays revalidated
+# so a deploy is visible immediately.
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
