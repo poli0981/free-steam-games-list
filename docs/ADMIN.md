@@ -171,8 +171,26 @@ The client secret is shown **once**. Copy both halves now.
 Then add a third Access application covering `free-steam-games.win/api/ingest`,
 with a policy of Action *Service Auth*, rule *Service Token* → `f2p-discovery`.
 
-> Use a *Service Auth* policy, not *Allow*. An `Allow` policy with a service
-> token rule still admits the interactive identities on your other policies.
+> **The policy Action must be *Service Auth*.** Cloudflare's own docs are blunt
+> about it: "Make sure to set the policy action to Service Auth; otherwise,
+> Access will prompt for an identity provider login." An `Allow` policy — even
+> one carrying a Service Token rule — serves the interactive login page to a
+> machine caller, and additionally admits the interactive identities from your
+> other policies.
+
+### Telling the three setup failures apart
+
+They all look like "the endpoint is broken". They are not the same problem:
+
+| Symptom | Cause | Fix |
+|---|---|---|
+| `404`, no redirect | No Access application covers the path | Create the application |
+| Redirect to the login page, `service_token_status=False` | Application exists, policy Action is not *Service Auth* | Change the policy Action |
+| `access: aud mismatch` in `wrangler tail` | Application exists, `ACCESS_AUD` is stale | Add its AUD, redeploy |
+| `ingest: principal not allowed` in `wrangler tail` | Access authenticated it, but the JWT identity is not in `INGEST_SERVICE_PRINCIPAL` | Copy the logged `got:` value into that var |
+
+`scripts/discover_new.py` decodes the first two from Access's own `meta` JWT and
+prints them; the last two only appear in `wrangler tail`.
 
 **The token alone is not enough.** Creating the service token without the
 application does nothing: Access only injects a JWT on paths an application
