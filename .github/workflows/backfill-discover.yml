@@ -104,11 +104,14 @@ jobs:
           DRY: ${{ inputs.dry_run && '--dry-run' || '' }}
         run: |
           # An absent YEAR means this is the scheduled run, so both env defaults
-          # apply. Do NOT fold this into a `${{ a || b }}` expression: `year` is
-          # required on dispatch but `quarter` is deliberately blankable, and an
-          # expression fallback cannot tell "blank, meaning whole year" from
-          # "absent, meaning use the default" -- it would silently narrow an
-          # explicit whole-year request down to SWEEP_QUARTER.
+          # apply. Resolved in shell, NOT with an expression fallback in the env
+          # block above: `year` is required on dispatch but `quarter` is
+          # deliberately blankable, and a fallback cannot tell "blank, meaning
+          # whole year" from "absent, meaning use the default" -- it would
+          # silently narrow an explicit whole-year request to SWEEP_QUARTER.
+          #
+          # (Actions also evaluates expression syntax inside `run:` comments, so
+          # writing the rejected form out here would itself break the file.)
           if [ -z "$YEAR" ]; then
             YEAR="$SWEEP_YEAR"
             QUARTER="$SWEEP_QUARTER"
