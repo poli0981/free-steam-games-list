@@ -14,6 +14,7 @@ import { verifyAccessJwt } from "./lib/access";
 import { handleAdminApi } from "./routes/admin";
 import { handleIngestApi } from "./routes/ingest";
 import { adminPage } from "./routes/admin-ui";
+import { editPage } from "./routes/edit-ui";
 import { reconcileApproved } from "./lib/reconcile";
 
 export default {
@@ -100,6 +101,10 @@ export default {
 
       if (isIngestApi) return handleIngestApi(request, url, env, who);
       if (isAdminApi) return handleAdminApi(request, url, env, who);
+
+      // /admin/edit corrects a game already in the catalogue. Same Access gate
+      // as the queue; it writes only data/overrides/<appid>.json.
+      if (pathname === "/admin/edit") return editPage(who.email);
 
       // Served from the Worker, never from ASSETS. Falling through to the SPA
       // handler here would serve the PUBLIC app shell at an admin URL.

@@ -12,6 +12,7 @@ import type { AccessIdentity } from "../lib/access";
 import { gh } from "../lib/github-app";
 import { appendLinks, TEMP_INFO_PATH } from "../lib/git-commit";
 import { reconcileApproved } from "../lib/reconcile";
+import { handleEditApi } from "./edit";
 
 /**
  * Per-request cap on a bulk decision. Bounds three things at once: the D1
@@ -65,6 +66,12 @@ export async function handleAdminApi(
   who: AccessIdentity,
 ): Promise<Response> {
   const route = url.pathname.slice("/api/admin/".length);
+
+  // Corrections to already-published games live in their own module; they
+  // write data/overrides/, never data/ and never the queue.
+  if (route === "game" || route === "edit") {
+    return handleEditApi(request, url, env, who);
+  }
 
   // Who am I? Confirms the Access -> Worker identity chain end to end.
   if (route === "me" && request.method === "GET") {

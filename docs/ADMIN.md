@@ -466,20 +466,38 @@ pipeline appends `Dead game`, `Delisted` and `No longer free!` segments to it,
 and those appends are one-way — once a game is flagged dead the marker is never
 re-added. Your text is combined with them rather than replacing them.
 
-### Why this is not in `/admin` yet
+### The same thing from `/admin/edit`
 
-Deliberately. The whole durability guarantee is ~200 lines of Python with no
-Worker, no D1 and no new credential; a UI adds none of it. Run it from the
-command line first — everything a `/admin/edit` screen would eventually do
-lands in the same override file, so nothing is thrown away when it arrives.
+`/admin/edit` (linked from the review queue) does exactly what the command
+above does, and writes a byte-identical file — that equality is asserted by a
+parity test, because a formatting difference between the two producers would
+turn every alternating edit into a whole-file diff.
+
+Load a game by appid, change the fields you want, add a reason, Save. A field
+already carrying an override is marked, shows the value from before the edit,
+and gets a **Retire** button. The Worker writes only
+`data/overrides/<appid>.json`; it cannot touch `data/`, and the page says so
+rather than letting you assume the catalogue changed.
+
+Two safeguards worth knowing:
+
+- The Worker's validation is a deliberately weaker MIRROR of
+  `validate_value()` in `scripts/core/overrides.py`. It exists so you are told
+  immediately. The Python one is authoritative and runs on every pipeline
+  write, and `check-overrides.yml` runs it on every push — so anything the UI
+  accepts but Python would reject fails CI within a minute instead of sitting
+  inert. Change one, change the other.
+- `was` is read server-side from the catalogue, never taken from the request.
+  It is what Retire restores, so a client-supplied value would let a crafted
+  request rewrite history.
 
 ---
 
 ## What is not built yet
 
-A `/admin/edit` screen. Corrections work today through
-`scripts/edit_game.py` (section 10) and land in the same `data/overrides/`
-files a UI would write, so the UI is presentation, not mechanism.
+`audit_log` pruning — see below. Otherwise the loop is closed: new games
+arrive by discovery and are approved in `/admin`, corrections are made in
+`/admin/edit` or from the command line, and both land in Git.
 
 `audit_log` has no pruning job yet. It grows only with admin actions, so it is
 not urgent, but it is unbounded — decide a retention window and make it agree

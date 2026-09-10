@@ -17,8 +17,29 @@ const REPO_OWNER = "poli0981";
 const REPO_NAME = "free-steam-games-list";
 const BRANCH = "main";
 
-/** The only path this module is permitted to write. */
+/** The new-game queue the ingest pipeline consumes. */
 export const TEMP_INFO_PATH = "scripts/temp_info.jsonl";
+
+/**
+ * Every path this module may write, anchored.
+ *
+ * The GitHub App credential can write anywhere in the repository; this is what
+ * stops a bug upstream from turning that into a general-purpose commit engine.
+ * data/ shards are NOT here and must never be: a shard is 1.2 MB, its identity
+ * is unstable (save_main re-chunks from scratch every run), and index.json
+ * would have to be bumped in the same commit. Overrides exist precisely so the
+ * Worker never has to touch a shard.
+ */
+const WRITABLE = [
+  /^scripts\/temp_info\.jsonl$/,
+  /^data\/overrides\/\d{1,10}\.json$/,
+];
+
+function assertWritable(path: string): void {
+  if (path.includes("..") || !WRITABLE.some((re) => re.test(path))) {
+    throw new Error(`refusing to write ${path}: not an allowed path`);
+  }
+}
 
 /**
  * Optimistic concurrency retries. The pipeline commits to `main` several times
@@ -74,14 +95,14 @@ interface HeadAndFile {
 }
 
 /**
- * Branch head and the current contents of the queue file, read TOGETHER.
+ * Branch head and the current contents of one file, read TOGETHER.
  *
  * Reading them in one query is what makes `expectedHeadOid` meaningful: the
  * text and the oid describe the same commit, so if anything lands between this
  * read and the mutation, the mutation is rejected rather than silently
  * overwriting the newer content.
  */
-async function readHeadAndFile(env: Env): Promise<HeadAndFile> {
+export async function readHeadAndFile(env: Env, path: string): Promise<HeadAndFile> {
   const data = await graphql<{
     repository: {
       defaultBranchRef: { target: { oid: string } } | null;
@@ -95,16 +116,16 @@ async function readHeadAndFile(env: Env): Promise<HeadAndFile> {
          object(expression:$expr) { ... on Blob { text isBinary } }
        }
      }`,
-    { owner: REPO_OWNER, name: REPO_NAME, expr: `${BRANCH}:${TEMP_INFO_PATH}` },
+    { owner: REPO_OWNER, name: REPO_NAME, expr: `${BRANCH}:${path}` },
   );
 
   const oid = data.repository?.defaultBranchRef?.target?.oid;
   if (!oid) throw new Error(`cannot read ${BRANCH} head`);
 
   const obj = data.repository.object;
-  // isBinary means GitHub refused to give us text. Appending to a blob we
-  // cannot read would destroy it.
-  if (obj?.isBinary) throw new Error(`${TEMP_INFO_PATH} is not text`);
+  // isBinary means GitHub refused to give us text. Rewriting a blob we cannot
+  // read would destroy it.
+  if (obj?.isBinary) throw new Error(`${path} is not text`);
   return { oid, text: obj?.text ?? "" };
 }
 
@@ -139,7 +160,7 @@ export async function appendLinks(
   const wanted = [...new Set(links)];
 
   for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
-    const { oid, text } = await readHeadAndFile(env);
+    const { oid, text } = await readHeadAndFile(env, TEMP_INFO_PATH);
 
     // Dedup against what is already queued. Without this, approving a game
     // twice before the pipeline runs queues it twice; ingest_new.py would
@@ -233,9 +254,74 @@ export async function appendLinks(
       let moved = ((err as GraphQlError).types ?? []).includes("STALE_DATA");
       if (!moved) {
         try {
-          moved = (await readHeadAndFile(env)).oid !== oid;
+          moved = (await readHeadAndFile(env, TEMP_INFO_PATH)).oid !== oid;
         } catch {
           // Cannot establish it either way; do not paper over the original error.
+        }
+      }
+      if (!moved) throw err;
+    }
+  }
+
+  throw new Error(`branch moved under ${MAX_ATTEMPTS} attempts: ${lastError}`);
+}
+
+
+/**
+ * Replace one allowlisted file, retrying if the branch moves under us.
+ *
+ * `build` receives the file's CURRENT text (empty when it does not exist) and
+ * returns the new text, or null to abandon without committing. It is called
+ * again on every retry, so it must derive its result from the text it is given
+ * rather than from anything captured earlier — that is what makes a retry
+ * merge with the newer content instead of clobbering it.
+ */
+export async function commitFile(
+  env: Env,
+  path: string,
+  headline: string,
+  body: string,
+  build: (current: string) => string | null,
+): Promise<string | null> {
+  assertWritable(path);
+  let lastError = "";
+
+  for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+    const { oid, text } = await readHeadAndFile(env, path);
+    const next = build(text);
+    if (next === null) return null;
+    if (next === text) return null; // nothing to say; do not make an empty commit
+
+    try {
+      const data = await graphql<{ createCommitOnBranch: { commit: { oid: string } } }>(
+        env,
+        `mutation($input: CreateCommitOnBranchInput!) {
+           createCommitOnBranch(input: $input) { commit { oid } }
+         }`,
+        {
+          input: {
+            branch: {
+              repositoryNameWithOwner: `${REPO_OWNER}/${REPO_NAME}`,
+              branchName: BRANCH,
+            },
+            message: { headline, body },
+            expectedHeadOid: oid,
+            fileChanges: { additions: [{ path, contents: b64encode(next) }] },
+          },
+        },
+      );
+      return data.createCommitOnBranch.commit.oid;
+    } catch (err) {
+      lastError = err instanceof Error ? err.message : String(err);
+      if (attempt === MAX_ATTEMPTS) throw err;
+      // Same fact-based classification as appendLinks: STALE_DATA if GitHub
+      // says so, otherwise re-read the head and see whether it actually moved.
+      let moved = ((err as GraphQlError).types ?? []).includes("STALE_DATA");
+      if (!moved) {
+        try {
+          moved = (await readHeadAndFile(env, path)).oid !== oid;
+        } catch {
+          /* cannot tell; surface the original error */
         }
       }
       if (!moved) throw err;

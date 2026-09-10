@@ -133,6 +133,7 @@ input[type=text], input[type=search] { font: inherit; font-size: 13px; padding: 
     <h1>Review queue</h1>
     <input type="search" id="q" placeholder="Filter this page by name or appid" style="width:270px">
     <button class="act" id="reconcile" title="Check whether approved games have appeared in data/">Reconcile</button>
+    <a class="act" href="/admin/edit" style="text-decoration:none" title="Correct a game already in the catalogue">Edit a game</a>
     <span class="who">${esc(actor)}</span>
   </div>
   <nav id="tabs"></nav>
