@@ -82,14 +82,24 @@
     // vars so the Worker can verify tokens itself rather than trusting that a
     // request reached it through the Access-protected path.
     "ACCESS_TEAM_DOMAIN": "polished-hall-48fd.cloudflareaccess.com",
-    // Comma-separated: one AUD per Access application. This Worker sits behind
-    // two — /admin and /api/admin/* — and each has its own tag. Add a tag here
-    // whenever another Access application is pointed at this Worker.
     // The Access service-token name the discovery pipeline authenticates as.
     // Pinned so the ingest token cannot use /api/admin/* and an admin session
     // cannot use /api/ingest/* — verifyAccessJwt alone would accept either.
     "INGEST_SERVICE_PRINCIPAL": "f2p-discovery",
 
-    "ACCESS_AUD": "ca93cf2c7444c20f13b0667a3063d4ac37f702a802e712721da53abb510f9194,a15d6e938cf3109651473e37c0c0fdf84a851248d8f57fdfda26808b40d3c3cb"
+    // Comma-separated: one AUD per Access application. This Worker sits behind
+    // three, and each has its own tag:
+    //   ca93cf2c…  /admin          (email policy)
+    //   a15d6e93…  /api/admin/*    (email policy)
+    //   bd54655a…  /api/ingest/*   (service auth, token f2p-discovery)
+    //
+    // ADD A TAG HERE whenever another Access application is pointed at this
+    // Worker. Forgetting fails only AFTER the application starts working, and
+    // the two failures look nothing alike in `wrangler tail`:
+    //   hasHeader: false, hasCookie: false  → no Access app covers the path
+    //   access: aud mismatch                → app exists, this list is stale
+    // Read a tag without the dashboard: an Access-covered path 302s to the
+    // login URL carrying its AUD as the `kid=` query parameter.
+    "ACCESS_AUD": "ca93cf2c7444c20f13b0667a3063d4ac37f702a802e712721da53abb510f9194,a15d6e938cf3109651473e37c0c0fdf84a851248d8f57fdfda26808b40d3c3cb,bd54655abb62f1bb72f8541177ef2406a066007a4c5ac60eb654f90f6ea88754"
   }
 }
