@@ -2,10 +2,14 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import { Layout } from "./components/layout/Layout";
 import { Dashboard } from "./pages/Dashboard";
 import { lazyWithRetry } from "./lib/lazy";
+import { useWelcome } from "./stores/welcome";
 
 // Dashboard (the landing page) and Layout stay eager — splitting them would
 // just add a request waterfall to the first paint. Everything else loads on
 // navigation; Layout's <Suspense> keeps the shell mounted meanwhile.
+const WelcomePage = lazyWithRetry(() =>
+  import("./pages/Welcome").then((m) => ({ default: m.WelcomePage })),
+);
 const GamesPage = lazyWithRetry(() =>
   import("./pages/Games").then((m) => ({ default: m.GamesPage })),
 );
@@ -73,11 +77,23 @@ const NotFoundPage = lazyWithRetry(() =>
   import("./pages/errors/NotFound").then((m) => ({ default: m.NotFoundPage })),
 );
 
+/**
+ * The landing route. A first-time visitor is sent to /welcome once — after the
+ * legal gate, never instead of it. Returning visitors go straight to the
+ * dashboard, and /welcome stays reachable from Settings.
+ */
+function DashboardOrWelcome() {
+  const seen = useWelcome((s) => s.seen);
+  if (!seen) return <Navigate to="/welcome" replace />;
+  return <Dashboard />;
+}
+
 export default function App() {
   return (
     <Routes>
       <Route element={<Layout />}>
-        <Route index element={<Dashboard />} />
+        <Route index element={<DashboardOrWelcome />} />
+        <Route path="welcome" element={<WelcomePage />} />
         <Route path="games" element={<GamesPage />} />
         <Route path="games/:appid" element={<GamesPage />} />
         <Route path="top-online" element={<TopOnlinePage />} />

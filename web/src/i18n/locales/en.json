@@ -10,6 +10,38 @@
     "declinedBody": "You must accept the License, EULA, Privacy Policy, Disclaimer, and Terms of Use to use F2P Tracker.",
     "back": "Back"
   },
+  "welcome": {
+    "title": "Welcome",
+    "heading": "A list of free-to-play games on Steam",
+    "intro": "Everything here is free to start playing. The catalog refreshes itself, so the numbers you see are close to current.",
+    "introWithCount": "{{total}} games you can start playing without paying. The catalog refreshes itself, so the numbers you see are close to current.",
+    "honestTitle": "What this list is, and isn't",
+    "honest1": "Being listed is not a recommendation. Most entries are here because Steam flags them free-to-play, not because anyone vouched for them.",
+    "honest2": "Genre, anti-cheat and safety fields are best-effort and sometimes wrong. Check the Steam page before relying on any single value.",
+    "honest3": "No warranty of any kind. Play at your own risk, and take any complaint about a game to its developer.",
+    "freshness": "An automated pipeline re-checks the catalog on a schedule and commits what changed.",
+    "lastUpdated": "Last update: {{date}}.",
+    "startHere": "Start here",
+    "entry": {
+      "browse": {
+        "title": "Browse the catalog",
+        "body": "Search and filter every tracked game."
+      },
+      "charts": {
+        "title": "Charts",
+        "body": "Genres, platforms, languages, anti-cheat and more."
+      },
+      "leaderboards": {
+        "title": "Leaderboards",
+        "body": "Who is actually being played right now."
+      }
+    },
+    "language": "Language",
+    "paperwork": "The paperwork",
+    "paperworkBody": "You accepted these before continuing. They stay available if you want to re-read them.",
+    "continue": "Go to the dashboard",
+    "reshowHint": "You can open this page again from Settings."
+  },
   "nav": {
     "dashboard": "Dashboard",
     "games": "Games",
@@ -186,7 +218,10 @@
     "title": "Settings",
     "subtitle": "Authentication, theme, and preferences.",
     "languageTitle": "Language",
-    "languageHint": "Switch UI language. Long-form legal copy stays in English."
+    "languageHint": "Switch UI language. Long-form legal copy stays in English.",
+    "welcomeTitle": "Introduction",
+    "welcomeHint": "The page shown on your first visit — what this list is, how fresh it is, and where to start.",
+    "welcomeAction": "Show the introduction again"
   },
   "verify": {
     "verifying": "verifying…",

@@ -10,6 +10,38 @@
     "declinedBody": "Bạn phải chấp nhận License, EULA, Chính sách bảo mật, Tuyên bố miễn trừ và Điều khoản sử dụng để dùng F2P Tracker.",
     "back": "Quay lại"
   },
+  "welcome": {
+    "title": "Chào mừng",
+    "heading": "Danh sách game miễn phí trên Steam",
+    "intro": "Mọi game ở đây đều chơi được mà không mất tiền. Danh sách tự cập nhật nên số liệu bạn thấy khá sát thực tế.",
+    "introWithCount": "{{total}} game bạn có thể chơi mà không mất tiền. Danh sách tự cập nhật nên số liệu bạn thấy khá sát thực tế.",
+    "honestTitle": "Danh sách này là gì, và không phải là gì",
+    "honest1": "Có mặt ở đây không có nghĩa là được khuyên dùng. Phần lớn game vào danh sách vì Steam đánh dấu free-to-play, không phải vì có ai kiểm chứng.",
+    "honest2": "Các trường thể loại, anti-cheat và mức an toàn chỉ ở mức cố gắng hết sức, đôi khi sai. Hãy xem trang Steam trước khi tin vào một giá trị đơn lẻ.",
+    "honest3": "Không bảo hành dưới bất kỳ hình thức nào. Bạn tự chịu rủi ro khi chơi, và mọi khiếu nại về game xin gửi tới nhà phát triển game đó.",
+    "freshness": "Một pipeline tự động kiểm tra lại danh sách theo lịch và ghi nhận những gì thay đổi.",
+    "lastUpdated": "Cập nhật gần nhất: {{date}}.",
+    "startHere": "Bắt đầu từ đây",
+    "entry": {
+      "browse": {
+        "title": "Xem danh sách",
+        "body": "Tìm kiếm và lọc toàn bộ game đang theo dõi."
+      },
+      "charts": {
+        "title": "Biểu đồ",
+        "body": "Thể loại, nền tảng, ngôn ngữ, anti-cheat và hơn nữa."
+      },
+      "leaderboards": {
+        "title": "Bảng xếp hạng",
+        "body": "Game nào đang thực sự có người chơi."
+      }
+    },
+    "language": "Ngôn ngữ",
+    "paperwork": "Phần pháp lý",
+    "paperworkBody": "Bạn đã chấp nhận những tài liệu này trước khi tiếp tục. Chúng luôn sẵn có nếu bạn muốn đọc lại.",
+    "continue": "Vào trang tổng quan",
+    "reshowHint": "Bạn có thể mở lại trang này trong phần Cài đặt."
+  },
   "nav": {
     "dashboard": "Tổng quan",
     "games": "Trò chơi",
@@ -186,7 +218,10 @@
     "title": "Cài đặt",
     "subtitle": "Đăng nhập, theme, và tuỳ chọn.",
     "languageTitle": "Ngôn ngữ",
-    "languageHint": "Đổi ngôn ngữ giao diện. Các văn bản pháp lý dài vẫn giữ tiếng Anh."
+    "languageHint": "Đổi ngôn ngữ giao diện. Các văn bản pháp lý dài vẫn giữ tiếng Anh.",
+    "welcomeTitle": "Giới thiệu",
+    "welcomeHint": "Trang hiện ra ở lần truy cập đầu tiên — danh sách này là gì, mới tới đâu, và nên bắt đầu từ đâu.",
+    "welcomeAction": "Xem lại phần giới thiệu"
   },
   "verify": {
     "verifying": "đang xác thực…",

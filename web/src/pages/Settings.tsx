@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Languages, Globe2 } from "lucide-react";
+import { Languages, Globe2, Sparkles } from "lucide-react";
 import { AuthPanel } from "../components/auth/AuthPanel";
 import { DeviceFlowPanel } from "../components/auth/DeviceFlowPanel";
 import { GpgPanel } from "../components/auth/GpgPanel";
@@ -8,6 +8,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card"
 import { Button } from "../components/ui/button";
 import { useAuth } from "../stores/auth";
 import { useDocumentTitle } from "../hooks/useDocumentTitle";
+import { useWelcome } from "../stores/welcome";
+import { useNavigate } from "react-router-dom";
 import { getRateLimit, type RateLimit } from "../lib/github-api";
 import { formatNumber } from "../lib/utils";
 import {
@@ -23,6 +25,8 @@ const LANG_LABELS: Record<SupportedLanguage, { native: string; en: string; flag:
 };
 
 export function SettingsPage() {
+  const navigate = useNavigate();
+  const resetWelcome = useWelcome((s) => s.reset);
   const { t, i18n } = useTranslation();
   useDocumentTitle("settings.title");
   const auth = useAuth();
@@ -95,6 +99,29 @@ export function SettingsPage() {
               <Globe2 className="h-3 w-3" /> {t("system.autoDetectedLanguage")}
             </span>
           </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Sparkles className="h-4 w-4" /> {t("settings.welcomeTitle")}
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <p className="text-sm text-muted-foreground">{t("settings.welcomeHint")}</p>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => {
+              // Clear the flag as well as navigating, so closing the page
+              // without pressing Continue does not silently re-arm it.
+              resetWelcome();
+              navigate("/welcome");
+            }}
+          >
+            {t("settings.welcomeAction")}
+          </Button>
         </CardContent>
       </Card>
 
