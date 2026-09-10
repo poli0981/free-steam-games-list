@@ -52,11 +52,16 @@ async function bumpedIndexFile(
     max_per_file?: number;
   };
   const newTotal = (obj.total ?? 0) + (deltas.totalDelta ?? 0);
+  // Spread, never reconstruct. This used to build `next` (and each file entry)
+  // from a hardcoded key list, which silently DELETED every other key on write
+  // — so one routine edit through the UI would strip anything the pipeline or
+  // a future feature had added to index.json. Keep it additive.
   const newFiles = (obj.files ?? []).map((f) => ({
-    name: f.name,
+    ...f,
     count: f.count + (deltas.shardCountDeltas?.[f.name] ?? 0),
   }));
   const next = {
+    ...obj,
     max_per_file: obj.max_per_file ?? 800,
     total: newTotal,
     last_updated: nowIsoSeconds(),

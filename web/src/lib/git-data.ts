@@ -278,17 +278,22 @@ export async function createCommit(
   };
 }
 
+/**
+ * Fast-forward the branch ref. Deliberately NOT force-capable: a force push
+ * here would silently erase whatever the data pipeline committed in between,
+ * and the caller's conflict path (RefAdvancedError -> retry) is the correct
+ * response to a moved ref. Do not reintroduce a `force` parameter.
+ */
 export async function updateBranchRef(
   newCommitSha: string,
   token: string,
-  force = false,
 ): Promise<void> {
   const res = await fetch(
     `${API}/repos/${REPO_OWNER}/${REPO_NAME}/git/refs/heads/${DEFAULT_BRANCH}`,
     {
       method: "PATCH",
       headers: authHeaders(token),
-      body: JSON.stringify({ sha: newCommitSha, force }),
+      body: JSON.stringify({ sha: newCommitSha, force: false }),
     },
   );
   if (!res.ok) {
