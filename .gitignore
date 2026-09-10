@@ -9,6 +9,13 @@
 ehthumbs.db
 Thumbs.db
 *.log
+# scripts/dead_games.log is a COMMITTED audit trail: appended by
+# scripts/mark_dead_games.py and explicitly staged by mark-dead-games.yml.
+# It survives *.log today only because ignore rules do not apply to
+# already-tracked files -- rename or recreate it and it silently vanishes.
+# (scripts/dead_links.log is deliberately NOT excepted: bash/dead_links.sh
+# runs `git add .`, and that log is local diagnostic output.)
+!scripts/dead_games.log
 *.tmp
 *.temp
 *.swp
@@ -22,8 +29,10 @@ Thumbs.db
 *.iml
 *.ipr
 
-# VS Code
-.vscode/
+# VS Code. `.vscode/*` not `.vscode/`: git does not descend into an excluded
+# DIRECTORY, so a negation cannot re-include a file whose parent is excluded --
+# the four exceptions below were dead code.
+.vscode/*
 !.vscode/settings.json
 !.vscode/tasks.json
 !.vscode/launch.json
@@ -51,6 +60,26 @@ local.properties
 .env
 .env.local
 .env.*.local
+# .env.production / .env.development matched none of the three rules above.
+.env.*
+!.env.example
+
+# Wrangler local secrets. `wrangler dev` reads GH_APP_PRIVATE_KEY -- the
+# GitHub App PEM that can commit to this repo -- from here, INLINE, so the
+# *.pem and *.key rules below do not cover it.
+.dev.vars
+.dev.vars.*
+!.dev.vars.example
+
+# Android signing keystores. web/src-tauri/TAURI.md walks you through
+# `keytool -genkeypair -keystore f2p-tracker-release.jks` with a relative path
+# inside gen/android/, and only keystore.properties was ignored. Losing or
+# leaking this key means the Android app can never be updated again.
+*.jks
+*.keystore
+*.p12
+*.pfx
+
 *.pem
 *.key
 *.cer
@@ -67,13 +96,17 @@ __pycache__/
 # Virtual Environments
 venv/
 .venv/
-env/
-ENV/
+# Anchored: unanchored `env/` matched web/worker/env/ at any depth, silently
+# dropping Worker source. (On Windows core.ignorecase makes ENV/ match env/.)
+/env/
+/ENV/
 .virtualenv/
 
-# Distribution / Packaging
-build/
-dist/
+# Distribution / Packaging. Anchored to the repo root: web/dist is covered by
+# web/.gitignore, and Android build dirs by the nested gitignores that
+# `tauri android init` wrote, so unanchored forms only risk hiding real source.
+/build/
+/dist/
 *.egg-info/
 *.egg
 .eggs/
@@ -173,16 +206,27 @@ artifacts/
 # 9.CUSTOM RULES
 # ========================
 # Add any project-specific files or directories to ignore below
-[Nn]ote.txt
-[Nn]ote.md
-[Nn]otes.txt
-[Nn]otes.md
+# Anchored: unanchored these matched docs/notes.md, docs/i18n/*/notes.md and
+# anything similar -- the likeliest filename for real documentation here.
+/[Nn]ote.txt
+/[Nn]ote.md
+/[Nn]otes.txt
+/[Nn]otes.md
 temp_data/
 debug_info/
-countdata.py
-checkduplicates.py
+/countdata.py
+/checkduplicates.py
 data.bak/
 *.pre_shard
 
 .claude/
+
+# Wrangler working state. web/.gitignore covers web/.wrangler, but running
+# wrangler from the REPO ROOT writes .wrangler/ here instead -- which is how
+# .wrangler/cache/wrangler-account.json (Cloudflare account id + account email)
+# reached a public repo. Unanchored so it holds at any depth.
+.wrangler/
+
+# Kotlin incremental build state from `tauri android build`.
+.kotlin/
 # End of .gitignore file

@@ -174,6 +174,44 @@ with a policy of Action *Service Auth*, rule *Service Token* → `f2p-discovery`
 > Use a *Service Auth* policy, not *Allow*. An `Allow` policy with a service
 > token rule still admits the interactive identities on your other policies.
 
+**The token alone is not enough.** Creating the service token without the
+application does nothing: Access only injects a JWT on paths an application
+claims, so `/api/ingest/*` stays uncovered, the request arrives at the Worker
+bare, and `verifyAccessJwt` returns 404. The symptom is a plain `404` with no
+redirect, and it is indistinguishable from a routing bug until you look at the
+Worker log.
+
+### Every new Access application needs its AUD added to `ACCESS_AUD`
+
+Easy to miss, and it fails *after* the application starts working - which
+makes it look like a different problem entirely.
+
+Each Access application gets its **own** AUD tag. `web/wrangler.jsonc` carries
+`ACCESS_AUD` as a **comma-separated allowlist**, and the Worker refuses any
+token whose `aud` is not in it. Add an application without extending that list
+and every request through it is rejected with `access: aud mismatch`.
+
+You do not need the dashboard to read an AUD. An uncovered path 404s; a
+covered one redirects to the login URL with the AUD in its `kid` parameter:
+
+```bash
+curl -s -o /dev/null -w '%{http_code} %{redirect_url}\n' https://free-steam-games.win/api/ingest/ping
+```
+
+A `404` with no redirect means no application covers the path. A `302` whose
+`kid=` value is absent from `ACCESS_AUD` means the application exists but the
+Worker will refuse it - add the value and redeploy (`ACCESS_AUD` is a `var`,
+not a secret, so a push touching `web/` is enough).
+
+From the Worker's own side:
+
+```bash
+cd web && npx wrangler tail --format pretty
+```
+
+`hasHeader: false, hasCookie: false` means Access never ran - no application
+covers the path. `access: aud mismatch` means it ran and `ACCESS_AUD` is stale.
+
 Finally, add three repository secrets (**Settings → Secrets and variables →
 Actions**):
 
