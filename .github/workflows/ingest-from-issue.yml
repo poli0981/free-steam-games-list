@@ -7,12 +7,16 @@ concurrency :
   cancel-in-progress : false
 jobs :
   ingest :
-    if : contains(github.event.issue.title, '[add-game]')
+    # Title match alone is NOT an authorization check — issues are public, so
+    # without the author_association gate any user can write to main.
+    if : >-
+      contains(github.event.issue.title, '[add-game]')
+      && contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'),
+                  github.event.issue.author_association)
     runs-on : ubuntu-latest
     steps :
       -
         uses : actions/checkout@v4
-        with : { token : '${{ secrets.GH_TOKEN }}' }
       -
         uses : actions/setup-python@v5
         with : { python-version : '3.12' }
@@ -27,7 +31,7 @@ jobs :
             fs.writeFileSync('scripts/temp_info.jsonl', m[1].trim() + '\n');
       -
         run : |
-          pip install --quiet requests
+          pip install --quiet -r requirements.txt
           python scripts/ingest_new.py
           python scripts/generate_tables.py
         env : { STEAM_API_KEY : '${{ secrets.STEAM_API_KEY }}' }
@@ -36,7 +40,7 @@ jobs :
           git config --global user.name 'github-actions[bot]'
           git config --global user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add .
-          git diff --staged --quiet && echo "No changes" || git commit -m "Ingest #${{ github.event.issue.number }}" && git push
+          git diff --staged --quiet && echo "No changes" || (git commit -m "Ingest #${{ github.event.issue.number }}" && git push)
       -
         uses : actions/github-script@v7
         with :

@@ -38,7 +38,7 @@ export function Layout() {
       <div className="flex min-w-0 flex-1 flex-col">
         <Topbar onMenuToggle={() => setMobileNavOpen(true)} />
         <main ref={mainRef} className="flex-1 overflow-y-auto">
-          <div className="container max-w-screen-2xl py-6">
+          <div className="container py-6">
             {/*
               Boundary + Suspense live INSIDE the layout so the sidebar/topbar
               stay mounted during lazy-route loads and page crashes. resetKey

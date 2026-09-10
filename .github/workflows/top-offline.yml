@@ -13,7 +13,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with: {token: '${{ secrets.GH_TOKEN }}'}
       - uses: actions/setup-python@v5
         with: {python-version: '3.12'}
       - run: chmod +x ./bash/offline.sh && ./bash/offline.sh

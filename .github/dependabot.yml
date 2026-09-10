@@ -1,0 +1,98 @@
+# NOTE: committing this file REPLACES the Dependabot configuration currently
+# set through repo settings. Existing open Dependabot PRs (e.g. #111) are
+# superseded and will be recreated against these groups on the next run.
+#
+# web/worker/ is intentionally absent: it does not exist yet. Add a fifth
+# npm entry for it as part of the Cloudflare Worker work — that package will
+# hold the repo-write credential, so it must be covered.
+version: 2
+
+updates:
+  # ── Frontend ──────────────────────────────────────────────────────────────
+  - package-ecosystem: npm
+    directory: /web
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 10
+    groups:
+      # Collapses the long tail of transitive advisories (brace-expansion,
+      # fast-uri, nanoid, postcss, browserslist, …) into ONE PR instead of
+      # one per package, which is what produced the current alert backlog.
+      npm-security:
+        applies-to: security-updates
+        patterns: ['*']
+      npm-minor-patch:
+        applies-to: version-updates
+        update-types: [minor, patch]
+      radix:
+        applies-to: version-updates
+        patterns: ['@radix-ui/*']
+      tanstack:
+        applies-to: version-updates
+        patterns: ['@tanstack/*']
+      tauri-js:
+        applies-to: version-updates
+        patterns: ['@tauri-apps/*']
+    ignore:
+      # Framework majors are migrations with their own staged PRs, not
+      # something to take as an unattended bump.
+      - dependency-name: react
+        update-types: [version-update:semver-major]
+      - dependency-name: react-dom
+        update-types: [version-update:semver-major]
+      - dependency-name: react-router-dom
+        update-types: [version-update:semver-major]
+      - dependency-name: tailwindcss
+        update-types: [version-update:semver-major]
+      - dependency-name: typescript
+        update-types: [version-update:semver-major]
+      # lucide-react ships breaking icon renames on 0.x minors.
+      - dependency-name: lucide-react
+
+  # ── Desktop / Android shell ───────────────────────────────────────────────
+  - package-ecosystem: cargo
+    directory: /web/src-tauri
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    groups:
+      cargo-security:
+        applies-to: security-updates
+        patterns: ['*']
+      cargo-minor-patch:
+        applies-to: version-updates
+        update-types: [minor, patch]
+
+  # ── Python pipeline ───────────────────────────────────────────────────────
+  # Only does useful work once requirements.txt uses exact `==` pins; with the
+  # current `>=x,<y` ranges Dependabot has nothing to raise.
+  - package-ecosystem: pip
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    groups:
+      pip-all:
+        patterns: ['*']
+
+  # ── GitHub Actions ────────────────────────────────────────────────────────
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    groups:
+      actions-all:
+        patterns: ['*']
+    ignore:
+      # Action majors are held until the GITHUB_TOKEN checkout migration is
+      # confirmed green — do not stack an untested action-major bump on top
+      # of a credential change you still need to verify.
+      - dependency-name: actions/checkout
+        update-types: [version-update:semver-major]
+      - dependency-name: actions/setup-python
+        update-types: [version-update:semver-major]

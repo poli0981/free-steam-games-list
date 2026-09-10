@@ -9,3 +9,6 @@ dist-ssr
 
 # TS incremental build info
 *.tsbuildinfo
+
+# Wrangler local state: local D1 sqlite, asset manifests, dev cache.
+.wrangler/

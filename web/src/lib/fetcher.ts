@@ -1,21 +1,36 @@
 /**
- * GitHub raw data fetchers. Returns parsed records.
- * Uses raw.githubusercontent.com — sends ACAO:* so works directly from browser.
+ * Dataset fetchers. Returns parsed records.
+ *
+ * Data is served same-origin through the Worker at /api/data/*, which proxies
+ * the files that remain canonical in Git. That keeps GitHub out of the request
+ * path for visitors (so the privacy policy can say the page loads no
+ * third-party resources) and puts caching under our control.
+ *
+ * The desktop/Android build is the exception: it loads from tauri://localhost,
+ * where a relative URL would resolve against the app origin rather than the
+ * site, so it needs the absolute origin.
  */
 import {
-  REPO_OWNER,
-  REPO_NAME,
-  DEFAULT_BRANCH,
   DATA_DIR,
   type DataIndex,
   type GameRecord,
 } from "./schema";
 import { migrateRecord } from "./data-store";
+import { isTauri } from "./external-open";
 
-const RAW_BASE = `https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/${DEFAULT_BRANCH}`;
+/** Must match `vars.SITE_ORIGIN` in web/wrangler.jsonc. */
+const SITE_ORIGIN = "https://free-steam-games.win";
 
+/** Same-origin on the web; absolute inside the Tauri webview. */
+const DATA_BASE = isTauri() ? `${SITE_ORIGIN}/api/data` : "/api/data";
+
+/**
+ * `pathInRepo` is the path as it exists in the repository (e.g.
+ * "data/index.json"); the Worker allowlists exactly the three paths the app
+ * fetches, so this is not a general-purpose GitHub proxy.
+ */
 export function rawUrl(pathInRepo: string): string {
-  return `${RAW_BASE}/${pathInRepo}`;
+  return `${DATA_BASE}/${pathInRepo}`;
 }
 
 export async function fetchIndex(signal?: AbortSignal): Promise<DataIndex> {

@@ -1,0 +1,77 @@
+// The ONLY deployment config for this project.
+//
+// Cloudflare Workers Builds (dashboard -> Worker -> Settings -> Build) is
+// pointed at this repo with root directory "web", so this file, package.json
+// and the lockfile sit together and dependency auto-detection works. There is
+// deliberately no deploy workflow in .github/workflows — pushing main deploys.
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+
+  // MUST match the existing Worker that holds the free-steam-games.win
+  // custom domain. Deploying under any other name creates a second,
+  // domainless Worker and leaves the live site on the old build.
+  "name": "free-steam-games-list",
+  "main": "./worker/index.ts",
+  "compatibility_date": "2026-09-10",
+
+  // Empty on purpose. The Worker uses only fetch, Web Crypto and D1, so
+  // nodejs_compat would add cold-start cost for nothing.
+  "compatibility_flags": [],
+
+  // No *.workers.dev hostname. A zone-scoped Cloudflare Access policy does not
+  // cover workers.dev, so leaving it enabled would expose /admin — and the
+  // repo-write credential behind it — on an unprotected hostname.
+  "workers_dev": false,
+
+  "assets": {
+    // Vite's build output. NOT "." — pointing this at the source directory is
+    // what currently serves an unbuilt index.html (referencing /src/main.tsx)
+    // along with the whole source tree.
+    "directory": "./dist",
+
+    // Lets worker/index.ts fall through via env.ASSETS.fetch(request).
+    "binding": "ASSETS",
+
+    // Any path matching no file returns index.html with HTTP 200, which is what
+    // BrowserRouter needs. Replaces the GitHub Pages 404.html trick.
+    //
+    // Consequence worth remembering: a request for a DELETED hashed chunk also
+    // gets index.html at 200, so the browser rejects it on MIME type rather
+    // than status. lib/lazy.ts's isChunkLoadError matches that message.
+    "not_found_handling": "single-page-application",
+
+    // Worker code runs ONLY for these prefixes; everything else is served
+    // straight from the asset server, unbilled, never invoking the Worker.
+    // /img/* must be listed or image requests fall through to the SPA handler
+    // and come back as index.html with Content-Type: text/html. /admin must be
+    // listed or the SPA fallback serves the public shell where Access is
+    // expected. /assets/* is deliberately NOT listed — routing hashed bundles
+    // through the Worker would bill every JS/CSS request.
+    "run_worker_first": ["/api/*", "/img/*", "/admin", "/admin/*"]
+  },
+
+  "observability": {
+    "enabled": true,
+    "head_sampling_rate": 1
+  },
+
+  // Admin-only state: the new-games queue, edit drafts, audit log. Game data
+  // stays canonical in Git — D1 never holds game records.
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "f2p-admin",
+      "database_id": "31b570e2-1863-4ccd-a019-dee4eadc3921"
+    }
+  ],
+
+  "vars": {
+    "SITE_ORIGIN": "https://free-steam-games.win",
+
+    // Image transformations bill separately from Workers Paid (5,000 unique per
+    // month free, then a distinct Images subscription) and Cloudflare has no
+    // spend cap. Ship OFF, read real /img/* volume from Workers Logs, then
+    // decide. Passthrough still gets edge caching.
+    "IMG_TRANSFORM": "false"
+  }
+}

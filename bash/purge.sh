@@ -1,6 +1,6 @@
 #!/bin/bash
 set -euo pipefail
-pip install --quiet requests
+pip install --quiet -r requirements.txt
 python scripts/purge_unhealthy.py
 python scripts/generate_tables.py
 git config --global user.name 'github-actions[bot]'

@@ -82,23 +82,43 @@ interface Props {
 }
 
 export function EChart({ option, height = 360, className }: Props) {
-  const opts = useMemo(
-    () => ({
-      ...withTouchZoom(option),
+  const opts = useMemo(() => {
+    const base = withTouchZoom(option) as Record<string, unknown>;
+    // Dark tooltip defaults. These used to come from the built-in "dark"
+    // theme; that theme never registers under `echarts/core` (see the note on
+    // <ReactEChartsCore> below), so we supply them here instead. Spread the
+    // caller's tooltip LAST so per-chart `formatter`/`trigger` still win.
+    const tooltip = {
+      backgroundColor: "#111c33",
+      borderColor: "#1e293b",
+      borderWidth: 1,
+      textStyle: { color: "#e2e8f0", fontSize: 12 },
+      ...((base.tooltip as Record<string, unknown> | undefined) ?? {}),
+    };
+    return {
+      ...base,
+      tooltip,
       backgroundColor: "transparent",
       textStyle: {
         fontFamily: "Inter, system-ui, sans-serif",
       },
-    }),
-    [option],
-  );
+    };
+  }, [option]);
   return (
     <ReactEChartsCore
       echarts={echarts}
       option={opts}
       style={{ height, width: "100%" }}
       className={className}
-      theme="dark"
+      // NO `theme="dark"` HERE. `echarts/core` ships no registered themes —
+      // only the full `echarts` bundle self-registers them. Passing an
+      // unregistered theme name was tolerated by echarts 5, but under
+      // echarts 6 it silently stops every series from painting: axes, grid
+      // and legend still draw, so the chart looks "empty" rather than
+      // broken, and nothing is logged. It cost a full bisect to find.
+      // Every chart in charts/ sets its own colors explicitly, so dropping
+      // the theme changes nothing visually. If a real theme is wanted, use
+      // echarts.registerTheme(name, obj) above and pass that name.
       notMerge
       lazyUpdate
     />

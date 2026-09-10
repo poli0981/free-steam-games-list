@@ -6,7 +6,10 @@ import { cn } from "../../lib/utils";
 
 interface Props {
   /** Ref to the scroll container — listens for scrollTop changes on it. */
-  scrollRef: RefObject<HTMLElement>;
+  // `RefObject<T | null>` because React 19's types made useRef<T>(null)
+  // return exactly that. The component already treats `.current` as
+  // nullable at runtime, so this only makes the type honest.
+  scrollRef: RefObject<HTMLElement | null>;
   /** Pixel threshold before the button fades in. */
   threshold?: number;
 }

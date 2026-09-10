@@ -1,0 +1,64 @@
+name: Web CI
+
+# The check gate for web/. This exists because deploy-pages.yml was previously
+# the ONLY thing running `npm run typecheck` — so when that workflow is deleted
+# during the Cloudflare migration, nothing would validate the frontend at all.
+# Cloudflare Workers Builds deploys the site; this workflow only *checks* it.
+
+on:
+  pull_request:
+    paths: ['web/**', '.github/workflows/web-ci.yml']
+  push:
+    branches: [main]
+    paths: ['web/**', '.github/workflows/web-ci.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: web-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: 'npm'
+          cache-dependency-path: web/package-lock.json
+
+      # Deliberately NOT `npm ci || npm install`. That fallback is what hid the
+      # echarts/echarts-wordcloud peer conflict: `npm ci` failed, `npm install`
+      # was tried, and the step still went red only at the very end — while
+      # locally everyone kept a stale node_modules. A lockfile that cannot be
+      # installed cleanly is a failure, not something to work around.
+      - name: Install
+        run: npm ci
+
+      # Covers BOTH tsconfigs. tsconfig.json only includes ["src",
+      # "vite.config.ts"], so before tsconfig.worker.json existed the Worker
+      # source would have shipped completely untyped.
+      - name: Type check
+        run: npm run typecheck
+
+      - name: Build
+        run: npm run build
+
+      # Bundles the Worker and resolves every binding in wrangler.jsonc without
+      # deploying or needing credentials. Catches a broken config here rather
+      # than in the Cloudflare dashboard after a push.
+      - name: Worker build check
+        run: npx wrangler deploy --dry-run
+
+      # knip.json is warn-only, so this reports dead code without failing the
+      # build. Flip the rules in knip.json to error when the backlog is clear.
+      - name: Unused code report
+        run: npm run knip
