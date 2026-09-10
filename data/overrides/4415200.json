@@ -1,0 +1,16 @@
+{
+  "schema": 1,
+  "appid": "4415200",
+  "link": "https://store.steampowered.com/app/4415200/",
+  "name": "Draw Party",
+  "fields": {
+    "genre": {
+      "value": "Party Game",
+      "was": "Casual",
+      "set_by": "k30021424@gmail.com",
+      "set_at": "2026-09-10T17:04:11.199Z",
+      "reason": ""
+    }
+  },
+  "retired": {}
+}
