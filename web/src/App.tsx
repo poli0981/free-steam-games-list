@@ -10,6 +10,9 @@ import { useWelcome } from "./stores/welcome";
 const WelcomePage = lazyWithRetry(() =>
   import("./pages/Welcome").then((m) => ({ default: m.WelcomePage })),
 );
+const ChartsIndexPage = lazyWithRetry(() =>
+  import("./pages/charts/ChartsIndex").then((m) => ({ default: m.ChartsIndexPage })),
+);
 const GamesPage = lazyWithRetry(() =>
   import("./pages/Games").then((m) => ({ default: m.GamesPage })),
 );
@@ -96,7 +99,7 @@ export default function App() {
         <Route path="top-online" element={<TopOnlinePage />} />
         <Route path="top-offline" element={<TopOfflinePage />} />
         <Route path="charts">
-          <Route index element={<Navigate to="/charts/genres" replace />} />
+          <Route index element={<ChartsIndexPage />} />
           <Route path="genres" element={<GenresPage />} />
           <Route path="platforms" element={<PlatformsPage />} />
           <Route path="tags" element={<TagsPage />} />

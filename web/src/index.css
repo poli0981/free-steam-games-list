@@ -11,44 +11,54 @@
    under Tailwind 3, so this migration is provably visual-neutral. The palette
    rework is a separate change. */
 :root {
-  --background: 0 0% 100%;
-  --foreground: 222.2 84% 4.9%;
+  --background: 210 30% 99%;
+  --foreground: 224 40% 10%;
   --card: 0 0% 100%;
-  --card-foreground: 222.2 84% 4.9%;
-  --primary: 217.2 91.2% 59.8%;
-  --primary-foreground: 222.2 47.4% 11.2%;
-  --secondary: 210 40% 96.1%;
-  --secondary-foreground: 222.2 47.4% 11.2%;
-  --muted: 210 40% 96.1%;
-  --muted-foreground: 215.4 16.3% 46.9%;
-  --accent: 210 40% 96.1%;
-  --accent-foreground: 222.2 47.4% 11.2%;
-  --destructive: 0 84.2% 60.2%;
-  --destructive-foreground: 210 40% 98%;
-  --border: 214.3 31.8% 91.4%;
-  --input: 214.3 31.8% 91.4%;
-  --ring: 217.2 91.2% 59.8%;
-  --radius: 0.5rem;
+  --card-foreground: 224 40% 10%;
+  --surface-2: 214 32% 96%;
+  --primary: 205 88% 42%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 214 32% 95%;
+  --secondary-foreground: 224 40% 14%;
+  --muted: 214 32% 95%;
+  --muted-foreground: 218 14% 42%;
+  --accent: 214 32% 94%;
+  --accent-foreground: 224 40% 14%;
+  --destructive: 358 70% 48%;
+  --destructive-foreground: 0 0% 100%;
+  --success: 152 58% 34%;
+  --warning: 33 88% 42%;
+  --info: 205 88% 42%;
+  --border: 216 22% 89%;
+  --border-strong: 216 20% 80%;
+  --input: 216 22% 89%;
+  --ring: 205 88% 42%;
+  --radius: 0.625rem;
 }
 
 .dark {
-  --background: 222.2 47% 6%;
-  --foreground: 210 40% 98%;
-  --card: 222.2 47% 9%;
-  --card-foreground: 210 40% 98%;
-  --primary: 217.2 91.2% 59.8%;
-  --primary-foreground: 222.2 47.4% 11.2%;
-  --secondary: 217.2 32.6% 17.5%;
-  --secondary-foreground: 210 40% 98%;
-  --muted: 217.2 32.6% 14%;
-  --muted-foreground: 215 20.2% 65.1%;
-  --accent: 217.2 32.6% 17.5%;
-  --accent-foreground: 210 40% 98%;
-  --destructive: 0 62.8% 50%;
-  --destructive-foreground: 210 40% 98%;
-  --border: 217.2 32.6% 17.5%;
-  --input: 217.2 32.6% 17.5%;
-  --ring: 217.2 91.2% 59.8%;
+  --background: 224 24% 6%;
+  --foreground: 210 28% 96%;
+  --card: 224 20% 10%;
+  --card-foreground: 210 28% 96%;
+  --surface-2: 223 19% 13%;
+  --primary: 204 92% 56%;
+  --primary-foreground: 224 45% 8%;
+  --secondary: 222 17% 17%;
+  --secondary-foreground: 210 28% 96%;
+  --muted: 223 18% 14%;
+  --muted-foreground: 216 17% 64%;
+  --accent: 222 17% 18%;
+  --accent-foreground: 210 28% 96%;
+  --destructive: 358 66% 55%;
+  --destructive-foreground: 210 28% 96%;
+  --success: 152 55% 48%;
+  --warning: 36 92% 58%;
+  --info: 204 92% 56%;
+  --border: 220 15% 19%;
+  --border-strong: 220 14% 27%;
+  --input: 220 15% 19%;
+  --ring: 204 92% 56%;
 }
 
 /* The v4 replacement for `theme.extend` in tailwind.config.ts. `inline` so the
@@ -74,6 +84,11 @@
   --color-accent-foreground: hsl(var(--accent-foreground));
   --color-card: hsl(var(--card));
   --color-card-foreground: hsl(var(--card-foreground));
+  --color-surface-2: hsl(var(--surface-2));
+  --color-border-strong: hsl(var(--border-strong));
+  --color-success: hsl(var(--success));
+  --color-warning: hsl(var(--warning));
+  --color-info: hsl(var(--info));
 
   --radius-lg: var(--radius);
   --radius-md: calc(var(--radius) - 2px);

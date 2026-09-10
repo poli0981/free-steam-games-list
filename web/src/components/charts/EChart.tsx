@@ -22,6 +22,7 @@ import { CanvasRenderer } from "echarts/renderers";
 // error #130. The esm/ build has a clean `export default`, fixing it.
 import ReactEChartsCore from "echarts-for-react/esm/core";
 import { useMemo } from "react";
+import { chartTheme } from "../../lib/chart-theme";
 import type { EChartsCoreOption } from "echarts/core";
 import "echarts-wordcloud";
 
@@ -84,23 +85,29 @@ interface Props {
 export function EChart({ option, height = 360, className }: Props) {
   const opts = useMemo(() => {
     const base = withTouchZoom(option) as Record<string, unknown>;
+    const theme = chartTheme();
     // Dark tooltip defaults. These used to come from the built-in "dark"
     // theme; that theme never registers under `echarts/core` (see the note on
     // <ReactEChartsCore> below), so we supply them here instead. Spread the
     // caller's tooltip LAST so per-chart `formatter`/`trigger` still win.
     const tooltip = {
-      backgroundColor: "#111c33",
-      borderColor: "#1e293b",
+      backgroundColor: theme.card,
+      borderColor: theme.border,
       borderWidth: 1,
-      textStyle: { color: "#e2e8f0", fontSize: 12 },
+      textStyle: { color: theme.text, fontSize: 12 },
       ...((base.tooltip as Record<string, unknown> | undefined) ?? {}),
     };
     return {
+      // `color` is ECharts' default categorical palette. Charts that set their
+      // own itemStyle still win; this only supplies a themed default so a new
+      // series does not fall back to ECharts' stock colours.
+      color: theme.series,
       ...base,
       tooltip,
       backgroundColor: "transparent",
       textStyle: {
         fontFamily: "Inter, system-ui, sans-serif",
+        color: theme.mutedText,
       },
     };
   }, [option]);

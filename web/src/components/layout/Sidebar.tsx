@@ -8,15 +8,6 @@ import {
   HeartPulse,
   Settings,
   BarChart3,
-  PieChart,
-  Globe,
-  Tags as TagsIcon,
-  Shield,
-  Languages as LanguagesIcon,
-  Clock,
-  Users,
-  Lock,
-  WifiOff,
   History,
   Info,
   Heart,
@@ -37,21 +28,9 @@ const PRIMARY: NavItem[] = [
   { to: "/games", i18n: "nav.games", icon: Gamepad2 },
   { to: "/top-online", i18n: "nav.topOnline", icon: Trophy },
   { to: "/top-offline", i18n: "nav.topOffline", icon: Trophy },
+  { to: "/charts", i18n: "nav.charts", icon: BarChart3 },
 ];
 
-const CHARTS: NavItem[] = [
-  { to: "/charts/genres", i18n: "nav.genres", icon: PieChart },
-  { to: "/charts/platforms", i18n: "nav.platforms", icon: Globe },
-  { to: "/charts/languages", i18n: "nav.languages", icon: LanguagesIcon },
-  { to: "/charts/tags", i18n: "nav.tags", icon: TagsIcon },
-  { to: "/charts/anti-cheat", i18n: "nav.antiCheat", icon: Shield },
-  { to: "/charts/anti-cheat/list", i18n: "nav.antiCheatList", icon: Shield },
-  { to: "/charts/reviews", i18n: "nav.reviews", icon: BarChart3 },
-  { to: "/charts/players", i18n: "nav.players", icon: Users },
-  { to: "/charts/time", i18n: "nav.time", icon: Clock },
-  { to: "/charts/drm", i18n: "nav.drmDlc", icon: Lock },
-  { to: "/charts/delisted", i18n: "nav.delisted", icon: WifiOff },
-];
 
 const SECONDARY: NavItem[] = [
   { to: "/health", i18n: "nav.health", icon: HeartPulse },
@@ -112,17 +91,6 @@ function SidebarBody({ onSelect }: SidebarBodyProps) {
           {PRIMARY.map((i) => (
             <Item key={i.to} item={i} onSelect={onSelect} />
           ))}
-        </div>
-
-        <div>
-          <div className="px-3 pb-1 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
-            {t("nav.charts")}
-          </div>
-          <div className="space-y-1">
-            {CHARTS.map((i) => (
-              <Item key={i.to} item={i} onSelect={onSelect} />
-            ))}
-          </div>
         </div>
 
         <div>

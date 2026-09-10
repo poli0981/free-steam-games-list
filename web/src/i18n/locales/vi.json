@@ -237,6 +237,21 @@
     "platforms": {
       "title": "Nền tảng",
       "platformSupport": "Hỗ trợ nền tảng"
+    },
+    "indexTitle": "Biểu đồ",
+    "indexSubtitle": "Mười một góc nhìn về danh sách — đây là những game gì, ai chơi, và đòi hỏi gì ở máy bạn.",
+    "desc": {
+      "genres": "Danh sách phân bổ theo thể loại ra sao.",
+      "platforms": "Hỗ trợ Windows, macOS và Linux.",
+      "languages": "Mức hỗ trợ giao diện, lồng tiếng và phụ đề theo ngôn ngữ.",
+      "tags": "Những tag cộng đồng xuất hiện nhiều nhất.",
+      "antiCheat": "Đang dùng anti-cheat nào, và bao nhiêu chạy ở mức kernel.",
+      "antiCheatList": "Cùng dữ liệu đó, dạng bảng tìm kiếm được.",
+      "reviews": "Phân bố điểm đánh giá của người dùng.",
+      "players": "Game online chia nhóm theo số người chơi đồng thời.",
+      "time": "Năm phát hành, và danh sách đã lớn lên thế nào.",
+      "drm": "Ghi chú DRM và mức độ phổ biến của DLC trả phí.",
+      "delisted": "Những game đã rời danh sách, và vì sao."
     }
   },
   "activity": {

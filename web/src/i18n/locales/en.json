@@ -237,6 +237,21 @@
     "platforms": {
       "title": "Platforms",
       "platformSupport": "Platform support"
+    },
+    "indexTitle": "Charts",
+    "indexSubtitle": "Eleven views over the catalog — what these games are, who plays them, and what they ask of your machine.",
+    "desc": {
+      "genres": "How the catalog splits across genres.",
+      "platforms": "Windows, macOS and Linux support.",
+      "languages": "Interface, audio and subtitle coverage by language.",
+      "tags": "The community tags that show up most.",
+      "antiCheat": "Which anti-cheat systems are in use, and how many run in the kernel.",
+      "antiCheatList": "The same data as a searchable table.",
+      "reviews": "Distribution of user-review scores.",
+      "players": "Live games bucketed by concurrent players.",
+      "time": "Release years, and how the catalog has grown.",
+      "drm": "DRM notes and paid-DLC prevalence.",
+      "delisted": "Games that left the catalog, and why."
     }
   },
   "activity": {
