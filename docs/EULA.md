@@ -1,55 +1,73 @@
-# END USER LICENSE AGREEMENT (EULA)
+# END USER LICENCE AGREEMENT
 
-**Short version:** the entire repository — data, scripts, web app, and docs — is licensed under the [MIT License](../LICENSE). The MIT text is the actual binding instrument. This file is supplemental commentary in plain language.
+**Short version:** two licences, not one. The code is
+[MIT](../LICENSE); the dataset is [CC BY 4.0 with carve-outs](../LICENSE-DATA).
+Where either licence conflicts with anything below, the licence text wins.
 
-There is no installable software, no executable, no SaaS contract, no subscription, no telemetry. The "product" is a Markdown / JSONL list of free-to-play Steam games plus a static, client-side web app that reads it. By accessing, viewing, forking, starring, cloning, redistributing, or otherwise interacting with this repository or the deployed Pages site, you agree to the terms below.
+This file is plain-language commentary. It is not a separate contract that
+grants or removes rights.
 
 ---
 
-### 1. Governing licence
+### 1. What you are actually getting
 
-The MIT License governs everything. Read [`LICENSE`](../LICENSE) — it is short and unambiguous. If anything in this EULA conflicts with the MIT text, the MIT text wins.
+Three things, and they are not the same:
 
-### 2. Nature of the work
+- **A dataset** of free-to-play Steam games, in `data/` and `games/`.
+- **A website** at <https://free-steam-games.win> that reads it. Read-only:
+  browse, search, filter, chart, export. There is no account and no sign-in.
+- **Optionally, an installable app** — a desktop and Android build of the same
+  interface, signed, with an auto-updater that checks GitHub Releases.
 
-You are not "using" software in the traditional sense. You are reading a curated list and, optionally, viewing it through a static client-side web app. There is no backend, no server-side processing of your data, no account.
+The previous version of this file said there was "no installable software."
+That was never true of the desktop and Android builds, and is corrected here.
 
-### 3. Your responsibilities
+### 2. Licences
 
-- Play games from the list at your own risk. Steam's own [Subscriber Agreement](https://store.steampowered.com/subscriber_agreement/) and [refund policy](https://store.steampowered.com/steam_refunds/) govern your relationship with Valve and the game developers.
-- Do not blame the maintainer if a game is bad, predatory, addictive, riddled with microtransactions, has a kernel-level anti-cheat that conflicts with your system, or any other complaint that is fundamentally about the game and not about this list.
-- Do your own malware / safety due diligence. The `safe` and `anti_cheat` columns are best-effort signals from a single person, not audited output.
-- If you fork the repository or build a derivative work, the MIT terms travel with you. Attribute appropriately.
+- Source code, scripts, configuration and docs: **MIT** ([LICENSE](../LICENSE)).
+- The dataset: **CC BY 4.0** ([LICENSE-DATA](../LICENSE-DATA)), with explicit
+  exclusions. Read that file before redistributing data — some fields are not
+  the project's to license, notably `description` (publisher store copy) and
+  `header_image` (a URL to publisher artwork).
 
-### 4. Maintainer's responsibilities
+### 3. What you agree to by using it
 
-- The maintainer commits to nothing. There is no SLA, no uptime guarantee, no roadmap obligation, no support contract, no response-time promise.
-- The pipeline runs daily under GitHub Actions on a best-effort basis. Workflow runs may fail, be paused, or be re-architected without notice.
+- You use the list at your own risk, and your relationship with any game is
+  between you, Valve and that game's developer. Steam's
+  [Subscriber Agreement](https://store.steampowered.com/subscriber_agreement/)
+  governs that, not this.
+- You will not treat the derived fields as authoritative. `genre`, `safe`,
+  `anti_cheat` and `is_kernel_ac` are one person's best effort. Details in
+  [DISCLAIMER.md](./DISCLAIMER.md).
+- If you redistribute, you carry the correct licence for the part you are
+  redistributing and keep the caveats visible.
 
-### 5. Accuracy notice (incorporated by reference)
+### 4. What the maintainer commits to
 
-[`DISCLAIMER.md`](./DISCLAIMER.md) lists specific known-error classes — genre best-effort, English-language assumption, test-data leakage, unsigned-commit artefacts, AC regex limits, sampled player counts, manual safe-flag scope. Read it before relying on any individual data point.
+Nothing. No SLA, no uptime guarantee, no support, no roadmap, no promise the
+pipeline runs tomorrow. It is a hobby project maintained by one person and it
+has already gone weeks at a time without updating.
+
+### 5. The installable app
+
+The desktop and Android builds are signed and update themselves from GitHub
+Releases. Install them only from this project's Releases page. Nobody else's
+build is this project's build, whatever it claims.
 
 ### 6. Trademarks
 
-- **Steam**, the **Steam logo**, **Steam Store**, **Steam Community**, **Valve Anti-Cheat**, **VAC**, and related marks are trademarks of Valve Corporation. Their use here is descriptive / nominative; the project is independent and not affiliated with, endorsed by, or sponsored by Valve.
-- **GitHub** and the **GitHub Actions** marks are trademarks of GitHub, Inc.
-- All other game titles, developer names, publisher names, and logos in the data are property of their respective owners. Their inclusion is descriptive (the same way a directory or review aggregator names games) and does not imply endorsement.
+**Steam**, the Steam logo, **Valve**, **VAC** and related marks belong to Valve
+Corporation. Game names and artwork belong to their publishers. All are used
+here nominatively, to identify what a row refers to. This project is
+independent and is not affiliated with, endorsed by, or sponsored by Valve or
+any publisher listed.
 
-### 7. Termination
+### 7. Warranty and liability
 
-If you breach the MIT License, your rights under it terminate per the licence text. The maintainer additionally reserves the right to ignore disputes, decline pull requests, and laugh at cease-and-desist letters that are addressed to a hobby project on a public GitHub repo.
+None, to the extent the law allows. See [DISCLAIMER.md](./DISCLAIMER.md) and
+the warranty clauses in both licence files.
 
-### 8. Governing law
+### 8. Changes
 
-Vietnam, plus whatever the MIT License + GitHub Terms of Service require. The maintainer is not a lawyer; this document is not legal advice.
-
-### 9. Changes
-
-This document may be updated to reflect actual project changes. Continued access after an update means you accept the new version. Diffs are visible in the repo's commit history.
-
----
-
-If you are a lawyer reading this for a real reason: I'd rather you open an issue than draft a letter. Open-source maintainers respond better to GitHub mentions than to certified mail.
-
-Last updated: whenever the maintainer remembered.
+This file is versioned in git. Material changes bump `TERMS_VERSION` in the
+app, which re-prompts everyone rather than quietly swapping the terms.

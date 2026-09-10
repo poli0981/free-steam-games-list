@@ -1,87 +1,124 @@
 # PRIVACY POLICY
 
-**Effective date:** whenever this file was first committed (see git history). Updates are documented in commit log.
+**Applies to:** the website at <https://free-steam-games.win>, the repository at
+<https://github.com/poli0981/free-steam-games-list>, and the desktop / Android
+app built from it.
 
-### Short version
-
-This repository and the static Pages site at <https://poli0981.github.io/free-steam-games-list/> collect **no personal data on the maintainer's side**.
-
-There is no backend, no server-side log, no analytics SDK, no advertising tracker, no fingerprinting library. Everything happens client-side in your browser, against either GitHub's API or `raw.githubusercontent.com`.
-
----
-
-### What the maintainer does NOT collect
-
-- No accounts, sign-ups, or sessions on this side.
-- No analytics. No Google Analytics, Plausible, Fathom, etc.
-- No cookies set by this domain.
-- No advertising / behavioural-ad tracking.
-- No fingerprinting.
-- No server-side request logging — there is no server other than GitHub's CDN.
-- No data sent to third-party SDKs.
-
-### What runs in your browser
-
-The static web app fetches:
-
-- `https://raw.githubusercontent.com/poli0981/free-steam-games-list/main/data/*.jsonl` — the game data.
-- `https://api.github.com/...` — only when the user signs in with their own GitHub PAT for editing/adding/deleting. Never from anonymous visitors.
-- `https://shared.akamai.steamstatic.com/store_item_assets/.../header.jpg` — Steam game header images. Each `<img>` tag emits an HTTP GET to Akamai; Akamai's standard CDN logs apply.
-- `https://avatars.githubusercontent.com/...` — the signed-in user's avatar, only when authenticated.
-
-These third-party endpoints have their own privacy policies and may log your IP / User-Agent according to their terms:
-
-- **GitHub** — [Privacy Statement](https://docs.github.com/en/site-policy/privacy-policies/github-privacy-statement).
-- **Akamai** — see Steam's [Privacy Policy](https://store.steampowered.com/privacy_agreement/) (Akamai is Steam's CDN).
-
-### What stays local in your browser
-
-The web app uses three local-storage mechanisms:
-
-1. **`localStorage`** — your GitHub PAT (only if you sign in), your selected GPG key (encrypted by the key's own passphrase), your theme + auto-lock preferences. Nothing is uploaded.
-2. **IndexedDB** — a cache of the JSONL records keyed on `data/index.json.last_updated`, so reloads are fast. Nothing is uploaded.
-3. **Service Worker cache** — the app shell + the last-known data shards, for offline browsing. Nothing is uploaded.
-
-You can clear all of the above at any time via your browser's site-data settings ("Clear site data" works fully).
-
-### What the *editing* path actually sends
-
-Only when you sign in and edit, add, or delete:
-
-- Your PAT goes only to `api.github.com`, never anywhere else.
-- The commits you make are public on the repo and visible to anyone — that is by design. Author and committer email come from your GPG key's user ID (when unlocked) or from GitHub's noreply email format (when the key is locked). The web app never alters these without your input.
-
-### Telegram bot (opt-in contribution channel)
-
-If you choose to contribute games via the **Scraper Info Game bot** ([`@my_skull_bot`](https://t.me/my_skull_bot)) instead of GitHub issues, the following data is exchanged:
-
-- **What you give the maintainer**: your Telegram numeric `user_id` (sent privately, never via public channels — see [`CONTRIBUTING.md`](../CONTRIBUTING.md)).
-- **Where it's stored**: in a private allowlist file on the maintainer's local machine (the bot runs in Docker on the maintainer's box, ~2–5 hrs/day). The allowlist is **not** committed to this public repository.
-- **What the bot then sees**: the messages you send it (Steam URLs + any manual-field overrides you specify in the conversation flow). Telegram itself stores the chat per its own [Privacy Policy](https://telegram.org/privacy).
-- **What ends up public**: only the resulting game records (links + Steam-derived metadata) appear in `data/*.jsonl`. The author/committer of the resulting commit is `github-actions[bot]`, not your Telegram handle. Your `user_id` never appears in the repo.
-- **What you can ask for**: removal from the allowlist (DM the maintainer; processing time depends on Docker uptime). Removal blocks future bot use; previously-ingested games stay in the dataset under MIT licence as they are unattributed contributions.
-
-**Maintainer's commitment**:
-- The Telegram `user_id` you share is treated as confidential. It is never published, never shared with third parties, and never logged into the public repo.
-- Public Discord, public Telegram groups, and GitHub issues are **not** acceptable channels for sharing your `user_id` — the maintainer will refuse to record IDs that arrived via those channels and will ask you to re-send privately.
-- Other personal information (real name, email, location, demographics) should not be sent at all. The bot does not need it.
-
-### LLM / AI
-
-About 70 % of the code in this repo was generated with help from Grok (v1) and Claude (v2+). Those LLM calls happen on the maintainer's development machine — never from your browser. No user data is sent to any AI service at runtime.
-
-### Children
-
-This is a directory of free-to-play Steam games. Steam itself has age-rating guidance per game; consult that before letting minors install anything found here. The maintainer does not moderate game content for age-appropriateness.
-
-### Changes
-
-If anything in this policy changes (it probably won't), the diff is in the repo commit history.
-
-### Contact
-
-Open an issue or use any of the channels listed in [`Contact.md`](./Contact.md). Privacy-specific questions: tag the issue `privacy`.
+**Last substantive change:** September 2026, when the site moved from GitHub
+Pages to Cloudflare and sign-in was removed. See git history for the exact diff.
 
 ---
 
-The maintainer has no server, no backend, and no commercial motive to collect user data — and is not interested in starting now.
+## Short version
+
+The site does not ask who you are. There are no accounts, no sign-in, no
+analytics, no advertising, and no tracking cookies.
+
+It is not, however, "serverless" any more, and the previous version of this
+document said things that are no longer true. The site is now served by a
+Cloudflare Worker, which means a server does sit between you and the page, and
+that server keeps operational logs. This document says exactly what that
+involves.
+
+## What runs the site
+
+**Cloudflare** serves every request. Like any CDN or web server, Cloudflare
+processes your IP address, User-Agent and the URL you asked for in order to
+deliver the page, and retains operational and security logs under its own
+policy. Cloudflare acts as a processor for the site; see the
+[Cloudflare Privacy Policy](https://www.cloudflare.com/privacypolicy/).
+
+The maintainer does not run any additional logging, does not have
+Cloudflare Web Analytics enabled, and does not export logs anywhere.
+
+**No cookies are set by this site.** Cloudflare may set its own operational
+cookies for security purposes; those are Cloudflare's, not the site's.
+
+## What the page loads
+
+Game data and artwork are fetched **same-origin**, through the site itself:
+
+- `/api/data/*` — the catalogue. The Worker fetches these files from GitHub on
+  the server side, so your browser never contacts GitHub for them and GitHub
+  does not see your IP.
+- `/img/*` — game artwork. The Worker fetches it from Valve's CDN on the server
+  side, so Valve does not see your IP either.
+
+That is a deliberate change: previously your browser fetched data from GitHub
+and images from Valve's CDN and a third-party image proxy directly.
+
+### The exceptions, stated plainly
+
+**The Activity page** (`/activity`) is the one part of the site that still
+talks to a third party from your browser. It calls the public GitHub commits
+API and loads contributor avatars from `avatars.githubusercontent.com`. If you
+open that page, GitHub sees your IP address and User-Agent. Every other page
+does not. If that matters to you, do not open it.
+
+**The desktop and Android apps** additionally check the GitHub Releases API on
+launch to see whether an update exists. Same exposure, same reason.
+
+GitHub's handling is covered by the
+[GitHub Privacy Statement](https://docs.github.com/en/site-policy/privacy-policies/github-privacy-statement).
+
+## What is stored on your device
+
+All of it stays on your device. None of it is transmitted anywhere.
+
+| Where | Key | Why |
+|---|---|---|
+| localStorage | `f2p:legal_consent` | that you accepted the terms, and which version |
+| localStorage | `f2p:welcome_seen` | that you have seen the introduction |
+| localStorage | `f2p:theme` | light / dark / system |
+| localStorage | `f2p:lang` | interface language |
+| sessionStorage | `f2p:chunk-reload` | one-shot flag so a failed script load retries once |
+| IndexedDB | `f2p:records`, `f2p:index` | the catalogue, cached so the site works offline and does not re-download ~6 MB each visit |
+| Cache Storage | `workbox-precache-*`, `f2p-data-v3`, `f2p-img-v1` | the offline app shell, data and images |
+
+Clearing site data in your browser removes all of it. Doing so re-shows the
+consent gate and the introduction, and the catalogue downloads again.
+
+## The admin area
+
+An admin area exists at `/admin`, gated by Cloudflare Access. It is for the
+maintainer. If you are not signed in through Access it returns 404 and sets
+nothing.
+
+When the maintainer signs in there, Cloudflare Access sets a `CF_Authorization`
+cookie **on that session only**, and administrative actions are recorded in a
+Cloudflare D1 database — what was changed, when, and by which Access identity.
+That log exists so a bad change can be traced. It records no visitor data,
+because visitors never reach it.
+
+## What is not collected
+
+No accounts. No analytics or telemetry of any kind. No advertising or
+behavioural profiles. No fingerprinting. No session recording. No email list.
+No sale or sharing of anything, because there is nothing to sell or share.
+
+Sign-in was removed entirely in September 2026. The site previously stored a
+GitHub access token and an encrypted signing key in your browser; it no longer
+has any mechanism to do so. If you used the old version, clearing site data
+removes any leftovers.
+
+## Your rights
+
+Since the site holds no personal data about you, there is nothing to export or
+delete on this end — clearing your browser storage is the complete picture.
+
+For the operational logs Cloudflare keeps as processor, requests go to
+Cloudflare under their policy. If you want to raise something directly, the
+contact address is in [docs/Contact.md](./Contact.md). The maintainer is one
+person running this as a hobby, so expect a slow, human reply rather than a
+formal privacy desk.
+
+## Children
+
+The site is a catalogue of games and is not directed at children. It collects
+nothing from anyone, of any age.
+
+## Changes
+
+This file is versioned in git. Material changes bump `TERMS_VERSION` in the
+app, which re-prompts everyone at the consent gate rather than quietly
+substituting new terms.

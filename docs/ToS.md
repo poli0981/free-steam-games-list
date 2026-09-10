@@ -1,6 +1,6 @@
 # TERMS OF USE
 
-By accessing, forking, contributing to, mirroring, scraping, or otherwise using this repository (`free-steam-games-list`) or the deployed Pages site, you agree to these Terms of Use, the [MIT License](../LICENSE), and the supplemental [Disclaimer](./DISCLAIMER.md). The MIT text governs in case of conflict.
+By accessing, forking, contributing to, mirroring, scraping, or otherwise using this repository (`free-steam-games-list`) or the site at <https://free-steam-games.win>, you agree to these Terms of Use, the two licences that cover this project — [MIT](../LICENSE) for the code and [CC BY 4.0](../LICENSE-DATA) for the dataset — and the supplemental [Disclaimer](./DISCLAIMER.md). The licence texts govern in case of conflict.
 
 ---
 
@@ -18,7 +18,7 @@ You acknowledge the following:
 
 1. **Genre is heuristic.** The genre column is derived from Steam tags + a description-text parser. Hybrids, indie experiments, and non-traditional titles are frequently mis-bucketed. Use the `tags` array for the unfiltered set.
 2. **English-only assumptions.** The scraper, ingest pipeline, and web app assume Steam responses come back in English. Regional storefronts can return localised strings that break parsing. Names, genres, language-support tables, and DLC flags can be wrong for non-EN sessions. Compare against the canonical EN store page before acting on the data.
-3. **Test data may have leaked in.** During web-app development, the maintainer ran live edit / add / delete tests against the production repo. Some rows may carry test artefacts; the daily pipeline cleans most of these up but stragglers exist.
+3. **Test data may have leaked in.** During web-app development the maintainer ran live edit / add / delete tests against the production repo, so some rows may carry test artefacts. The daily pipeline cleans most of these up but stragglers exist. In-browser editing was removed in September 2026, so no new artefacts of this kind can appear.
 4. **`unsigned` Activity entries are dev artefacts.** Many commits during development were made while the GPG key was locked. They are not malicious — just unsigned. If you require Verified-only trust, filter the Activity feed accordingly.
 5. **Anti-cheat detection is regex-based.** `anti_cheat` / `is_kernel_ac` are populated by matching known AC names against page text; rebrands and launcher-only mentions are missed.
 6. **Player counts are sampled.** `current_players` and `peak_today` lag by minutes-to-hours.
@@ -29,14 +29,14 @@ See [`DISCLAIMER.md`](./DISCLAIMER.md). Short version: the maintainer is not res
 
 ### 5. Contributions
 
-Pull requests are welcome but optional to merge. By submitting a contribution you license it under the same MIT terms as the rest of the repo. Don't include code or data you don't have the right to share.
+Pull requests are welcome but optional to merge. By submitting a contribution you license it under whichever licence covers the part you touched — MIT for code, CC BY 4.0 for data. Don't include code or data you don't have the right to share.
 
 #### 5.1 Sharing personal information when contributing
 
 For the Telegram-bot contribution path ([`@my_skull_bot`](https://t.me/my_skull_bot), see [`CONTRIBUTING.md`](../CONTRIBUTING.md)):
 
 1. **Your Telegram `user_id` must be sent via a private channel only** — Telegram DM, email, or any 1-on-1 chat. Posting it in public Discord channels, public Telegram groups, GitHub issues, or any other public surface is forbidden by these Terms; the maintainer will reject IDs that arrived via public channels and ask for a re-send.
-2. **You retain control of your data.** The maintainer's allowlist is local and unpublished. You can request removal at any time via the same private channels. Removal blocks future bot use; previously-ingested game records remain in the public dataset since they are unattributed Steam-link submissions and form part of the curated MIT-licensed list.
+2. **You retain control of your data.** The maintainer's allowlist is local and unpublished. You can request removal at any time via the same private channels. Removal blocks future bot use; previously-ingested game records remain in the public dataset since they are unattributed Steam-link submissions and form part of the curated dataset, which is CC BY 4.0.
 3. **No other personal information should be transmitted.** The bot needs only your `user_id`. Real names, addresses, payment info, government IDs, biometric data, or any sensitive personal data should NOT be sent — the maintainer is a hobbyist with no infrastructure for handling them, and the bot does not request them.
 4. **Public-channel discussion of `user_id`s is a security issue.** If you accidentally post a Telegram `user_id` (yours or anyone else's) in a public channel of this project, edit/delete it immediately and notify the maintainer via DM. The maintainer will assist with cleanup but cannot recall messages already mirrored by third parties.
 
@@ -49,11 +49,11 @@ These rules are non-negotiable: they protect contributors from doxxing and the m
 
 ### 7. Forking, mirroring, derivative works
 
-Allowed under the MIT terms. Carry the licence text with you and attribute the original repo. If you build something that financially benefits from the list, you are not obligated to share the proceeds — but a "thanks" via [Ko-fi / Patreon](https://ko-fi.com/skullmute) is appreciated.
+Allowed. Carry the right licence with you — MIT for code, CC BY 4.0 for data, and read [LICENSE-DATA](../LICENSE-DATA) for the fields the project cannot license to you — and attribute the original repo. If you build something that financially benefits from the list, you are not obligated to share the proceeds — but a "thanks" via [Ko-fi / Patreon](https://ko-fi.com/skullmute) is appreciated.
 
 ### 8. No commercial drama
 
-You can fork and modify; the maintainer can't help if your downstream project blows up, gets DMCA'd, or has a launch-day disaster. The MIT licence's no-warranty clause covers this.
+You can fork and modify; the maintainer can't help if your downstream project blows up, gets DMCA'd, or has a launch-day disaster. The no-warranty clauses in both licences cover this.
 
 ### 9. Updates
 

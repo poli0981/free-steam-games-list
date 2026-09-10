@@ -1,0 +1,72 @@
+# Data licence
+
+This file covers the **dataset**: `data/**` and the generated tables in
+`games/**`.
+
+Source code, configuration, scripts and documentation are covered separately by
+the MIT licence in [LICENSE](./LICENSE). The split exists because code and data
+are different kinds of work with different constraints — MIT is a software
+licence and says nothing useful about a compilation of facts.
+
+---
+
+## The licence
+
+The dataset is licensed under
+**[Creative Commons Attribution 4.0 International (CC BY 4.0)](https://creativecommons.org/licenses/by/4.0/)**.
+
+You may share and adapt it, including commercially, provided you give
+appropriate credit, link to the licence, and say whether you made changes.
+
+Suggested attribution:
+
+> Data from *Steam F2P Tracker* (github.com/poli0981/free-steam-games-list),
+> CC BY 4.0.
+
+## What this licence does and does not cover
+
+This is the important part, and it is easy to get wrong.
+
+**What the project can license.** The selection, curation and arrangement of
+the catalogue, and the fields produced by this project's own work — the
+`genre` bucketing, `type_game`, `safe`, `anti_cheat` and `is_kernel_ac`
+judgements, `notes`, and the derived tables in `games/**`. That editorial
+effort is the project's contribution and is what CC BY 4.0 is being applied to.
+
+**What the project does NOT own, and therefore cannot license:**
+
+- **`description`** — the short blurb each publisher writes for its own Steam
+  store page, stored verbatim. These are typically ~200 characters (median 213,
+  longest 340 in the current dataset). They are reproduced here as short
+  identifying quotations so a row is recognisable; copyright remains with the
+  publisher. They are **excluded** from the CC BY grant.
+- **`header_image`** — a URL pointing at publisher artwork hosted on Valve's
+  CDN. The dataset contains the address, never the image. The artwork itself is
+  the publisher's.
+- **Game names, and Steam's own tag vocabulary** — names are trademarks of
+  their respective owners and appear here nominatively, to identify the game.
+- **Anything reachable through `link`** — that is Valve's page, not ours.
+
+**Facts are not owned by anyone.** Player counts, review percentages, release
+dates, platform and language support are facts. The CC BY grant applies to this
+project's compilation of them, not to the underlying facts, which nobody can
+license to you.
+
+**EU database rights.** Where a *sui generis* database right subsists in this
+compilation, it is licensed on the same CC BY 4.0 terms.
+
+## If you republish this data
+
+Attribute the project, keep the caveats in
+[docs/DISCLAIMER.md](./docs/DISCLAIMER.md) visible to your users, and do not
+present the derived fields as authoritative — `genre`, `safe` and the
+anti-cheat flags are one person's best effort, not an audit. Re-deriving
+`description` from Steam yourself is safer than inheriting it from here.
+
+## Not legal advice
+
+This file was written by the maintainer, who is not a lawyer. It reflects a
+good-faith engineering judgement about what can honestly be licensed, made so
+that anyone reusing the data knows exactly where the boundaries are rather than
+finding a blanket MIT notice over material the project never owned. If you need
+certainty for a commercial use, get your own advice.

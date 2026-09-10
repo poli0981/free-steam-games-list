@@ -117,6 +117,13 @@ pnpm-debug.log*
 coverage/
 .nyc_output/
 
+# F2P Tracker desktop app (Electron + Vite)
+app/dist/
+app/dist-electron/
+app/release/
+app/.vite/
+app/*.tsbuildinfo
+
 # ========================
 # 6. MOBILE CROSS-PLATFORM
 # ========================

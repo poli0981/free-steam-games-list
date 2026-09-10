@@ -536,9 +536,11 @@ export function AboutPage() {
             trademarks of Valve Corporation. This site is not affiliated with
             Valve.
             <br />
-            Steam header images served from Akamai (
-            <code>shared.akamai.steamstatic.com</code>). Public-key search for
-            commit verification uses <code>api.github.com</code>.
+            Game data and artwork are served from this site, which fetches
+            them from GitHub and Valve&apos;s CDN server-side — your browser
+            does not contact either. The Activity page is the exception: it
+            calls <code>api.github.com</code> and loads avatars from GitHub
+            directly. See the Privacy Policy for the full picture.
           </div>
         </CardContent>
       </Card>

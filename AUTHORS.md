@@ -1,6 +1,6 @@
 # Authors
 
-This file lives at the repo root so the author can be found without digging into the docs. The canonical handle map is also in [`username.txt`](username.txt) (machine-readable) and rendered in the web app's [About page](https://poli0981.github.io/free-steam-games-list/#/about).
+This file lives at the repo root so the author can be found without digging into the docs. The canonical handle map is also in [`username.txt`](username.txt) (machine-readable) and rendered in the web app's [About page](https://free-steam-games.win/#/about).
 
 ## Maintainer
 

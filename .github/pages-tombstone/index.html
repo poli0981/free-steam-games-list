@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Moved — Steam F2P Tracker</title>
+  <link rel="canonical" href="https://free-steam-games.win/">
+  <meta name="robots" content="noindex, follow">
+  <style>
+    body{margin:0;min-height:100vh;display:grid;place-items:center;background:#0b0e14;color:#e8eef7;
+         font-family:Inter,system-ui,sans-serif;text-align:center;padding:24px}
+    .card{max-width:460px}
+    h1{font-size:20px;margin:.5em 0}
+    p{font-size:14px;color:#98a4b8;line-height:1.6}
+    a.btn{display:inline-block;margin-top:18px;padding:9px 22px;border-radius:10px;
+          background:#22a3f1;color:#06121e;text-decoration:none;font-size:14px;font-weight:600}
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>This site has moved</h1>
+    <p>Steam F2P Tracker now lives at <strong>free-steam-games.win</strong>.</p>
+    <p id="fallback">Redirecting…</p>
+    <a class="btn" href="https://free-steam-games.win/">Go to the new site</a>
+  </div>
+  <script>
+    // GitHub Pages cannot issue a 301, so carry the deep link across in JS.
+    // A meta-refresh would drop the #/... fragment, which is exactly the part
+    // worth preserving: every old link into this app was a hash route.
+    (function () {
+      var hash = location.hash || "";
+      var path = hash.replace(/^#\/?/, "");
+      var target = "https://free-steam-games.win/" + (path ? "#/" + path : "");
+      try { location.replace(target); }
+      catch (e) { document.getElementById("fallback").textContent = "Open the link below."; }
+    })();
+  </script>
+</body>
+</html>

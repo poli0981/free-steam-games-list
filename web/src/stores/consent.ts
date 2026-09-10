@@ -1,7 +1,7 @@
 /**
  * Legal consent state: whether the user has accepted the current version of
  * the terms. Persisted to localStorage (no backend, no cookie — same pattern
- * as f2p:theme / f2p:lang / f2p:gpg_*). Incognito tabs get a fresh storage
+ * as f2p:theme / f2p:lang / f2p:welcome_seen). Incognito tabs get a fresh storage
  * partition, so the gate naturally re-shows there with zero extra code.
  */
 import { create } from "zustand";
@@ -12,7 +12,11 @@ const KEY = "f2p:legal_consent";
  * Bump this whenever the binding legal documents change materially. A stored
  * acceptance for an older version no longer counts, so everyone is re-prompted.
  */
-const TERMS_VERSION = 1;
+// 2 (Sept 2026): the licence split, and a Privacy Policy that now discloses
+// edge logging where the previous one claimed there was no server at all.
+// That is a material change, so everyone re-consents rather than being
+// silently moved onto different terms.
+const TERMS_VERSION = 2;
 
 interface StoredConsent {
   version: number;

@@ -1,19 +1,19 @@
-[![Games Count](https://img.shields.io/badge/Games-1.2k%2B-green?style=flat&logo=steam)](games/all-games_part1.md)
+[![Games Count](https://img.shields.io/badge/Games-3.4k%2B-green?style=flat&logo=steam)](games/all-games_part1.md)
 [![Last Updated](https://img.shields.io/badge/Updated-Daily-blue?style=flat&logo=github-actions)](.github/workflows)
 [![Top Online](https://img.shields.io/badge/Top%20Online-Live%20Leaderboard-red?style=flat&logo=steam)](games/top-online.md)
 [![Version](https://img.shields.io/badge/version-3.4.2-purple?style=flat&logo=github)](https://github.com/poli0981/free-steam-games-list)
-[![Web App](https://img.shields.io/badge/Web%20App-Live-2563eb?style=flat&logo=react)](https://poli0981.github.io/free-steam-games-list/)
+[![Web App](https://img.shields.io/badge/Web%20App-Live-2563eb?style=flat&logo=react)](https://free-steam-games.win/)
 [![Desktop](https://img.shields.io/badge/Desktop-Tauri%202-FFC131?style=flat&logo=tauri)](https://github.com/poli0981/free-steam-games-list/releases)
 [![Android](https://img.shields.io/badge/Android-11%2B%20APK-3DDC84?style=flat&logo=android)](https://github.com/poli0981/free-steam-games-list/releases)
 [![Health Check](https://img.shields.io/badge/Health%20Check-Weekly-orange?style=flat&logo=github-actions)](.github/workflows/purge-unhealthy.yml)
 ![Visitors](https://visitor-badge.laobi.icu/badge?page_id=poli0981.free-steam-games-list)
 [![Sponsor](https://img.shields.io/badge/Sponsor-Buy%20me%20a%20coffee-ff5f5f?style=flat&logo=buy-me-a-coffee)](.github/FUNDING.yml)
 
-A **curated list** of free-to-play games on Steam — now ~1,200 of them — no quality guarantees, no endorsements, just pure listings by a broke, unemployed Vietnamese dev with too much free time and a Steam library full of sale games (80% under $10).
+A **curated list** of free-to-play games on Steam — now ~3,400 of them — no quality guarantees, no endorsements, just pure listings by a broke, unemployed Vietnamese dev with too much free time and a Steam library full of sale games (80% under $10).
 
 **v3.0.0** is the version that grew limbs. It is no longer a list. It is also:
 
-- a **React web app** at <https://poli0981.github.io/free-steam-games-list/> with a virtualised 1.2k-row table, 12 charts, fuzzy search, faceted filters, owner-gated bulk edit/delete with **GPG-signed commits**, queue-based add (single + JSON bulk), CSV/JSON export, validation badges, command palette, PWA / offline cache, **vi/en i18n**, and per-game permalinks;
+- a **React web app** at <https://free-steam-games.win/> with a virtualised 3.4k-row table, 12 charts, fuzzy search, faceted filters, CSV/JSON export, validation badges, command palette, PWA / offline cache, **en/vi i18n**, and per-game permalinks. It is read-only: sign-in and in-browser editing were removed in September 2026;
 - a **desktop app** (Tauri 2, fixed-size 1400 × 900 window — see Releases for Win/Mac/Linux installers);
 - the same **Python pipeline** that has run daily under GitHub Actions since v1.
 
@@ -25,27 +25,27 @@ A **curated list** of free-to-play games on Steam — now ~1,200 of them — no 
 
 | Surface              | URL                                                                                                                  |
 | -------------------- | -------------------------------------------------------------------------------------------------------------------- |
-| 🌐 Web app          | <https://poli0981.github.io/free-steam-games-list/>                                                                  |
+| 🌐 Web app          | <https://free-steam-games.win/>                                                                  |
 | 🖥️ Desktop releases  | [GitHub Releases](https://github.com/poli0981/free-steam-games-list/releases) (Win `.msi`, Mac `.dmg`, Linux `.AppImage`) |
 | 📱 Android APK      | [GitHub Releases](https://github.com/poli0981/free-steam-games-list/releases) (sideload `.apk`, **Android 11+** — see [`docs/android-support.md`](docs/android-support.md)) |
 | 📋 All games (md)   | [games/all-games_part1.md](games/all-games_part1.md) (sorted by reviews)                                             |
 | 🏆 Top online (md)  | [games/top-online.md](games/top-online.md)                                                                           |
 | 🎯 Top offline (md) | [games/top-offline.md](games/top-offline.md)                                                                         |
 | 🏷️ By genre         | [games/](games/) — separate file per genre                                                                           |
-| 📦 Raw data         | [data/data_001.jsonl](data/data_001.jsonl) + [data/data_002.jsonl](data/data_002.jsonl) (sharded JSONL)              |
+| 📦 Raw data         | [data/data_001.jsonl](data/data_001.jsonl) … `data_005.jsonl` (5 sharded JSONL files)              |
 | 📖 Index            | [games/README.md](games/README.md)                                                                                   |
-| 🛠️ About            | <https://poli0981.github.io/free-steam-games-list/#/about> (in-app)                                                 |
+| 🛠️ About            | <https://free-steam-games.win/#/about> (in-app)                                                 |
 | 👤 Authors          | [`AUTHORS.md`](AUTHORS.md) — maintainer + contact channels + AI-assistant disclosure                                 |
 | 🤖 Telegram bot     | [`@my_skull_bot`](https://t.me/my_skull_bot) — Scraper Info Game bot, see [`CONTRIBUTING.md`](CONTRIBUTING.md)        |
 
 ### What's new in v3.0.0
 
 <details>
-<summary><b>Web app at <code>poli0981.github.io/free-steam-games-list/</code></b></summary>
+<summary><b>Web app at <code>free-steam-games.win/</code></b></summary>
 
 A React/Vite SPA hosted on GitHub Pages, fetching data live from `raw.githubusercontent.com`. Features:
 
-- **Browse** — virtualised 1.2k-row table (TanStack Table + Virtual), faceted filters (genre, type, platform, status), Fuse.js fuzzy search, sortable columns including correctly-parsed release-date sorting, 50/100/200/500/all pagination, hidden scrollbar.
+- **Browse** — virtualised 3.4k-row table (TanStack Virtual), faceted filters (genre, type, platform, status), Fuse.js fuzzy search, sortable columns including correctly-parsed release-date sorting, 50/100/200/500/all pagination, hidden scrollbar.
 - **Charts** — 12 charts via Apache ECharts: KPI overview, top-online bar, genre treemap, platform donut, language heatmap, tag word cloud, anti-cheat stacked, release-year histogram, catalog-growth cumulative line, review histogram, online player tiers pie, DRM/DLC bars.
 - **Edit / add / delete** (owner-only) — single edit drawer with form / JSON-editor toggle, bulk edit + delete in one signed commit, Steam-link queue (single + JSON bulk) into `scripts/temp_info.jsonl`, diff viewer, conflict-retry, optimistic local cache update so edits show up instantly without waiting for the Fastly CDN.
 - **GPG signing** — paste your OpenPGP private key, unlock per-session, every edit commit gets a detached binary signature → GitHub verifies them as ✓. Multi-UID picker, idle auto-lock 5/15/30/60 min.
@@ -86,7 +86,7 @@ npm run tauri:build    # release binary into web/src-tauri/target/release/bundle
 
 The Python pipeline that powered v2 is untouched and runs daily as before:
 
-- Schema v2.2 (23 + manual fields per record), MIT-licensed, sharded data in `data/data_*.jsonl` (cap 800 records/shard, current total ~1,230) plus a `data/index.json` manifest.
+- Schema v2.2 (23 + manual fields per record), CC BY 4.0 (see [LICENSE-DATA](LICENSE-DATA)), sharded data in `data/data_*.jsonl` (cap 800 records/shard, current total 3,424) plus a `data/index.json` manifest.
 - Extension-compatible: the [Chrome extension](https://github.com/poli0981/free-steam-games-list-extension) pushes pre-fetched rich data straight into `scripts/temp_info.jsonl`; the ingest workflow merges and dedupes.
 - HTML scraper for accurate language tables, DLC pricing, and user tags — single GET per game.
 - Health-checked: dead-link sweep every 5 days, full purge every Monday.
@@ -101,7 +101,7 @@ The Python pipeline that powered v2 is untouched and runs daily as before:
 .
 ├── data/                       # Sharded data (the source of truth)
 │   ├── data_001.jsonl          # ≤ 800 records
-│   ├── data_002.jsonl          # the rest
+│   ├── data_002.jsonl … 005    # the rest
 │   └── index.json              # last_updated, totals, shard manifest
 │
 ├── games/                      # Auto-generated markdown tables
@@ -127,8 +127,9 @@ The Python pipeline that powered v2 is untouched and runs daily as before:
 │   └── dist/                   # build artefacts (PWA + desktop)
 │
 ├── docs/                       # Legal + acknowledgements + contact
-├── .github/workflows/          # 11 workflows: data pipeline + Pages + desktop release
-└── LICENSE                     # MIT
+├── .github/workflows/          # 24 workflows: data pipeline + CI + desktop/Android release
+├── LICENSE                     # MIT — code
+└── LICENSE-DATA                # CC BY 4.0 — dataset
 ```
 
 </details>
@@ -153,8 +154,6 @@ scripts/
 ├── top_online.py           # Live leaderboard with trends
 ├── generate_tables.py      # Markdown tables + genre files + index
 ├── refetch_all.py          # Force re-fetch ALL (manual only)
-├── migrate_schema.py       # Upgrade old records to v2.1
-├── export_data.py          # CSV export
 └── delete_game.py          # Interactive delete
 ```
 
@@ -219,13 +218,15 @@ Unemployed, introvert max level, dropped out uni year 3, mooching off family. Ne
 - [CHANGELOG](CHANGELOG.md) — what changed in each version.
 - [CONTRIBUTING](CONTRIBUTING.md) — issue templates, web-app sign-in, Telegram bot flow, extension, manual fork.
 - [PC spec](docs/pc_spec.md) ([VI](docs/i18n/vi/pc_spec.md)) — maintainer's dev hardware + test devices.
-- [Dev environment](docs/dev_env.md) ([VI](docs/i18n/vi/dev_env.md)) — IDE, toolchains (Python 3.12 / Node ≥ 22 / Rust stable / Tauri 2), workflow.
+- [Dev environment](docs/dev_env.md) ([VI](docs/i18n/vi/dev_env.md)) — IDE, toolchains (Python 3.12 / Node 24 / Rust stable / Tauri 2), workflow.
 - [Tauri build](web/src-tauri/TAURI.md) — desktop build prerequisites + signing + auto-update.
 - [Telegram bot](docs/telegram-bot.md) — pointer to the external bot user guide + how it integrates with this repo.
 - [DISCLAIMER](docs/DISCLAIMER.md) — accuracy caveats, no-warranty, the broke-maintainer note.
 - [Terms of Use](docs/ToS.md) — usage agreement, contributions, governing law, **rules for sharing your Telegram `user_id`**.
-- [EULA](docs/EULA.md) — supplemental to the MIT licence.
-- [Privacy Policy](docs/PRIVACY_POLICY.md) — zero personal data collected by the site; **Telegram-bot data flow** documented separately.
+- [EULA](docs/EULA.md) — plain-language commentary on both licences.
+- [Privacy Policy](docs/PRIVACY_POLICY.md) — no accounts, no analytics, no tracking; what Cloudflare logs as the host, and the one page that still talks to GitHub.
+- [Deployment](docs/DEPLOYMENT.md) — how a push becomes a deploy, and how to verify or roll one back.
+- [Admin setup](docs/ADMIN.md) — Cloudflare Access and the GitHub App behind `/admin`.
 - [Acknowledgements](docs/ACKNOWLEDGEMENTs.md) — credits, AI assistants, third-party libraries.
 - [Third-party dev tooling](docs/THIRD_PARTY.md) — dead-code / lint / audit tools + the pre-publish check suite.
 - [Contact](docs/Contact.md) — where to find the maintainer.
@@ -233,6 +234,6 @@ Unemployed, introvert max level, dropped out uni year 3, mooching off family. Ne
 - [SECURITY](SECURITY.md) — vulnerability reporting.
 - [`web/README.md`](web/README.md) — stack details, per-phase changelog, build instructions.
 
-Licensed under [MIT](LICENSE) — do whatever; keep the credit if you fork. Star if you find a hidden gem ✨
+Code is [MIT](LICENSE); the dataset is [CC BY 4.0](LICENSE-DATA) with carve-outs for fields the project does not own (`description`, `header_image`). Keep the right licence with you if you fork. Star if you find a hidden gem ✨
 
 Last auto-update: daily via GitHub Actions. Manual runs from the [Actions tab](../../actions) or the web app's Health page.

@@ -17,7 +17,8 @@ export interface LegalDoc {
 }
 
 export const LEGAL_DOCS: LegalDoc[] = [
-  { label: "MIT License", path: "LICENSE", hint: "the actual binding terms — short and friendly", consent: true },
+  { label: "MIT License (code)", path: "LICENSE", hint: "covers the source code", consent: true },
+  { label: "Data Licence (CC BY 4.0)", path: "LICENSE-DATA", hint: "covers the dataset, and names what it cannot cover", consent: true },
   { label: "Disclaimer", path: "docs/DISCLAIMER.md", hint: "no warranty, accuracy caveats, liability shrug", consent: true },
   { label: "Terms of Use", path: "docs/ToS.md", hint: "what you agree to by using the repo / site", consent: true },
   { label: "EULA", path: "docs/EULA.md", hint: "redundant with MIT but exists for paranoia", consent: true },

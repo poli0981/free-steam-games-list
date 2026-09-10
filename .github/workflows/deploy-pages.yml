@@ -1,11 +1,23 @@
 name: Deploy Web (GitHub Pages)
 
+# This no longer deploys the app. The site moved to Cloudflare at
+# free-steam-games.win, and the app is built with base "/", so serving it from
+# the /free-steam-games-list/ Pages subpath produces a blank page — every asset
+# 404s. Rather than leave that live, Pages now serves a redirect.
+#
+# GitHub Pages cannot return a 301, so the redirect is client-side and
+# deliberately carries the #/... fragment across; old links into the app were
+# all hash routes.
+#
+# Once inbound traffic has drained, delete this workflow, delete
+# notify-deploy.yml (it listens for this workflow by name), and set
+# Settings -> Pages -> Source to None.
+
 on:
   push:
     branches: [main]
     paths:
-      - 'web/**'
-      - 'data/**'
+      - '.github/pages-tombstone/**'
       - '.github/workflows/deploy-pages.yml'
   workflow_dispatch:
 
@@ -19,40 +31,18 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: web
-    steps:
-      - uses: actions/checkout@v5
-
-      - uses: actions/setup-node@v5
-        with:
-          node-version: '24'
-          cache: 'npm'
-          cache-dependency-path: web/package-lock.json
-
-      - name: Install
-        run: npm ci || npm install
-
-      - name: Type check
-        run: npm run typecheck
-
-      - name: Build
-        run: npm run build
-
-      - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v4
-        with:
-          path: web/dist
-
   deploy:
-    needs: build
     runs-on: ubuntu-latest
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
+      - uses: actions/checkout@v4
+
+      - name: Upload redirect page
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: .github/pages-tombstone
+
       - id: deployment
         uses: actions/deploy-pages@v5

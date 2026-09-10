@@ -6,7 +6,7 @@ Want to help? Awesome — no strict rules, life's hard enough. Pick whichever pa
 
 ## Maintainer contact
 
-The canonical handle list is in [`AUTHORS.md`](AUTHORS.md) at the repo root (mirror of [`username.txt`](username.txt) for human reading). Web-app version: <https://poli0981.github.io/free-steam-games-list/#/about>.
+The canonical handle list is in [`AUTHORS.md`](AUTHORS.md) at the repo root (mirror of [`username.txt`](username.txt) for human reading). Web-app version: <https://free-steam-games.win/#/about>.
 
 > [!WARNING]
 > **Privacy first.** When sending your Telegram `user_id` (needed for the bot whitelist below), **DM the maintainer privately**. Do **not** post it in:
@@ -38,7 +38,7 @@ Fill the form (checkboxes, dropdowns, short descriptions). The `Ingest from Issu
 
 If you have repo write access:
 
-1. Open <https://poli0981.github.io/free-steam-games-list/>.
+1. Open <https://free-steam-games.win/>.
 2. Settings → paste a Classic GitHub PAT (scopes: `repo` + `workflow`).
 3. Optionally unlock a GPG private key in Settings to sign commits → **Verified ✓** badges.
 4. Add via the `Add` page (single + JSON bulk) or edit/delete via the table drawers.
