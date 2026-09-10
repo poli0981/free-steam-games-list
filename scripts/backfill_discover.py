@@ -164,7 +164,10 @@ def main():
     known = catalogue_appids()
     print(f"catalogue: {len(known)} appids")
 
-    if not args.dry_run:
+    # Read-only, so it runs under --dry-run too: a dry run that skipped this
+    # exercised Steam and the parser but never the Access service token, which
+    # is the only part that is new. See the same note in discover_new.py.
+    if base and tid and tsec:
         # Prove the credential before spending Steam requests.
         try:
             ping = worker_get(base, "/api/ingest/ping", tid, tsec)
@@ -175,6 +178,8 @@ def main():
         except Exception as e:
             print(f"ERROR: worker unreachable: {e}")
             return 2
+    else:
+        print("worker: no credentials in env, skipping reachability check")
 
     client = get_client()
     candidates, rejected, seen = [], {}, set()

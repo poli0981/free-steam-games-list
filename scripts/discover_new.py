@@ -220,7 +220,14 @@ def main():
     known = catalogue_appids()
     print(f"catalogue: {len(known)} appids")
 
-    if not args.dry_run:
+    # Talk to the Worker whenever credentials exist, INCLUDING under --dry-run.
+    # Both calls are read-only, so the dry run stays a dry run -- and a dry run
+    # that skipped them was verifying nothing: it exercised Steam and the
+    # parser, never the Access service token, which is the part that is
+    # actually new and actually breaks. docs/ADMIN.md offers `-f dry_run=true`
+    # as the post-setup check, so it has to be one.
+    have_creds = bool(base and tid and tsec)
+    if have_creds:
         # Prove the credential BEFORE spending Steam requests.
         try:
             ping = worker_get(base, "/api/ingest/ping", tid, tsec)
@@ -239,6 +246,8 @@ def main():
         except Exception as e:
             print(f"ERROR: /api/ingest/known failed: {e}")
             return 2
+    else:
+        print("worker: no credentials in env, skipping reachability check")
 
     client = get_client()
     candidates, rejected, seen = [], {}, set()
