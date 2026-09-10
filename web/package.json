@@ -69,6 +69,7 @@
   "overrides": {
     "echarts-wordcloud": {
       "echarts": "$echarts"
-    }
+    },
+    "sharp": "0.35.4"
   }
 }
