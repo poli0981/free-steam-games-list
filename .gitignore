@@ -117,12 +117,12 @@ pnpm-debug.log*
 coverage/
 .nyc_output/
 
-# F2P Tracker desktop app (Electron + Vite)
-app/dist/
-app/dist-electron/
-app/release/
-app/.vite/
-app/*.tsbuildinfo
+# F2P Tracker desktop / Android app (Tauri 2 + Rust, at web/src-tauri).
+# NOTE: there is no app/ directory in this repo — an earlier version of this
+# block ignored app/** and described the shell as Electron. Both were wrong.
+web/src-tauri/target/
+web/src-tauri/gen/android/app/build/
+web/src-tauri/gen/apple/build/
 
 # ========================
 # 6. MOBILE CROSS-PLATFORM
