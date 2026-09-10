@@ -118,6 +118,20 @@ export default defineConfig(({ mode }) => ({
       devOptions: { enabled: false },
     }),
   ],
+  // `vite dev` serves the SPA shell for any unmatched path, so without this
+  // /api/data/* and /img/* return text/html: the dataset fetch parses HTML as
+  // JSON, throws, and React Query retries in a loop, while every image 404s
+  // into the shell. Proxying to the deployed Worker keeps `npm run dev` working
+  // with real data and real images while still hot-reloading app code.
+  //
+  // This does NOT exercise worker/ source — changes there must be run with
+  // `npx wrangler dev`, which serves the Worker and dist/ together.
+  server: {
+    proxy: {
+      "/api": { target: "https://free-steam-games.win", changeOrigin: true },
+      "/img": { target: "https://free-steam-games.win", changeOrigin: true },
+    },
+  },
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
