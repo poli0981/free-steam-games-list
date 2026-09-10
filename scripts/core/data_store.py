@@ -59,18 +59,34 @@ def is_empty(val) -> bool:
 # ──────────── JSONL I/O ────────────
 
 def load_jsonl(path: str) -> list[dict]:
-    """Load JSONL file. Returns [] if missing/empty."""
+    """Load JSONL file. Returns [] if missing/empty.
+
+    A malformed line is SKIPPED, not fatal. This used to wrap the whole read
+    loop in one try: the first json.loads failure ended the read and returned
+    only the lines before it. For scripts/temp_info.jsonl that was silent data
+    loss - ingest_new.py would process the partial list and then clear_temp()
+    would truncate the file, deleting every unread line after the bad one.
+    """
     if not os.path.isfile(path):
         return []
     records = []
+    skipped = 0
     try:
         with open(path, "r", encoding="utf-8") as f:
-            for line in f:
+            for lineno, line in enumerate(f, 1):
                 line = line.strip()
-                if line:
+                if not line:
+                    continue
+                try:
                     records.append(json.loads(line))
-    except Exception as e:
+                except json.JSONDecodeError as e:
+                    skipped += 1
+                    print(f"  [skip] {path}:{lineno} bad JSON: {e}")
+    except OSError as e:
+        # Only an I/O failure aborts the read.
         print(f"  ⚠ Error reading {path}: {e}")
+    if skipped:
+        print(f"  [skip] {path}: skipped {skipped} malformed line(s), kept {len(records)}")
     return records
 
 

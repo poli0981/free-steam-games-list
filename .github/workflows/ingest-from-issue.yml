@@ -28,7 +28,39 @@ jobs :
             const m = body.match(/```json\s*([\s\S]*?)\s*```/);
             if (!m) { core.setFailed('No JSON block'); return; }
             const fs = require('fs');
-            fs.writeFileSync('scripts/temp_info.jsonl', m[1].trim() + '\n');
+            const path = 'scripts/temp_info.jsonl';
+
+            // APPEND, never overwrite. This file is a shared queue with more
+            // than one producer: the Telegram bot appends to it, and the admin
+            // Worker appends approved candidates. writeFileSync here silently
+            // destroyed every queued entry not yet consumed, leaving no trace
+            // beyond a cleared file in the diff.
+            //
+            // Entries must also be ONE PER LINE. load_jsonl() in
+            // scripts/core/data_store.py aborts the whole read on the first
+            // json.loads failure and returns only what it had, after which
+            // clear_temp() truncates the file - so one pretty-printed block
+            // pasted into an issue would eat every line after it.
+            const lines = [];
+            for (const raw of m[1].trim().split(/\r?\n/)) {
+              const t = raw.trim();
+              if (!t) continue;
+              try {
+                lines.push(JSON.stringify(JSON.parse(t)));
+              } catch {
+                core.setFailed(
+                  'Each line of the json block must be one complete JSON object ' +
+                  '(JSONL), not a pretty-printed array. Offending line: ' + t.slice(0, 120)
+                );
+                return;
+              }
+            }
+            if (!lines.length) { core.setFailed('json block had no entries'); return; }
+
+            const prev = fs.existsSync(path) ? fs.readFileSync(path, 'utf8') : '';
+            const sep = prev && !prev.endsWith('\n') ? '\n' : '';
+            fs.appendFileSync(path, sep + lines.join('\n') + '\n');
+            core.info(`appended ${lines.length} entr(ies) to ${path}`);
       -
         run : |
           pip install --quiet -r requirements.txt
