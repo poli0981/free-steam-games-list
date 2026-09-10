@@ -106,11 +106,25 @@ export async function verifyAccessJwt(
 
     const claims = decodeJson(parts[1]);
 
-    // aud pins the token to THIS application. Without it, a valid token minted
-    // for any other application in the same Access org would be accepted here.
+    // aud pins the token to a KNOWN application. Without this check, a token
+    // minted for any other application in the same Access organisation would
+    // be accepted here.
+    //
+    // ACCESS_AUD is a comma-separated LIST because each Access application has
+    // its own AUD tag, and this Worker sits behind two: one for /admin and one
+    // for /api/admin/*. Configuring only the first made every API call fail
+    // verification while the page itself worked — and both failures surfaced
+    // as an identical 404.
+    const allowed = env.ACCESS_AUD.split(",").map((a) => a.trim()).filter(Boolean);
     const aud = claims.aud;
-    const audList = Array.isArray(aud) ? aud : [aud];
-    if (!audList.includes(env.ACCESS_AUD)) return null;
+    const audList = (Array.isArray(aud) ? aud : [aud]).filter(
+      (a): a is string => typeof a === "string",
+    );
+    if (!audList.some((a) => allowed.includes(a))) {
+      // Visible in Workers Logs only; the client still gets an opaque 404.
+      console.warn("access: aud mismatch", { got: audList, allowed });
+      return null;
+    }
 
     if (claims.iss !== `https://${env.ACCESS_TEAM_DOMAIN}`) return null;
 

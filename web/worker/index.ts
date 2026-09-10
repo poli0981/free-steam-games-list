@@ -37,6 +37,13 @@ export default {
     if (isAdminApi || isAdminPage) {
       const who = await verifyAccessJwt(request, env);
       if (!who) {
+        // The client response is deliberately opaque, which makes this hard to
+        // debug from outside — so say what happened in Workers Logs.
+        console.warn("admin: access verification failed", {
+          path: pathname,
+          hasHeader: request.headers.has("Cf-Access-Jwt-Assertion"),
+          hasCookie: (request.headers.get("Cookie") ?? "").includes("CF_Authorization"),
+        });
         // 404, not 401: an unauthenticated caller learns nothing about what
         // exists here, and Access has already redirected real humans to a
         // login before the request ever arrived.

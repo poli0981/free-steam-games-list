@@ -82,6 +82,9 @@
     // vars so the Worker can verify tokens itself rather than trusting that a
     // request reached it through the Access-protected path.
     "ACCESS_TEAM_DOMAIN": "polished-hall-48fd.cloudflareaccess.com",
-    "ACCESS_AUD": "ca93cf2c7444c20f13b0667a3063d4ac37f702a802e712721da53abb510f9194"
+    // Comma-separated: one AUD per Access application. This Worker sits behind
+    // two — /admin and /api/admin/* — and each has its own tag. Add a tag here
+    // whenever another Access application is pointed at this Worker.
+    "ACCESS_AUD": "ca93cf2c7444c20f13b0667a3063d4ac37f702a802e712721da53abb510f9194,a15d6e938cf3109651473e37c0c0fdf84a851248d8f57fdfda26808b40d3c3cb"
   }
 }
