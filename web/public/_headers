@@ -1,5 +1,11 @@
 # Headers for STATIC ASSETS only.
 #
+# No Strict-Transport-Security here, deliberately. The Cloudflare zone setting
+# (SSL/TLS -> Edge Certificates -> HSTS) adds it to EVERY response — these
+# assets, the Worker's /api and /img responses, and any future subdomain.
+# Repeating it here would risk a second HSTS header, and browsers honour only
+# the first. See docs/SECURITY_SETUP.md section 2.
+#
 # Worker-generated responses do NOT inherit these — worker/lib/http.ts applies
 # its own set, and the /admin pages build a stricter per-response CSP with a
 # nonce. Anything added here that must also hold for API responses has to be
