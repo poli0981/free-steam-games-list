@@ -1,0 +1,16 @@
+{
+  "schema": 1,
+  "appid": "4584940",
+  "link": "https://store.steampowered.com/app/4584940/",
+  "name": "Frog Climb",
+  "fields": {
+    "genre": {
+      "value": "Adventure",
+      "was": "Casual",
+      "set_by": "k30021424@gmail.com",
+      "set_at": "2026-09-11T03:03:01.595Z",
+      "reason": ""
+    }
+  },
+  "retired": {}
+}
