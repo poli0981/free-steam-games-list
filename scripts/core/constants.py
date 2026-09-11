@@ -61,6 +61,15 @@ ANTI_CHEAT_PATTERNS: dict[str, list[str]] = {
 }
 
 # ──────────── Field classification ────────────
+# Longest stored `description`, INCLUDING the ellipsis.
+#
+# The field holds the publisher's own store blurb, reproduced as a short
+# identifying quotation so a row is recognisable — see LICENSE-DATA, which
+# excludes it from the CC BY grant. Keeping it short is what makes that
+# characterisation honest: at full length (median 213, longest 340) the field
+# was reproducing the whole blurb rather than quoting from it.
+DESCRIPTION_MAX = 180
+
 MANUAL_FIELDS = frozenset({
     "anti_cheat", "anti_cheat_note", "is_kernel_ac",
     "notes", "type_game", "safe", "genre",

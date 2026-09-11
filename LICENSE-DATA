@@ -35,11 +35,16 @@ effort is the project's contribution and is what CC BY 4.0 is being applied to.
 
 **What the project does NOT own, and therefore cannot license:**
 
-- **`description`** — the short blurb each publisher writes for its own Steam
-  store page, stored verbatim. These are typically ~200 characters (median 213,
-  longest 340 in the current dataset). They are reproduced here as short
-  identifying quotations so a row is recognisable; copyright remains with the
-  publisher. They are **excluded** from the CC BY grant.
+- **`description`** — the opening of the short blurb each publisher writes for
+  its own Steam store page. **Truncated to 180 characters**, on a word boundary
+  where one is available, with an ellipsis marking the cut. 2,156 of 3,426 rows
+  (63%) were shortened; the rest were already under the cap and are stored
+  whole. No stored value exceeds 180 characters. Before truncation the
+  median was 213 characters and the longest 340 — long enough that the field
+  reproduced whole blurbs rather than quoting from them, which is the practice
+  this cap exists to end. What remains is a short identifying quotation so a
+  row is recognisable; copyright remains with the publisher, and it is
+  **excluded** from the CC BY grant.
 - **`header_image`** — a URL pointing at publisher artwork hosted on Valve's
   CDN. The dataset contains the address, never the image. The artwork itself is
   the publisher's.

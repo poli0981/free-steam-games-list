@@ -150,9 +150,16 @@ export function GameDetailDrawer({ game, onClose, missing }: Props) {
             </DialogHeader>
 
             {game.description && (
-              <p className="text-sm leading-relaxed text-muted-foreground">
-                {game.description}
-              </p>
+              <div>
+                <p className="text-sm leading-relaxed text-muted-foreground">
+                  {game.description}
+                </p>
+                {/* The blurb is the publisher's own copy, quoted in part. Say so
+                    where it is read, not only in LICENSE-DATA. */}
+                <p className="mt-1 text-[11px] text-muted-foreground/70">
+                  {t("detail.descriptionSource")}
+                </p>
+              </div>
             )}
 
             <Separator />

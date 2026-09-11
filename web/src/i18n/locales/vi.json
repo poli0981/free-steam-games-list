@@ -400,7 +400,8 @@
     "kernelLevel": "kernel-level",
     "playersPeak": "(peak {{peak}})",
     "viewSteamPage": "trang Steam",
-    "viewHealth": "Health"
+    "viewHealth": "Health",
+    "descriptionSource": "Mô tả do nhà phát hành viết, lấy từ Steam — đã rút gọn."
   },
   "errors": {
     "code": "LỖI {{code}}",

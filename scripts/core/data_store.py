@@ -17,7 +17,7 @@ from typing import Optional
 from .constants import (
     DATA_DIR, LEGACY_JSONL, TEMP_JSONL,
     MAX_RECORDS_PER_FILE, SHARD_PREFIX,
-    MANUAL_FIELDS, ARRAY_FIELDS,
+    MANUAL_FIELDS, ARRAY_FIELDS, DESCRIPTION_MAX,
 )
 
 # ──────────── Link helpers ────────────
@@ -148,6 +148,50 @@ def load_main() -> list[dict]:
     return []
 
 
+ELLIPSIS = "\u2026"
+
+
+def truncate_description(text: str) -> str:
+    """Shorten one blurb to DESCRIPTION_MAX, on a word boundary where possible.
+
+    Idempotent by construction: the result is always <= DESCRIPTION_MAX, so a
+    second pass returns it unchanged. That matters because this runs on every
+    single write to data/ -- if it were not idempotent it would nibble a
+    character off every description on every run and rewrite all five shards
+    forever.
+    """
+    t = (text or "").strip()
+    if len(t) <= DESCRIPTION_MAX:
+        return t
+    # -1 leaves room for the ellipsis, so the STORED value never exceeds the cap.
+    cut = t[:DESCRIPTION_MAX - 1]
+    space = cut.rfind(" ")
+    # Only back off to a word boundary if one is reasonably near the end;
+    # otherwise a blurb with no spaces in its tail would lose most of itself.
+    if space >= int(DESCRIPTION_MAX * 0.6):
+        cut = cut[:space]
+    return cut.rstrip(" ,;:.\u2014\u2013-") + ELLIPSIS
+
+
+def truncate_descriptions(records: list[dict]) -> int:
+    """Apply truncate_description() across records, in place. Returns the count.
+
+    Deliberately does NOT touch each record's `last_updated`. That field means
+    "the game's data changed", and shortening how much of a publisher's blurb
+    is stored is a change to this repository's representation, not news about
+    the game. Bumping it would show ~2,150 games as freshly updated on the
+    Activity and Health pages on the day this first runs.
+    """
+    n = 0
+    for game in records:
+        old = game.get("description", "")
+        new = truncate_description(old)
+        if new != old:
+            game["description"] = new
+            n += 1
+    return n
+
+
 def save_main(records: list[dict], apply_human_overrides: bool = True):
     """Save records to sharded JSONL files (MAX_RECORDS_PER_FILE per shard).
 
@@ -161,6 +205,13 @@ def save_main(records: list[dict], apply_human_overrides: bool = True):
     apply_human_overrides=False exists for tooling that must see the
     un-overridden values (an audit report). Never pass it from the pipeline.
     """
+    # Before overrides, so a human decision always has the last word. (No
+    # override can currently set `description` -- it is not a MANUAL_FIELD --
+    # but the ordering should not depend on that staying true.)
+    shortened = truncate_descriptions(records)
+    if shortened:
+        print(f"  descriptions: shortened {shortened} to {DESCRIPTION_MAX} chars")
+
     if apply_human_overrides:
         # Imported here, not at module scope: overrides.py imports from this
         # module, so a top-level import would be circular.
