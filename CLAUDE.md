@@ -107,6 +107,17 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
 - `echarts-wordcloud` declares a stale `echarts@^5` peer. It runs fine on
   echarts 6 (all the legacy APIs it uses are still exported), so `package.json`
   carries an `overrides` entry. Do not "fix" it by pinning echarts back to 5.
+- **Router: `BrowserRouter` on the web, `HashRouter` under `isTauri()`**
+  (`web/src/main.tsx`). The Tauri webview has no server-side fallback, so real
+  paths would 404 on refresh there. Never hardcode a `#/…` href — use
+  `<Link to>`, which renders the right form for either router. HashRouter-era
+  `/#/…` URLs are upgraded on page load by `upgradeLegacyHashUrl()`.
+- **`/api/data/*` sends `Access-Control-Allow-Origin: *` on purpose.** The
+  Tauri apps fetch it cross-origin (`tauri://localhost`,
+  `http://tauri.localhost`); without it they cannot load the catalogue at all.
+  Never add CORS to `/api/admin/*` or `/api/ingest/*`, and never set
+  `Cross-Origin-Resource-Policy` on Worker responses — the same apps load
+  `/img/*` cross-site.
 - The app is behind a first-run legal consent gate
   (`web/src/components/common/ConsentGate.tsx`). Only `/error/*` bypasses it —
   any new route that must be reachable pre-consent has to join that list.

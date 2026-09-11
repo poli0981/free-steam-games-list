@@ -62,6 +62,13 @@ export async function handleData(request: Request, url: URL): Promise<Response> 
         ? "no-cache"
         : "public, max-age=300, stale-while-revalidate=600",
       "CDN-Cache-Control": `public, max-age=${edgeTtl}`,
+      // `*`, deliberately and only here. This is the same public dataset
+      // raw.githubusercontent.com serves to every origin with `*`, no
+      // credentials ride on it, and the Tauri apps (tauri://localhost and
+      // http://tauri.localhost) fetch it cross-origin — without this the
+      // packaged apps cannot load the catalogue at all. Never copy this onto
+      // /api/admin/* or /api/ingest/*.
+      "Access-Control-Allow-Origin": "*",
       ...SECURITY_HEADERS,
     },
   });

@@ -32,7 +32,7 @@
       }
     ],
     "security": {
-      "csp": null
+      "csp": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://free-steam-games.win https://shared.akamai.steamstatic.com https://shared.fastly.steamstatic.com https://cdn.akamai.steamstatic.com; font-src 'self'; connect-src 'self' ipc: http://ipc.localhost https://free-steam-games.win https://api.github.com; object-src 'none'; base-uri 'none'"
     }
   },
   "bundle": {
@@ -48,7 +48,7 @@
     ],
     "category": "Utility",
     "shortDescription": "Browse and analyse free-to-play Steam games",
-    "longDescription": "Desktop wrapper around the Steam F2P Tracker web app. Browses 1,200+ free-to-play games with charts, filters, and editor. Reads data live from raw.githubusercontent.com; no telemetry.",
+    "longDescription": "Desktop wrapper around the Steam F2P Tracker web app: browse and analyse the free-to-play Steam catalogue with charts and filters. Reads data from free-steam-games.win; no telemetry.",
     "publisher": "poli0981",
     "homepage": "https://github.com/poli0981/free-steam-games-list",
     "license": "MIT",
