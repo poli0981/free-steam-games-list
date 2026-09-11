@@ -1,0 +1,16 @@
+{
+  "schema": 1,
+  "appid": "4667580",
+  "link": "https://store.steampowered.com/app/4667580/",
+  "name": "Don't Knife Me!",
+  "fields": {
+    "genre": {
+      "value": "Shooter",
+      "was": "Casual",
+      "set_by": "k30021424@gmail.com",
+      "set_at": "2026-09-11T02:39:08.484Z",
+      "reason": ""
+    }
+  },
+  "retired": {}
+}
