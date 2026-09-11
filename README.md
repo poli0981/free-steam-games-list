@@ -1,7 +1,7 @@
 [![Games Count](https://img.shields.io/badge/Games-3.4k%2B-green?style=flat&logo=steam)](data/)
 [![Last Updated](https://img.shields.io/badge/Updated-Daily-blue?style=flat&logo=github-actions)](.github/workflows)
 [![Top Online](https://img.shields.io/badge/Top%20Online-Live%20Leaderboard-red?style=flat&logo=steam)](games/top-online.md)
-[![Version](https://img.shields.io/badge/version-3.4.2-purple?style=flat&logo=github)](https://github.com/poli0981/free-steam-games-list)
+[![Version](https://img.shields.io/badge/version-3.4.3-purple?style=flat&logo=github)](https://github.com/poli0981/free-steam-games-list)
 [![Web App](https://img.shields.io/badge/Web%20App-Live-2563eb?style=flat&logo=react)](https://free-steam-games.win/)
 [![Desktop](https://img.shields.io/badge/Desktop-Tauri%202-FFC131?style=flat&logo=tauri)](https://github.com/poli0981/free-steam-games-list/releases)
 [![Android](https://img.shields.io/badge/Android-11%2B%20APK-3DDC84?style=flat&logo=android)](https://github.com/poli0981/free-steam-games-list/releases)

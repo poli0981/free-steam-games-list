@@ -2,6 +2,56 @@
 
 All notable changes to this awesome noob repo will be documented here.
 
+## [v3.4.3] – 2026-09-11 (The "Own Domain" Edition)
+
+The site moved off GitHub Pages to **free-steam-games.win** on Cloudflare, and
+the catalogue gained a reviewed intake path for new games plus durable manual
+corrections. Web app + desktop/Android bumped `1.4.4` → `1.4.5`; repo
+public-facing version `3.4.2` → `3.4.3`. Tags `v3.4.3`, `desktop-v1.4.5` and
+`android-v1.4.5` are GPG-signed; both binary workflows publish **draft**
+releases.
+
+### 🌐 New home
+
+- Served by a Cloudflare Worker with static assets; data is proxied same-origin
+  at `/api/data/*`, Steam art at `/img/*`. Details: [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md).
+- Real URLs on the web (`/games/730`) instead of `/#/games/730`; old hash links
+  are upgraded on load. The desktop/Android shell keeps hash routing.
+- Content-Security-Policy and hardening headers, with a check command for every
+  setting in [docs/SECURITY_SETUP.md](docs/SECURITY_SETUP.md).
+
+### 📥 New games: discovered, then reviewed
+
+- `Discover New Games` sweeps the Steam store daily into a review queue; the
+  maintainer approves at `/admin` (behind Cloudflare Access). Approval queues
+  the game for `ingest_new.py`, and a reconcile cron confirms it landed.
+- Submissions from outside now come only through the
+  [browser extension](https://github.com/poli0981/steam-f2p-extension); the
+  issue-template and Telegram-bot paths were removed.
+
+### ✏️ Corrections that survive the pipeline
+
+- Manual fixes (genre, notes, anti-cheat…) live in
+  `data/overrides/<appid>.json` and are re-applied on every write, so a refetch
+  or genre normalisation can no longer revert them. Edit from `/admin/edit`
+  (single game or bulk by genre) or `scripts/edit_game.py`.
+
+### 📄 Data & licensing
+
+- Dataset licensed separately under CC BY 4.0 ([LICENSE-DATA](LICENSE-DATA));
+  code stays MIT. Terms updated, so the consent prompt appears once more.
+- `description` is now a short quotation — capped at 180 characters and
+  attributed in the app.
+- The bulk markdown tables in `games/` were removed; the two leaderboards stay.
+
+### 🖥️ Desktop & Android
+
+- Packaged apps now read from free-steam-games.win; the Worker sends CORS for
+  `/api/data/*` so they can. Builds made from `main` before this fix could not
+  load the catalogue — no released build was affected.
+- The Tauri webview has a real CSP (`ipc:` included, so native calls keep
+  working). **Smoke-test the draft builds before publishing.**
+
 ## [v3.4.2] – 2026-06-15 (The "Android Floor" Edition)
 
 Android-focused release that raises the APK's minimum OS, hides a desktop-only
