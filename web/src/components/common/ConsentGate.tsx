@@ -11,7 +11,7 @@ import { isTauri, openExternal } from "../../lib/external-open";
  * First-run legal consent gate. Blocks the main UI until the user accepts the
  * binding documents. Kept in the EAGER bundle (no lazy import) so it paints on
  * first render with no flash — i18n is already awaited before render in
- * main.tsx. Mounted INSIDE AppErrorBoundary + HashRouter, so a crash here is
+ * main.tsx. Mounted INSIDE AppErrorBoundary + the router, so a crash here is
  * caught by the top-level boundary and `useLocation` is available.
  *
  * Persistence + incognito behaviour live in stores/consent.ts.

@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
+import { Link } from "react-router-dom";
 import {
   AlertTriangle,
   Trash2,
@@ -114,16 +115,16 @@ export function HealthPage() {
               <CardContent>
                 <div className="space-y-1 max-h-48 overflow-auto pr-1 text-sm scrollbar-thin">
                   {g.records.slice(0, 30).map((r) => (
-                    <a
+                    <Link
                       key={r.link}
-                      href={`#/games?search=${encodeURIComponent(r.name)}`}
+                      to={`/games?search=${encodeURIComponent(r.name)}`}
                       className="flex items-center justify-between rounded px-2 py-1 hover:bg-accent"
                     >
                       <span className="truncate">{r.name || "—"}</span>
                       <span className="ml-2 text-xs text-muted-foreground">
                         {formatRelativeDate(r.last_updated)}
                       </span>
-                    </a>
+                    </Link>
                   ))}
                   {g.records.length > 30 && (
                     <div className="px-2 text-xs text-muted-foreground">

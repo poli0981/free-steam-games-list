@@ -1,4 +1,5 @@
 import { useTranslation } from "react-i18next";
+import { Link } from "react-router-dom";
 import {
   Dialog,
   DialogContent,
@@ -82,9 +83,9 @@ export function GameDetailDrawer({ game, onClose, missing }: Props) {
                   {t("detail.viewSteamPage")}
                 </a>{" "}
                 ·{" "}
-                <a href="#/health" className="text-primary hover:underline">
+                <Link to="/health" className="text-primary hover:underline">
                   {t("detail.viewHealth")}
-                </a>
+                </Link>
               </DialogDescription>
             </DialogHeader>
           </div>
