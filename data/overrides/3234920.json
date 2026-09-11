@@ -1,0 +1,16 @@
+{
+  "schema": 1,
+  "appid": "3234920",
+  "link": "https://store.steampowered.com/app/3234920/",
+  "name": "Hexpand",
+  "fields": {
+    "genre": {
+      "value": "RTS",
+      "was": "Casual",
+      "set_by": "k30021424@gmail.com",
+      "set_at": "2026-09-11T02:25:08.150Z",
+      "reason": "change to RTS"
+    }
+  },
+  "retired": {}
+}
