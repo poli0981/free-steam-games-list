@@ -14,6 +14,7 @@
   import { formatNumber } from "$lib/utils";
   import PageHeader from "$lib/common/PageHeader.svelte";
   import Badge from "$lib/ui/Badge.svelte";
+  import Seo from "$lib/common/Seo.svelte";
 
   const t = i18n.t;
   const REPO_URL = `https://github.com/${REPO_OWNER}/${REPO_NAME}`;
@@ -60,10 +61,7 @@
   ];
 </script>
 
-<svelte:head>
-  <title>{t("about.title")} · Steam F2P Tracker</title>
-  <meta name="description" content={t("about.subtitle")} />
-</svelte:head>
+<Seo title={t("about.title")} description={t("about.subtitle")} />
 
 <PageHeader title={t("about.title")} subtitle={t("about.subtitle")} />
 

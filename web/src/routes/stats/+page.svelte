@@ -7,6 +7,7 @@
   import QueryState from "$lib/common/QueryState.svelte";
   import PageHeader from "$lib/common/PageHeader.svelte";
   import EChart from "$lib/charts/EChart.svelte";
+  import Seo from "$lib/common/Seo.svelte";
 
   const t = i18n.t;
   const records = $derived(games.data?.records ?? []);
@@ -185,10 +186,7 @@
   });
 </script>
 
-<svelte:head>
-  <title>{t("stats.title")} · Steam F2P Tracker</title>
-  <meta name="description" content={t("stats.subtitle")} />
-</svelte:head>
+<Seo title={t("stats.title")} description={t("stats.subtitle")} />
 
 <PageHeader title={t("stats.title")} subtitle={t("stats.subtitle")} />
 

@@ -6,6 +6,7 @@
   import QueryState from "$lib/common/QueryState.svelte";
   import PageHeader from "$lib/common/PageHeader.svelte";
   import EChart from "$lib/charts/EChart.svelte";
+  import Seo from "$lib/common/Seo.svelte";
 
   const t = i18n.t;
 
@@ -111,10 +112,7 @@
   });
 </script>
 
-<svelte:head>
-  <title>{t("nav.delisted")} · Steam F2P Tracker</title>
-  <meta name="description" content={t("charts.desc.delisted")} />
-</svelte:head>
+<Seo title={t("nav.delisted")} description={t("charts.desc.delisted")} />
 
 <PageHeader title={t("nav.delisted")} subtitle={t("charts.desc.delisted")} />
 

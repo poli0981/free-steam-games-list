@@ -2,7 +2,6 @@
   import type { Component } from "svelte";
   import ShieldX from "@lucide/svelte/icons/shield-x";
   import FileQuestion from "@lucide/svelte/icons/file-question-mark";
-  import TimerOff from "@lucide/svelte/icons/timer-off";
   import ServerCrash from "@lucide/svelte/icons/server-crash";
   import Network from "@lucide/svelte/icons/network";
   import CloudOff from "@lucide/svelte/icons/cloud-off";
@@ -12,7 +11,6 @@
   export const ERROR_CODES = [
     "403",
     "404",
-    "419",
     "500",
     "502",
     "503",
@@ -31,7 +29,6 @@
   > = {
     "403": { icon: ShieldX, tone: "warn" },
     "404": { icon: FileQuestion, tone: "neutral" },
-    "419": { icon: TimerOff, tone: "warn" },
     "500": { icon: ServerCrash, tone: "destructive" },
     "502": { icon: Network, tone: "destructive" },
     "503": { icon: CloudOff, tone: "destructive" },

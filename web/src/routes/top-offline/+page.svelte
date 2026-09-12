@@ -11,6 +11,7 @@
   import PageHeader from "$lib/common/PageHeader.svelte";
   import EChart from "$lib/charts/EChart.svelte";
   import Badge from "$lib/ui/Badge.svelte";
+  import Seo from "$lib/common/Seo.svelte";
 
   const t = i18n.t;
 
@@ -46,10 +47,7 @@
   });
 </script>
 
-<svelte:head>
-  <title>{t("nav.topOffline")} · Steam F2P Tracker</title>
-  <meta name="description" content={t("topOffline.subtitle")} />
-</svelte:head>
+<Seo title={t("nav.topOffline")} description={t("topOffline.subtitle")} />
 
 <PageHeader title={t("nav.topOffline")} subtitle={t("topOffline.subtitle")} />
 

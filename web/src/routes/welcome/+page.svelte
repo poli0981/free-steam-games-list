@@ -9,6 +9,7 @@
   import { LEGAL_DOCS, legalDocSlug } from "$lib/legal";
   import { formatNumber } from "$lib/utils";
   import Button from "$lib/ui/Button.svelte";
+  import Seo from "$lib/common/Seo.svelte";
 
   const t = i18n.t;
   const total = $derived(games.data?.records.length ?? 0);
@@ -20,10 +21,7 @@
   }
 </script>
 
-<svelte:head>
-  <title>{t("welcome.title")} · Steam F2P Tracker</title>
-  <meta name="description" content={t("welcome.heading")} />
-</svelte:head>
+<Seo title={t("welcome.title")} description={t("welcome.heading")} />
 
 <div class="mx-auto flex min-h-dvh max-w-3xl flex-col justify-center px-4 py-12">
   <span class="mb-5 grid size-12 place-items-center rounded-xl bg-primary text-primary-foreground">

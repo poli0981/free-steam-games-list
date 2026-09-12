@@ -13,6 +13,7 @@
   import { cn } from "$lib/utils";
   import PageHeader from "$lib/common/PageHeader.svelte";
   import Button from "$lib/ui/Button.svelte";
+  import Seo from "$lib/common/Seo.svelte";
 
   const t = i18n.t;
 
@@ -42,10 +43,7 @@
   }
 </script>
 
-<svelte:head>
-  <title>{t("settings.title")} · Steam F2P Tracker</title>
-  <meta name="description" content={t("settings.subtitle")} />
-</svelte:head>
+<Seo title={t("settings.title")} description={t("settings.subtitle")} />
 
 <PageHeader title={t("settings.title")} subtitle={t("settings.subtitle")} />
 

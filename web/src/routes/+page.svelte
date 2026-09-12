@@ -18,6 +18,7 @@
   import PageHeader from "$lib/common/PageHeader.svelte";
   import EChart from "$lib/charts/EChart.svelte";
   import { chartTheme } from "$lib/chart-theme";
+  import Seo from "$lib/common/Seo.svelte";
 
   const t = i18n.t;
 
@@ -57,10 +58,7 @@
   });
 </script>
 
-<svelte:head>
-  <title>{t("dashboard.title")} · Steam F2P Tracker</title>
-  <meta name="description" content={t("dashboard.subtitle", { count: kpis.total })} />
-</svelte:head>
+<Seo title={t("dashboard.title")} description={t("dashboard.subtitle", { count: kpis.total })} />
 
 <PageHeader title={t("dashboard.title")} subtitle={t("dashboard.subtitle", { count: formatNumber(kpis.total) })} />
 

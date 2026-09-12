@@ -7,6 +7,7 @@
   import QueryState from "$lib/common/QueryState.svelte";
   import PageHeader from "$lib/common/PageHeader.svelte";
   import Badge from "$lib/ui/Badge.svelte";
+  import Seo from "$lib/common/Seo.svelte";
 
   const t = i18n.t;
 
@@ -22,10 +23,7 @@
   );
 </script>
 
-<svelte:head>
-  <title>{t("antiCheatList.title")} · Steam F2P Tracker</title>
-  <meta name="description" content={t("antiCheatList.subtitle")} />
-</svelte:head>
+<Seo title={t("antiCheatList.title")} description={t("antiCheatList.subtitle")} />
 
 <PageHeader title={t("antiCheatList.title")} subtitle={t("antiCheatList.subtitle")} />
 

@@ -33,20 +33,36 @@ export default defineConfig(({ mode }) => ({
         short_name: "F2P Tracker",
         description:
           "Browse and analyse the catalogue of free-to-play Steam games tracked in this repository.",
-        theme_color: "#131110",
-        background_color: "#131110",
+        theme_color: "#14120F",
+        background_color: "#14120F",
         display: "standalone",
         scope: "/",
         start_url: "/",
+        // Absolute paths. A relative manifest icon src resolves against the
+        // MANIFEST's URL, which is fine at / and wrong the moment the manifest
+        // is requested from a deep route - and the SPA fallback answers the
+        // miss with index.html at HTTP 200, so it fails silently.
+        //
+        // "any" and "maskable" are separate entries, not one "any maskable":
+        // a maskable icon is padded so Android can crop it to a circle, and
+        // reusing that same padded art for "any" leaves a visibly small mark
+        // floating in a large box everywhere else.
         icons: [
-          { src: "icon-192.svg", sizes: "192x192", type: "image/svg+xml", purpose: "any" },
-          { src: "icon-512.svg", sizes: "512x512", type: "image/svg+xml", purpose: "any maskable" },
+          { src: "/icon-192.png", sizes: "192x192", type: "image/png", purpose: "any" },
+          { src: "/icon-512.png", sizes: "512x512", type: "image/png", purpose: "any" },
+          { src: "/icon-maskable-512.png", sizes: "512x512", type: "image/png", purpose: "maskable" },
+          { src: "/icon.svg", sizes: "any", type: "image/svg+xml", purpose: "any" },
         ],
       },
       workbox: {
         // Big enough for the echarts chunk, which is ~700 KB on its own.
         maximumFileSizeToCacheInBytes: 6 * 1024 * 1024,
         globPatterns: ["**/*.{js,css,html,svg,woff2}"],
+        // The social card is 145 KB that no VISITOR ever loads - it exists
+        // for crawlers. @vite-pwa/sveltekit adds every static asset to the
+        // precache on its own, regardless of globPatterns, so keeping it
+        // out of every install takes an explicit ignore.
+        globIgnores: ["**/og.png"],
         navigateFallback: "/200.html",
         // These are Worker routes, not app navigations. Without the denylist an
         // installed service worker answers them from the app shell and they

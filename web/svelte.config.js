@@ -51,6 +51,39 @@ const config = {
       // fallback exists to serve it.
       strict: false,
     }),
+    paths: {
+      /**
+       * Absolute asset URLs. MUST stay false.
+       *
+       * SvelteKit defaults `relative` to true, which makes every PRERENDERED
+       * page reference its assets as "./_app/immutable/...". That is portable,
+       * and here it was fatal: Cloudflare's
+       * `not_found_handling: "single-page-application"` answers an unmatched
+       * path with index.html, so a request for /games/730 got the dashboard's
+       * HTML - whose "./_app/..." then resolved against /games/, i.e.
+       * /games/_app/immutable/entry/start.js. That 404s into the SPA fallback,
+       * which returns index.html again with Content-Type: text/html, and the
+       * browser refuses it:
+       *
+       *   Failed to load module script: Expected a JavaScript-or-Wasm module
+       *   script but the server responded with a MIME type of "text/html"
+       *
+       * The page therefore rendered the dashboard's prerendered markup and
+       * never hydrated - no router, no correction, HTTP 200 throughout. That is
+       * every non-prerendered route: /games/[appid], /developers/[name],
+       * /publishers/[name].
+       *
+       * The fallback 200.html was always absolute, which is why the bug was
+       * invisible until a route actually fell through to index.html.
+       *
+       * Safe because this app is served from the domain root on the web and
+       * from the asset-protocol root under Tauri. It would break under a
+       * subpath deployment - there is none, and adding one means setting
+       * `base` here rather than turning this back on.
+       */
+      relative: false,
+    },
+
     alias: {
       // The React app used "@/..." for src-relative imports. Kept so a ported
       // file does not have to rewrite every import path at the same time as
@@ -105,6 +138,14 @@ const config = {
         "base-uri": ["none"],
         "form-action": ["none"],
       },
+    },
+
+    prerender: {
+      // "*" is every route SvelteKit can reach by crawling links from the
+      // entry points. /sitemap.xml is linked from robots.txt, not from any
+      // page, so the crawler never finds it and it would be left to the SPA
+      // fallback - which answers it with HTML at HTTP 200 and no error.
+      entries: ["*", "/sitemap.xml"],
     },
 
     typescript: {

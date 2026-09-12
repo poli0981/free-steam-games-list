@@ -4,16 +4,14 @@
   import { i18n } from "$lib/i18n.svelte";
   import PageHeader from "$lib/common/PageHeader.svelte";
   import type { PageData } from "./$types";
+  import Seo from "$lib/common/Seo.svelte";
 
   let { data }: { data: PageData } = $props();
 
   const t = i18n.t;
 </script>
 
-<svelte:head>
-  <title>{data.meta.label} · Steam F2P Tracker</title>
-  <meta name="description" content={data.meta.hint} />
-</svelte:head>
+<Seo title={data.meta.label} description={data.meta.hint} type="article" />
 
 <div class="mx-auto max-w-3xl">
   <a

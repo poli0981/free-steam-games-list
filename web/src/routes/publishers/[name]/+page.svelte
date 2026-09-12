@@ -10,6 +10,7 @@
   import QueryState from "$lib/common/QueryState.svelte";
   import PageHeader from "$lib/common/PageHeader.svelte";
   import Badge from "$lib/ui/Badge.svelte";
+  import Seo from "$lib/common/Seo.svelte";
 
   const t = i18n.t;
 
@@ -19,13 +20,7 @@
   );
 </script>
 
-<svelte:head>
-  <title>{name} · Steam F2P Tracker</title>
-  <meta name="description" content={t("studios.gamesCount", { count: titles.length })} />
-  <!-- One page per studio name is generated on demand from the catalogue, not
-       prerendered: there are thousands, and most have a single game. -->
-  <meta name="robots" content="index, follow" />
-</svelte:head>
+<Seo title={name} description={t("studios.gamesCount", { count: titles.length })} />
 
 <a
   href="/publishers"

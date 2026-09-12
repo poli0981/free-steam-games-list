@@ -62,6 +62,60 @@
     void import("./echarts").then((m) => (mod = m));
   });
 
+  /**
+   * echarts' renderer registers wheel listeners that block scrolling. This
+   * makes them passive.
+   *
+   * zrender binds BOTH `wheel` and `mousewheel` on the chart element with no
+   * options object at all, which means passive defaults to false. Measured on
+   * /stats: four listeners for two charts, with no dataZoom configured
+   * anywhere - it is zrender's base handler, not something a chart opts into.
+   *
+   * Chrome then prints
+   *     [Violation] Added non-passive event listener to a scroll-blocking
+   *     'mousewheel' event
+   * and, the part that actually matters, has to wait for zrender's handler
+   * before it may scroll. Every chart on this site sits inside the page's
+   * scroll container, so that is real jank on every wheel tick over a chart,
+   * not just console noise.
+   *
+   * zrender exposes no option for this and the listeners are registered
+   * synchronously inside init(), so the patch covers exactly that one call and
+   * is removed in a finally. JS is single-threaded, so nothing else can
+   * observe the swapped method in between.
+   *
+   * SAFE ONLY WHILE NO CHART NEEDS THE WHEEL. A passive listener cannot call
+   * preventDefault(), so `dataZoom: { type: "inside" }` and `roam: true` would
+   * silently stop responding to the wheel. charts.test.ts asserts that neither
+   * appears in any chart option, so this cannot rot unnoticed.
+   */
+  function initWithPassiveWheel(m: typeof import("./echarts"), el: HTMLDivElement): ECharts {
+    const proto = EventTarget.prototype;
+    const original = proto.addEventListener;
+
+    proto.addEventListener = function (
+      this: EventTarget,
+      type: string,
+      listener: EventListenerOrEventListenerObject | null,
+      options?: boolean | AddEventListenerOptions,
+    ) {
+      if (type === "wheel" || type === "mousewheel") {
+        const merged: AddEventListenerOptions =
+          typeof options === "object" && options !== null
+            ? { ...options, passive: true }
+            : { capture: options === true, passive: true };
+        return original.call(this, type, listener, merged);
+      }
+      return original.call(this, type, listener, options);
+    };
+
+    try {
+      return m.echarts.init(el, undefined, { renderer: "canvas" });
+    } finally {
+      proto.addEventListener = original;
+    }
+  }
+
   $effect(() => {
     const el = host;
     const m = mod;
@@ -69,7 +123,7 @@
 
     // No theme argument. See the note in echarts.ts: under echarts 6 an
     // unregistered theme name silently stops every series painting.
-    chart = m.echarts.init(el, undefined, { renderer: "canvas" });
+    chart = initWithPassiveWheel(m, el);
 
     const ro = new ResizeObserver(() => chart?.resize());
     ro.observe(el);

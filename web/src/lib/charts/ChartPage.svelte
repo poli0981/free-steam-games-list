@@ -4,6 +4,7 @@
   import { i18n } from "../i18n.svelte";
   import QueryState from "../common/QueryState.svelte";
   import PageHeader from "../common/PageHeader.svelte";
+  import Seo from "../common/Seo.svelte";
 
   /**
    * The shell every chart page shares: head tags, header, load/error handling.
@@ -16,15 +17,12 @@
     title,
     subtitle,
     children,
-  }: { title: string; subtitle?: string; children: Snippet } = $props();
+  }: { title: string; subtitle: string; children: Snippet } = $props();
 
   const t = i18n.t;
 </script>
 
-<svelte:head>
-  <title>{title} · Steam F2P Tracker</title>
-  {#if subtitle}<meta name="description" content={subtitle} />{/if}
-</svelte:head>
+<Seo {title} description={subtitle} />
 
 <PageHeader {title} {subtitle} />
 

@@ -8,6 +8,7 @@
   import { installPaletteShortcut } from "$lib/palette.svelte";
   import { games } from "$lib/games.svelte";
   import { upgradeLegacyHashUrl } from "$lib/legacy-url";
+  import { recoverFallbackRoute } from "$lib/fallback-route";
   import { installExternalLinkInterceptor } from "$lib/external-link-interceptor";
   import { checkAndroidUpdate } from "$lib/android-update";
   import { isTauri, isAndroid, openExternal } from "$lib/external-open";
@@ -57,6 +58,10 @@
     // run during prerender. The URL upgrade goes first, before the router
     // settles on a route.
     upgradeLegacyHashUrl();
+    // Straight after the URL upgrade and before anything renders off the
+    // route: both hosts answer an unmatched path with the PRERENDERED
+    // dashboard, so /games/730 hydrates as "/" unless this corrects it.
+    recoverFallbackRoute(page.route.id);
     theme.hydrate();
     consent.hydrate();
     welcome.hydrate();

@@ -7,6 +7,7 @@
   import QueryState from "$lib/common/QueryState.svelte";
   import PageHeader from "$lib/common/PageHeader.svelte";
   import Input from "$lib/ui/Input.svelte";
+  import Seo from "$lib/common/Seo.svelte";
 
   const t = i18n.t;
 
@@ -20,10 +21,7 @@
   );
 </script>
 
-<svelte:head>
-  <title>{t("studios.publishersTitle")} · Steam F2P Tracker</title>
-  <meta name="description" content={t("studios.publishersSubtitle", { count: studios.length })} />
-</svelte:head>
+<Seo title={t("studios.publishersTitle")} description={t("studios.publishersSubtitle", { count: studios.length })} />
 
 <PageHeader
   title={t("studios.publishersTitle")}

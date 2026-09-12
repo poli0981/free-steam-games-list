@@ -13,9 +13,19 @@
  */
 import { isTauri } from "./external-open";
 
-/** Must match `vars.SITE_ORIGIN` in web/wrangler.jsonc. Not exported: nothing
- *  outside this file needs the bare origin, and an unused export is noise. */
-const SITE_ORIGIN = "https://free-steam-games.win";
+/**
+ * Must match `vars.SITE_ORIGIN` in web/wrangler.jsonc.
+ *
+ * Exported for Seo.svelte, which needs the bare origin rather than API_ORIGIN:
+ * canonical and og:url must be the PUBLIC web address on every target. In the
+ * Tauri builds API_ORIGIN happens to equal this, but on the web it is "" - and
+ * a canonical tag of "/about" is not a canonical tag at all.
+ *
+ * It cannot come from `page.url.origin` either: during prerendering that is
+ * SvelteKit's internal "http://sveltekit-prerender" host, which would be baked
+ * into every static page.
+ */
+export const SITE_ORIGIN = "https://free-steam-games.win";
 
 /**
  * Prefix for this site's own absolute paths: "" on the web, the full origin

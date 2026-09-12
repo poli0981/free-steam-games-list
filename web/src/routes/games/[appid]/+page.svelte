@@ -13,6 +13,7 @@
   import QueryState from "$lib/common/QueryState.svelte";
   import Badge from "$lib/ui/Badge.svelte";
   import Button from "$lib/ui/Button.svelte";
+  import Seo from "$lib/common/Seo.svelte";
 
   const t = i18n.t;
 
@@ -56,13 +57,11 @@
   ];
 </script>
 
-<svelte:head>
-  <title>{game ? `${game.name} · Steam F2P Tracker` : "Steam F2P Tracker"}</title>
-  {#if game}
-    <meta name="description" content={game.description || game.name} />
-    <link rel="canonical" href={`https://free-steam-games.win/games/${appid}`} />
-  {/if}
-</svelte:head>
+<Seo
+  title={game?.name ?? ""}
+  description={game ? game.description || game.name : t("games.subtitle")}
+  type="article"
+/>
 
 <a
   href="/games"

@@ -486,21 +486,15 @@
     "actions": {
       "home": "Về trang chính",
       "reload": "Tải lại",
-      "retry": "Thử lại",
-      "report": "Báo lỗi",
-      "openSettings": "Mở Cài đặt"
+      "report": "Báo lỗi"
     },
     "403": {
       "title": "Truy cập bị từ chối",
-      "description": "Bạn không có quyền thực hiện thao tác này. Chỉ chủ repo mới được sửa dữ liệu — kiểm tra token trong Cài đặt."
+      "description": "Bạn không có quyền xem trang này."
     },
     "404": {
       "title": "Không tìm thấy trang",
       "description": "Trang bạn tìm không tồn tại hoặc đã bị di chuyển."
-    },
-    "419": {
-      "title": "Phiên đăng nhập hết hạn",
-      "description": "Token xác thực không còn hiệu lực. Hãy đăng nhập lại trong Cài đặt."
     },
     "500": {
       "title": "Đã xảy ra lỗi",
@@ -522,10 +516,6 @@
       "badge": "OFFLINE",
       "title": "Bạn đang offline",
       "description": "Không có kết nối mạng. Dữ liệu đã tải trước đó vẫn xem được."
-    },
-    "boundary": {
-      "chunkTitle": "Có bản cập nhật mới",
-      "chunkDescription": "Phiên bản mới vừa được deploy trong lúc bạn đang duyệt. Tải lại để lấy file mới nhất."
     },
     "offlineTitle": "Bạn đang ngoại tuyến",
     "offlineBody": "Không có kết nối mạng. Dữ liệu đã tải vẫn dùng được.",

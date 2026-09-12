@@ -12,6 +12,7 @@
   import GamesTable from "$lib/games/GamesTable.svelte";
   import MobileGameCards from "$lib/games/MobileGameCards.svelte";
   import Button from "$lib/ui/Button.svelte";
+  import Seo from "$lib/common/Seo.svelte";
 
   const t = i18n.t;
 
@@ -65,10 +66,7 @@
   }
 </script>
 
-<svelte:head>
-  <title>{t("games.title")} · Steam F2P Tracker</title>
-  <meta name="description" content={t("games.subtitle")} />
-</svelte:head>
+<Seo title={t("games.title")} description={t("games.subtitle")} />
 
 <PageHeader title={t("games.title")} subtitle={t("games.subtitle")}>
   {#snippet actions()}

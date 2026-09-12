@@ -15,6 +15,7 @@
   import PageHeader from "$lib/common/PageHeader.svelte";
   import Badge from "$lib/ui/Badge.svelte";
   import Button from "$lib/ui/Button.svelte";
+  import Seo from "$lib/common/Seo.svelte";
 
   const t = i18n.t;
 
@@ -60,10 +61,7 @@
   const shown = $derived(filter === "bot" ? commits.filter((c) => c.login === BOT_LOGIN) : commits);
 </script>
 
-<svelte:head>
-  <title>{t("activity.title")} · Steam F2P Tracker</title>
-  <meta name="description" content={t("activity.subtitle", { count: commits.length, branch: DEFAULT_BRANCH })} />
-</svelte:head>
+<Seo title={t("activity.title")} description={t("activity.subtitle", { count: commits.length, branch: DEFAULT_BRANCH })} />
 
 <PageHeader
   title={t("activity.title")}

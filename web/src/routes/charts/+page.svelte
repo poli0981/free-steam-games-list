@@ -3,14 +3,12 @@
   import { CHART_PAGES } from "$lib/chart-nav";
   import { i18n } from "$lib/i18n.svelte";
   import PageHeader from "$lib/common/PageHeader.svelte";
+  import Seo from "$lib/common/Seo.svelte";
 
   const t = i18n.t;
 </script>
 
-<svelte:head>
-  <title>{t("charts.indexTitle")} · Steam F2P Tracker</title>
-  <meta name="description" content={t("charts.indexSubtitle")} />
-</svelte:head>
+<Seo title={t("charts.indexTitle")} description={t("charts.indexSubtitle")} />
 
 <PageHeader title={t("charts.indexTitle")} subtitle={t("charts.indexSubtitle")} />
 

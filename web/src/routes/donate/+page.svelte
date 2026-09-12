@@ -8,6 +8,7 @@
   import ExternalLink from "@lucide/svelte/icons/external-link";
   import { i18n } from "$lib/i18n.svelte";
   import PageHeader from "$lib/common/PageHeader.svelte";
+  import Seo from "$lib/common/Seo.svelte";
 
   const t = i18n.t;
 
@@ -23,10 +24,7 @@
   ];
 </script>
 
-<svelte:head>
-  <title>{t("donate.title")} · Steam F2P Tracker</title>
-  <meta name="description" content={t("donate.subtitle")} />
-</svelte:head>
+<Seo title={t("donate.title")} description={t("donate.subtitle")} />
 
 <PageHeader title={t("donate.title")} />
 
