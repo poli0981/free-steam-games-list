@@ -202,19 +202,66 @@ function say(text, kind) {
   $("msg").appendChild(d);
 }
 
+const NL = String.fromCharCode(10);
+
+/**
+ * See the matching helper in admin-ui.ts. The old version reported EVERY
+ * non-JSON response as an expired session, so a server-side crash - which
+ * arrived as a Cloudflare 1101 HTML page, the Worker having had no top-level
+ * try/catch - was indistinguishable from needing to log in again.
+ *
+ * redirect:'manual' observes an Access redirect rather than following it to
+ * cloudflareaccess.com, which the page CSP blocks as a connect-src violation.
+ */
 async function api(path, init) {
-  const res = await fetch("/api/admin/" + path, {
-    credentials: "same-origin",
-    headers: { "Accept": "application/json", ...(init && init.body ? {"Content-Type":"application/json"} : {}) },
-    ...init,
-  });
+  let res;
+  try {
+    res = await fetch("/api/admin/" + path, {
+      credentials: "same-origin",
+      redirect: "manual",
+      headers: { "Accept": "application/json", ...(init && init.body ? {"Content-Type":"application/json"} : {}) },
+      ...init,
+    });
+  } catch (e) {
+    throw new Error("Network error reaching the admin API. Check your connection, then reload.");
+  }
+  if (res.type === "opaqueredirect" || res.status === 0 || res.status === 401 || res.status === 403) {
+    throw new Error("SESSION_EXPIRED");
+  }
   const ct = res.headers.get("Content-Type") || "";
   if (!ct.includes("application/json")) {
-    throw new Error("Session expired or Access refused the request. Reload the page.");
+    throw new Error("Server returned " + res.status + " and a non-JSON body. Check wrangler tail.");
   }
   const body = await res.json();
   if (!res.ok) throw new Error(body.error || ("HTTP " + res.status));
   return body;
+}
+
+function reportError(e) {
+  const m = String((e && e.message) || e);
+  if (m === "SESSION_EXPIRED") {
+    say("Your Cloudflare Access session expired. Reloading to sign in again...", "err");
+    setTimeout(() => window.location.reload(), 1200);
+    return;
+  }
+  say(m, "err");
+}
+
+/**
+ * One busy flag for the whole page.
+ *
+ * There was none. save() and saveBulk() toggled only $("save").disabled, and
+ * retire() did not even do that - so Retire could be double-clicked into two
+ * concurrent commits, and tab switching, Discard, Load and the genre picker
+ * all stayed live while a commit was in flight.
+ */
+let busy = false;
+function setBusy(on) {
+  busy = on;
+  for (const id of ["save", "reset", "load", "tab-one", "tab-bulk", "bgenre", "bnew", "appid"]) {
+    const el = $(id);
+    if (el) el.disabled = on;
+  }
 }
 
 const toWire = (k, v) => k === "is_kernel_ac"
@@ -389,8 +436,9 @@ async function save() {
   const set = {};
   for (const [k, v] of Object.entries(dirty)) set[k] = toWire(k, v);
   if (!Object.keys(set).length) return;
-  $("save").disabled = true;
-  say("Saving…");
+  if (busy) return;
+  setBusy(true);
+  say("Saving...");
   try {
     const out = await api("edit", {
       method: "POST",
@@ -403,35 +451,61 @@ async function save() {
     await load(data.appid, true);
     await loadGenres();
   } catch (e) {
-    say(String(e.message || e), "err");
+    reportError(e);
   } finally {
-    $("save").disabled = false;
+    setBusy(false);
   }
 }
 
 async function retire(field, ov) {
   if (!confirm("Retire the override on " + field + "?\\n\\nThe value from before the edit (" +
                JSON.stringify(ov.was) + ") is restored once, then the entry stops acting.")) return;
-  say("Retiring…");
+  if (busy) return;
+  setBusy(true);
+  say("Retiring...");
   try {
     const out = await api("edit", {
       method: "POST",
       body: JSON.stringify({ appids: [data.appid], retire: [field], reason: $("reason").value }),
     });
-    say("Retired " + field + (out.commit ? "\\ncommit " + out.commit.slice(0, 10) : ""), "ok");
+    // Retiring a field that has no override is a no-op server-side: build()
+    // returns null, commitFiles() returns null, and the old message still read
+    // "Retired genre" - success wording for nothing having happened.
+    if (out.commit) {
+      say("Retired " + field + NL + "commit " + out.commit.slice(0, 10) +
+          NL + "The pre-edit value is written back on the next pipeline run.", "ok");
+    } else {
+      say("There was no override on " + field + " to retire - nothing was committed.", "err");
+    }
     await load(data.appid, true);
   } catch (e) {
-    say(String(e.message || e), "err");
+    reportError(e);
+  } finally {
+    setBusy(false);
   }
 }
 
 // ─────────────────────────── bulk mode ───────────────────────────
+/**
+ * The genre vocabulary, built server-side by regex-scanning ~6 MB of shards.
+ *
+ * This used to swallow every error into an empty list with no message, so a
+ * failure left both pickers empty, bulk mode silently doing nothing, and
+ * nothing on screen to say why.
+ */
 async function loadGenres() {
   try {
     const out = await api("genres");
     genres = out.genres || [];
+    return true;
   } catch (e) {
     genres = [];
+    const m = String((e && e.message) || e);
+    say(m === "SESSION_EXPIRED"
+      ? "Session expired while loading the genre list. Reload to sign in again."
+      : "Could not load the genre list (" + m + "). Bulk retag is unavailable until that works; one-game edits still are.",
+      "err");
+    return false;
   }
 }
 
@@ -570,8 +644,9 @@ async function saveBulk() {
                " to " + JSON.stringify(target) +
                "?\\n\\nOne commit, one override file per game.")) return;
 
-  $("save").disabled = true;
-  say("Saving…");
+  if (busy) return;
+  setBusy(true);
+  say("Saving...");
   try {
     const out = await api("edit", {
       method: "POST",
@@ -586,14 +661,24 @@ async function saveBulk() {
         (out.commit ? "\\ncommit " + out.commit.slice(0, 10) : "\\nno commit needed") +
         "\\ndata/ is unchanged until the next pipeline run applies it.", "ok");
   } catch (e) {
-    say(String(e.message || e), "err");
+    reportError(e);
   } finally {
-    $("save").disabled = false;
+    setBusy(false);
   }
 }
 
 // ─────────────────────────── wiring ───────────────────────────
 function setMode(m) {
+  if (busy) return;
+  // dirty belongs to one-game mode and bulk.sel to bulk mode, and neither was
+  // cleared on a switch. One -> Bulk -> One left dirty populated while
+  // recount() reported bulk.sel.size, so the counter and what Save would
+  // actually send disagreed.
+  if (m !== mode) {
+    dirty = {};
+    bulk.sel.clear();
+    if (data) render();
+  }
   mode = m;
   $("tab-one").setAttribute("aria-current", String(m === "one"));
   $("tab-bulk").setAttribute("aria-current", String(m === "bulk"));
@@ -629,6 +714,14 @@ $("bnew").addEventListener("change", () => {
   const initial = new URLSearchParams(location.search).get("appid");
   if (initial) { $("appid").value = initial; load(initial); }
 })();
+// An edit in progress was lost with no warning on navigate or close. The
+// browser shows its own generic prompt; the text is not ours to choose.
+window.addEventListener("beforeunload", (e) => {
+  const pending = mode === "one" ? Object.keys(dirty).length : bulk.sel.size;
+  if (!pending && !busy) return;
+  e.preventDefault();
+  e.returnValue = "";
+});
 </script>
 </body>
 </html>`;

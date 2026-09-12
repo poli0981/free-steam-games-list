@@ -55,7 +55,8 @@
     "head_sampling_rate": 1
   },
 
-  // Admin-only state: the new-games queue, edit drafts, audit log. Game data
+  // Admin-only state: the new-games queue, decisions, commit jobs and the
+  // audit log. (Not "edit drafts" - there is no such table.) Game data
   // stays canonical in Git — D1 never holds game records.
   "d1_databases": [
     {

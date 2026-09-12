@@ -139,8 +139,10 @@ D1, remains the source of truth.
 ## 6. The database
 
 `f2p-admin` (D1, region APAC) already exists and is bound as `DB` in
-`web/wrangler.jsonc`. It holds the new-games queue, edit drafts and an audit
-log — never game records. Migrations live in `web/worker/migrations/` and are
+`web/wrangler.jsonc`. It holds four tables — `ingest_queue`, `ingest_decisions`, `commit_jobs`
+and `audit_log` — and never game records. (This used to say "edit drafts";
+there is no such table. `/api/admin/edit` commits straight to Git with no
+draft stage.) Migrations live in `web/worker/migrations/` and are
 applied out of band:
 
 ```bash
@@ -273,10 +275,20 @@ token buys an attacker a cluttered review screen. The workflows reinforce this
 with `permissions: contents: read` and a grep step that fails the run if a
 discovery script so much as references a dataset-writing helper.
 
-The two credentials are also pinned apart: `verifyAccessJwt` accepts any
-configured AUD, so the Worker additionally checks that `/api/ingest/*` is a
-service token named `f2p-discovery` and that `/api/admin/*` is not. Without
-that pinning, either credential would satisfy the other's routes.
+The two credentials are pinned apart in two independent ways, and neither is
+a name check — Cloudflare reports a service token's identity as its opaque
+Client ID, not its friendly name, so a name check is not possible:
+
+1. **Per-route AUD.** `verifyAccessJwt` is called with only the AUD group a
+   route accepts (`ACCESS_AUD_INGEST` or `ACCESS_AUD_ADMIN`), never a pooled
+   list, so a token minted for one application cannot satisfy the other.
+2. **Credential class.** `worker/index.ts` additionally refuses a service
+   token on the admin surface and a human session on ingest
+   (`isIngestApi !== who.isServiceToken`).
+
+An earlier version of this paragraph claimed a `f2p-discovery` name check
+and a pooled AUD list. Both were wrong, and it contradicted the accurate
+account higher up this page.
 
 ## 8. Working through the backlog
 
@@ -469,9 +481,15 @@ re-added. Your text is combined with them rather than replacing them.
 ### The same thing from `/admin/edit`
 
 `/admin/edit` (linked from the review queue) does exactly what the command
-above does, and writes a byte-identical file — that equality is asserted by a
-parity test, because a formatting difference between the two producers would
-turn every alternating edit into a whole-file diff.
+above does, and writes a byte-identical file. A formatting difference between
+the two producers would turn every alternating edit into a whole-file diff, so
+the equality is asserted by `web/worker/lib/override-doc.test.ts`, which
+round-trips every committed `data/overrides/*.json` — all Python-written —
+through the TypeScript serialiser and compares bytes. It runs in `web-ci.yml`
+and in `check-overrides.yml`.
+
+(Until 2026-09-12 this paragraph asserted that test existed. It did not; there
+were no tests in the repository at all.)
 
 Load a game by appid, change the fields you want, add a reason, Save. A field
 already carrying an override is marked, shows the value from before the edit,
@@ -495,10 +513,26 @@ Two safeguards worth knowing:
 
 ## What is not built yet
 
-`audit_log` pruning — see below. Otherwise the loop is closed: new games
-arrive by discovery and are approved in `/admin`, corrections are made in
-`/admin/edit` or from the command line, and both land in Git.
+The loop is closed: new games arrive by discovery and are approved in
+`/admin`, corrections are made in `/admin/edit` or from the command line, and
+both land in Git. What remains:
 
-`audit_log` has no pruning job yet. It grows only with admin actions, so it is
-not urgent, but it is unbounded — decide a retention window and make it agree
-with `docs/PRIVACY_POLICY.md` before that matters.
+- **`audit_log` pruning.** It grows only with admin actions, so it is not
+  urgent, but it is unbounded — decide a retention window and make it agree
+  with `docs/PRIVACY_POLICY.md` before that matters.
+- **The Worker cannot DELETE an override file.** `scripts/edit_game.py`
+  removes it once the last entry is retired; the Worker's `build()` returns
+  `null` ("leave the file alone") in the same state, and `createCommitOnBranch`
+  is only ever given `fileChanges.additions`. So `/admin/edit` leaves an empty
+  override document where the CLI would tidy it away. Harmless — an empty
+  document applies nothing — but the two tools diverge here.
+- **Bulk mode sets one field.** `set: { genre }` is hardcoded; there is no
+  bulk retire and no multi-field bulk set.
+- **Bulk selection does not survive pagination** (`loadBulk()` clears it).
+- **Un-rejecting is raw SQL.** Removing a row from `ingest_decisions` has no
+  endpoint and writes no audit row, and there is no `suppress_until`, so a
+  rejection is permanent until someone runs `wrangler d1 execute`.
+- **No cross-isolate reconcile lock.** The in-flight guard in
+  `lib/reconcile.ts` covers one isolate; the cron and a manual click in
+  different isolates can still overlap. Left alone deliberately — every write
+  there is idempotent, so the only cost is duplicated fetching.

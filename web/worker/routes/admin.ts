@@ -128,8 +128,34 @@ export async function handleAdminApi(
     const limit = clampLimit(url.searchParams.get("limit"), 50, 200);
     const offset = clampOffset(url.searchParams.get("offset"));
 
-    // ORDER BY first_seen_at DESC, id: first_seen_at alone is not unique -- a
-    // whole sweep shares one timestamp -- so paging by it would let rows swap
+    // Search is SERVER-side. The page used to filter only the 60 rows it had
+    // loaded, so typing an appid that sat on page 3 reported "Nothing on this
+    // page matches that filter" - indistinguishable from "not in the queue".
+    const q = (url.searchParams.get("q") ?? "").trim().slice(0, 80);
+    // LIKE with an escaped pattern, so a reviewer pasting a name containing %
+    // or _ searches for those characters rather than wildcards.
+    const like = q ? `%${q.replace(/[\\%_]/g, (c) => "\\" + c)}%` : null;
+    const where = like
+      ? "status = ? AND (name LIKE ? ESCAPE '\\' OR appid LIKE ? ESCAPE '\\')"
+      : "status = ?";
+    const whereArgs: unknown[] = like ? [status, like, like] : [status];
+
+    // ORDER BY is a closed set mapped to fixed SQL, never interpolated from
+    // the caller. reviews_pct and current_players_num have been selected since
+    // the schema was written - the comment there says they exist "so the
+    // review screen can sort" - but nothing ever offered the sort.
+    const SORTS: Record<string, string> = {
+      newest: "first_seen_at DESC, id",
+      oldest: "first_seen_at ASC, id",
+      players: "current_players_num DESC NULLS LAST, id",
+      reviews: "reviews_pct DESC NULLS LAST, id",
+      name: "name COLLATE NOCASE ASC, id",
+    };
+    const sortKey = url.searchParams.get("sort") ?? "newest";
+    const orderBy = SORTS[sortKey] ?? SORTS.newest;
+
+    // first_seen_at alone is not unique -- a whole sweep shares one timestamp
+    // -- so every ordering above breaks the tie on id, or rows would swap
     // places between pages and a game could be shown twice or never.
     const rows = await env.DB.prepare(
       `SELECT id, appid, link, name, header_image, release_date, app_type,
@@ -138,27 +164,48 @@ export async function handleAdminApi(
               decided_by, decided_at, reject_reason,
               first_seen_at, last_seen_at, seen_count
          FROM ingest_queue
-        WHERE status = ?
-        ORDER BY first_seen_at DESC, id
+        WHERE ${where}
+        ORDER BY ${orderBy}
         LIMIT ? OFFSET ?`,
     )
-      .bind(status, limit, offset)
+      .bind(...whereArgs, limit, offset)
       .all();
 
     const total = await env.DB.prepare(
-      "SELECT COUNT(*) AS n FROM ingest_queue WHERE status = ?",
+      `SELECT COUNT(*) AS n FROM ingest_queue WHERE ${where}`,
     )
-      .bind(status)
+      .bind(...whereArgs)
       .first<{ n: number }>();
 
     return json({
       status,
       offset,
       limit,
+      q,
+      sort: sortKey in SORTS ? sortKey : "newest",
       total: total?.n ?? 0,
       count: rows.results?.length ?? 0,
       items: rows.results ?? [],
+      // So the page stops hardcoding 100 as a client-side literal.
+      maxDecide: MAX_DECIDE,
     });
+  }
+
+  // The full candidate as it arrived, for one row. payload_json is stored
+  // verbatim on every insert and was never surfaced anywhere, so the only way
+  // to see why a game was proposed was `wrangler d1 execute`.
+  if (route === "candidate" && request.method === "GET") {
+    const id = (url.searchParams.get("id") ?? "").slice(0, 64);
+    if (!id) return jsonError(400, "id is required");
+    const row = await env.DB.prepare(
+      `SELECT id, appid, name, payload_json, first_seen_at, last_seen_at, seen_count,
+              health_status, app_type, is_free, source
+         FROM ingest_queue WHERE id = ?`,
+    )
+      .bind(id)
+      .first();
+    if (!row) return jsonError(404, "not found");
+    return json(row);
   }
 
   // Recent admin actions.
@@ -167,6 +214,22 @@ export async function handleAdminApi(
     const rows = await env.DB.prepare(
       `SELECT id, actor, action, target, detail_json, created_at
          FROM audit_log ORDER BY id DESC LIMIT ?`,
+    )
+      .bind(limit)
+      .all();
+    return json({ items: rows.results ?? [] });
+  }
+
+  // commit_jobs, which had no UI at all. /api/admin/stats already returned
+  // these counts and the page discarded them, so the one table that records a
+  // commit attempt BEFORE it is made - the evidence that a commit died
+  // mid-flight - was only readable through `wrangler d1 execute`.
+  if (route === "jobs" && request.method === "GET") {
+    const limit = clampLimit(url.searchParams.get("limit"), 50, 200);
+    const rows = await env.DB.prepare(
+      `SELECT id, kind, status, target_path, commit_sha, error,
+              requested_by, created_at, finished_at
+         FROM commit_jobs ORDER BY created_at DESC LIMIT ?`,
     )
       .bind(limit)
       .all();

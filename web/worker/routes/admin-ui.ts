@@ -96,37 +96,75 @@ input[type=text], input[type=search] { font: inherit; font-size: 13px; padding: 
 .empty { color: var(--muted); padding: 40px 0; text-align: center; }
 .pager { display: flex; gap: 10px; align-items: center; justify-content: center;
   margin-top: 20px; color: var(--muted); font-size: 13px; }
+select { font: inherit; font-size: 13px; padding: 6px 9px; border-radius: 7px;
+  border: 1px solid var(--border); background: var(--bg); color: var(--text); }
+.note { color: var(--muted); font-size: 12px; }
+/* reject_reason is unbounded in the schema, so an essay-length one used to
+   stretch the card instead of truncating. The full text is in the title. */
+.tag { max-width: 190px; overflow: hidden; text-overflow: ellipsis;
+  white-space: nowrap; vertical-align: bottom; margin-left: 8px; }
+.linky { background: none; border: 0; color: var(--accent); cursor: pointer;
+  font: inherit; font-size: 12px; padding: 0 0 0 8px; text-decoration: underline; }
+/* The three read-only views (commit jobs, audit log, health). */
+.tbl { width: 100%; border-collapse: collapse; font-size: 12.5px;
+  table-layout: fixed; }
+.tbl th, .tbl td { text-align: left; padding: 6px 9px; border-bottom: 1px solid var(--border);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tbl th { color: var(--muted); font-weight: 600; background: var(--surface); }
+.tbl tr:hover td { background: var(--surface-2); }
+dialog { background: var(--surface); color: var(--text); border: 1px solid var(--border);
+  border-radius: 10px; padding: 16px; max-width: min(760px, 92vw); width: 760px; }
+dialog::backdrop { background: rgba(0,0,0,.6); }
+dialog pre { margin: 0; max-height: 60vh; overflow: auto; font-size: 12px;
+  background: var(--bg); border: 1px solid var(--border); border-radius: 7px; padding: 10px;
+  white-space: pre-wrap; word-break: break-word; }
 </style>
 </head>
 <body>
 <header>
   <div class="row">
     <h1>Review queue</h1>
-    <input type="search" id="q" placeholder="Filter this page by name or appid" style="width:270px">
+    <input type="search" id="q" placeholder="Search every row by name or appid" style="width:260px">
+    <select id="sort" title="Sort order">
+      <option value="newest">Newest first</option>
+      <option value="oldest">Oldest first</option>
+      <option value="players">Most players</option>
+      <option value="reviews">Best reviews</option>
+      <option value="name">Name A-Z</option>
+    </select>
     <button class="act" id="reconcile" title="Check whether approved games have appeared in data/">Reconcile</button>
     <a class="act" href="/admin/edit" style="text-decoration:none" title="Correct a game already in the catalogue">Edit a game</a>
     <span class="who">${esc(actor)}</span>
   </div>
+  <nav id="views"></nav>
   <nav id="tabs"></nav>
 </header>
 
 <main>
   <div id="msg"></div>
-  <div class="row" style="margin-bottom:12px">
-    <label class="row" style="gap:7px;cursor:pointer">
-      <input type="checkbox" id="all" style="width:17px;height:17px;accent-color:var(--accent)">
-      <span style="font-size:13px;color:var(--muted)">Select all on this page</span>
-    </label>
-    <span id="shown" style="font-size:13px;color:var(--muted);margin-left:auto"></span>
-  </div>
-  <div class="grid" id="grid"></div>
-  <div class="pager" id="pager"></div>
+
+  <section id="queueView">
+    <div class="row" style="margin-bottom:12px">
+      <label class="row" style="gap:7px;cursor:pointer">
+        <input type="checkbox" id="all" style="width:17px;height:17px;accent-color:var(--accent)">
+        <span style="font-size:13px;color:var(--muted)">Select all on this page</span>
+      </label>
+      <span id="shown" style="font-size:13px;color:var(--muted);margin-left:auto"></span>
+    </div>
+    <div class="grid" id="grid"></div>
+    <div class="pager" id="pager"></div>
+  </section>
+
+  <section id="tableView" hidden>
+    <div id="tableWrap"></div>
+  </section>
 </main>
 
 <div class="bar" id="bar">
   <div class="row">
     <strong id="count">0 selected</strong>
     <input type="text" id="reason" placeholder="Reason (kept with a rejection)" style="width:290px">
+    <span id="barNote" class="note"></span>
     <span style="margin-left:auto"></span>
     <button class="act" id="defer">Defer</button>
     <button class="act no" id="reject">Reject</button>
@@ -134,11 +172,35 @@ input[type=text], input[type=search] { font: inherit; font-size: 13px; padding: 
   </div>
 </div>
 
+<dialog id="detail">
+  <div class="row" style="margin-bottom:10px">
+    <strong id="detailTitle">Candidate</strong>
+    <button class="act" id="detailClose" style="margin-left:auto">Close</button>
+  </div>
+  <pre id="detailBody"></pre>
+</dialog>
+
 <script nonce="${nonce}">
 "use strict";
 const PAGE = 60;
 const TABS = ["pending","deferred","approved","committed","failed","rejected"];
-let status = "pending", offset = 0, items = [], sel = new Set(), busy = false;
+// Mirrors DECIDABLE in routes/admin.ts. Selecting rows on any other tab and
+// pressing Approve or Reject always returned 409 "no decidable rows in that
+// selection", because the server guards both the read and every UPDATE with
+// this set - but the buttons stayed enabled and gave no hint why.
+const DECIDABLE = ["pending","deferred","failed"];
+const VIEWS = [
+  { id: "queue", label: "Queue" },
+  { id: "jobs",  label: "Commit jobs" },
+  { id: "audit", label: "Audit log" },
+  { id: "health", label: "Health" },
+];
+
+let view = "queue";
+let status = "pending", offset = 0, items = [], sel = new Set();
+let busy = false, reconciling = false;
+let sortKey = "newest", query = "";
+let maxDecide = 100;
 // Click handlers call load() without awaiting it, so two loads can be in
 // flight at once. Whoever responds LAST would otherwise win, which on a slow
 // connection means clicking pending then committed can leave pending's rows
@@ -146,6 +208,11 @@ let status = "pending", offset = 0, items = [], sel = new Set(), busy = false;
 let seq = 0;
 
 const $ = (id) => document.getElementById(id);
+// String.fromCharCode(10) rather than an escape: this whole script lives
+// inside a TypeScript template literal, where a backslash escape has to be
+// doubled and is easy to get silently wrong.
+const NL = String.fromCharCode(10);
+const fmt = (n) => (n === null || n === undefined ? "" : Number(n).toLocaleString("en-US"));
 
 function say(text, kind) {
   $("msg").innerHTML = "";
@@ -156,33 +223,86 @@ function say(text, kind) {
   $("msg").appendChild(d);
 }
 
+/**
+ * One fetch helper for the whole page.
+ *
+ * The old version treated ANY non-JSON response as an expired session. Since
+ * the Worker had no top-level try/catch, every server-side crash arrived as a
+ * Cloudflare 1101 HTML page and was therefore reported as "Session expired" -
+ * the most misleading diagnostic in this screen, and it hid real D1 and GitHub
+ * failures for as long as it existed.
+ *
+ * Two things fixed it. The Worker now always answers JSON, and this function
+ * distinguishes the cases: redirect:'manual' means an expired Access
+ * session is OBSERVED as a redirect rather than followed to
+ * cloudflareaccess.com - which the page CSP blocks as a connect-src violation,
+ * the third of the reported console errors.
+ */
 async function api(path, init) {
-  const res = await fetch("/api/admin/" + path, {
-    credentials: "same-origin",
-    headers: { "Accept": "application/json", ...(init && init.body ? { "Content-Type": "application/json" } : {}) },
-    ...init,
-  });
+  let res;
+  try {
+    res = await fetch("/api/admin/" + path, {
+      credentials: "same-origin",
+      redirect: "manual",
+      headers: {
+        "Accept": "application/json",
+        ...(init && init.body ? { "Content-Type": "application/json" } : {}),
+      },
+      ...init,
+    });
+  } catch (e) {
+    throw new Error("Network error reaching the admin API. Check your connection, then reload.");
+  }
+
+  // An opaque redirect is Access sending us to the login page. Following it
+  // from fetch() is what produced the cloudflareaccess.com CSP error; a
+  // full-page navigation is the only way to re-authenticate interactively.
+  if (res.type === "opaqueredirect" || res.status === 0 || res.status === 401 || res.status === 403) {
+    throw new Error("SESSION_EXPIRED");
+  }
+
   const ct = res.headers.get("Content-Type") || "";
   if (!ct.includes("application/json")) {
-    // Access sessions expire. Without this the page would report a JSON parse
-    // error when the real answer is "log in again".
-    throw new Error("Session expired or Access refused the request. Reload the page.");
+    throw new Error("Server returned " + res.status + " and a non-JSON body. Check wrangler tail.");
   }
   const body = await res.json();
   if (!res.ok) throw new Error(body.error || ("HTTP " + res.status));
   return body;
 }
 
+function reportError(e) {
+  const m = String((e && e.message) || e);
+  if (m === "SESSION_EXPIRED") {
+    say("Your Cloudflare Access session expired. Reloading to sign in again...", "err");
+    // Full-page navigation, not fetch: Access must be able to redirect the
+    // document to its login flow.
+    setTimeout(() => window.location.reload(), 1200);
+    return;
+  }
+  say(m, "err");
+}
+
+function renderViews() {
+  $("views").innerHTML = "";
+  for (const v of VIEWS) {
+    const b = document.createElement("button");
+    b.textContent = v.label;
+    if (v.id === view) b.setAttribute("aria-current", "true");
+    b.addEventListener("click", () => { view = v.id; sel.clear(); load(); });
+    $("views").appendChild(b);
+  }
+}
+
 async function loadStats() {
   const mine = seq;
-  let s = { queue: {} };
+  let s = { queue: {}, commits: {} };
   try { s = await api("stats"); } catch (e) { /* tabs still render with no counts */ }
   if (mine !== seq) return;
   $("tabs").innerHTML = "";
   for (const t of TABS) {
     const b = document.createElement("button");
     b.textContent = t;
-    const n = s.queue[t] || 0;
+    const n = (s.queue || {})[t] || 0;
     const c = document.createElement("span");
     c.className = "n";
     c.textContent = n;
@@ -228,7 +348,15 @@ function card(it) {
 
   const sub = document.createElement("div");
   sub.className = "sub";
-  sub.textContent = [it.release_date, it.app_type, it.source].filter(Boolean).join("  ·  ");
+  // reviews_pct and current_players_num have been selected by the API since
+  // the schema was written and were never rendered, so the reviewer had no
+  // signal at all about whether a candidate was worth publishing.
+  const bits = [it.release_date, it.app_type, it.source];
+  if (it.reviews_pct !== null && it.reviews_pct !== undefined) bits.push(it.reviews_pct + "%");
+  if (it.current_players_num !== null && it.current_players_num !== undefined) {
+    bits.push(fmt(it.current_players_num) + " playing");
+  }
+  sub.textContent = bits.filter(Boolean).join("  ·  ");
   meta.appendChild(sub);
 
   const line = document.createElement("div");
@@ -239,18 +367,22 @@ function card(it) {
   a.rel = "noopener noreferrer";
   a.textContent = it.appid;
   line.appendChild(a);
-  if (it.reject_reason) {
+
+  const why = document.createElement("button");
+  why.className = "linky";
+  why.textContent = "details";
+  why.title = "The full candidate as it was proposed";
+  why.addEventListener("click", () => showCandidate(it.id, it.name));
+  line.appendChild(why);
+
+  for (const [val, title] of [[it.reject_reason, "reason"], [it.decided_by, "decided by"]]) {
+    if (!val) continue;
     const t = document.createElement("span");
     t.className = "tag";
-    t.style.marginLeft = "8px";
-    t.textContent = it.reject_reason;
-    line.appendChild(t);
-  }
-  if (it.decided_by) {
-    const t = document.createElement("span");
-    t.className = "tag";
-    t.style.marginLeft = "8px";
-    t.textContent = it.decided_by;
+    // title as well as text: reject_reason is unbounded in the schema, so a
+    // long one used to stretch the card instead of truncating.
+    t.title = title + ": " + val;
+    t.textContent = val;
     line.appendChild(t);
   }
   meta.appendChild(line);
@@ -259,16 +391,26 @@ function card(it) {
   return el;
 }
 
+async function showCandidate(id, name) {
+  try {
+    const d = await api("candidate?id=" + encodeURIComponent(id));
+    $("detailTitle").textContent = (name || "Candidate") + " - " + d.appid;
+    let payload = d.payload_json;
+    try { payload = JSON.stringify(JSON.parse(d.payload_json), null, 2); } catch (e) { /* show raw */ }
+    $("detailBody").textContent =
+      "seen " + d.seen_count + "x, first " + d.first_seen_at + ", last " + d.last_seen_at + NL +
+      "health " + d.health_status + ", type " + d.app_type + ", free " + d.is_free +
+      ", source " + d.source + NL + NL + payload;
+    $("detail").showModal();
+  } catch (e) { reportError(e); }
+}
+
 // The rows actually on screen. render() and the select-all box MUST agree on
 // this: the box used to iterate the unfiltered page, so filtering to one game
 // and ticking "select all" selected all 60 loaded rows while showing one card
-// - and the next click approved 59 games the reviewer never saw.
-function visible() {
-  const q = $("q").value.trim().toLowerCase();
-  return q
-    ? items.filter((i) => (i.name || "").toLowerCase().includes(q) || String(i.appid).includes(q))
-    : items;
-}
+// - and the next click approved 59 games the reviewer never saw. Filtering is
+// now done by the server, so this is simply the loaded page.
+function visible() { return items; }
 
 function render() {
   const show = visible();
@@ -277,16 +419,12 @@ function render() {
   if (!show.length) {
     const d = document.createElement("div");
     d.className = "empty";
-    d.textContent = items.length ? "Nothing on this page matches that filter." : "Nothing here.";
+    d.textContent = query
+      ? "No row in '" + status + "' matches " + JSON.stringify(query) + "."
+      : "Nothing here.";
     $("grid").appendChild(d);
   }
   for (const it of show) $("grid").appendChild(card(it));
-  $("shown").textContent = show.length === items.length
-    ? show.length + " shown"
-    : show.length + " of " + items.length + " shown";
-  // Keep the master box honest. After a decision clears the selection it would
-  // otherwise stay ticked while nothing is selected, so the next click would
-  // untick it, select nothing, and need a second click to do anything.
   $("all").checked = show.length > 0 && show.every((i) => sel.has(i.id));
   paintBar();
 }
@@ -294,13 +432,16 @@ function render() {
 function paintBar() {
   $("bar").classList.toggle("on", sel.size > 0);
   $("count").textContent = sel.size + " selected";
-  $("approve").disabled = busy;
-  $("reject").disabled = busy;
-  // On the 'failed' tab this button re-opens a row the pipeline bounced, which
-  // is the opposite of deferring - so it must not keep saying "Defer".
+
+  const decidable = DECIDABLE.includes(status);
   const requeueing = status === "failed";
+  $("approve").disabled = busy || !decidable;
+  $("reject").disabled = busy || !decidable;
   $("defer").textContent = requeueing ? "Send back to pending" : "Defer";
-  $("defer").disabled = busy || (!requeueing && status === "deferred");
+  $("defer").disabled = busy || !decidable || (!requeueing && status === "deferred");
+  $("barNote").textContent = decidable
+    ? (sel.size > maxDecide ? "Over the server's limit of " + maxDecide : "")
+    : "Rows in '" + status + "' are already decided - nothing to do here.";
 }
 
 // keepMsg: a decision leaves a result worth reading ("commit abc1234 - 60
@@ -309,19 +450,142 @@ function paintBar() {
 async function load(keepMsg) {
   if (!keepMsg) say("");
   const mine = ++seq;
+  renderViews();
+  const isQueue = view === "queue";
+  $("queueView").hidden = !isQueue;
+  $("tableView").hidden = isQueue;
+  $("tabs").hidden = !isQueue;
+  $("q").hidden = !isQueue;
+  $("sort").hidden = !isQueue;
+  if (!isQueue) { sel.clear(); paintBar(); }
+
   try {
+    if (!isQueue) { await loadTable(mine); return; }
     const d = await api("queue?status=" + encodeURIComponent(status) +
-                        "&limit=" + PAGE + "&offset=" + offset);
+                        "&limit=" + PAGE + "&offset=" + offset +
+                        "&sort=" + encodeURIComponent(sortKey) +
+                        (query ? "&q=" + encodeURIComponent(query) : ""));
     if (mine !== seq) return;
     items = d.items || [];
+    if (typeof d.maxDecide === "number") maxDecide = d.maxDecide;
     renderPager(d.total || 0);
+    $("shown").textContent = (d.total || 0) + " row(s)" + (query ? " matching" : "");
     render();
     await loadStats();
   } catch (e) {
     // A superseded request that fails is not worth reporting: the banner would
     // describe a view the reviewer already navigated away from.
-    if (mine === seq) say(String(e.message || e), "err");
+    if (mine === seq) reportError(e);
   }
+}
+
+/** Simple read-only tables for the three views that previously had no UI. */
+async function loadTable(mine) {
+  const wrap = $("tableWrap");
+  wrap.innerHTML = "";
+  const loading = document.createElement("div");
+  loading.className = "empty";
+  loading.textContent = "Loading...";
+  wrap.appendChild(loading);
+
+  if (view === "health") {
+    const h = await api("health");
+    if (mine !== seq) return;
+    wrap.innerHTML = "";
+    wrap.appendChild(kv([
+      ["overall", h.ok ? "ok" : "PROBLEM"],
+      ["D1", h.d1],
+      ["GitHub App", h.github],
+      ["actor", h.actor || ""],
+    ]));
+    const note = document.createElement("p");
+    note.className = "note";
+    note.textContent = "d1/github report 'ok' or 'error'. The message stays in Workers Logs on purpose - run 'wrangler tail' for the detail.";
+    wrap.appendChild(note);
+    const q = document.createElement("div");
+    q.className = "row";
+    q.style.marginTop = "14px";
+    for (const [k, v] of Object.entries(h.queue || {})) {
+      const t = document.createElement("span");
+      t.className = "tag";
+      t.textContent = k + ": " + v;
+      q.appendChild(t);
+    }
+    wrap.appendChild(q);
+    return;
+  }
+
+  if (view === "audit") {
+    const d = await api("audit?limit=200");
+    if (mine !== seq) return;
+    wrap.innerHTML = "";
+    wrap.appendChild(table(
+      ["when", "actor", "action", "target", "detail"],
+      (d.items || []).map((r) => [r.created_at, r.actor, r.action, r.target || "", r.detail_json || ""]),
+      "No admin actions recorded yet.",
+    ));
+    return;
+  }
+
+  // jobs
+  const d = await api("jobs?limit=200");
+  if (mine !== seq) return;
+  wrap.innerHTML = "";
+  wrap.appendChild(table(
+    ["created", "kind", "status", "target", "commit", "error", "finished"],
+    (d.items || []).map((r) => [
+      r.created_at, r.kind, r.status, r.target_path,
+      r.commit_sha ? String(r.commit_sha).slice(0, 10) : "",
+      r.error || "", r.finished_at || "",
+    ]),
+    "No commit jobs yet. A row is written here BEFORE each approval commit is attempted, so a 'pending' row that never finished is the evidence a commit died mid-flight.",
+  ));
+}
+
+function kv(pairs) {
+  const t = document.createElement("table");
+  t.className = "tbl";
+  for (const [k, v] of pairs) {
+    const tr = document.createElement("tr");
+    const th = document.createElement("th");
+    th.textContent = k;
+    const td = document.createElement("td");
+    td.textContent = String(v);
+    tr.appendChild(th); tr.appendChild(td);
+    t.appendChild(tr);
+  }
+  return t;
+}
+
+function table(headers, rows, emptyText) {
+  if (!rows.length) {
+    const d = document.createElement("div");
+    d.className = "empty";
+    d.textContent = emptyText;
+    return d;
+  }
+  const t = document.createElement("table");
+  t.className = "tbl";
+  const hr = document.createElement("tr");
+  for (const h of headers) {
+    const th = document.createElement("th");
+    th.textContent = h;
+    hr.appendChild(th);
+  }
+  t.appendChild(hr);
+  for (const r of rows) {
+    const tr = document.createElement("tr");
+    for (const c of r) {
+      const td = document.createElement("td");
+      // textContent throughout: detail_json and error carry server text, and
+      // reject_reason carries reviewer text.
+      td.textContent = String(c);
+      td.title = String(c);
+      tr.appendChild(td);
+    }
+    t.appendChild(tr);
+  }
+  return t;
 }
 
 function renderPager(total) {
@@ -344,19 +608,19 @@ function renderPager(total) {
 
 async function decide(action) {
   if (!sel.size || busy) return;
+  if (!DECIDABLE.includes(status)) return;
   const ids = [...sel];
-  if (ids.length > 100) {
-    say("Select at most 100 at a time — that is the server's batch limit.", "err");
+  if (ids.length > maxDecide) {
+    say("Select at most " + maxDecide + " at a time - that is the server's batch limit.", "err");
     return;
   }
   if (action === "approve" &&
-      !confirm("Approve " + ids.length + " game(s)?\\n\\nThis commits them to " +
-               "scripts/temp_info.jsonl and starts the ingest workflow.")) return;
+      !confirm("Approve " + ids.length + " game(s)? This commits them to scripts/temp_info.jsonl and starts the ingest workflow.")) return;
   if (action === "reject" &&
-      !confirm("Reject " + ids.length + " game(s)?\\n\\nThey will not be offered again by future sweeps.")) return;
+      !confirm("Reject " + ids.length + " game(s)? They will not be offered again by future sweeps.")) return;
 
   busy = true; paintBar();
-  say("Working…");
+  say("Working...");
   try {
     const out = await api("decide", {
       method: "POST",
@@ -364,22 +628,22 @@ async function decide(action) {
     });
     let m = action + ": " + out.decided + " row(s)";
     if (out.commit) {
-      m += "\\ncommit " + out.commit.slice(0, 10) +
-        " — " + out.appended + " appended" +
+      m += NL + "commit " + out.commit.slice(0, 10) +
+        " - " + out.appended + " appended" +
         (out.already_queued ? ", " + out.already_queued + " already queued" : "") +
-        "\\nIngest New Game Links will pick them up; they move to 'committed' once they appear in data/.";
+        NL + "Ingest New Game Links will pick them up; they move to 'committed' once they appear in data/.";
     } else if (action === "approve") {
       // commit === null means every link was already in the queue file, so no
       // commit was made. Saying "committed" here would be a lie the reviewer
       // could only catch by opening the repository.
-      m += "\\nAlready queued in scripts/temp_info.jsonl — no new commit was needed.";
+      m += NL + "Already queued in scripts/temp_info.jsonl - no new commit was needed.";
     }
     say(m, "ok");
     sel.clear();
     $("reason").value = "";
     await load(true);
   } catch (e) {
-    say(String(e.message || e), "err");
+    reportError(e);
   } finally {
     busy = false; paintBar();
   }
@@ -388,14 +652,38 @@ async function decide(action) {
 $("approve").addEventListener("click", () => decide("approve"));
 $("reject").addEventListener("click", () => decide("reject"));
 $("defer").addEventListener("click", () => decide(status === "failed" ? "requeue" : "defer"));
-$("q").addEventListener("input", render);
+$("detailClose").addEventListener("click", () => $("detail").close());
+
+// Debounced, because every keystroke is now a server round-trip rather than an
+// array filter.
+let qTimer = 0;
+$("q").addEventListener("input", () => {
+  clearTimeout(qTimer);
+  qTimer = setTimeout(() => {
+    query = $("q").value.trim();
+    offset = 0;
+    sel.clear();
+    load();
+  }, 250);
+});
+$("sort").addEventListener("change", () => {
+  sortKey = $("sort").value;
+  offset = 0;
+  sel.clear();
+  load();
+});
 $("all").addEventListener("change", () => {
   const on = $("all").checked;
   for (const it of visible()) { if (on) sel.add(it.id); else sel.delete(it.id); }
   render();
 });
 $("reconcile").addEventListener("click", async () => {
-  say("Checking data/ for approved games…");
+  // A full run fetches index.json, every shard and removed_games.jsonl - about
+  // 6 MB. This button had no busy state at all, so a double-click fired two.
+  if (reconciling) return;
+  reconciling = true;
+  $("reconcile").disabled = true;
+  say("Checking data/ for approved games...");
   try {
     const out = await api("reconcile", { method: "POST" });
     // "ok" was outside the ternary, so a hard dependency failure ("index
@@ -411,7 +699,12 @@ $("reconcile").addEventListener("click", async () => {
         (out.stale ? ", " + out.stale + " aged out to failed - approve again to retry" : ""),
       bad ? "err" : "ok");
     await load(true);
-  } catch (e) { say(String(e.message || e), "err"); }
+  } catch (e) {
+    reportError(e);
+  } finally {
+    reconciling = false;
+    $("reconcile").disabled = false;
+  }
 });
 
 load();
