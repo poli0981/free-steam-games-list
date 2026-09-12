@@ -29,6 +29,14 @@
   "ignoreDependencies": [
     "@fontsource-variable/jetbrains-mono"
   ],
+  // `npm run fonts` and `npm run gen:icons` shell out to python, which is a
+  // system tool rather than a package. knip treats an unlisted binary as an
+  // ERROR (not a warning like the export backlog below), so without this the
+  // CI step exits 1 on a green report - which is exactly what happened when
+  // the fonts script arrived with the SvelteKit rewrite.
+  "ignoreBinaries": [
+    "python"
+  ],
   "rules": {
     "exports": "warn",
     "types": "warn"
