@@ -1,21 +1,20 @@
 /**
  * The chart catalogue, shared by the sidebar and the /charts index page so the
  * two can never drift. Eleven separate sidebar entries crowded out everything
- * else in the nav; the sidebar now links to /charts and this list is what that
- * page renders.
+ * else in the nav; the sidebar links to /charts and this list is what that page
+ * renders.
  */
-import {
-  PieChart,
-  Globe,
-  Languages as LanguagesIcon,
-  Tags as TagsIcon,
-  Shield,
-  BarChart3,
-  Users,
-  Clock,
-  Lock,
-  WifiOff,
-} from "lucide-react";
+import type { Component } from "svelte";
+import BarChart3 from "@lucide/svelte/icons/chart-column";
+import Clock from "@lucide/svelte/icons/clock";
+import Globe from "@lucide/svelte/icons/globe";
+import LanguagesIcon from "@lucide/svelte/icons/languages";
+import Lock from "@lucide/svelte/icons/lock";
+import PieChart from "@lucide/svelte/icons/chart-pie";
+import Shield from "@lucide/svelte/icons/shield";
+import TagsIcon from "@lucide/svelte/icons/tags";
+import Users from "@lucide/svelte/icons/users";
+import WifiOff from "@lucide/svelte/icons/wifi-off";
 
 export interface ChartNavItem {
   to: string;
@@ -23,7 +22,7 @@ export interface ChartNavItem {
   i18n: string;
   /** Key under "charts.desc.*" — one line on the index page. */
   desc: string;
-  icon: React.ComponentType<{ className?: string }>;
+  icon: Component<{ class?: string }>;
 }
 
 export const CHART_PAGES: ChartNavItem[] = [

@@ -1,70 +1,111 @@
 @import "tailwindcss";
-/* Replaces the tailwindcss-animate plugin, which is v3-only. Provides the
-   animate-in/animate-out, fade-in-*, zoom-in-*, slide-in-from-* utilities the
-   Radix-based dialog/sheet/popover components rely on. */
-@import "tw-animate-css";
+
+/* ── Fonts ────────────────────────────────────────────────────────────────
+   Self-hosted, and actually loaded. index.css used to declare
+   `--font-sans: Inter` and `--font-mono: JetBrains Mono` with no @font-face,
+   no <link> and no woff2 anywhere in the repo, so the app had always rendered
+   in system-ui. CSP is `font-src 'self'`, which permits these and would have
+   blocked a CDN.
+
+   Fontsource ships per-subset woff2 with the right unicode-range, so a
+   Vietnamese reader downloads the Vietnamese subset and a Latin-only reader
+   never does. `vi` is a shipped locale, so that subset is not optional.
+
+   Three faces, each with a job:
+     Bricolage Grotesque  display  — headings, hero, nav. The distinctive one.
+     IBM Plex Sans        body     — prose and the 3,400-row table.
+     JetBrains Mono       numeric  — appids, player counts, hashes, code.
+   ───────────────────────────────────────────────────────────────────────── */
+@import "./fonts.css";
 
 /* v4 has no `darkMode: ["class"]` config key; this is the equivalent. */
 @custom-variant dark (&:where(.dark, .dark *));
 
-/* Design tokens. Kept as raw HSL channel triples, byte-for-byte as they were
-   under Tailwind 3, so this migration is provably visual-neutral. The palette
-   rework is a separate change. */
+/* ── Design tokens ────────────────────────────────────────────────────────
+   The palette rework the previous file deferred, in its own words: "Kept as
+   raw HSL channel triples, byte-for-byte as they were under Tailwind 3, so
+   this migration is provably visual-neutral. The palette rework is a separate
+   change." This is that change.
+
+   Still raw HSL channels, because two things depend on the format:
+   `@theme inline` needs them bare so `bg-primary/15` resolves through
+   color-mix(), and lib/chart-theme.ts reads them at call time with
+   getComputedStyle and wraps them in hsl().
+
+   The hue moved off the stock Tailwind sky-blue. Steam's own surfaces are
+   blue-grey, so a blue accent on a dark blue-grey field is exactly the
+   generic look this rework exists to fix. The accent is a warm amber, which
+   reads as "free" rather than "corporate", sits far from every meaning-bearing
+   colour below, and stays legible on both grounds.
+   ───────────────────────────────────────────────────────────────────────── */
 :root {
-  --background: 210 30% 99%;
-  --foreground: 224 40% 10%;
+  /* Neutrals: a hint of warmth (hue 40) rather than dead grey, so the amber
+     accent looks intentional instead of pasted on. */
+  --background: 40 30% 98%;
+  --foreground: 30 12% 12%;
   --card: 0 0% 100%;
-  --card-foreground: 224 40% 10%;
-  --surface-2: 214 32% 96%;
-  --primary: 205 88% 42%;
-  --primary-foreground: 0 0% 100%;
-  --secondary: 214 32% 95%;
-  --secondary-foreground: 224 40% 14%;
-  --muted: 214 32% 95%;
-  --muted-foreground: 218 14% 42%;
-  --accent: 214 32% 94%;
-  --accent-foreground: 224 40% 14%;
-  --destructive: 358 70% 48%;
+  --card-foreground: 30 12% 12%;
+  --surface-2: 40 22% 95%;
+
+  --primary: 28 88% 42%;
+  --primary-foreground: 40 60% 99%;
+  --secondary: 40 20% 94%;
+  --secondary-foreground: 30 14% 18%;
+  --muted: 40 20% 94%;
+  --muted-foreground: 32 8% 42%;
+  --accent: 40 24% 92%;
+  --accent-foreground: 30 14% 18%;
+
+  /* Meaning-bearing. These are NOT decoration and do not follow the accent:
+     review scores, safety flags and anti-cheat tiers all read through them,
+     and a reader has to be able to tell them apart at a glance. */
+  --destructive: 358 68% 47%;
   --destructive-foreground: 0 0% 100%;
-  --success: 152 58% 34%;
-  --warning: 33 88% 42%;
-  --info: 205 88% 42%;
-  --border: 216 22% 89%;
-  --border-strong: 216 20% 80%;
-  --input: 216 22% 89%;
-  --ring: 205 88% 42%;
-  --radius: 0.625rem;
+  --success: 152 58% 32%;
+  --warning: 36 92% 38%;
+  --info: 205 80% 40%;
+
+  --border: 38 18% 87%;
+  --border-strong: 36 16% 76%;
+  --input: 38 18% 87%;
+  --ring: 28 88% 42%;
+  --radius: 0.5rem;
 }
 
 .dark {
-  --background: 224 24% 6%;
-  --foreground: 210 28% 96%;
-  --card: 224 20% 10%;
-  --card-foreground: 210 28% 96%;
-  --surface-2: 223 19% 13%;
-  --primary: 204 92% 56%;
-  --primary-foreground: 224 45% 8%;
-  --secondary: 222 17% 17%;
-  --secondary-foreground: 210 28% 96%;
-  --muted: 223 18% 14%;
-  --muted-foreground: 216 17% 64%;
-  --accent: 222 17% 18%;
-  --accent-foreground: 210 28% 96%;
-  --destructive: 358 66% 55%;
-  --destructive-foreground: 210 28% 96%;
-  --success: 152 55% 48%;
-  --warning: 36 92% 58%;
-  --info: 204 92% 56%;
-  --border: 220 15% 19%;
-  --border-strong: 220 14% 27%;
-  --input: 220 15% 19%;
-  --ring: 204 92% 56%;
+  /* Near-black with the same warm hue, not the blue-black of every other
+     dark theme. */
+  --background: 30 14% 7%;
+  --foreground: 40 20% 95%;
+  --card: 30 13% 10%;
+  --card-foreground: 40 20% 95%;
+  --surface-2: 30 12% 14%;
+
+  --primary: 34 96% 58%;
+  --primary-foreground: 30 40% 8%;
+  --secondary: 30 10% 18%;
+  --secondary-foreground: 40 20% 95%;
+  --muted: 30 11% 15%;
+  --muted-foreground: 38 10% 65%;
+  --accent: 30 10% 19%;
+  --accent-foreground: 40 20% 95%;
+
+  --destructive: 358 72% 62%;
+  --destructive-foreground: 40 20% 96%;
+  --success: 152 56% 50%;
+  --warning: 38 94% 60%;
+  --info: 204 88% 62%;
+
+  --border: 30 10% 19%;
+  --border-strong: 30 9% 29%;
+  --input: 30 10% 19%;
+  --ring: 34 96% 58%;
 }
 
-/* The v4 replacement for `theme.extend` in tailwind.config.ts. `inline` so the
-   generated utilities reference the custom properties directly, which keeps
-   opacity modifiers (bg-primary/15) resolving through color-mix() and lets the
-   .dark block re-resolve per element. */
+/* The v4 replacement for `theme.extend`. `inline` so the generated utilities
+   reference the custom properties directly, which keeps opacity modifiers
+   (bg-primary/15) resolving through color-mix() and lets the .dark block
+   re-resolve per element. */
 @theme inline {
   --color-border: hsl(var(--border));
   --color-input: hsl(var(--input));
@@ -94,49 +135,96 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-sm: calc(var(--radius) - 4px);
 
-  --font-sans: Inter, system-ui, sans-serif;
-  --font-mono: JetBrains Mono, ui-monospace, monospace;
+  /* The fallbacks matter: a variable font is a separate request, and these are
+     what render during it. */
+  --font-display: "Bricolage Grotesque Variable", "IBM Plex Sans Variable", system-ui, sans-serif;
+  --font-sans: "IBM Plex Sans Variable", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "JetBrains Mono Variable", ui-monospace, "Cascadia Code", monospace;
 }
 
-/* v4 dropped `theme.container` config. This reproduces the previous behaviour
-   exactly — centred, 1rem gutter, and the same breakpoint steps with the 2xl
-   stop overridden to 1400px — rather than the fluid version, so widths between
-   breakpoints do not shift. */
 @utility container {
   width: 100%;
   margin-inline: auto;
   padding-inline: 1rem;
-  @media (width >= 40rem) {
-    max-width: 40rem;
-  }
-  @media (width >= 48rem) {
-    max-width: 48rem;
-  }
-  @media (width >= 64rem) {
-    max-width: 64rem;
-  }
-  @media (width >= 80rem) {
-    max-width: 80rem;
-  }
-  @media (width >= 1400px) {
-    max-width: 1400px;
-  }
+  @media (width >= 40rem) { max-width: 40rem; }
+  @media (width >= 48rem) { max-width: 48rem; }
+  @media (width >= 64rem) { max-width: 64rem; }
+  @media (width >= 80rem) { max-width: 80rem; }
+  @media (width >= 1400px) { max-width: 1400px; }
 }
 
 @utility scrollbar-thin {
   scrollbar-width: thin;
 }
 
+/* Numbers that sit in a column must not shift width between rows.
+
+   Measured, not assumed: IBM Plex Sans renders every digit at the SAME advance
+   width by default (all ten measured at 24px at font-size:40px), so its figures
+   are already tabular and this utility is currently a no-op. It is kept anyway
+   - it states the requirement, costs nothing, and is what stops the table
+   going ragged if the body face is ever swapped for one whose default figures
+   are proportional. */
+@utility tnum {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+}
+
 @layer base {
-  /* v4 defaults borders to currentColor instead of gray-200; this keeps the
-     v3 behaviour of every border using the token. */
+  /* v4 defaults borders to currentColor instead of gray-200; this keeps every
+     border on the token. */
   * {
     @apply border-border;
   }
+
+  html {
+    /* Anchor navigation and in-page jumps land below the sticky header rather
+       than under it. */
+    scroll-padding-top: 5rem;
+  }
+
   body {
     @apply bg-background text-foreground;
+    font-family: var(--font-sans);
     font-feature-settings: "rlig" 1, "calt" 1;
+    text-rendering: optimizeLegibility;
   }
+
+  h1, h2, h3, .font-display {
+    font-family: var(--font-display);
+    /* Bricolage is a variable face with an optical-size axis. Letting it track
+       the rendered size is the whole reason to choose it over a static
+       display font. */
+    font-optical-sizing: auto;
+    letter-spacing: -0.015em;
+  }
+
+  code, kbd, pre, samp {
+    font-family: var(--font-mono);
+  }
+
+  /* index.css never had any of the next three. */
+
+  /* Visible keyboard focus everywhere, without the permanent outline that
+     makes mouse users disable it. */
+  :focus-visible {
+    outline: 2px solid hsl(var(--ring));
+    outline-offset: 2px;
+    border-radius: calc(var(--radius) - 2px);
+  }
+
+  /* Respect the OS setting rather than animating regardless. */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+
   ::-webkit-scrollbar {
     @apply h-2 w-2;
   }
@@ -146,4 +234,13 @@
   ::-webkit-scrollbar-thumb {
     @apply rounded-full bg-muted hover:bg-muted-foreground/30;
   }
+}
+
+/* Keyboard users get to the content without tabbing the whole nav first. */
+.skip-link {
+  @apply sr-only;
+}
+.skip-link:focus-visible {
+  @apply not-sr-only fixed left-4 top-4 z-50 rounded-md bg-primary px-4 py-2
+         font-medium text-primary-foreground shadow-lg;
 }

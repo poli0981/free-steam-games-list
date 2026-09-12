@@ -1,9 +1,8 @@
 import { defineConfig } from "vite";
-import react from "@vitejs/plugin-react";
+import { sveltekit } from "@sveltejs/kit/vite";
 // Tailwind 4 runs as a Vite plugin instead of a PostCSS plugin;
-// tailwind.config.ts and postcss.config.js no longer exist.
+// tailwind.config.ts and postcss.config.js do not exist.
 import tailwindcss from "@tailwindcss/vite";
-import { VitePWA } from "vite-plugin-pwa";
 import { visualizer } from "rollup-plugin-visualizer";
 import path from "node:path";
 import { readFileSync } from "node:fs";
@@ -15,15 +14,16 @@ const appVersion = JSON.parse(
 ).version as string;
 
 export default defineConfig(({ mode }) => ({
-  // Served at the domain root by the Cloudflare Worker, not from a GitHub
-  // Pages subpath, so this is "/" in every mode.
-  base: "/",
+  // No `base`. SvelteKit owns the base path (kit.paths), and setting Vite's
+  // would fight it.
   define: {
     __APP_VERSION__: JSON.stringify(appVersion),
   },
   plugins: [
-    react(),
+    // Tailwind before sveltekit: the Svelte plugin needs the CSS transform
+    // already registered when it processes <style> blocks.
     tailwindcss(),
+    sveltekit(),
     // `npm run analyze` → dist/stats.html treemap. Vite mode instead of an
     // env var so it works cross-platform without cross-env.
     mode === "analyze" &&
@@ -33,146 +33,27 @@ export default defineConfig(({ mode }) => ({
         brotliSize: true,
         template: "treemap",
       }),
-    VitePWA({
-      registerType: "autoUpdate",
-      injectRegister: "auto",
-      includeAssets: ["favicon.svg"],
-      manifest: {
-        name: "Steam F2P Tracker",
-        short_name: "F2P Tracker",
-        description:
-          "Browse, analyse, and edit the catalog of free-to-play Steam games tracked in this repo.",
-        theme_color: "#0f172a",
-        background_color: "#0f172a",
-        display: "standalone",
-        orientation: "portrait-primary",
-        scope: "/",
-        start_url: "/",
-        icons: [
-          {
-            src: "icon-192.svg",
-            sizes: "192x192",
-            type: "image/svg+xml",
-            purpose: "any",
-          },
-          {
-            src: "icon-512.svg",
-            sizes: "512x512",
-            type: "image/svg+xml",
-            purpose: "any maskable",
-          },
-        ],
-      },
-      workbox: {
-        // Precache the app shell. Bigger than default to fit echarts + openpgp chunks.
-        maximumFileSizeToCacheInBytes: 6 * 1024 * 1024,
-        globPatterns: ["**/*.{js,css,html,svg,woff2}"],
-        navigateFallback: "/index.html",
-        // These are Worker routes, not SPA navigations. Without the denylist an
-        // installed service worker answers them from the app shell and they
-        // never reach Cloudflare — which for /admin would mean serving the
-        // public shell where the Access gate is expected.
-        navigateFallbackDenylist: [/^\/api\//, /^\/img\//, /^\/admin/],
-        runtimeCaching: [
-          // Dataset, now same-origin via the Worker proxy. NetworkFirst so an
-          // edit is visible on the next reload: index.json carries
-          // last_updated, which is the client's only cache-invalidation
-          // signal, and serving it from cache would strand every reader on
-          // stale records. Cache name bumped to v3 so clients holding the old
-          // raw.githubusercontent entries drop them on activation.
-          {
-            urlPattern: ({ url }: { url: URL }) => url.pathname.startsWith("/api/data/"),
-            handler: "NetworkFirst",
-            options: {
-              cacheName: "f2p-data-v3",
-              networkTimeoutSeconds: 5,
-              expiration: { maxEntries: 30, maxAgeSeconds: 60 * 60 * 24 * 7 },
-              cacheableResponse: { statuses: [200] },
-            },
-          },
-          // Artwork via the Worker image proxy, and since the avatar proxy was
-          // added, GitHub avatars at /img/gh/* too - one rule covers both
-          // because they share the /img/ prefix. There used to be a separate
-          // StaleWhileRevalidate rule for avatars.githubusercontent.com,
-          // commented "only for signed-in users"; sign-in is gone, /activity is
-          // public, and the avatars are no longer fetched from GitHub at all.
-          //
-          // Steam's ?t= is an asset mtime, so a changed image arrives as a
-          // different URL and CacheFirst is safe. Status 200 only: caching an
-          // opaque 0-status placeholder for 30 days is how a transient upstream
-          // failure becomes permanent.
-          {
-            urlPattern: ({ url }: { url: URL }) => url.pathname.startsWith("/img/"),
-            handler: "CacheFirst",
-            options: {
-              cacheName: "f2p-img-v1",
-              expiration: { maxEntries: 800, maxAgeSeconds: 60 * 60 * 24 * 30 },
-              cacheableResponse: { statuses: [200] },
-            },
-          },
-        ],
-      },
-      devOptions: { enabled: false },
-    }),
   ],
-  // `vite dev` serves the SPA shell for any unmatched path, so without this
+  // `vite dev` serves the app shell for any unmatched path, so without this
   // /api/data/* and /img/* return text/html: the dataset fetch parses HTML as
-  // JSON, throws, and React Query retries in a loop, while every image 404s
-  // into the shell. Proxying to the deployed Worker keeps `npm run dev` working
-  // with real data and real images while still hot-reloading app code.
+  // JSON and throws, while every image 404s into the shell. Proxying to the
+  // deployed Worker keeps `npm run dev` working with real data and real images
+  // while still hot-reloading app code.
   //
   // This does NOT exercise worker/ source — changes there must be run with
-  // `npx wrangler dev`, which serves the Worker and dist/ together.
+  // `wrangler dev`, which serves the Worker and dist/ together.
   server: {
     proxy: {
       "/api": { target: "https://free-steam-games.win", changeOrigin: true },
       "/img": { target: "https://free-steam-games.win", changeOrigin: true },
     },
   },
-  resolve: {
-    alias: {
-      "@": path.resolve(__dirname, "./src"),
-    },
-  },
-  worker: {
-    format: "es",
-  },
   build: {
-    target: "es2020",
+    // Raised from es2020: Svelte 5's compiled output and SvelteKit 2 both
+    // assume a modern baseline, and the Android floor is already API 30, whose
+    // System WebView handles ES2022.
+    target: "es2022",
     sourcemap: false,
     chunkSizeWarningLimit: 1200,
-    rollupOptions: {
-      output: {
-        // echarts/openpgp are NOT grouped here on purpose: they're behind
-        // dynamic-import boundaries (LazyEChart, lib/gpg pgp()) and the
-        // bundler splits them into async chunks naturally. Forcing them into
-        // a manual chunk made the bundler hoist shared helpers (tslib) INTO
-        // the echarts chunk, which the eager graph then statically imported —
-        // echarts ended up modulepreloaded on first paint, nullifying the
-        // lazy boundary.
-        //
-        // Vite 8 uses Rolldown, which dropped the object form of
-        // `manualChunks`. `advancedChunks.groups` is the replacement: each
-        // group `test`s a module id and only the three vendor groups below
-        // are captured; everything else (incl. echarts/openpgp) falls back to
-        // Rolldown's default code splitting, preserving the lazy boundaries.
-        advancedChunks: {
-          groups: [
-            {
-              name: "react",
-              test: /[\\/]node_modules[\\/](react|react-dom|react-router-dom|react-router|scheduler)[\\/]/,
-            },
-            {
-              name: "query",
-              test: /[\\/]node_modules[\\/]@tanstack[\\/]react-query[\\/]/,
-            },
-            {
-              name: "table",
-              test: /[\\/]node_modules[\\/]@tanstack[\\/]react-virtual[\\/]/,
-            },
-          ],
-        },
-      },
-    },
   },
 }));

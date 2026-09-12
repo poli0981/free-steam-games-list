@@ -12,3 +12,8 @@ dist-ssr
 
 # Wrangler local state: local D1 sqlite, asset manifests, dev cache.
 .wrangler/
+
+# SvelteKit generates these on every `svelte-kit sync` / build. .svelte-kit
+# holds the generated tsconfig, route manifest and type declarations that
+# tsconfig.json extends - regenerated, never edited, never committed.
+.svelte-kit
