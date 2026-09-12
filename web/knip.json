@@ -4,9 +4,20 @@
     "src/workers/jsonl-parser.ts",
     "src/index.css"
   ],
+  // worker/** was absent until 2026-09-12, so nothing in the Cloudflare Worker
+  // was ever analysed - which is why five dead exports (commitFile,
+  // readHeadAndFile, installationToken, MANUAL_FIELDS, adminCsp) sat
+  // unreported in the module holding a repository-write credential.
   "project": [
     "src/**/*.{ts,tsx}",
-    "src/**/*.css"
+    "src/**/*.css",
+    "worker/**/*.ts"
+  ],
+  // Ambient declaration for the Worker secrets, which wrangler types cannot
+  // see because secrets are not in wrangler.jsonc. Nothing imports it by
+  // design, so knip reports it as an unused file; it is not.
+  "ignore": [
+    "worker/env.d.ts"
   ],
   "rules": {
     "exports": "warn",

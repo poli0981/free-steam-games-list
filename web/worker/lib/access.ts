@@ -24,17 +24,53 @@ export interface AccessIdentity {
   isServiceToken: boolean;
 }
 
+/**
+ * Cloudflare's signing keys were unreachable.
+ *
+ * Distinct from "this token is bad" so callers can answer 503 instead of 404.
+ * Previously both collapsed into null, which meant a Cloudflare outage looked
+ * exactly like an invalid token and there was nothing in the response to tell
+ * them apart.
+ */
+export class AccessUnavailableError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "AccessUnavailableError";
+  }
+}
+
 /** JWKS changes rarely; cache per isolate to avoid a fetch on every request. */
 let jwksCache: { keys: Map<string, CryptoKey>; fetchedAt: number } | null = null;
 const JWKS_TTL_MS = 60 * 60 * 1000;
 
-async function getKeys(teamDomain: string): Promise<Map<string, CryptoKey>> {
-  const now = Date.now();
-  if (jwksCache && now - jwksCache.fetchedAt < JWKS_TTL_MS) return jwksCache.keys;
+/**
+ * Floor between forced refetches, so an unknown `kid` cannot be used to make
+ * this Worker hammer Cloudflare: a flood of tokens carrying junk kids would
+ * otherwise trigger one upstream fetch each.
+ */
+const JWKS_REFRESH_FLOOR_MS = 60 * 1000;
+let lastForcedFetch = 0;
 
-  const res = await fetch(`https://${teamDomain}/cdn-cgi/access/certs`);
-  if (!res.ok) throw new Error(`Access JWKS: ${res.status}`);
-  const { keys } = (await res.json()) as { keys: Jwk[] };
+async function getKeys(teamDomain: string, force = false): Promise<Map<string, CryptoKey>> {
+  const now = Date.now();
+  if (!force && jwksCache && now - jwksCache.fetchedAt < JWKS_TTL_MS) return jwksCache.keys;
+
+  let res: Response;
+  try {
+    res = await fetch(`https://${teamDomain}/cdn-cgi/access/certs`);
+  } catch (err) {
+    throw new AccessUnavailableError(
+      `Access JWKS unreachable: ${err instanceof Error ? err.message : String(err)}`,
+    );
+  }
+  if (!res.ok) throw new AccessUnavailableError(`Access JWKS: ${res.status}`);
+  let parsed: { keys?: Jwk[] };
+  try {
+    parsed = (await res.json()) as { keys?: Jwk[] };
+  } catch {
+    throw new AccessUnavailableError("Access JWKS: invalid JSON");
+  }
+  const keys = parsed.keys ?? [];
 
   const map = new Map<string, CryptoKey>();
   for (const jwk of keys) {
@@ -68,9 +104,12 @@ function decodeJson(part: string): Record<string, unknown> {
 }
 
 /**
- * Returns the verified identity, or null. Never throws for an untrusted token —
- * callers treat null as "deny" and must not distinguish failure modes to the
- * client.
+ * Returns the verified identity, or null.
+ *
+ * Never throws for an UNTRUSTED token — callers treat null as "deny" and must
+ * not distinguish failure modes to the client. It does throw
+ * AccessUnavailableError when Cloudflare's signing keys cannot be fetched,
+ * which is an outage rather than a decision and deserves a 503.
  */
 export async function verifyAccessJwt(
   request: Request,
@@ -85,13 +124,25 @@ export async function verifyAccessJwt(
    * crossing impossible rather than merely checked for afterwards.
    */
   allowedAud: string,
+  opts: { headerOnly?: boolean } = {},
 ): Promise<AccessIdentity | null> {
-  const token =
-    request.headers.get("Cf-Access-Jwt-Assertion") ??
-    // Access also sets a cookie; the header is authoritative but the cookie is
-    // what a browser navigation carries.
-    /(?:^|;\s*)CF_Authorization=([^;]+)/.exec(request.headers.get("Cookie") ?? "")?.[1] ??
-    null;
+  // Access sets BOTH a Cf-Access-Jwt-Assertion header and a CF_Authorization
+  // cookie. The cookie is what a top-level browser navigation carries, so it
+  // has to be accepted for the /admin page itself.
+  //
+  // For state-changing requests it must not be. A cookie is attached by the
+  // browser to cross-site requests too, so accepting it there made the
+  // Sec-Fetch-Site sniff in worker/index.ts the only thing standing between a
+  // stolen or forced cross-site POST and a repository write - and that sniff
+  // is deliberately fail-open for non-browser callers. The header is never
+  // attached by a browser on its own, so requiring it here is a CSRF control
+  // that does not depend on a heuristic. curl and the discovery service token
+  // send the header explicitly and are unaffected.
+  const header = request.headers.get("Cf-Access-Jwt-Assertion");
+  const cookie = opts.headerOnly
+    ? null
+    : /(?:^|;\s*)CF_Authorization=([^;]+)/.exec(request.headers.get("Cookie") ?? "")?.[1] ?? null;
+  const token = header ?? cookie;
   if (!token) return null;
 
   const parts = token.split(".");
@@ -102,9 +153,24 @@ export async function verifyAccessJwt(
     const kid = typeof header.kid === "string" ? header.kid : null;
     if (!kid || header.alg !== "RS256") return null;
 
-    const keys = await getKeys(env.ACCESS_TEAM_DOMAIN);
-    const key = keys.get(kid);
-    if (!key) return null;
+    let keys = await getKeys(env.ACCESS_TEAM_DOMAIN);
+    let key = keys.get(kid);
+    if (!key) {
+      // Cloudflare rotates its signing keys. With a 1-hour cache and no
+      // refetch, a rotation locked out admin AND ingest for up to an hour, as
+      // an opaque 404 with nothing in the logs to explain it. Refetch once,
+      // rate-limited, before concluding the token is forged.
+      const now = Date.now();
+      if (now - lastForcedFetch >= JWKS_REFRESH_FLOOR_MS) {
+        lastForcedFetch = now;
+        keys = await getKeys(env.ACCESS_TEAM_DOMAIN, true);
+        key = keys.get(kid);
+      }
+      if (!key) {
+        console.warn("access: unknown kid", { kid });
+        return null;
+      }
+    }
 
     const ok = await crypto.subtle.verify(
       "RSASSA-PKCS1-v1_5",
@@ -137,9 +203,21 @@ export async function verifyAccessJwt(
 
     if (claims.iss !== `https://${env.ACCESS_TEAM_DOMAIN}`) return null;
 
+    // exp is REQUIRED, not merely honoured when present. The previous form
+    // (`typeof claims.exp === "number" && claims.exp < now`) accepted a token
+    // with no exp, or with exp as a string, and such a token then never
+    // expired. Cloudflare always sets it, so demanding it costs nothing and
+    // removes the one shape that would have been immortal.
     const now = Math.floor(Date.now() / 1000);
-    if (typeof claims.exp === "number" && claims.exp < now) return null;
-    if (typeof claims.nbf === "number" && claims.nbf > now) return null;
+    if (typeof claims.exp !== "number" || claims.exp < now) {
+      console.warn("access: missing or expired exp");
+      return null;
+    }
+    // nbf is optional, but if it is present it must be a number - the same
+    // typeof-guard trap, where a string nbf silently skipped the check.
+    if ("nbf" in claims) {
+      if (typeof claims.nbf !== "number" || claims.nbf > now) return null;
+    }
 
     const email = typeof claims.email === "string" ? claims.email : null;
     const commonName = typeof claims.common_name === "string" ? claims.common_name : null;
@@ -148,7 +226,10 @@ export async function verifyAccessJwt(
     if (email) return { email, isServiceToken: false };
     if (commonName) return { email: commonName, isServiceToken: true };
     return null;
-  } catch {
+  } catch (err) {
+    // An outage must reach the caller so it can answer 503. Everything else -
+    // malformed base64, bad JSON, a forged signature - is a deny.
+    if (err instanceof AccessUnavailableError) throw err;
     return null;
   }
 }

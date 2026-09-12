@@ -7,7 +7,8 @@
  * check is not redundant: it is what keeps a repository-write credential safe
  * if the edge policy is ever wrong.
  */
-import { jsonError, SECURITY_HEADERS } from "../lib/http";
+import { jsonError, SECURITY_HEADERS, clampLimit, clampOffset } from "../lib/http";
+import { audit } from "../lib/audit";
 import type { AccessIdentity } from "../lib/access";
 import { gh } from "../lib/github-app";
 import { appendLinks, TEMP_INFO_PATH } from "../lib/git-commit";
@@ -44,20 +45,6 @@ function json(body: unknown, status = 200): Response {
   });
 }
 
-async function audit(
-  env: Env,
-  actor: string,
-  action: string,
-  target: string | null,
-  detail: unknown = {},
-): Promise<void> {
-  await env.DB.prepare(
-    `INSERT INTO audit_log (actor, action, target, detail_json, created_at)
-     VALUES (?, ?, ?, ?, ?)`,
-  )
-    .bind(actor, action, target, JSON.stringify(detail), new Date().toISOString())
-    .run();
-}
 
 export async function handleAdminApi(
   request: Request,
@@ -91,7 +78,12 @@ export async function handleAdminApi(
       out.d1 = "ok";
     } catch (err) {
       out.ok = false;
-      out.d1 = err instanceof Error ? err.message : String(err);
+      // "error", not the message. This is behind Access so the exposure is
+      // small, but a D1 driver message can carry SQL fragments and column
+      // names, and there is no reason for a health endpoint to be the place
+      // they surface. The detail goes to Workers Logs instead.
+      out.d1 = "error";
+      console.error("health: d1", err instanceof Error ? err.message : String(err));
     }
 
     // Verifies the App private key, the installation, and its permissions in
@@ -102,7 +94,11 @@ export async function handleAdminApi(
       if (!res.ok) out.ok = false;
     } catch (err) {
       out.ok = false;
-      out.github = err instanceof Error ? err.message : String(err);
+      // Same reasoning, and more pressing: github-app.ts embeds GitHub's raw
+      // response body in this message, which on a mis-scoped App includes the
+      // installation details.
+      out.github = "error";
+      console.error("health: github", err instanceof Error ? err.message : String(err));
     }
 
     return json(out, out.ok ? 200 : 503);
@@ -129,8 +125,8 @@ export async function handleAdminApi(
   if (route === "queue" && request.method === "GET") {
     const status = url.searchParams.get("status") ?? "pending";
     if (!/^[a-z]{1,12}$/.test(status)) return jsonError(400, "bad status");
-    const limit = Math.min(Number(url.searchParams.get("limit") ?? 50) || 50, 200);
-    const offset = Math.max(Number(url.searchParams.get("offset") ?? 0) || 0, 0);
+    const limit = clampLimit(url.searchParams.get("limit"), 50, 200);
+    const offset = clampOffset(url.searchParams.get("offset"));
 
     // ORDER BY first_seen_at DESC, id: first_seen_at alone is not unique -- a
     // whole sweep shares one timestamp -- so paging by it would let rows swap
@@ -167,7 +163,7 @@ export async function handleAdminApi(
 
   // Recent admin actions.
   if (route === "audit" && request.method === "GET") {
-    const limit = Math.min(Number(url.searchParams.get("limit") ?? 50) || 50, 200);
+    const limit = clampLimit(url.searchParams.get("limit"), 50, 200);
     const rows = await env.DB.prepare(
       `SELECT id, actor, action, target, detail_json, created_at
          FROM audit_log ORDER BY id DESC LIMIT ?`,
@@ -325,12 +321,22 @@ export async function handleAdminApi(
           // Durable, so tomorrow's sweep does not offer it again. The partial
           // unique index only covers OPEN rows, so this table is what makes a
           // rejection stick.
+          //
+          // The trailing WHERE is what stops a reject DOWNGRADING an approval.
+          // reconcile.ts writes decision='approved' only after observing the
+          // appid in data/ - i.e. the game is published, which is a fact rather
+          // than a preference. Its insert uses DO NOTHING; this one used a bare
+          // DO UPDATE, so the two disagreed about who may overwrite whom, and a
+          // reject landing on a re-queued row for an already-published appid
+          // silently replaced that record and its attribution. Refuse instead:
+          // to actually un-publish a game, remove it from data/.
           env.DB.prepare(
             `INSERT INTO ingest_decisions (appid, decision, reason, decided_by, decided_at)
              VALUES (?, 'rejected', ?, ?, ?)
              ON CONFLICT(appid) DO UPDATE SET
                decision=excluded.decision, reason=excluded.reason,
-               decided_by=excluded.decided_by, decided_at=excluded.decided_at`,
+               decided_by=excluded.decided_by, decided_at=excluded.decided_at
+             WHERE ingest_decisions.decision <> 'approved'`,
           ).bind(r.appid, reason || null, who.email, now),
         ]),
       );

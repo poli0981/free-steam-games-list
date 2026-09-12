@@ -62,7 +62,7 @@ const ADMIN_IMG_HOSTS = [
  * system stack, and the directive should appear the day a font is actually
  * served, not before.
  */
-export function adminCsp(nonce: string): string {
+function adminCsp(nonce: string): string {
   return [
     "default-src 'none'",
     `script-src 'nonce-${nonce}'`,
@@ -96,6 +96,30 @@ export function adminHtmlResponse(body: string, nonce: string): Response {
       ...SECURITY_HEADERS,
     },
   });
+}
+
+/**
+ * Clamp a caller-supplied `limit` query parameter.
+ *
+ * Every call site used to be `Math.min(Number(v) || fallback, max)`, which has
+ * no lower bound. `Number("-1")` is -1, which is truthy, so `|| fallback` never
+ * fires and `Math.min(-1, max)` is -1 - and **SQLite treats a negative LIMIT as
+ * no limit at all**. `?limit=-1` therefore dumped the entire table:
+ * `/api/admin/audit?limit=-1` returned the whole, never-pruned audit log.
+ *
+ * Math.trunc as well, because a fractional LIMIT is not a valid bind value.
+ */
+export function clampLimit(raw: string | null, fallback: number, max: number): number {
+  const n = Math.trunc(Number(raw));
+  if (!Number.isFinite(n) || n < 1) return fallback;
+  return Math.min(n, max);
+}
+
+/** Same shape for `offset`, which was already clamped but not truncated. */
+export function clampOffset(raw: string | null, max = 1_000_000): number {
+  const n = Math.trunc(Number(raw));
+  if (!Number.isFinite(n) || n < 0) return 0;
+  return Math.min(n, max);
 }
 
 export function jsonError(status: number, message: string): Response {

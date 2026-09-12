@@ -49,6 +49,11 @@ jobs:
       - name: Type check
         run: npm run typecheck
 
+      # Before the build, so a broken guard or a formatting drift in the
+      # override serialiser fails fast rather than after a full bundle.
+      - name: Test
+        run: npm test
+
       - name: Build
         run: npm run build
 

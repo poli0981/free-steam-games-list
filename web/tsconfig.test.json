@@ -1,0 +1,22 @@
+{
+  // Vitest runs on Node, so tests get Node types and the DOM-free ES libs.
+  // Kept separate from tsconfig.worker.json so the Worker itself still cannot
+  // see node:fs and friends - a test importing Worker code must not be what
+  // makes a Node-only global typecheck inside the Worker.
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2022"],
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "types": ["node", "vitest/globals"],
+    "noEmit": true,
+    "isolatedModules": true,
+    "moduleDetection": "force",
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+    "skipLibCheck": true
+  },
+  "include": ["worker/**/*.test.ts", "worker", "worker-configuration.d.ts"]
+}

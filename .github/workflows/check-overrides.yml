@@ -13,6 +13,11 @@ on:
       - 'data/overrides/**'
       - 'scripts/core/overrides.py'
       - 'scripts/edit_game.py'
+      # The Worker mirrors validate_value() and the file formatting. This
+      # workflow did not trigger on it, so "change one, change the other" had
+      # no enforcement in either direction.
+      - 'web/worker/routes/edit.ts'
+      - 'web/worker/lib/override-doc.ts'
       - '.github/workflows/check-overrides.yml'
   push:
     branches: [main]
@@ -20,6 +25,11 @@ on:
       - 'data/overrides/**'
       - 'scripts/core/overrides.py'
       - 'scripts/edit_game.py'
+      # The Worker mirrors validate_value() and the file formatting. This
+      # workflow did not trigger on it, so "change one, change the other" had
+      # no enforcement in either direction.
+      - 'web/worker/routes/edit.ts'
+      - 'web/worker/lib/override-doc.ts'
       - '.github/workflows/check-overrides.yml'
   workflow_dispatch:
 
@@ -43,3 +53,18 @@ jobs:
       - run: pip install --quiet -r requirements.txt
       - name: Validate every override
         run: python scripts/edit_game.py --check
+
+      # The other half of the mirror: assert the Worker reproduces the exact
+      # bytes Python writes. Round-trips the real committed override files, so
+      # a formatting change on either side fails here.
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '24'
+          cache: 'npm'
+          cache-dependency-path: web/package-lock.json
+      - name: Install web deps
+        working-directory: web
+        run: npm ci
+      - name: Assert CLI/Worker override parity
+        working-directory: web
+        run: npx vitest run worker/lib/override-doc.test.ts

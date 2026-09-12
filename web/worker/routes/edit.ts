@@ -14,7 +14,9 @@
  * Python would reject fails CI within a minute rather than sitting inert.
  * Change one, change the other.
  */
-import { jsonError, SECURITY_HEADERS } from "../lib/http";
+import { jsonError, SECURITY_HEADERS, clampLimit, clampOffset } from "../lib/http";
+import { audit } from "../lib/audit";
+import { serialiseOverride } from "../lib/override-doc";
 import type { AccessIdentity } from "../lib/access";
 import { commitFiles } from "../lib/git-commit";
 import { findOverride, findRecord, genreCounts, listByGenre } from "../lib/records";
@@ -29,7 +31,7 @@ import { findOverride, findRecord, genreCounts, listByGenre } from "../lib/recor
 const MAX_EDIT = 10;
 
 /** Mirrors MANUAL_FIELDS in scripts/core/constants.py. */
-export const MANUAL_FIELDS = [
+const MANUAL_FIELDS = [
   "anti_cheat",
   "anti_cheat_note",
   "is_kernel_ac",
@@ -155,8 +157,8 @@ export async function handleEditApi(
   if (route === "by-genre" && request.method === "GET") {
     const genre = url.searchParams.get("genre") ?? "";
     if (!genre || genre.length > 100) return jsonError(400, "genre required");
-    const limit = Math.min(Number(url.searchParams.get("limit") ?? 60) || 60, 200);
-    const offset = Math.max(Number(url.searchParams.get("offset") ?? 0) || 0, 0);
+    const limit = clampLimit(url.searchParams.get("limit"), 60, 200);
+    const offset = clampOffset(url.searchParams.get("offset"));
     const out = await listByGenre(genre, limit, offset);
     return json({ genre, limit, offset, ...out });
   }
@@ -270,10 +272,11 @@ export async function handleEditApi(
             if (!Object.keys(doc.fields).length && !Object.keys(doc.retired).length) {
               return null; // nothing to record for this game
             }
-            // 2-space indent + trailing newline, byte-identical to what
-            // scripts/core/overrides.py::save_override() writes, so the two
-            // producers never fight over formatting in the diff.
-            return JSON.stringify(doc, null, 2) + "\n";
+            // Byte-identical to scripts/core/overrides.py::save_override(),
+            // so the CLI and this screen never fight over formatting in the
+            // diff. Shared rather than inlined so override-doc.test.ts
+            // exercises the code that actually runs here.
+            return serialiseOverride(doc);
           },
         };
       }),
@@ -283,17 +286,16 @@ export async function handleEditApi(
         `See scripts/core/overrides.py.`,
     );
 
-    await env.DB.prepare(
-      `INSERT INTO audit_log (actor, action, target, detail_json, created_at)
-       VALUES (?, 'override', ?, ?, ?)`,
-    )
-      .bind(
-        who.email,
-        appids.join(","),
-        JSON.stringify({ appids, set: Object.keys(set), retire, sha, reason }),
-        now,
-      )
-      .run();
+    // Shared helper, and best-effort on purpose: this runs after commitFiles
+    // has already landed a commit, so a D1 failure here must not report the
+    // override as failed. See lib/audit.ts.
+    await audit(env, who.email, "override", appids.join(","), {
+      appids,
+      set: Object.keys(set),
+      retire,
+      sha,
+      reason,
+    });
 
     return json({
       appids,

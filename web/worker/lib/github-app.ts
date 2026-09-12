@@ -97,7 +97,7 @@ async function appJwt(env: Env): Promise<string> {
 }
 
 /** Installation token, cached until shortly before it expires. */
-export async function installationToken(env: Env): Promise<string> {
+async function installationToken(env: Env): Promise<string> {
   const now = Date.now();
   if (tokenCache && tokenCache.expiresAt - now > 5 * 60 * 1000) return tokenCache.token;
 

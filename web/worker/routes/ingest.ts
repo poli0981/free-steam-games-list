@@ -78,6 +78,33 @@ function str(v: unknown, max: number, fallback = ""): string {
   return typeof v === "string" ? v.slice(0, max) : fallback;
 }
 
+/**
+ * Accept a header image only if it is a Steam CDN URL.
+ *
+ * This value was length-capped and otherwise unvalidated, so the caller chose
+ * a URL that the admin review screen then rendered in an <img>. The page CSP
+ * happened to stop it loading, which made a content-injection hole look like a
+ * non-issue - the wrong thing to rely on, since the CSP could reasonably be
+ * relaxed later or the value reused somewhere without one. Anything that does
+ * not match is dropped to "" and the screen shows its no-image placeholder.
+ *
+ * Both Steam hosts, because ~44% of the catalogue is on fastly and an akamai-
+ * only allowlist is a mistake this repo has made before.
+ *
+ * The optional `?t=<digits>` is Steam's asset mtime and is NOT optional in
+ * practice: every one of the 2,399 header_image values sampled from data/
+ * carries it. A pattern without it would have silently blanked the image of
+ * every queued game. Nothing else is allowed through the query string.
+ */
+const STEAM_IMG_RE =
+  /^https:\/\/(?:shared\.(?:akamai|fastly)|cdn\.akamai)\.steamstatic\.com\/[\w\-./]{1,400}(?:\?t=\d{1,12})?$/;
+
+function steamImage(v: unknown): string {
+  if (typeof v !== "string") return "";
+  const s = v.slice(0, 500);
+  return STEAM_IMG_RE.test(s) ? s : "";
+}
+
 function intOrNull(v: unknown): number | null {
   return typeof v === "number" && Number.isFinite(v) ? Math.trunc(v) : null;
 }
@@ -108,7 +135,7 @@ function normalize(c: CandidateIn): Normalized | string {
     // Publisher-controlled text that reaches an admin screen. Length-capped
     // here; escaping belongs to whatever renders it.
     name: str(c.name, 200),
-    header_image: str(c.header_image, 500),
+    header_image: steamImage(c.header_image),
     release_date: str(c.release_date, 60),
     app_type: str(c.app_type, 30),
     // D1 rejects JS booleans, and the column is INTEGER CHECK (is_free IN (0,1)).

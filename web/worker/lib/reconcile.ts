@@ -95,7 +95,31 @@ function parseRemoved(text: string): Map<string, number> {
  * `"/app/<id>/"` is anchored on both sides by the canonical link format, so it
  * cannot collide with a longer appid or match inside a description.
  */
+/**
+ * In-flight guard, per isolate.
+ *
+ * A full run fetches index.json, every shard and removed_games.jsonl - roughly
+ * 6 MB. The 15-minute cron and the manual /admin button can both start one, and
+ * the button had no busy state at all, so a double-click fired two.
+ *
+ * Scope is honest about its limit: this stops repeats within one isolate, which
+ * covers the double-click and a cron tick overlapping its predecessor. Two
+ * different isolates can still overlap, and that is left alone deliberately -
+ * every write in this function is idempotent (`WHERE status='approved'`,
+ * `ON CONFLICT DO NOTHING`), so the only cost is duplicated fetching, and a
+ * real cross-isolate lock would mean a D1 migration for a purely wasteful race.
+ */
+let inFlight: Promise<ReconcileResult> | null = null;
+
 export async function reconcileApproved(env: Env): Promise<ReconcileResult> {
+  if (inFlight) return inFlight;
+  inFlight = runReconcile(env).finally(() => {
+    inFlight = null;
+  });
+  return inFlight;
+}
+
+async function runReconcile(env: Env): Promise<ReconcileResult> {
   const open = await env.DB.prepare(
     `SELECT id, appid, decided_at FROM ingest_queue WHERE status = 'approved'
       ORDER BY decided_at ASC, id LIMIT ?`,

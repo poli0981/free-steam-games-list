@@ -102,7 +102,7 @@ interface HeadAndFile {
  * read and the mutation, the mutation is rejected rather than silently
  * overwriting the newer content.
  */
-export async function readHeadAndFile(env: Env, path: string): Promise<HeadAndFile> {
+async function readHeadAndFile(env: Env, path: string): Promise<HeadAndFile> {
   const data = await graphql<{
     repository: {
       defaultBranchRef: { target: { oid: string } } | null;
@@ -393,15 +393,4 @@ export async function commitFiles(
   }
 
   throw new Error(`branch moved under ${MAX_ATTEMPTS} attempts: ${lastError}`);
-}
-
-/** The one-file case. */
-export function commitFile(
-  env: Env,
-  path: string,
-  headline: string,
-  body: string,
-  build: (current: string) => string | null,
-): Promise<string | null> {
-  return commitFiles(env, [{ path, build }], headline, body);
 }
