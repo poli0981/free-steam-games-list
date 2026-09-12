@@ -27,8 +27,24 @@ export const LEGAL_DOCS: LegalDoc[] = [
   { label: "Contact", path: "docs/Contact.md", hint: "where to find me" },
 ];
 
-/** The 5 binding documents the user accepts at the consent gate. */
+/** The binding documents the user accepts at the consent gate - six of them,
+ *  not the five this comment claimed since the licence split added
+ *  LICENSE-DATA. Derived from the flag rather than counted by hand. */
 export const CONSENT_DOCS: LegalDoc[] = LEGAL_DOCS.filter((d) => d.consent);
+
+/**
+ * The in-app route for a doc: "docs/ToS.md" -> "/legal/tos".
+ *
+ * These routes exist now. Welcome.tsx used to build this exact string and then
+ * call e.preventDefault() on the click, redirecting to /about, because nothing
+ * was there to receive it.
+ */
+export function legalDocSlug(path: string): string {
+  return path
+    .replace(/^docs\//, "")
+    .replace(/\.md$/, "")
+    .toLowerCase();
+}
 
 /** Canonical GitHub URL for a legal doc, matching the About page's links. */
 export function legalDocUrl(path: string): string {

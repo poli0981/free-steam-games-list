@@ -62,11 +62,17 @@
     "manage": "Quản lý",
     "health": "Sức khoẻ",
     "activity": "Hoạt động",
-    "add": "Thêm",
     "about": "Giới thiệu",
     "donate": "Ủng hộ",
     "settings": "Cài đặt",
-    "menu": "Điều hướng"
+    "menu": "Điều hướng",
+    "stats": "Thống kê",
+    "developers": "Nhà phát triển",
+    "publishers": "Nhà phát hành",
+    "welcome": "Giới thiệu",
+    "primary": "Điều hướng chính",
+    "secondary": "Liên kết dự án",
+    "sourceOnGitHub": "Mã nguồn trên GitHub"
   },
   "common": {
     "save": "Lưu",
@@ -99,7 +105,13 @@
     "offline": "offline",
     "active": "đang có",
     "delisted": "đã gỡ",
-    "backToTop": "Lên đầu trang"
+    "backToTop": "Lên đầu trang",
+    "retry": "Thử lại",
+    "viewAll": "Xem tất cả",
+    "skipToContent": "Bỏ qua tới nội dung",
+    "none": "Không có",
+    "copy": "Sao chép",
+    "copied": "Đã sao chép"
   },
   "topbar": {
     "searchPlaceholder": "Tìm theo tên, tag, mô tả…",
@@ -108,7 +120,8 @@
     "signIn": "Đăng nhập",
     "signed": "đã ký",
     "locked": "đã khoá",
-    "menuOpen": "Mở menu"
+    "menuOpen": "Mở menu",
+    "gamesTracked": "trò chơi đang theo dõi"
   },
   "pwa": {
     "offline": "offline",
@@ -132,7 +145,9 @@
     "subtitle": "Tổng hợp {{count}} game F2P trên Steam được track trong repo.",
     "topOnlineTitle": "Top online (số người chơi hiện tại)",
     "platformsTitle": "Nền tảng",
-    "genreTitle": "Phân bố thể loại"
+    "genreTitle": "Phân bố thể loại",
+    "topGenres": "Thể loại phổ biến",
+    "playingNow": "Đang chơi ngay bây giờ"
   },
   "games": {
     "title": "Trò chơi",
@@ -184,7 +199,12 @@
     "languageHint": "Đổi ngôn ngữ giao diện. Các văn bản pháp lý dài vẫn giữ tiếng Anh.",
     "welcomeTitle": "Giới thiệu",
     "welcomeHint": "Trang hiện ra ở lần truy cập đầu tiên — danh sách này là gì, mới tới đâu, và nên bắt đầu từ đâu.",
-    "welcomeAction": "Xem lại phần giới thiệu"
+    "welcomeAction": "Xem lại phần giới thiệu",
+    "theme": "Giao diện",
+    "themeHint": "Chế độ Hệ thống bám theo hệ điều hành, và giờ đã thực sự đổi theo.",
+    "themeLight": "Sáng",
+    "themeDark": "Tối",
+    "themeSystem": "Hệ thống"
   },
   "charts": {
     "time": {
@@ -252,6 +272,17 @@
       "time": "Năm phát hành, và danh sách đã lớn lên thế nào.",
       "drm": "Ghi chú DRM và mức độ phổ biến của DLC trả phí.",
       "delisted": "Những game đã rời danh sách, và vì sao."
+    },
+    "kpi": {
+      "totalGames": "Tổng số game",
+      "totalGamesHint": "trong danh mục",
+      "playersNow": "Người chơi hiện tại",
+      "avgReview": "Đánh giá trung bình",
+      "avgReviewHint": "trên {{count}} game có đánh giá",
+      "topGenre": "Thể loại lớn nhất",
+      "online": "Trực tuyến",
+      "offline": "Ngoại tuyến",
+      "removed": "Đã gỡ bỏ"
     }
   },
   "activity": {
@@ -303,7 +334,14 @@
     "kbdNavigate": "để di chuyển",
     "kbdSelect": "để chọn",
     "lockGpgKey": "Khoá GPG key",
-    "unlockGpgSettings": "Unlock GPG key (mở Settings)"
+    "unlockGpgSettings": "Unlock GPG key (mở Settings)",
+    "title": "Bảng lệnh",
+    "open": "Mở bảng lệnh",
+    "pages": "Trang",
+    "games": "Trò chơi",
+    "noResults": "Không có kết quả.",
+    "toSelect": "để chọn",
+    "toClose": "để đóng"
   },
   "donate": {
     "title": "Ủng hộ dự án",
@@ -448,6 +486,9 @@
     "boundary": {
       "chunkTitle": "Có bản cập nhật mới",
       "chunkDescription": "Phiên bản mới vừa được deploy trong lúc bạn đang duyệt. Tải lại để lấy file mới nhất."
-    }
+    },
+    "offlineTitle": "Bạn đang ngoại tuyến",
+    "offlineBody": "Không có kết nối mạng. Dữ liệu đã tải vẫn dùng được.",
+    "loadFailedTitle": "Không tải được danh mục"
   }
 }

@@ -62,11 +62,17 @@
     "manage": "Manage",
     "health": "Health",
     "activity": "Activity",
-    "add": "Add",
     "about": "About",
     "donate": "Donate",
     "settings": "Settings",
-    "menu": "Navigation"
+    "menu": "Navigation",
+    "stats": "Stats",
+    "developers": "Developers",
+    "publishers": "Publishers",
+    "welcome": "Introduction",
+    "primary": "Main navigation",
+    "secondary": "Project links",
+    "sourceOnGitHub": "Source on GitHub"
   },
   "common": {
     "save": "Save",
@@ -99,7 +105,13 @@
     "offline": "offline",
     "active": "active",
     "delisted": "delisted",
-    "backToTop": "Back to top"
+    "backToTop": "Back to top",
+    "retry": "Try again",
+    "viewAll": "View all",
+    "skipToContent": "Skip to content",
+    "none": "None",
+    "copy": "Copy",
+    "copied": "Copied"
   },
   "topbar": {
     "searchPlaceholder": "Search by name, tag, description…",
@@ -108,7 +120,8 @@
     "signIn": "Sign in",
     "signed": "signed",
     "locked": "locked",
-    "menuOpen": "Open menu"
+    "menuOpen": "Open menu",
+    "gamesTracked": "games tracked"
   },
   "pwa": {
     "offline": "offline",
@@ -132,7 +145,9 @@
     "subtitle": "Overview of {{count}} F2P Steam games tracked in this repository.",
     "topOnlineTitle": "Top online (current players)",
     "platformsTitle": "Platforms",
-    "genreTitle": "Genre distribution"
+    "genreTitle": "Genre distribution",
+    "topGenres": "Top genres",
+    "playingNow": "Playing right now"
   },
   "games": {
     "title": "Games",
@@ -184,7 +199,12 @@
     "languageHint": "Switch UI language. Long-form legal copy stays in English.",
     "welcomeTitle": "Introduction",
     "welcomeHint": "The page shown on your first visit — what this list is, how fresh it is, and where to start.",
-    "welcomeAction": "Show the introduction again"
+    "welcomeAction": "Show the introduction again",
+    "theme": "Theme",
+    "themeHint": "System follows your operating system, and now actually reacts when it changes.",
+    "themeLight": "Light",
+    "themeDark": "Dark",
+    "themeSystem": "System"
   },
   "charts": {
     "time": {
@@ -252,6 +272,17 @@
       "time": "Release years, and how the catalog has grown.",
       "drm": "DRM notes and paid-DLC prevalence.",
       "delisted": "Games that left the catalog, and why."
+    },
+    "kpi": {
+      "totalGames": "Total games",
+      "totalGamesHint": "in the catalogue",
+      "playersNow": "Players right now",
+      "avgReview": "Average review",
+      "avgReviewHint": "across {{count}} rated games",
+      "topGenre": "Largest genre",
+      "online": "Online",
+      "offline": "Offline",
+      "removed": "Removed all-time"
     }
   },
   "activity": {
@@ -303,7 +334,14 @@
     "kbdNavigate": "to navigate",
     "kbdSelect": "to select",
     "lockGpgKey": "Lock GPG key",
-    "unlockGpgSettings": "Unlock GPG key (Settings)"
+    "unlockGpgSettings": "Unlock GPG key (Settings)",
+    "title": "Command palette",
+    "open": "Open the command palette",
+    "pages": "Pages",
+    "games": "Games",
+    "noResults": "Nothing matches.",
+    "toSelect": "to select",
+    "toClose": "to close"
   },
   "donate": {
     "title": "Support the project",
@@ -448,6 +486,9 @@
     "boundary": {
       "chunkTitle": "Update available",
       "chunkDescription": "A new version was deployed while you were browsing. Reload to get the latest files."
-    }
+    },
+    "offlineTitle": "You are offline",
+    "offlineBody": "No network connection. Anything already loaded is still available.",
+    "loadFailedTitle": "Could not load the catalogue"
   }
 }

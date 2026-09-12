@@ -371,6 +371,61 @@ error appears.
 
 ---
 
+## 10. Hotlink Protection is ON, and the packaged apps survive it by luck
+
+Found 2026-09-12 while running the SvelteKit dev server, which proxies `/img/*`
+to production: every image came back **403**, body `error code: 1011` —
+Cloudflare's Hotlink Protection.
+
+It keys on `Referer`. Measured against the live zone:
+
+| Referer sent | `/img/*` |
+|---|---|
+| none | 200 |
+| `https://free-steam-games.win/` | 200 |
+| `http://localhost:5173/` | **403** |
+| `tauri://localhost/` | **403** |
+| `http://tauri.localhost/` | **403** |
+
+`/api/data/*` is unaffected — the rule only covers images.
+
+**Why this matters beyond dev.** The desktop and Android builds load `/img/*`
+from `tauri://localhost` and `http://tauri.localhost`. Both of those Referers
+are blocked. Images render in the shipped apps **only because the Tauri webview
+currently sends no Referer at all for `<img>` requests.** That is not a
+guarantee anybody made: sending a Referer is the ordinary, spec-compliant
+behaviour, so a WebView2 or Android System WebView update could start doing it
+and blank every image in both apps, with no change on our side and nothing in
+the repo to explain why.
+
+**Recommended: turn Hotlink Protection OFF** (dashboard → Scrape Shield →
+Hotlink Protection). It buys nothing here and costs the above:
+
+- It is not what restricts `/img/*`. That is the anchored `PATH_RE` and the
+  two-host `SOURCE_HOSTS` allowlist in `worker/routes/img.ts`, which no client
+  header can influence.
+- `Referer` is set by the client and trivially forged, so as an access control
+  it is theatre; as an availability dependency for the packaged apps it is
+  real.
+- The images are Steam's own store art, already served publicly by Valve's CDN
+  to anyone. There is nothing here that hotlinking would steal.
+
+There is no allowlist workaround: Cloudflare's allowed-domain list takes
+hostnames, and `tauri://localhost` is a custom scheme it cannot express.
+
+**Check** (the bare request must be 200 and the localhost one must also be 200
+once this is off):
+
+```bash
+curl -s -o /dev/null -w '%{http_code}
+' -H "Referer: http://localhost:5173/" "https://free-steam-games.win/img/t/730/header.jpg?t=1749053861"
+```
+
+Until it is switched off, `npm run dev` shows broken thumbnails. The data,
+charts and everything else work; only images are affected.
+
+---
+
 ## Still open
 
 `audit_log` has no pruning job. It grows only with admin actions so it is not
