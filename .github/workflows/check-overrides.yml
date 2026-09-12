@@ -57,7 +57,7 @@ jobs:
       # The other half of the mirror: assert the Worker reproduces the exact
       # bytes Python writes. Round-trips the real committed override files, so
       # a formatting change on either side fails here.
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@v7
         with:
           node-version: '24'
           cache: 'npm'
