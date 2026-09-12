@@ -171,7 +171,18 @@
     "deletedToast_one": "Deleted {{count}} game",
     "deletedToast_other": "Deleted {{count}} games",
     "bulkDeleteFailedToast": "Bulk delete failed",
-    "clearSelection": "Clear"
+    "clearSelection": "Clear",
+    "colName": "Name",
+    "colIssues": "Data issues",
+    "noResults": "No game matches these filters.",
+    "clearFilters": "Clear filters",
+    "showing": "{{shown}} of {{total}}",
+    "filterAllSafe": "Any safety",
+    "filterAnyAc": "Any anti-cheat",
+    "filterHasAc": "Has anti-cheat",
+    "filterNoAc": "No anti-cheat",
+    "deadTitle": "Dead game - no players recorded",
+    "sortBy": "Sort by {{column}}"
   },
   "topOnline": {
     "title": "Top online",
@@ -490,5 +501,38 @@
     "offlineTitle": "You are offline",
     "offlineBody": "No network connection. Anything already loaded is still available.",
     "loadFailedTitle": "Could not load the catalogue"
+  },
+  "stats": {
+    "title": "Stats",
+    "subtitle": "The numbers behind the catalogue, and the fields no chart covered before.",
+    "metacriticTitle": "Metacritic scores",
+    "metacriticDesc": "Only a minority of free-to-play games are reviewed by Metacritic at all.",
+    "retentionTitle": "Peak today vs playing now",
+    "retentionDesc": "Each point is one game. Further below the diagonal means a bigger drop from today's peak.",
+    "safetyTitle": "Safety flags",
+    "safetyDesc": "A human judgement, not a scan. Most records are unreviewed.",
+    "deadTitle": "Games that went quiet",
+    "deadDesc": "Recorded when a game first reported zero players and never recovered.",
+    "languageTitle": "Language coverage",
+    "languageDesc": "How many interface languages each game ships.",
+    "reviewLabelTitle": "Review wording",
+    "reviewLabelDesc": "Steam's own label, which is a band rather than the raw percentage."
+  },
+  "studios": {
+    "developersTitle": "Developers",
+    "developersSubtitle": "Who makes the free-to-play catalogue. {{count}} studios with at least one game here.",
+    "publishersTitle": "Publishers",
+    "publishersSubtitle": "Who publishes it. {{count}} publishers with at least one game here.",
+    "gamesCount": "{{count}} games",
+    "oneGame": "1 game",
+    "notFound": "No studio by that name is in the catalogue.",
+    "backToList": "Back to the list"
+  },
+  "legal": {
+    "title": "Legal documents",
+    "subtitle": "The binding documents, rendered here rather than sent to GitHub.",
+    "notFound": "No legal document by that name.",
+    "viewSource": "View the source on GitHub",
+    "lastCommitted": "Rendered from the repository at build time."
   }
 }

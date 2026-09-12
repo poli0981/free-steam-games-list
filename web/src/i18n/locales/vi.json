@@ -171,7 +171,18 @@
     "deletedToast_one": "Đã xoá {{count}} game",
     "deletedToast_other": "Đã xoá {{count}} game",
     "bulkDeleteFailedToast": "Xoá hàng loạt thất bại",
-    "clearSelection": "Xoá chọn"
+    "clearSelection": "Xoá chọn",
+    "colName": "Tên",
+    "colIssues": "Vấn đề dữ liệu",
+    "noResults": "Không có game nào khớp bộ lọc này.",
+    "clearFilters": "Xóa bộ lọc",
+    "showing": "{{shown}} trên {{total}}",
+    "filterAllSafe": "Mọi mức an toàn",
+    "filterAnyAc": "Mọi anti-cheat",
+    "filterHasAc": "Có anti-cheat",
+    "filterNoAc": "Không anti-cheat",
+    "deadTitle": "Game chết - không ghi nhận người chơi",
+    "sortBy": "Sắp xếp theo {{column}}"
   },
   "topOnline": {
     "title": "Top online",
@@ -490,5 +501,38 @@
     "offlineTitle": "Bạn đang ngoại tuyến",
     "offlineBody": "Không có kết nối mạng. Dữ liệu đã tải vẫn dùng được.",
     "loadFailedTitle": "Không tải được danh mục"
+  },
+  "stats": {
+    "title": "Thống kê",
+    "subtitle": "Các con số đằng sau danh mục, và những trường chưa biểu đồ nào dùng tới.",
+    "metacriticTitle": "Điểm Metacritic",
+    "metacriticDesc": "Chỉ một số ít game miễn phí được Metacritic chấm.",
+    "retentionTitle": "Đỉnh hôm nay so với hiện tại",
+    "retentionDesc": "Mỗi điểm là một game. Càng xa dưới đường chéo là giảm càng nhiều.",
+    "safetyTitle": "Cờ an toàn",
+    "safetyDesc": "Là đánh giá của con người, không phải quét tự động. Phần lớn chưa được xem xét.",
+    "deadTitle": "Những game đã im ắng",
+    "deadDesc": "Ghi nhận từ lần đầu game báo 0 người chơi và không hồi phục.",
+    "languageTitle": "Độ phủ ngôn ngữ",
+    "languageDesc": "Mỗi game hỗ trợ bao nhiêu ngôn ngữ giao diện.",
+    "reviewLabelTitle": "Nhãn đánh giá",
+    "reviewLabelDesc": "Nhãn của Steam, là một khoảng chứ không phải số phần trăm."
+  },
+  "studios": {
+    "developersTitle": "Nhà phát triển",
+    "developersSubtitle": "Ai làm ra danh mục miễn phí này. {{count}} studio có ít nhất một game ở đây.",
+    "publishersTitle": "Nhà phát hành",
+    "publishersSubtitle": "Ai phát hành chúng. {{count}} nhà phát hành có ít nhất một game ở đây.",
+    "gamesCount": "{{count}} game",
+    "oneGame": "1 game",
+    "notFound": "Không có studio nào tên như vậy trong danh mục.",
+    "backToList": "Về danh sách"
+  },
+  "legal": {
+    "title": "Tài liệu pháp lý",
+    "subtitle": "Các tài liệu ràng buộc, hiển thị ngay tại đây thay vì chuyển sang GitHub.",
+    "notFound": "Không có tài liệu nào tên như vậy.",
+    "viewSource": "Xem mã nguồn trên GitHub",
+    "lastCommitted": "Được kết xuất từ kho lúc build."
   }
 }
