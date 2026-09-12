@@ -2,6 +2,15 @@ import adapter from "@sveltejs/adapter-static";
 import { vitePreprocess } from "@sveltejs/vite-plugin-svelte";
 
 /**
+ * True while the Tauri CLI is driving this build.
+ *
+ * Tauri 2 sets TAURI_ENV_* for the process running beforeBuildCommand, so
+ * this needs no extra npm script and no cross-env - which matters, because
+ * `VAR=1 vite build` in package.json does not work on Windows.
+ */
+const IS_TAURI = Boolean(process.env.TAURI_ENV_PLATFORM);
+
+/**
  * One adapter, two targets.
  *
  * `adapter-static` with a fallback produces output that works unmodified in
@@ -123,14 +132,36 @@ const config = {
         "img-src": [
           "self",
           "data:",
+          // Same reason as connect-src: under Tauri 'self' is the bundle, so
+          // artwork proxied through /img/* is cross-origin.
+          ...(IS_TAURI ? ["https://free-steam-games.win", "blob:"] : []),
           "https://shared.akamai.steamstatic.com",
           "https://shared.fastly.steamstatic.com",
           "https://cdn.akamai.steamstatic.com",
         ],
         "font-src": ["self"],
-        // 'self' with no exceptions. The Activity page's GitHub call goes
-        // through the Worker at /api/activity, and avatars through /img/gh/*.
-        "connect-src": ["self"],
+        /**
+         * On the web: 'self' with no exceptions. The Activity page's GitHub
+         * call goes through the Worker at /api/activity and avatars through
+         * /img/gh/*, which is why api.github.com is absent - that was a
+         * deliberate removal and must not creep back into the web policy.
+         *
+         * Under Tauri the page origin is tauri://localhost, so 'self' is the
+         * BUNDLE, not the site. Without these the packaged apps cannot load
+         * the catalogue at all - every /api/data/* fetch is blocked, and the
+         * app shows an empty table with a CSP error. api.github.com is needed
+         * only there, by the Android release check, which the web never runs
+         * (it is gated on isTauri() && isAndroid()).
+         */
+        "connect-src": IS_TAURI
+          ? [
+              "self",
+              "https://free-steam-games.win",
+              "https://api.github.com",
+              "ipc:",
+              "http://ipc.localhost",
+            ]
+          : ["self"],
         "worker-src": ["self"],
         "manifest-src": ["self"],
         "media-src": ["none"],

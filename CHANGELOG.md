@@ -2,6 +2,135 @@
 
 All notable changes to this awesome noob repo will be documented here.
 
+## [v4.0.0] – 2026-09-12 (The "Rewrite" Edition)
+
+The end-user web app was rewritten from React 19 to **SvelteKit 2 / Svelte 5**,
+given a typeface and a palette of its own, and gained the pages it had been
+missing. `/admin` was completed and hardened in place. Web app +
+desktop/Android bumped `1.4.5` → `2.0.0`; repo public-facing version `3.4.3` →
+`4.0.0`.
+
+Breaking for anyone who packaged or embedded the old build: the desktop window
+is now resizable, the `tauri-plugin-http` native bridge is gone, and the
+Content-Security-Policy is emitted by the app itself rather than by
+`_headers`.
+
+### 🎨 A front end that looks like something
+
+- **Rewritten on SvelteKit 2 + Svelte 5 runes.** 30 routes, prerendered to
+  static HTML — every page now ships real markup to a crawler instead of an
+  empty shell. React, react-router, zustand, TanStack Query, cmdk and Radix
+  are gone; Bits UI, `@tanstack/svelte-virtual` and svelte-sonner replace
+  them.
+- **Three self-hosted typefaces**, subsetted to Latin, Latin-Ext and
+  Vietnamese: Bricolage Grotesque for display, IBM Plex Sans for body and the
+  3,666-row table, JetBrains Mono for figures. The old build declared `Inter`
+  and shipped no font file at all, so it had always rendered in `system-ui`.
+- **A warm amber palette**, replacing the Tailwind 3 defaults the previous
+  version kept "until the palette rework", plus a skip link, a
+  `:focus-visible` rule and a `prefers-reduced-motion` block — none of which
+  had ever existed.
+- **A brand mark that is geometry, not a font glyph.** The old icon drew "▶"
+  as SVG `<text>` in `system-ui`: a different shape on every platform, and
+  tofu where no font supplied it.
+
+### 📄 New pages
+
+- `/legal/:doc` — all eight documents, rendered from the repo's markdown **at
+  build time**, so no markdown parser or sanitiser reaches the browser. The
+  welcome screen used to intercept these links and redirect to `/about`.
+- `/games/:appid` — a real page per game, with its own title and description.
+- `/developers`, `/developers/:name`, `/publishers/:name` — `developer[]` and
+  `publisher[]` were on every record and used by nothing.
+- `/stats` — the fields no chart covered: Metacritic distribution, peak-vs-now
+  retention, safety flags, language coverage, review-label buckets.
+
+### 🔎 Findable
+
+- **Open Graph and Twitter cards on every page.** There were none, so a shared
+  link rendered as a bare grey URL everywhere. `og:image` is a real 1200×630
+  PNG — it used to point at an SVG, which no social platform renders.
+- **Canonical URLs on every page**, not just `/games/:appid`.
+- **`sitemap.xml` generated from the route table.** The old one listed four
+  URLs, three of them pointing at github.com, and none of the app's own routes.
+- PNG icons for the PWA manifest and `apple-touch-icon`, which never accepted
+  SVG.
+
+### 🛠️ `/admin` finished
+
+- Three endpoints that had no UI at all are now reachable: the audit log,
+  health, and commit jobs — the evidence trail for a commit that landed
+  without a queue update was previously readable only through
+  `wrangler d1 execute`.
+- Server-side search and sorting. The filter box used to search only the 60
+  rows on screen, so an appid on page 3 reported "nothing matches".
+- Approve/Reject are disabled on tabs where they can only 409, Reconcile is
+  busy-guarded, and leaving with unsaved edits warns.
+- `/admin/edti` served the queue page. Unknown `/admin/*` now 404s.
+
+### 🔐 Security
+
+- **A negative `limit` disabled the SQL bound.** `Math.min(Number("-1") || 50,
+  200)` is `-1`, and SQLite treats a negative LIMIT as unlimited — so
+  `?limit=-1` dumped the entire never-pruned audit log. Clamped.
+- **A token with a missing or non-numeric `exp` never expired.** `exp` is now
+  required and numeric.
+- **The JWT is no longer accepted from a cookie on writes.** Only the
+  `Cf-Access-Jwt-Assertion` header, which browsers never send cross-site.
+- A signing-key rotation locked out admin and ingest for up to an hour as an
+  opaque 404; the JWKS is refetched once on an unknown `kid`, and a fetch
+  failure is now a 503 rather than "not found".
+- Every server crash was reported to the reviewer as "Session expired" — the
+  admin pages sniff Content-Type, and an unhandled throw became Cloudflare's
+  HTML 1101 page. There is a top-level handler now.
+- A reject can no longer downgrade an approved game, which would have made it
+  permanently invisible to every future discovery sweep.
+- `header_image` is validated as an HTTPS Steam CDN URL, not merely
+  length-capped.
+
+### ✅ Tests, where there were none
+
+`docs/ADMIN.md` claimed the override byte-parity between `scripts/edit_game.py`
+and the Worker was "asserted by a parity test". No test existed anywhere in the
+repo. There are now 95 across the Worker and the app, including that one — and
+each was checked by mutation, not merely by passing.
+
+### 🖥️ Binary 2.0.0
+
+- **The window unlocks.** It was pinned to exactly 1400×900, non-resizable and
+  non-maximisable, which made a responsive redesign pointless on the one
+  platform that could not use it. Now 1280×860, resizable, minimum 880×600.
+- **`tauri-plugin-http` removed** along with its `https://github.com/*`
+  capability. It existed for the GitHub OAuth Device Flow, which went with
+  sign-in; the only remaining GitHub call is the Android release check, which
+  is a plain `fetch` to an endpoint that sends CORS headers.
+- Real paths, no hash router. `tauri::manager::get_asset()` resolves
+  `/games/730` through its own fallback chain; the note claiming the webview
+  had no server-side fallback was out of date. Links from released 1.4.x
+  builds are still upgraded on load.
+
+### 🐛 Console
+
+Every reported error is fixed, and each was measured rather than assumed:
+
+- GitHub avatars were blocked by CSP on `/activity`. They are proxied through
+  the Worker at `/img/gh/*`, so `img-src` stays `'self'`.
+- The Cloudflare Access re-auth fetch was blocked. It uses a full-page
+  redirect now.
+- `[Violation] 'setTimeout' handler took 122ms` — zero long tasks while four
+  charts initialise, because each waits for an IntersectionObserver instead of
+  all of them racing in one frame.
+- `[Violation] non-passive 'mousewheel' listener` — zrender binds both `wheel`
+  and `mousewheel` with no options object, unconditionally. Four blocking
+  listeners for two charts, measured; now zero.
+
+### 📇 Contact
+
+The maintainer address is **contact@poli0981.dev**; every other channel is
+`https://poli0981.dev/links/`. `CODE_OF_CONDUCT.md` had no reporting address at
+all. `/.well-known/security.txt` exists and is served as `text/plain` — it used
+to return the app shell with HTTP 200.
+
 ## [v3.4.3] – 2026-09-11 (The "Own Domain" Edition)
 
 The site moved off GitHub Pages to **free-steam-games.win** on Cloudflare, and

@@ -1,18 +1,13 @@
 {
   "$schema": "../gen/schemas/desktop-schema.json",
   "identifier": "default",
-  "description": "Cross-platform capabilities for the main window. Frontend is a static SPA fetching from raw.githubusercontent.com / api.github.com — only shell:open is needed as a native bridge here. The desktop-only updater lives in updater.json so the Android/iOS build (which doesn't compile the updater plugin) doesn't fail ACL resolution.",
-  "windows": ["main"],
+  "description": "Cross-platform capabilities for the main window. The frontend is a static SvelteKit app that fetches its data from free-steam-games.win over plain HTTP, so shell:open is the only native bridge it needs - it opens external links, which the webview otherwise blocks. The desktop-only updater lives in updater.json so the Android/iOS build, which does not compile that plugin, does not fail ACL resolution.",
+  "windows": [
+    "main"
+  ],
   "permissions": [
     "core:default",
     "core:window:allow-close",
-    "shell:allow-open",
-    {
-      "identifier": "http:default",
-      "allow": [
-        { "url": "https://github.com/*" },
-        { "url": "https://api.github.com/*" }
-      ]
-    }
+    "shell:allow-open"
   ]
 }

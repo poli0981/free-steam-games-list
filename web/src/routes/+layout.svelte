@@ -11,6 +11,7 @@
   import { recoverFallbackRoute } from "$lib/fallback-route";
   import { installExternalLinkInterceptor } from "$lib/external-link-interceptor";
   import { checkAndroidUpdate } from "$lib/android-update";
+  import { purgeTauriServiceWorker } from "$lib/pwa";
   import { isTauri, isAndroid, openExternal } from "$lib/external-open";
   import { toast } from "svelte-sonner";
   import ConsentGate from "$lib/common/ConsentGate.svelte";
@@ -72,6 +73,12 @@
     // dead-clicks in the packaged builds. One capture-phase listener covers
     // them all. No-op on the web.
     installExternalLinkInterceptor();
+
+    // Tauri only, and a one-time migration for anyone upgrading from a
+    // build that shipped a service worker: one registered at
+    // tauri.localhost can never update, so it would serve that build's
+    // precache for the life of the install.
+    void purgeTauriServiceWorker();
 
     // Android has no native Tauri updater (the plugin is desktop-only), so the
     // APK checks GitHub Releases itself, once per session. Best-effort: a

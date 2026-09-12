@@ -109,6 +109,14 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
   `$state`: a plain `let chart` meant the setOption effect ran once while it was
   still undefined and never re-ran. See the comment in
   `web/src/lib/charts/EChart.svelte`.
+- **zrender's wheel listeners are forced passive during `echarts.init()`.** It
+  binds both `wheel` and `mousewheel` with no options object, unconditionally
+  and regardless of `dataZoom`, which blocks scrolling over every chart — they
+  sit inside the page's scroll container. `EChart.svelte` swaps
+  `addEventListener` for exactly the duration of that one call. A passive
+  listener cannot `preventDefault()`, so `dataZoom: {type: "inside"}` and
+  `roam: true` would silently stop working; `charts.test.ts` fails if either
+  appears.
 - `echarts-wordcloud` declares a stale `echarts@^5` peer. It runs fine on
   echarts 6 (all the legacy APIs it uses are still exported), so `package.json`
   carries an `overrides` entry. Do not "fix" it by pinning echarts back to 5.
@@ -126,9 +134,38 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
   meta says, and the whole app renders its HTML and then fails to hydrate.
   `frame-ancestors` is ignored in a meta CSP, so `X-Frame-Options: DENY` in
   `web/static/_headers` is what stops framing.
+- **That CSP has TWO flavours, chosen by `TAURI_ENV_PLATFORM`.** Under Tauri
+  the page origin is `tauri://localhost`, so `'self'` means the BUNDLE, not the
+  site — a `connect-src 'self'` policy blocks every `/api/data/*` fetch and the
+  packaged apps show an empty catalogue. `svelte.config.js` adds
+  `https://free-steam-games.win`, `https://api.github.com`, `ipc:` and
+  `http://ipc.localhost` only for that build; the web policy stays `'self'`,
+  because dropping `api.github.com` from it was deliberate (`/api/activity`
+  proxies it). Tauri sends its OWN policy as a header from
+  `tauri.conf.json`, which is why that one carries `script-src 'unsafe-inline'`:
+  the two intersect, and the meta policy's sha256 is what actually enforces.
 - **`adapter-static`'s `fallback` must not be named `index.html`.** It is
   written last and overwrites whatever shares its name, which silently replaced
   the prerendered home page with an empty shell. It is `200.html`.
+- **`kit.paths.relative` must stay `false`.** SvelteKit defaults it to `true`,
+  which gives every PRERENDERED page `./_app/...` asset URLs. Served as the
+  fallback for `/games/730` those resolve to `/games/_app/...`, which misses,
+  falls into the SPA handler, and comes back as `index.html` with
+  `Content-Type: text/html` at HTTP 200 — so the browser refuses the module
+  and the page never hydrates. Invisible until a route actually falls through,
+  because `200.html` was always absolute.
+- **An unmatched path is answered with `index.html`, which is the prerendered
+  DASHBOARD — and a prerendered page hydrates as its own route.** Cloudflare's
+  `not_found_handling: "single-page-application"` names no file, and Tauri's
+  `get_asset()` chain is compiled in, so neither can be pointed at `200.html`.
+  `_redirects` cannot either: Workers Static Assets has no 200-status rewrite
+  and honours `/games/* /200.html 200` as a REDIRECT (measured: the address bar
+  became `/200`). The symptom is subtle — `page.route.id` and `page.url` are
+  CORRECT, so the canonical tag and og:url look right; only the rendered
+  components are the dashboard's. `web/src/lib/fallback-route.ts` re-navigates
+  on first mount for the three routes that are never prerendered, and
+  `fallback-route.test.ts` holds its list against the routes that actually
+  declare `prerender = false`.
 - **Nothing may gate the markup behind `onMount`.** onMount does not run during
   prerender, so anything behind it ships an empty body and the SEO reason for
   prerendering is gone. The consent gate is an OVERLAY for this reason, not a
@@ -139,6 +176,30 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
   Never add CORS to `/api/admin/*` or `/api/ingest/*`, and never set
   `Cross-Origin-Resource-Policy` on Worker responses — the same apps load
   `/img/*` cross-site.
+- **Every page's `<head>` comes from `web/src/lib/common/Seo.svelte`.** Do not
+  hand-write `<title>` in a route — two title elements resolve by DOM order,
+  silently. `og:image`/`og:url` must stay absolute from `SITE_ORIGIN`, never
+  `page.url.origin`, which during prerender is SvelteKit's internal
+  `http://sveltekit-prerender` host. `seo.test.ts` enforces both.
+- **`sitemap.xml` is a prerendered route**, not a static file, driven by
+  `import.meta.glob` over the route table. It needs `kit.prerender.entries`
+  because nothing links to it. Extra exports from a `+server.ts` must be
+  `_`-prefixed or SvelteKit rejects the build.
+- **`static/` art is generated.** `icon.svg` is the only hand-edited mark;
+  `scripts/gen-icons.py` derives the PNG icons and `og.png` from it. Social
+  platforms do not render SVG previews, and `apple-touch-icon` never accepted
+  SVG.
+- **The packaged apps must never register a service worker.** One registered
+  at `tauri.localhost` can NEVER be updated — the update algorithm refetches
+  the worker script bypassing the worker, and Tauri's custom protocol does not
+  satisfy it ("An unknown error occurred when fetching the script"). The worker
+  from whatever version ran FIRST then serves its own precache, including
+  `index.html`, forever: the 2.0.0 build launched showing the 1.4.x React UI
+  inside the new window. No frontend fix is possible, because the frontend that
+  would do the fixing is the part being served stale. `vite.config.ts` omits the
+  PWA plugin when `TAURI_ENV_PLATFORM` is set, and
+  `src-tauri/src/lib.rs::purge_stale_webview_data` clears the webview's storage
+  once per version for anyone upgrading from a build that had one.
 - The app is behind a first-run legal consent gate
   (`web/src/lib/common/ConsentGate.svelte`). Only `/error/*` bypasses it —
   any new route that must be reachable pre-consent has to join that list.
