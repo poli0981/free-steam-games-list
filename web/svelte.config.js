@@ -57,6 +57,56 @@ const config = {
       // its rendering.
       "@": "src",
     },
+    /**
+     * The Content-Security-Policy, owned HERE rather than in public/_headers.
+     *
+     * SvelteKit emits exactly one inline <script> per page - the hydration
+     * bootstrap - and there is no option to avoid it. Under the header CSP's
+     * `script-src 'self'` the browser blocked it, so every page rendered its
+     * prerendered HTML and then sat there completely inert. Measured in a real
+     * browser: "Executing inline script violates ... script-src 'self'" on
+     * every route.
+     *
+     * mode "hash" makes SvelteKit compute that script's sha256 at build time
+     * and emit the whole policy as a <meta> tag that already trusts it. The
+     * header CSP could not do this: browsers enforce the INTERSECTION of a
+     * header policy and a meta policy, so leaving `script-src 'self'` in
+     * _headers would keep blocking the script no matter what the meta said.
+     * public/_headers therefore no longer sets a CSP at all.
+     *
+     * One directive is lost in the move: `frame-ancestors` is ignored in a
+     * meta CSP. `X-Frame-Options: DENY` stays in _headers and covers it.
+     */
+    csp: {
+      mode: "hash",
+      directives: {
+        "default-src": ["self"],
+        "script-src": ["self"],
+        // 'unsafe-inline' is load-bearing for style-src: Bits UI positions
+        // popovers and dialogs with inline style attributes, and ECharts sizes
+        // its canvas the same way. Low risk while script-src stays strict,
+        // which is the directive that actually stops code execution.
+        "style-src": ["self", "unsafe-inline"],
+        "img-src": [
+          "self",
+          "data:",
+          "https://shared.akamai.steamstatic.com",
+          "https://shared.fastly.steamstatic.com",
+          "https://cdn.akamai.steamstatic.com",
+        ],
+        "font-src": ["self"],
+        // 'self' with no exceptions. The Activity page's GitHub call goes
+        // through the Worker at /api/activity, and avatars through /img/gh/*.
+        "connect-src": ["self"],
+        "worker-src": ["self"],
+        "manifest-src": ["self"],
+        "media-src": ["none"],
+        "object-src": ["none"],
+        "base-uri": ["none"],
+        "form-action": ["none"],
+      },
+    },
+
     typescript: {
       config(cfg) {
         // The generated config is what svelte-check uses. The Worker and the

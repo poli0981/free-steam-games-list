@@ -10,29 +10,20 @@
 # its own set, and the /admin pages build a stricter per-response CSP with a
 # nonce. Anything added here that must also hold for API responses has to be
 # added there too.
-#
-# Verified against the built app in a browser rather than assumed: the only
-# inline <script> in dist/index.html is a `type="application/ld+json"` data
-# block, which is not executed and so is not governed by script-src.
 
 /*
-  # Radix (via shadcn/ui) positions popovers, dialogs and tooltips with inline
-  # style attributes, and ECharts sizes its canvas the same way, so
-  # 'unsafe-inline' is load-bearing for style-src. It is also low risk here:
-  # the app renders no user-supplied HTML, and script-src stays strict, which
-  # is the directive that actually stops code execution.
+  # NO Content-Security-Policy here.
   #
-  # connect-src is 'self' with no exceptions. It used to allow
-  # https://api.github.com for one page: /activity fetched the commit list
-  # straight from GitHub. That request now goes through the Worker at
-  # /api/activity, so the whole site no longer needs a third-party connect
-  # target. The Android in-app update check still calls api.github.com, but only
-  # under isTauri() && isAndroid() (see useAndroidUpdateCheck), and the packaged
-  # apps use the separate CSP in src-tauri/tauri.conf.json - not this file.
+  # SvelteKit owns it now, in svelte.config.js under kit.csp, and emits it as a
+  # <meta> tag carrying the sha256 of the one inline bootstrap script it
+  # generates per page. A CSP could not live in both places: browsers enforce
+  # the INTERSECTION of a header policy and a meta policy, so a
+  # `script-src 'self'` header kept blocking that script no matter what the
+  # meta allowed - and the whole app rendered its HTML and then failed to
+  # hydrate. See the comment on kit.csp for the full reasoning.
   #
-  # img-src likewise stays without avatars.githubusercontent.com: GitHub avatars
-  # are proxied at /img/gh/{u|in}/{id}. Before that they were simply blocked.
-  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://shared.akamai.steamstatic.com https://shared.fastly.steamstatic.com https://cdn.akamai.steamstatic.com; font-src 'self'; connect-src 'self'; worker-src 'self'; manifest-src 'self'; media-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'
+  # X-Frame-Options below is now load-bearing rather than belt-and-braces:
+  # `frame-ancestors` is ignored in a meta CSP, so this is what stops framing.
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
   X-Frame-Options: DENY
@@ -42,8 +33,8 @@
   Cross-Origin-Opener-Policy: same-origin
   Cross-Origin-Resource-Policy: same-site
 
-# Hashed build output is immutable by construction — the filename changes when
-# the content does — so it can be cached hard. Everything else stays revalidated
-# so a deploy is visible immediately.
-/assets/*
+# Hashed build output is immutable by construction - the filename changes when
+# the content does - so it can be cached hard, fonts included. Everything else
+# stays revalidated so a deploy is visible immediately.
+/_app/immutable/*
   Cache-Control: public, max-age=31536000, immutable

@@ -12,14 +12,42 @@ Companion docs: [`ADMIN.md`](ADMIN.md) for Access and the GitHub App,
 
 ## 1. Response headers — done in code
 
-Two files, and neither inherits from the other:
+Three places now, and none inherits from the others:
 
 | File | Covers |
 |---|---|
-| `web/public/_headers` | static assets (the SPA document, `/assets/*`, icons) |
+| `web/svelte.config.js` (`kit.csp`) | the Content-Security-Policy on every app page |
+| `web/static/_headers` | every other security header on static assets |
 | `web/worker/lib/http.ts` | everything the Worker generates (`/api/*`, `/img/*`) |
 
-Add a header that must hold everywhere and you must add it in both.
+Add a header that must hold everywhere and you must add it in each.
+
+### Why the CSP moved out of `_headers` (2026-09-12)
+
+SvelteKit emits exactly one inline `<script>` per page — the hydration
+bootstrap — and offers no way to avoid it. Under the old header policy's
+`script-src 'self'` the browser blocked it, so every page rendered its
+prerendered HTML and then sat there completely inert. Measured in a real
+browser, on every route:
+
+```
+Executing inline script violates the following Content Security Policy
+directive 'script-src 'self''
+```
+
+`kit.csp` with `mode: "hash"` makes SvelteKit compute that script's sha256 at
+build time and emit the whole policy as a `<meta>` tag that already trusts it.
+
+**The header CSP had to go, not just relax.** Browsers enforce the
+INTERSECTION of a header policy and a meta policy, so leaving
+`script-src 'self'` in `_headers` would have kept blocking the script no matter
+what the meta allowed.
+
+One directive is lost in the move: `frame-ancestors` is ignored in a meta CSP.
+`X-Frame-Options: DENY` stays in `_headers` and is now load-bearing rather than
+belt-and-braces.
+
+Note `web/public/` is `web/static/` since the SvelteKit migration.
 
 ### The CSP
 
@@ -109,7 +137,7 @@ Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
 ```
 
 It is set by the **Cloudflare zone** (SSL/TLS → Edge Certificates → HTTP
-Strict Transport Security), not in `web/public/_headers` or the Worker — on
+Strict Transport Security), not in `web/static/_headers` or the Worker — on
 purpose. The zone setting stamps every response, static and Worker-generated
 alike, and any subdomain created later. Setting it in code as well would mean
 keeping two files in step and risking a second `Strict-Transport-Security`

@@ -5,7 +5,7 @@ code; if you change the code, change this file.
 
 ## What this is
 
-A dataset of free-to-play Steam games (`data/data_*.jsonl`) plus a React SPA
+A dataset of free-to-play Steam games (`data/data_*.jsonl`) plus a SvelteKit app
 (`web/`), a Tauri 2 desktop/Android shell (`web/src-tauri/`), and a Python
 scraping pipeline (`scripts/`) driven by GitHub Actions.
 
@@ -71,8 +71,8 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
   pipeline runs. Add a key there or not at all.
 
   (The browser-side `bumpedIndexFile()` that used to have the same flaw is
-  gone: `web/src/lib/edits.ts` was deleted along with sign-in and in-app
-  editing. The public app no longer writes anything.)
+  gone, along with sign-in and in-app editing. The public app no longer writes
+  anything.)
 
 - **`web/src/lib/schema.ts` mirrors `scripts/core/constants.py`.** `MANUAL_FIELDS`,
   `ARRAY_FIELDS`, `EXTENSION_FIELDS` and the record shape exist in both. Change
@@ -99,19 +99,40 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
 
 ## Frontend gotchas
 
-- **Never pass `theme="dark"` to `<ReactEChartsCore>`.** `echarts/core` ships no
+- **Never pass a theme name to `echarts.init()`.** `echarts/core` ships no
   registered themes. Under echarts 6 an unregistered theme name silently stops
   every series from painting — axes and legends still draw, so charts look
-  "empty" rather than broken, and nothing is logged. Charts set their own colors;
-  see the comment in `web/src/components/charts/EChart.tsx`.
+  "empty" rather than broken, and nothing is logged. Charts set their own colors
+  from the design tokens; see `web/src/lib/charts/echarts.ts`.
+- **A chart that initialises but paints no canvas looks identical to that bug
+  and usually is not.** In Svelte 5 a value an `$effect` must react to has to be
+  `$state`: a plain `let chart` meant the setOption effect ran once while it was
+  still undefined and never re-ran. See the comment in
+  `web/src/lib/charts/EChart.svelte`.
 - `echarts-wordcloud` declares a stale `echarts@^5` peer. It runs fine on
   echarts 6 (all the legacy APIs it uses are still exported), so `package.json`
   carries an `overrides` entry. Do not "fix" it by pinning echarts back to 5.
-- **Router: `BrowserRouter` on the web, `HashRouter` under `isTauri()`**
-  (`web/src/main.tsx`). The Tauri webview has no server-side fallback, so real
-  paths would 404 on refresh there. Never hardcode a `#/…` href — use
-  `<Link to>`, which renders the right form for either router. HashRouter-era
-  `/#/…` URLs are upgraded on page load by `upgradeLegacyHashUrl()`.
+- **Real paths everywhere, including the packaged apps.** There is no
+  HashRouter and no hash shim: `tauri::manager::get_asset()` falls back through
+  `<path>.html`, `<path>/index.html`, then `index.html`, so the Tauri webview
+  resolves `/games/730` on its own. The old claim that it "has no server-side
+  fallback" was out of date. See `docs/plan/15-sveltekit-migration.md`.
+  HashRouter-era `/#/…` URLs from released 1.4.x builds are still upgraded on
+  load by `upgradeLegacyHashUrl()` — do not remove it.
+- **The CSP lives in `web/svelte.config.js` (`kit.csp`), not in `_headers`.**
+  SvelteKit emits one inline bootstrap script per page and hashes it there. A
+  header CSP cannot coexist: browsers enforce the INTERSECTION of header and
+  meta policies, so a `script-src 'self'` header blocks the script whatever the
+  meta says, and the whole app renders its HTML and then fails to hydrate.
+  `frame-ancestors` is ignored in a meta CSP, so `X-Frame-Options: DENY` in
+  `web/static/_headers` is what stops framing.
+- **`adapter-static`'s `fallback` must not be named `index.html`.** It is
+  written last and overwrites whatever shares its name, which silently replaced
+  the prerendered home page with an empty shell. It is `200.html`.
+- **Nothing may gate the markup behind `onMount`.** onMount does not run during
+  prerender, so anything behind it ships an empty body and the SEO reason for
+  prerendering is gone. The consent gate is an OVERLAY for this reason, not a
+  replacement for the page.
 - **`/api/data/*` sends `Access-Control-Allow-Origin: *` on purpose.** The
   Tauri apps fetch it cross-origin (`tauri://localhost`,
   `http://tauri.localhost`); without it they cannot load the catalogue at all.
@@ -119,5 +140,5 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
   `Cross-Origin-Resource-Policy` on Worker responses — the same apps load
   `/img/*` cross-site.
 - The app is behind a first-run legal consent gate
-  (`web/src/components/common/ConsentGate.tsx`). Only `/error/*` bypasses it —
+  (`web/src/lib/common/ConsentGate.svelte`). Only `/error/*` bypasses it —
   any new route that must be reachable pre-consent has to join that list.

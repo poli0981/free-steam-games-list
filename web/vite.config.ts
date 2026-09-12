@@ -1,5 +1,6 @@
 import { defineConfig } from "vite";
 import { sveltekit } from "@sveltejs/kit/vite";
+import { SvelteKitPWA } from "@vite-pwa/sveltekit";
 // Tailwind 4 runs as a Vite plugin instead of a PostCSS plugin;
 // tailwind.config.ts and postcss.config.js do not exist.
 import tailwindcss from "@tailwindcss/vite";
@@ -24,6 +25,67 @@ export default defineConfig(({ mode }) => ({
     // already registered when it processes <style> blocks.
     tailwindcss(),
     sveltekit(),
+    SvelteKitPWA({
+      registerType: "autoUpdate",
+      injectRegister: "auto",
+      manifest: {
+        name: "Steam F2P Tracker",
+        short_name: "F2P Tracker",
+        description:
+          "Browse and analyse the catalogue of free-to-play Steam games tracked in this repository.",
+        theme_color: "#131110",
+        background_color: "#131110",
+        display: "standalone",
+        scope: "/",
+        start_url: "/",
+        icons: [
+          { src: "icon-192.svg", sizes: "192x192", type: "image/svg+xml", purpose: "any" },
+          { src: "icon-512.svg", sizes: "512x512", type: "image/svg+xml", purpose: "any maskable" },
+        ],
+      },
+      workbox: {
+        // Big enough for the echarts chunk, which is ~700 KB on its own.
+        maximumFileSizeToCacheInBytes: 6 * 1024 * 1024,
+        globPatterns: ["**/*.{js,css,html,svg,woff2}"],
+        navigateFallback: "/200.html",
+        // These are Worker routes, not app navigations. Without the denylist an
+        // installed service worker answers them from the app shell and they
+        // never reach Cloudflare - which for /admin means serving the public
+        // shell where the Access gate is expected.
+        navigateFallbackDenylist: [/^\/api\//, /^\/img\//, /^\/admin/],
+        runtimeCaching: [
+          // The dataset. NetworkFirst so an edit is visible on the next reload:
+          // index.json carries last_updated, the client's only
+          // cache-invalidation signal, and serving THAT from cache would strand
+          // every reader on stale records.
+          {
+            urlPattern: ({ url }: { url: URL }) => url.pathname.startsWith("/api/data/"),
+            handler: "NetworkFirst",
+            options: {
+              cacheName: "f2p-data-v3",
+              networkTimeoutSeconds: 5,
+              expiration: { maxEntries: 30, maxAgeSeconds: 60 * 60 * 24 * 7 },
+              cacheableResponse: { statuses: [200] },
+            },
+          },
+          // Artwork AND the GitHub avatars at /img/gh/*, which share the prefix.
+          // Steam's ?t= is an asset mtime, so a changed image arrives as a
+          // different URL and CacheFirst is safe. Status 200 only: caching an
+          // opaque 0-status placeholder for 30 days is how a transient upstream
+          // failure becomes permanent.
+          {
+            urlPattern: ({ url }: { url: URL }) => url.pathname.startsWith("/img/"),
+            handler: "CacheFirst",
+            options: {
+              cacheName: "f2p-img-v1",
+              expiration: { maxEntries: 800, maxAgeSeconds: 60 * 60 * 24 * 30 },
+              cacheableResponse: { statuses: [200] },
+            },
+          },
+        ],
+      },
+      devOptions: { enabled: false },
+    }),
     // `npm run analyze` → dist/stats.html treemap. Vite mode instead of an
     // env var so it works cross-platform without cross-env.
     mode === "analyze" &&

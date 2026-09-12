@@ -8,8 +8,12 @@
   // was ever analysed - which is why five dead exports (commitFile,
   // readHeadAndFile, installationToken, MANUAL_FIELDS, adminCsp) sat
   // unreported in the module holding a repository-write credential.
+  // .svelte must be here or knip sees none of the app: the globs were
+  // {ts,tsx} from the React era, so after the migration every component,
+  // route and their imports were invisible and knip reported the whole UI
+  // dependency tree as unused.
   "project": [
-    "src/**/*.{ts,tsx}",
+    "src/**/*.{ts,svelte}",
     "src/**/*.css",
     "worker/**/*.ts"
   ],
@@ -18,6 +22,12 @@
   // design, so knip reports it as an unused file; it is not.
   "ignore": [
     "worker/env.d.ts"
+  ],
+  // Only this one. The other two faces are additionally imported with ?url in
+  // +layout.svelte for their preload tags, so knip sees them; JetBrains Mono is
+  // referenced ONLY from src/fonts.css via url(), which knip does not trace.
+  "ignoreDependencies": [
+    "@fontsource-variable/jetbrains-mono"
   ],
   "rules": {
     "exports": "warn",

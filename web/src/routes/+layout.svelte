@@ -8,6 +8,10 @@
   import { installPaletteShortcut } from "$lib/palette.svelte";
   import { games } from "$lib/games.svelte";
   import { upgradeLegacyHashUrl } from "$lib/legacy-url";
+  import { installExternalLinkInterceptor } from "$lib/external-link-interceptor";
+  import { checkAndroidUpdate } from "$lib/android-update";
+  import { isTauri, isAndroid, openExternal } from "$lib/external-open";
+  import { toast } from "svelte-sonner";
   import ConsentGate from "$lib/common/ConsentGate.svelte";
   import Sidebar from "$lib/layout/Sidebar.svelte";
   import Topbar from "$lib/layout/Topbar.svelte";
@@ -22,6 +26,9 @@
   let { children }: { children: Snippet } = $props();
 
   let menuOpen = $state(false);
+  // Module-level would leak across HMR reloads in dev; per-instance is enough
+  // because the layout mounts once.
+  let updateChecked = false;
   let main: HTMLElement | undefined = $state();
 
   // Chrome-less routes: the introduction and the error pages stand alone, with
@@ -54,6 +61,36 @@
     consent.hydrate();
     welcome.hydrate();
     void i18n.init();
+
+    // Tauri only. The webview blocks window.open() and target="_blank" to
+    // external http(s), so without this every plain external <a> in the app
+    // dead-clicks in the packaged builds. One capture-phase listener covers
+    // them all. No-op on the web.
+    installExternalLinkInterceptor();
+
+    // Android has no native Tauri updater (the plugin is desktop-only), so the
+    // APK checks GitHub Releases itself, once per session. Best-effort: a
+    // network error or a rate limit stays silent, because this is a nicety and
+    // not a critical path.
+    if (isTauri() && isAndroid() && !updateChecked) {
+      updateChecked = true;
+      void checkAndroidUpdate()
+        .then((update) => {
+          if (!update) return;
+          toast.info(i18n.t("appUpdate.available", { version: update.version }), {
+            description: i18n.t("appUpdate.body"),
+            duration: Number.POSITIVE_INFINITY,
+            action: {
+              label: i18n.t("appUpdate.download"),
+              onClick: () => void openExternal(update.url),
+            },
+          });
+        })
+        .catch(() => {
+          /* silent by design */
+        });
+    }
+
     return installPaletteShortcut();
   });
 
