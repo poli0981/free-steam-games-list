@@ -25,9 +25,15 @@ There is genuinely something to attack here. Hence a real policy.
 repository: *Security → Report a vulnerability*. It is private between you and
 the maintainer.
 
-If that does not work for you, email **lopop05905@proton.me**. (The old file
-claimed there was no contact address. There is; it is published in
-`AUTHORS.md`, `CONTRIBUTING.md`, `docs/Contact.md` and `username.txt`.)
+If that does not work for you, email **contact@poli0981.dev**. The same
+address is published in [`AUTHORS.md`](AUTHORS.md),
+[`docs/Contact.md`](docs/Contact.md), [`username.txt`](username.txt) and
+<https://free-steam-games.win/.well-known/security.txt>.
+
+That `security.txt` is the machine-readable version of this policy
+(RFC 9116). Its `Policy` field points back at this file and its `Canonical`
+field at itself; if the two ever disagree, **this file wins** and the
+`security.txt` is stale.
 
 **Please do not open a public issue for anything exploitable.** Public issues
 are fine for a dead link or a game that is no longer free — those are data

@@ -83,5 +83,5 @@ Larger features (multi-task batches like the v3.x release cycle) are landed in p
 
 - [`pc_spec.md`](pc_spec.md) — hardware spec
 - [`../web/src-tauri/TAURI.md`](../web/src-tauri/TAURI.md) — Tauri 2 desktop build prerequisites
-- [`../CONTRIBUTING.md`](../CONTRIBUTING.md) — contribution paths (issue / web app / Telegram bot / extension / fork)
+- [`../CONTRIBUTING.md`](../CONTRIBUTING.md) — contribution paths (issue / extension / fork)
 - [`../web/README.md`](../web/README.md) — web stack details + per-phase changelog

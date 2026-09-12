@@ -1,6 +1,6 @@
 # Authors
 
-This file lives at the repo root so the author can be found without digging into the docs. The canonical handle map is also in [`username.txt`](username.txt) (machine-readable) and rendered in the web app's [About page](https://free-steam-games.win/#/about).
+This file lives at the repo root so the author can be found without digging into the docs. The canonical handle map is also in [`username.txt`](username.txt) (machine-readable) and rendered in the web app's [About page](https://free-steam-games.win/about).
 
 ## Maintainer
 
@@ -9,18 +9,15 @@ This file lives at the repo root so the author can be found without digging into
 | Channel | Handle / URL |
 |---|---|
 | GitHub | [@poli0981](https://github.com/poli0981) |
-| X / Twitter | [@SkullMute0011](https://x.com/SkullMute0011) |
-| YouTube | [@SkullMute](https://www.youtube.com/@SkullMute) |
-| Bluesky | [@skullmute0011.bsky.social](https://bsky.app/profile/skullmute0011.bsky.social) |
-| Mastodon | [@skullmute1122@mastodon.social](https://mastodon.social/@skullmute1122) |
-| Discord (repo) | [#general invite](https://discord.gg/2aNR3aVt) |
-| Discord (game) | [#general invite](https://discord.gg/kDM9GMu5vm) |
-| Steam | [profile](https://steamcommunity.com/profiles/76561199544666292/) |
-| Telegram user | [@SkullMute0011](https://t.me/SkullMute0011) — DM for anything that should not be public |
-| Patreon / Ko-fi | [skullmute](https://ko-fi.com/skullmute) |
-| Email | `lopop05905@proton.me` (checked weekly) |
+| Email | `contact@poli0981.dev` |
+| Everything else | <https://poli0981.dev/links/> |
 
-QR codes for the Telegram channels live in [`assets/qr/`](assets/qr/).
+`poli0981.dev/links/` is the single source of truth for every other channel
+— chat, socials, video, donations. It is maintained there rather than in
+this repository so a moved or retired account cannot leave a dead link here.
+
+Anything that should not be public belongs in email, or in GitHub's private
+vulnerability reporting — see [`SECURITY.md`](SECURITY.md).
 
 ## Dev info
 
@@ -52,4 +49,4 @@ Generated code is reviewed and tested before each commit. No user data is sent t
 
 ## Licensing
 
-Everything in this repo (data, code, docs, web app) is [MIT-licensed](LICENSE) — fork freely; please keep the credit.
+Code, docs and the web app are [MIT-licensed](LICENSE). The **dataset** (`data/**`, `games/**`) is licensed separately under [CC BY 4.0](LICENSE-DATA). Fork freely; please keep the credit.

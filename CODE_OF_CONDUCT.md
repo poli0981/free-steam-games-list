@@ -15,6 +15,11 @@ Be nice. Or at least civil. We're all unemployed introverts at heart (or pretend
 ### Enforcement
 I'm the only maintainer (with Grok as backup), so violations = close issue/PR, block if needed. No appeals – life's too short.
 
+**Reporting:** if something needs raising privately rather than in the Issue
+thread it happened in, email **contact@poli0981.dev**. One person reads it, so
+expect a slow reply rather than none. Security holes do not belong here — use
+GitHub’s private vulnerability reporting, see [`SECURITY.md`](SECURITY.md).
+
 This is based on the Contributor Covenant, but shortened because who reads long docs?
 
 Scope: Everywhere in this repo – Issues, PRs, Discussions.

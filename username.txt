@@ -1,11 +1,8 @@
 username:
-x: @SkullMute0011
-youtube: @SkullMute
-discord invite repo #general:https://discord.gg/2aNR3aVt
-discord game on channel #general: https://discord.gg/kDM9GMu5vm
-patreon, ko-fi: skullmute
-steam profile: https://steamcommunity.com/profiles/76561199544666292/
-bluesky: https://bsky.app/profile/skullmute0011.bsky.social
-mastodon instance: https://mastodon.social/@skullmute1122
-telegram user: @SkullMute0011 or QR (in `assets/qr/telegram-user.png`)
-email: lopop05905@proton.me
+github: @poli0981
+email: contact@poli0981.dev
+links: https://poli0981.dev/links/
+
+`links` is the single source of truth for every other channel (chat, socials,
+video, donations). Handles are maintained there, not here, so a moved or
+retired account cannot leave a dead link in this repository.

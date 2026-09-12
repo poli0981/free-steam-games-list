@@ -365,7 +365,7 @@ The commit is made with the GraphQL `createCommitOnBranch` mutation, so GitHub
 signs it and it shows as **Verified**. It carries `expectedHeadOid`, so if the
 pipeline commits between the read and the write the mutation is rejected and
 retried against the newer file rather than overwriting it. The file is
-**appended** to, never replaced — the issue workflow and the Telegram bot write
+**appended** to, never replaced — the browser extension and this Worker write
 to it too.
 
 Because the commit comes from a GitHub App installation token rather than

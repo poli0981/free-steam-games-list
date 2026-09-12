@@ -6,16 +6,12 @@ import {
   Lightbulb,
   Shield,
   FileText,
-  Twitter,
-  Youtube,
   MessageCircle,
-  Coffee,
   Scale,
   Sparkles,
   AlertTriangle,
-  Send,
-  QrCode,
   Mail,
+  Link as LinkIcon,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
@@ -35,21 +31,11 @@ interface Social {
   label: string;
   href: string;
   handle?: string;
-  /** Optional path under public/qr/ for a scannable code shown beside the row. */
-  qr?: string;
 }
 
 const SOCIALS: Social[] = [
-  { icon: Send, label: "Telegram (DM)", handle: "@SkullMute0011", href: "https://t.me/SkullMute0011", qr: "qr/telegram-user.png" },
-  { icon: Twitter, label: "X / Twitter", handle: "@SkullMute0011", href: "https://x.com/SkullMute0011" },
-  { icon: Youtube, label: "YouTube", handle: "@SkullMute", href: "https://www.youtube.com/@SkullMute" },
-  { icon: MessageCircle, label: "Discord (repo)", handle: "#general", href: "https://discord.gg/2aNR3aVt" },
-  { icon: MessageCircle, label: "Discord (game)", handle: "#general", href: "https://discord.gg/kDM9GMu5vm" },
-  { icon: Coffee, label: "Patreon / Ko-fi", handle: "skullmute", href: "https://ko-fi.com/skullmute" },
-  { icon: ExternalLink, label: "Steam", handle: "Profile", href: "https://steamcommunity.com/profiles/76561199544666292/" },
-  { icon: ExternalLink, label: "Bluesky", handle: "@skullmute0011", href: "https://bsky.app/profile/skullmute0011.bsky.social" },
-  { icon: ExternalLink, label: "Mastodon", handle: "@skullmute1122", href: "https://mastodon.social/@skullmute1122" },
-  { icon: Mail, label: "Email", handle: "lopop05905@proton.me", href: "mailto:lopop05905@proton.me" },
+  { icon: Mail, label: "Email", handle: "contact@poli0981.dev", href: "mailto:contact@poli0981.dev" },
+  { icon: LinkIcon, label: "Every other channel", handle: "poli0981.dev/links", href: "https://poli0981.dev/links/" },
 ];
 
 interface Dep {
@@ -133,7 +119,7 @@ export function AboutPage() {
             <strong>{REPO_OWNER}/{REPO_NAME}</strong> — a curated, automatically
             refreshed list of free-to-play Steam games. Daily Python pipeline +
             GitHub Actions; this web app sits on top of the same data shards.
-            MIT licensed.
+            Code is MIT; the dataset is CC BY 4.0.
           </p>
           <div className="flex flex-wrap gap-2">
             <Button asChild variant="outline" size="sm">
@@ -270,65 +256,9 @@ export function AboutPage() {
                     <div className="truncate text-xs text-muted-foreground">{s.handle}</div>
                   )}
                 </div>
-                {s.qr && (
-                  <img
-                    src={s.qr}
-                    alt=""
-                    width={32}
-                    height={32}
-                    loading="lazy"
-                    decoding="async"
-                    className="h-8 w-8 rounded bg-white p-0.5"
-                    title="Scan to open in Telegram"
-                  />
-                )}
                 <ExternalLink className="h-3 w-3 text-muted-foreground" />
               </a>
             ))}
-          </div>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <QrCode className="h-4 w-4" /> Telegram QR code
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          <p className="text-sm text-muted-foreground">
-            Scan to DM the maintainer directly. The source PNG lives at{" "}
-            <a
-              href={`${REPO_URL}/tree/main/assets/qr`}
-              target="_blank"
-              rel="noreferrer"
-              className="text-primary hover:underline"
-            >
-              <code>assets/qr/</code>
-            </a>{" "}
-            in the repo.
-          </p>
-          <div className="grid gap-3">
-            <a
-              href="https://t.me/SkullMute0011"
-              target="_blank"
-              rel="noreferrer"
-              className="flex flex-col items-center gap-2 rounded-md border bg-card p-3 transition-colors hover:bg-accent"
-            >
-              <img
-                src="qr/telegram-user.png"
-                alt="Telegram DM QR code"
-                width={200}
-                height={200}
-                loading="lazy"
-                decoding="async"
-                className="h-40 w-40 rounded bg-white p-2"
-              />
-              <div className="text-center">
-                <div className="font-medium">@SkullMute0011</div>
-                <div className="text-xs text-muted-foreground">Direct message</div>
-              </div>
-            </a>
           </div>
         </CardContent>
       </Card>
@@ -370,7 +300,7 @@ export function AboutPage() {
         </CardHeader>
         <CardContent className="space-y-3">
           <p className="text-sm text-muted-foreground">
-            The whole repo (data, code, docs, this web app) is{" "}
+            Code, docs and this web app are{" "}
             <a
               href={`${REPO_URL}/blob/main/LICENSE`}
               target="_blank"
@@ -379,7 +309,18 @@ export function AboutPage() {
             >
               MIT-licensed
             </a>
-            . Everything below is supplemental — the MIT terms still govern.
+            . The <strong>dataset</strong> (<code>data/**</code>,{" "}
+            <code>games/**</code>) is licensed separately under{" "}
+            <a
+              href={`${REPO_URL}/blob/main/LICENSE-DATA`}
+              target="_blank"
+              rel="noreferrer"
+              className="text-primary hover:underline"
+            >
+              CC BY 4.0
+            </a>
+            . Everything below is supplemental — those two licences still
+            govern.
           </p>
           <ul className="space-y-1.5">
             {LEGAL_DOCS.map((d) => (

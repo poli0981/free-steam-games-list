@@ -6,16 +6,20 @@ Want to help? Awesome — no strict rules, life's hard enough. Pick whichever pa
 
 ## Maintainer contact
 
-The canonical handle list is in [`AUTHORS.md`](AUTHORS.md) at the repo root (mirror of [`username.txt`](username.txt) for human reading). Web-app version: <https://free-steam-games.win/#/about>.
+The canonical contact list is in [`AUTHORS.md`](AUTHORS.md) at the repo root
+(machine-readable mirror: [`username.txt`](username.txt); the chatty version is
+[`docs/Contact.md`](docs/Contact.md)). Web-app version:
+<https://free-steam-games.win/about>.
+
+Short version: **contact@poli0981.dev** for anything private, and
+<https://poli0981.dev/links/> for every other channel.
 
 > [!WARNING]
-> **Privacy first.** When sending your Telegram `user_id` (needed for the bot whitelist below), **DM the maintainer privately**. Do **not** post it in:
-> - Public Discord channels (including the project's own `#general`).
-> - Public Telegram groups or super-groups.
-> - GitHub issues, PR comments, or commit messages.
-> - Public posts on X / Bluesky / Mastodon / YouTube comments.
->
-> Personal info — Telegram `user_id`, email, real name, etc. — should travel through DM only. The maintainer will not ask you for anything beyond the `user_id` for the bot.
+> **Privacy first.** Issues, PR comments and commit messages are public and
+> permanent — GitHub keeps them in the fork network even after deletion. Keep
+> personal information (email, real name, account IDs) out of them and send it
+> by email instead. The maintainer will never ask you for an account ID, a
+> token, or a password: there is no whitelist to join and nothing to verify.
 
 ---
 

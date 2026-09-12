@@ -215,12 +215,12 @@ Unemployed, introvert max level, dropped out uni year 3, mooching off family. Ne
 
 - [AUTHORS](AUTHORS.md) — maintainer + canonical handle map + AI-assistant disclosure.
 - [CHANGELOG](CHANGELOG.md) — what changed in each version.
-- [CONTRIBUTING](CONTRIBUTING.md) — issue templates, web-app sign-in, Telegram bot flow, extension, manual fork.
+- [CONTRIBUTING](CONTRIBUTING.md) — issue templates, the browser extension, manual fork.
 - [PC spec](docs/pc_spec.md) ([VI](docs/i18n/vi/pc_spec.md)) — maintainer's dev hardware + test devices.
 - [Dev environment](docs/dev_env.md) ([VI](docs/i18n/vi/dev_env.md)) — IDE, toolchains (Python 3.12 / Node 24 / Rust stable / Tauri 2), workflow.
 - [Tauri build](web/src-tauri/TAURI.md) — desktop build prerequisites + signing + auto-update.
 - [DISCLAIMER](docs/DISCLAIMER.md) — accuracy caveats, no-warranty, the broke-maintainer note.
-- [Terms of Use](docs/ToS.md) — usage agreement, contributions, governing law, **rules for sharing your Telegram `user_id`**.
+- [Terms of Use](docs/ToS.md) — usage agreement, contributions, governing law.
 - [EULA](docs/EULA.md) — plain-language commentary on both licences.
 - [Privacy Policy](docs/PRIVACY_POLICY.md) — no accounts, no analytics, no tracking; what Cloudflare logs as the host, and the one page that still talks to GitHub.
 - [Deployment](docs/DEPLOYMENT.md) — how a push becomes a deploy, and how to verify or roll one back.
