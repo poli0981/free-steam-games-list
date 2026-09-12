@@ -29,7 +29,21 @@ const config = {
       // touching deploy config for no gain.
       pages: "dist",
       assets: "dist",
-      fallback: "index.html",
+      // NOT "index.html". adapter-static writes the prerendered pages first
+      // and then OVERWRITES the fallback's filename - so naming it index.html
+      // replaced the prerendered home page with an empty shell, and `/`, the
+      // most important page on the site, shipped with zero content. Measured:
+      // dist/index.html was 3,403 bytes of comments while every other page had
+      // real markup.
+      //
+      // Consequence to know: Cloudflare's `not_found_handling:
+      // "single-page-application"` and Tauri's get_asset both fall back to
+      // index.html, which is now the DASHBOARD. An unmatched path therefore
+      // gets dashboard markup for one frame before the client router corrects
+      // it. That only affects the routes that opt out of prerendering
+      // (/games/[appid], /developers/[name], /publishers/[name]), and those
+      // are not indexed anyway.
+      fallback: "200.html",
       precompress: false,
       // Not strict: /games/[appid] is deliberately NOT prerendered in the
       // Tauri build (3,400 HTML files would bloat the APK), and strict mode

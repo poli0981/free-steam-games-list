@@ -1,5 +1,4 @@
 <script lang="ts">
-  import type { Snippet } from "svelte";
   import ScrollText from "@lucide/svelte/icons/scroll-text";
   import ShieldCheck from "@lucide/svelte/icons/shield-check";
   import ChevronRight from "@lucide/svelte/icons/chevron-right";
@@ -9,8 +8,6 @@
   import { i18n } from "../i18n.svelte";
   import { isTauri } from "../external-open";
   import Button from "../ui/Button.svelte";
-
-  let { children }: { children: Snippet } = $props();
 
   const t = i18n.t;
 
@@ -26,6 +23,12 @@
    */
   const isErrorRoute = $derived(page.url.pathname.startsWith("/error"));
   const open = $derived(!consent.accepted && !isErrorRoute);
+
+  // No scroll lock on <body>. It would be dead code: the shell is a fixed-height
+  // flex layout whose scroller is <main>, so body never scrolls in the first
+  // place - measured, document.body.style.overflow stayed "visible" either way.
+  // The overlay is a full-viewport `fixed inset-0` element with its own
+  // overflow-auto, so wheel events over it never reach the page beneath.
 
   async function decline() {
     // Desktop: declining means you do not get the app, so quit it. On the web
@@ -44,9 +47,9 @@
 </script>
 
 {#if !open}
-  {@render children()}
+  <!-- nothing: the page underneath is already rendered -->
 {:else if declined}
-  <div class="flex min-h-dvh items-center justify-center overflow-auto p-4">
+  <div class="fixed inset-0 z-[60] flex items-center justify-center overflow-auto bg-background/95 p-4 backdrop-blur-sm">
     <div class="w-full max-w-md rounded-lg border border-warning/40 bg-warning/5 p-8 text-center">
       <ShieldCheck class="mx-auto mb-4 size-10 text-warning" />
       <h1 class="mb-2 text-xl font-semibold">{t("consent.declinedTitle")}</h1>
@@ -57,7 +60,7 @@
     </div>
   </div>
 {:else}
-  <div class="flex min-h-dvh items-center justify-center overflow-auto p-4">
+  <div class="fixed inset-0 z-[60] flex items-center justify-center overflow-auto bg-background/95 p-4 backdrop-blur-sm">
     <div class="w-full max-w-lg rounded-xl border bg-card p-6 shadow-xl sm:p-8">
       <div class="mb-5 flex items-start gap-3">
         <span class="grid size-10 shrink-0 place-items-center rounded-lg bg-primary/15 text-primary">

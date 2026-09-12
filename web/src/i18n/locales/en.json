@@ -215,7 +215,10 @@
     "themeHint": "System follows your operating system, and now actually reacts when it changes.",
     "themeLight": "Light",
     "themeDark": "Dark",
-    "themeSystem": "System"
+    "themeSystem": "System",
+    "cacheTitle": "Local data",
+    "cacheHint": "The catalogue is cached in your browser and refreshed when the dataset's last_updated changes. Clearing it forces a full re-download on the next load.",
+    "cacheAction": "Clear cached catalogue"
   },
   "charts": {
     "time": {
@@ -258,7 +261,12 @@
       "title": "Delisted games",
       "subtitle": "{{count}} games that have been removed from the catalogue — either no longer free-to-play or fully delisted from Steam. Source: scripts/removed_games.jsonl.",
       "timeline": "Removed per month (stacked by reason)",
-      "breakdown": "Removal reason"
+      "breakdown": "Removal reason",
+      "notFreeLabel": "No longer free",
+      "unavailableLabel": "Unavailable",
+      "otherLabel": "Other",
+      "timelineTitle": "Removals per month",
+      "reasonTitle": "Why they were removed"
     },
     "languages": {
       "title": "Languages",
@@ -294,6 +302,13 @@
       "online": "Online",
       "offline": "Offline",
       "removed": "Removed all-time"
+    },
+    "acLevel": {
+      "kernel": "Kernel-level",
+      "user": "User-mode",
+      "unknown": "Not checked",
+      "none": "None",
+      "note": "\"Not checked\" is its own bar on purpose: is_kernel_ac is tri-state, and null means nobody has verified it rather than that the anti-cheat runs in user mode. Per-product breakdown:"
     }
   },
   "activity": {
@@ -383,7 +398,20 @@
     "legalTitle": "Legal & license",
     "stackTitle": "Stack & third-party",
     "trackedGamesLabel": "Tracked games",
-    "dataLastUpdatedLabel": "Data last updated"
+    "dataLastUpdatedLabel": "Data last updated",
+    "everyOtherChannel": "Every other channel",
+    "repositoryBlurb": "A curated, automatically refreshed list of free-to-play Steam games. A daily Python pipeline commits what changed; this app reads the same data shards. Code is MIT, the dataset is CC BY 4.0.",
+    "rawData": "Raw data (JSONL)",
+    "headsUpGenre": "Genre is best-effort. The pipeline picks one genre per game from Steam tags and the description, and for hybrids it is often wrong. Corrections are made by hand and survive every later scrape.",
+    "headsUpEnglish": "The scraper assumes Steam pages in English. Regional storefront overrides can break parsing, so names, genres and DLC counts may be wrong for some records.",
+    "headsUpValve": "This is not a Valve or Steam product. Independent project, no affiliation, no support contract.",
+    "aiDisclosureBody": "About 70% of the code here was written with help from large-language-model assistants - Grok for the first Python pipeline, Claude for the rewrite, this web app, the Worker and the legal docs. Everything is reviewed before it is committed, and no user data is sent to any model at runtime: those calls happen on the maintainer's machine, never from your browser.",
+    "maintainerBlurb": "One Vietnamese developer, running this in spare time.",
+    "legalBlurb": "Code, docs and this web app are MIT-licensed. The dataset is licensed separately under CC BY 4.0. Each document is rendered here from the repository.",
+    "tplBug": "Bug report",
+    "tplFeature": "Feature request",
+    "tplDelete": "Delete a game",
+    "trademarkNote": "Steam, Steam Store, Steam Community and the Steam logo are trademarks of Valve Corporation. This site is not affiliated with Valve. Everything the page loads is served from this site, which fetches it from GitHub and Valve's CDN server-side - your browser contacts neither."
   },
   "dialogs": {
     "gameNotFound": "Game not found",
@@ -422,7 +450,8 @@
     "signInFirst": "Sign in first",
     "triggeredToast": "Triggered {{name}}",
     "viewRuns": "View runs",
-    "failedToast": "{{name}} failed"
+    "failedToast": "{{name}} failed",
+    "allClear": "Nothing flagged. Every record has its manual fields and a recent refresh."
   },
   "detail": {
     "openOnSteam": "appid {{appid}} · open on Steam",

@@ -215,7 +215,10 @@
     "themeHint": "Chế độ Hệ thống bám theo hệ điều hành, và giờ đã thực sự đổi theo.",
     "themeLight": "Sáng",
     "themeDark": "Tối",
-    "themeSystem": "Hệ thống"
+    "themeSystem": "Hệ thống",
+    "cacheTitle": "Dữ liệu cục bộ",
+    "cacheHint": "Danh mục được lưu đệm trong trình duyệt và làm mới khi last_updated của bộ dữ liệu thay đổi. Xóa đệm sẽ buộc tải lại toàn bộ ở lần mở kế tiếp.",
+    "cacheAction": "Xóa danh mục đã lưu đệm"
   },
   "charts": {
     "time": {
@@ -258,7 +261,12 @@
       "title": "Game đã gỡ",
       "subtitle": "{{count}} game đã bị gỡ khỏi catalog — không còn free-to-play hoặc đã bị Steam gỡ hẳn. Nguồn: scripts/removed_games.jsonl.",
       "timeline": "Số game gỡ theo tháng (stacked theo lý do)",
-      "breakdown": "Lý do gỡ"
+      "breakdown": "Lý do gỡ",
+      "notFreeLabel": "Không còn miễn phí",
+      "unavailableLabel": "Không khả dụng",
+      "otherLabel": "Khác",
+      "timelineTitle": "Số game bị gỡ mỗi tháng",
+      "reasonTitle": "Lý do bị gỡ"
     },
     "languages": {
       "title": "Ngôn ngữ",
@@ -294,6 +302,13 @@
       "online": "Trực tuyến",
       "offline": "Ngoại tuyến",
       "removed": "Đã gỡ bỏ"
+    },
+    "acLevel": {
+      "kernel": "Mức kernel",
+      "user": "Mức người dùng",
+      "unknown": "Chưa kiểm tra",
+      "none": "Không có",
+      "note": "\"Chưa kiểm tra\" là một cột riêng có chủ ý: is_kernel_ac có ba trạng thái, và null nghĩa là chưa ai xác minh, không phải là anti-cheat chạy ở mức người dùng. Chi tiết từng sản phẩm:"
     }
   },
   "activity": {
@@ -383,7 +398,20 @@
     "legalTitle": "Pháp lý & license",
     "stackTitle": "Stack & thư viện bên thứ ba",
     "trackedGamesLabel": "Game đang track",
-    "dataLastUpdatedLabel": "Lần cập nhật dữ liệu cuối"
+    "dataLastUpdatedLabel": "Lần cập nhật dữ liệu cuối",
+    "everyOtherChannel": "Mọi kênh khác",
+    "repositoryBlurb": "Danh mục game miễn phí trên Steam, được tuyển chọn và tự động làm mới. Một pipeline Python chạy hàng ngày commit những gì thay đổi; ứng dụng này đọc cùng bộ dữ liệu đó. Mã nguồn MIT, dữ liệu CC BY 4.0.",
+    "rawData": "Dữ liệu thô (JSONL)",
+    "headsUpGenre": "Thể loại chỉ mang tính tương đối. Pipeline chọn một thể loại cho mỗi game từ tag Steam và mô tả, với game lai thì thường sai. Các sửa đổi thủ công được giữ qua mọi lần quét sau.",
+    "headsUpEnglish": "Trình quét giả định trang Steam bằng tiếng Anh. Storefront theo khu vực có thể làm sai kết quả phân tích, nên tên, thể loại và số DLC có thể không chính xác ở một số bản ghi.",
+    "headsUpValve": "Đây không phải sản phẩm của Valve hay Steam. Dự án độc lập, không liên kết, không hợp đồng hỗ trợ.",
+    "aiDisclosureBody": "Khoảng 70% mã nguồn ở đây được viết với sự hỗ trợ của các trợ lý mô hình ngôn ngữ lớn - Grok cho pipeline Python đầu tiên, Claude cho bản viết lại, ứng dụng web này, Worker và tài liệu pháp lý. Mọi thứ đều được xem lại trước khi commit, và không dữ liệu người dùng nào được gửi tới mô hình lúc chạy.",
+    "maintainerBlurb": "Một lập trình viên Việt Nam, làm dự án này lúc rảnh.",
+    "legalBlurb": "Mã nguồn, tài liệu và ứng dụng web theo giấy phép MIT. Bộ dữ liệu theo giấy phép riêng CC BY 4.0. Mỗi tài liệu được kết xuất tại đây từ kho mã.",
+    "tplBug": "Báo lỗi",
+    "tplFeature": "Đề xuất tính năng",
+    "tplDelete": "Xóa một game",
+    "trademarkNote": "Steam, Steam Store, Steam Community và logo Steam là thương hiệu của Valve Corporation. Trang này không liên kết với Valve. Mọi thứ trang tải đều được phục vụ từ chính trang này, vốn lấy dữ liệu từ GitHub và CDN của Valve ở phía máy chủ - trình duyệt của bạn không liên hệ với bên nào."
   },
   "dialogs": {
     "gameNotFound": "Không tìm thấy game",
@@ -422,7 +450,8 @@
     "signInFirst": "Đăng nhập trước",
     "triggeredToast": "Đã trigger {{name}}",
     "viewRuns": "Xem runs",
-    "failedToast": "{{name}} thất bại"
+    "failedToast": "{{name}} thất bại",
+    "allClear": "Không có cảnh báo nào. Mọi bản ghi đều đủ trường thủ công và được cập nhật gần đây."
   },
   "detail": {
     "openOnSteam": "appid {{appid}} · mở trên Steam",
