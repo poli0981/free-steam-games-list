@@ -36,6 +36,68 @@ export function withSecurityHeaders(res: Response): Response {
   return out;
 }
 
+/**
+ * Steam serves capsule art from two hosts, and roughly 44% of the catalogue
+ * uses the fastly one. Allowlisting only akamai is a mistake this repo has
+ * already made once, in the service-worker cache rules.
+ */
+const ADMIN_IMG_HOSTS = [
+  "https://shared.akamai.steamstatic.com",
+  "https://shared.fastly.steamstatic.com",
+  "https://cdn.akamai.steamstatic.com",
+].join(" ");
+
+/**
+ * The admin pages' Content-Security-Policy.
+ *
+ * This was duplicated byte-for-byte in admin-ui.ts and edit-ui.ts, which is one
+ * copy too many for the policy protecting the only origin that holds a
+ * repository-write credential: a hardening change applied to one file and not
+ * the other is invisible.
+ *
+ * `default-src 'none'` already denies fonts, media, workers, frames and
+ * objects by fallback. object-src is repeated explicitly anyway because it is
+ * the directive whose absence has the worst consequences and the one a reader
+ * will look for. Note there is deliberately no font-src: these pages use the
+ * system stack, and the directive should appear the day a font is actually
+ * served, not before.
+ */
+export function adminCsp(nonce: string): string {
+  return [
+    "default-src 'none'",
+    `script-src 'nonce-${nonce}'`,
+    "style-src 'unsafe-inline'",
+    `img-src ${ADMIN_IMG_HOSTS} data:`,
+    "connect-src 'self'",
+    "object-src 'none'",
+    "base-uri 'none'",
+    "form-action 'none'",
+    "frame-ancestors 'none'",
+  ].join("; ");
+}
+
+/**
+ * Response wrapper for the two HTML pages the Worker serves.
+ *
+ * Carries the nonce CSP plus SECURITY_HEADERS, and adds
+ * Cross-Origin-Opener-Policy, which public/_headers sets for the SPA but which
+ * the admin pages were missing - so an admin window opened from elsewhere
+ * stayed in the opener's browsing-context group.
+ */
+export function adminHtmlResponse(body: string, nonce: string): Response {
+  return new Response(body, {
+    status: 200,
+    headers: {
+      "Content-Type": "text/html; charset=utf-8",
+      // Per-identity and mutable; never let this sit in any cache.
+      "Cache-Control": "no-store, no-cache, must-revalidate",
+      "Content-Security-Policy": adminCsp(nonce),
+      "Cross-Origin-Opener-Policy": "same-origin",
+      ...SECURITY_HEADERS,
+    },
+  });
+}
+
 export function jsonError(status: number, message: string): Response {
   return new Response(JSON.stringify({ error: message }), {
     status,

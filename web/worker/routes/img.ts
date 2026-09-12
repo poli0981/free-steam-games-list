@@ -8,6 +8,14 @@
  * (~1,927 records) and shared.fastly.steamstatic.com (~1,496, i.e. 44%). Any
  * allowlist, CSP or cache rule that names only akamai silently misses almost
  * half the images.
+ *
+ * /img/gh/{u|in}/{id} is the second thing this file serves: GitHub avatars for
+ * the Activity page. They used to be rendered straight from
+ * avatars.githubusercontent.com, which no CSP in this repo allowed, so every
+ * avatar on /activity was blocked outright. Widening img-src was the wrong fix
+ * — it would put a third-party host back in the page and leak every visitor's
+ * IP to GitHub. Proxying keeps img-src at 'self' and works in the Tauri builds,
+ * whose CSP already allows free-steam-games.win, unchanged.
  */
 import { jsonError, SECURITY_HEADERS } from "../lib/http";
 
@@ -26,6 +34,18 @@ const VARIANTS: Record<string, number> = { t: 184, d: 460, d2: 920 };
  *  asset name is restricted so this cannot address arbitrary Steam paths. */
 const PATH_RE = /^(\d{1,8})(?:\/([0-9a-f]{40}))?\/([a-z0-9_]{1,64}\.jpg)$/;
 
+/** The only origin the avatar branch will fetch from. */
+const AVATAR_HOST = "avatars.githubusercontent.com";
+
+/** `u/<id>` for a user, `in/<id>` for a GitHub App (the pipeline's own commits
+ *  are authored by one, which is where `in/15368` comes from). Anchored, and
+ *  the id is digits only, so this cannot address any other GitHub path. */
+const AVATAR_RE = /^(u|in)\/(\d{1,12})$/;
+
+/** Rendered at 28 CSS px, so 56 covers a 2x display. Fixed, not a parameter:
+ *  a caller-chosen size is an unbounded set of cache keys. */
+const AVATAR_PX = 56;
+
 export async function handleImg(
   request: Request,
   url: URL,
@@ -41,6 +61,15 @@ export async function handleImg(
   if (slash < 0) return jsonError(404, "not found");
 
   const variant = rest.slice(0, slash);
+
+  // Avatars are a different upstream with a different path shape, so they
+  // branch out before VARIANTS (which would reject "gh" as unknown). They keep
+  // the /img/ prefix on purpose: it is already in run_worker_first and already
+  // matched by the service worker's CacheFirst rule, so neither needed a change.
+  if (variant === "gh") {
+    return handleAvatar(rest.slice(slash + 1), url, ctx);
+  }
+
   const width = VARIANTS[variant];
   if (!width) return jsonError(404, "unknown variant");
 
@@ -101,6 +130,43 @@ export async function handleImg(
       "Content-Type": upstream.headers.get("Content-Type") ?? "image/jpeg",
       // Steam's ?t= is an asset mtime, so a changed image changes the URL.
       "Cache-Control": "public, max-age=2592000, immutable",
+      ...SECURITY_HEADERS,
+    },
+  });
+  ctx.waitUntil(cache.put(cacheKey, res.clone()));
+  return res;
+}
+
+async function handleAvatar(
+  rest: string,
+  url: URL,
+  ctx: ExecutionContext,
+): Promise<Response> {
+  const m = AVATAR_RE.exec(rest);
+  if (!m) return jsonError(404, "not found");
+  const [, kind, id] = m;
+
+  const cache = caches.default;
+  const cacheKey = new Request(url.toString(), { method: "GET" });
+  const hit = await cache.match(cacheKey);
+  if (hit) return hit;
+
+  const upstream = await fetch(
+    `https://${AVATAR_HOST}/${kind}/${id}?v=4&s=${AVATAR_PX}`,
+    { cf: { cacheTtl: 604800, cacheEverything: true } },
+  );
+  // A deleted account or app 404s upstream. Say so rather than caching a
+  // placeholder for a week; the Activity page already renders a fallback icon
+  // when the avatar will not load.
+  if (!upstream.ok) return jsonError(404, "not found");
+
+  const res = new Response(upstream.body, {
+    status: 200,
+    headers: {
+      "Content-Type": upstream.headers.get("Content-Type") ?? "image/png",
+      // An avatar can change under a stable URL, so this is a week rather than
+      // the immutable year Steam's mtime-stamped assets get.
+      "Cache-Control": "public, max-age=604800",
       ...SECURITY_HEADERS,
     },
   });

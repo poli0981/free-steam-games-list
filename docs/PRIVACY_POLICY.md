@@ -36,27 +36,34 @@ cookies for security purposes; those are Cloudflare's, not the site's.
 
 ## What the page loads
 
-Game data and artwork are fetched **same-origin**, through the site itself:
+Everything the site loads is fetched **same-origin**, through the site itself:
 
 - `/api/data/*` — the catalogue. The Worker fetches these files from GitHub on
   the server side, so your browser never contacts GitHub for them and GitHub
   does not see your IP.
 - `/img/*` — game artwork. The Worker fetches it from Valve's CDN on the server
   side, so Valve does not see your IP either.
+- `/api/activity` — the recent-commits list on the Activity page, and the
+  contributor avatars shown beside each entry. Same arrangement: the Worker
+  calls GitHub server-side and proxies the avatars, so your browser never
+  contacts GitHub.
 
 That is a deliberate change: previously your browser fetched data from GitHub
 and images from Valve's CDN and a third-party image proxy directly.
 
-### The exceptions, stated plainly
+Until September 2026 the Activity page was an exception to all of this: it
+called the GitHub API from your browser and loaded avatars from
+`avatars.githubusercontent.com`, so opening it showed GitHub your IP address
+and User-Agent. **That exception is gone.** No page on the website contacts a
+third party any more.
 
-**The Activity page** (`/activity`) is the one part of the site that still
-talks to a third party from your browser. It calls the public GitHub commits
-API and loads contributor avatars from `avatars.githubusercontent.com`. If you
-open that page, GitHub sees your IP address and User-Agent. Every other page
-does not. If that matters to you, do not open it.
+### The one remaining exception, stated plainly
 
-**The desktop and Android apps** additionally check the GitHub Releases API on
-launch to see whether an update exists. Same exposure, same reason.
+**The desktop and Android apps** check the GitHub Releases API on launch to see
+whether an update exists. That request goes to GitHub from the app, so GitHub
+sees the IP address it comes from. It happens once per session, sends nothing
+about you beyond what any HTTP request carries, and has no equivalent on the
+website — the website uses its service worker instead.
 
 GitHub's handling is covered by the
 [GitHub Privacy Statement](https://docs.github.com/en/site-policy/privacy-policies/github-privacy-statement).

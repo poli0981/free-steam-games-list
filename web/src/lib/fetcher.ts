@@ -16,13 +16,10 @@ import {
   type GameRecord,
 } from "./schema";
 import { migrateRecord } from "./data-store";
-import { isTauri } from "./external-open";
-
-/** Must match `vars.SITE_ORIGIN` in web/wrangler.jsonc. */
-const SITE_ORIGIN = "https://free-steam-games.win";
+import { API_ORIGIN } from "./site";
 
 /** Same-origin on the web; absolute inside the Tauri webview. */
-const DATA_BASE = isTauri() ? `${SITE_ORIGIN}/api/data` : "/api/data";
+const DATA_BASE = `${API_ORIGIN}/api/data`;
 
 /**
  * `pathInRepo` is the path as it exists in the repository (e.g.

@@ -90,10 +90,17 @@ export default defineConfig(({ mode }) => ({
               cacheableResponse: { statuses: [200] },
             },
           },
-          // Artwork via the Worker image proxy. Steam's ?t= is an asset mtime,
-          // so a changed image arrives as a different URL and CacheFirst is
-          // safe. Status 200 only: caching an opaque 0-status placeholder for
-          // 30 days is how a transient upstream failure becomes permanent.
+          // Artwork via the Worker image proxy, and since the avatar proxy was
+          // added, GitHub avatars at /img/gh/* too - one rule covers both
+          // because they share the /img/ prefix. There used to be a separate
+          // StaleWhileRevalidate rule for avatars.githubusercontent.com,
+          // commented "only for signed-in users"; sign-in is gone, /activity is
+          // public, and the avatars are no longer fetched from GitHub at all.
+          //
+          // Steam's ?t= is an asset mtime, so a changed image arrives as a
+          // different URL and CacheFirst is safe. Status 200 only: caching an
+          // opaque 0-status placeholder for 30 days is how a transient upstream
+          // failure becomes permanent.
           {
             urlPattern: ({ url }: { url: URL }) => url.pathname.startsWith("/img/"),
             handler: "CacheFirst",
@@ -101,16 +108,6 @@ export default defineConfig(({ mode }) => ({
               cacheName: "f2p-img-v1",
               expiration: { maxEntries: 800, maxAgeSeconds: 60 * 60 * 24 * 30 },
               cacheableResponse: { statuses: [200] },
-            },
-          },
-          // The one remaining third-party fetch, and only for signed-in users.
-          {
-            urlPattern: /^https:\/\/avatars\.githubusercontent\.com\/.*/,
-            handler: "StaleWhileRevalidate",
-            options: {
-              cacheName: "gh-avatars",
-              expiration: { maxEntries: 20, maxAgeSeconds: 60 * 60 * 24 * 7 },
-              cacheableResponse: { statuses: [0, 200] },
             },
           },
         ],

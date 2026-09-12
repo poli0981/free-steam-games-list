@@ -26,13 +26,19 @@ Add a header that must hold everywhere and you must add it in both.
 ```
 default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline';
 img-src 'self' data: https://shared.akamai.steamstatic.com https://shared.fastly.steamstatic.com https://cdn.akamai.steamstatic.com;
-font-src 'self'; connect-src 'self' https://api.github.com; worker-src 'self';
+font-src 'self'; connect-src 'self'; worker-src 'self';
 manifest-src 'self'; media-src 'none'; object-src 'none'; base-uri 'none';
 form-action 'none'; frame-ancestors 'none'
 ```
 
 Verified by loading the built app under it and walking `/games`, four chart
-pages, `/about` and `/health`: **zero console errors, zero violations**.
+pages, `/about`, `/health` and `/activity`.
+
+`/activity` was missing from that walk until 2026-09-12, and it was the one
+page with a violation: it rendered commit avatars straight from
+`avatars.githubusercontent.com`, which appears in none of this repo's four
+CSPs, so every avatar on the page was blocked. A route added after a CSP walk
+does not inherit its result — re-walk, or the claim rots.
 
 Two directives are the way they are for measured reasons, not by preference:
 
@@ -47,9 +53,23 @@ Two directives are the way they are for measured reasons, not by preference:
   executed, so `script-src` does not govern it. The built output has no other
   inline script.
 
-`connect-src` allows `https://api.github.com` because the Activity page lists
-recent commits and the Android build checks releases. Remove those and you can
-tighten it to `'self'`.
+`connect-src` is `'self'` with no exceptions, as of 2026-09-12. It used to
+allow `https://api.github.com` for one page. Both reasons are gone:
+
+- The Activity page now reads `/api/activity`, a Worker route that fetches the
+  commit list server-side, narrows it to the fields the page renders (dropping
+  the author email GitHub returns for every commit, and the message body, whose
+  `Co-Authored-By` trailers carry real addresses), and rewrites avatar URLs to
+  `/img/gh/{u|in}/{id}`. Edge-cached for 5 minutes, which also bounds upstream
+  traffic to ~12 calls/hour against GitHub's anonymous budget of 60.
+- The Android release check still calls `api.github.com`, but only under
+  `isTauri() && isAndroid()`, and the packaged apps use the separate CSP in
+  `src-tauri/tauri.conf.json` — not this file.
+
+`img-src` correspondingly does **not** list `avatars.githubusercontent.com`.
+Avatars are proxied. Widening `img-src` would have been the smaller diff and
+the wrong call: it puts a third-party host back in the page and hands every
+visitor's IP to GitHub, which the privacy policy says does not happen.
 
 ### Why there is no CSP on API responses
 
@@ -109,19 +129,44 @@ That is the maximum setting. Two consequences worth a deliberate decision:
   criteria. Leaving the directive in place means a third party can put you on
   it, and removal then takes months and a browser-vendor process.
 
-**Decide one of two things:**
+### Decided 2026-09-12: submit for preloading
 
-1. You want preloading → submit it yourself at <https://hstspreload.org>, so it
-   happens on your schedule.
-2. You do not → **remove `preload` from the header** (SSL/TLS → Edge
-   Certificates → HTTP Strict Transport Security). Keep `max-age` and
-   `includeSubDomains`; only the invitation goes away.
+Of the two options this section used to leave open — submit it yourself, or
+remove the `preload` directive so nobody else can — the maintainer chose to
+submit. Rationale: the directive is already in the header, so the invitation is
+already open to third parties; submitting deliberately is strictly better than
+leaving it for someone else to do on a schedule you do not control.
 
-**Check:**
+**Eligibility was verified before the decision, and there are no blockers:**
+
+```bash
+curl -s "https://hstspreload.org/api/v2/preloadable?domain=free-steam-games.win"
+```
+
+returned `{"errors": [], "warnings": []}` — a clean pass. Port 80 also 301s to
+HTTPS, which is one of the criteria. So all four requirements hold: valid
+certificate, HTTP → HTTPS redirect, `max-age` of at least 31536000 with
+`includeSubDomains` and `preload`, and every subdomain HTTPS-only.
+
+**This step is the maintainer's to perform, and it is not reversible on any
+useful timescale.** Submission at <https://hstspreload.org> bakes HTTPS-only
+for `free-steam-games.win` *and every subdomain* into shipped browser binaries.
+Removal requires a separate request plus the months it takes for browser
+releases to roll over. Do not submit until you are certain no subdomain will
+ever need plain HTTP.
+
+**Check the header, then the list status:**
 
 ```bash
 curl -sI https://free-steam-games.win/ | grep -i strict-transport
 ```
+
+```bash
+curl -s "https://hstspreload.org/api/v2/status?domain=free-steam-games.win"
+```
+
+`"status": "unknown"` means not submitted. After a successful submission it
+becomes `"pending"`, and `"preloaded"` once it ships in a browser release.
 
 ---
 
@@ -263,6 +308,68 @@ Not everything needs switching on. For the record:
 - `audit_log` records the acting Access identity and the target, and
   deliberately no IP, User-Agent or country — matching what
   `PRIVACY_POLICY.md` promises.
+
+## 8. security.txt — and the one date that will rot
+
+`web/public/.well-known/security.txt` (RFC 9116) points researchers at GitHub's
+private vulnerability reporting first and `contact@poli0981.dev` second.
+
+It is a plain static file. `/.well-known/*` is **not** in `wrangler.jsonc`'s
+`run_worker_first`, so it never invokes the Worker, and Cloudflare's asset
+server infers `text/plain` from the extension. It has to exist as a real file:
+`not_found_handling` is `"single-page-application"`, so before it was added a
+request for it returned `dist/index.html` with **HTTP 200** — scanners got a
+web page and no error.
+
+**Recurring task: renew `Expires` before 2027-09-01.** RFC 9116 requires the
+field and scanners treat an expired file as no file at all. Bump the date and
+redeploy; there is nothing else to do.
+
+**Check:**
+
+```bash
+curl -s https://free-steam-games.win/.well-known/security.txt
+```
+
+Must return the field list as `text/plain`, not the SPA shell.
+
+---
+
+## 9. Cloudflare Web Analytics is injecting a script the CSP blocks
+
+Found 2026-09-12 by reading the browser console on the live site, not from any
+report. Every page load logs two CSP violations:
+
+```
+Loading the script 'https://static.cloudflareinsights.com/beacon.min.js/...'
+violates the following Content Security Policy directive: "script-src 'self'"
+Executing inline script violates ... 'script-src 'self''
+```
+
+It is not in the repository — `curl` of the deployed HTML shows no such tag.
+Cloudflare **Web Analytics** is enabled on the zone with automatic setup, and
+injects the beacon plus an inline loader into HTML responses at the edge, after
+the origin response and therefore after our CSP.
+
+So the beacon has never actually run: the analytics are empty and the only
+effect is two console errors per page load.
+
+**Recommended: turn Web Analytics OFF** (dashboard → Analytics & Logs → Web
+Analytics). It is a third-party tracking beacon, and
+`docs/PRIVACY_POLICY.md` tells visitors the site loads no third-party
+resources and collects nothing. Allowlisting `static.cloudflareinsights.com`
+in `script-src`/`connect-src` is the other option, but it would make that
+promise false and require rewriting the privacy policy.
+
+Dashboard action, so it is the maintainer's to do.
+
+**Check** (in a browser console, not curl — the injection is
+browser-conditional):
+
+open <https://free-steam-games.win/> and confirm no `cloudflareinsights`
+error appears.
+
+---
 
 ## Still open
 

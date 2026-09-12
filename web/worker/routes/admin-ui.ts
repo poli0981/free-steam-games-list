@@ -12,43 +12,14 @@
  * against an API that already exists, and a second toolchain to maintain would
  * cost more than it saves.
  */
-import { SECURITY_HEADERS } from "../lib/http";
-
-/**
- * Steam serves capsule art from two hosts, and roughly 44% of the catalogue
- * uses the fastly one. Allowlisting only akamai is a mistake this repo has
- * already made once, in the service-worker cache rules.
- */
-const IMG_HOSTS =
-  "https://shared.akamai.steamstatic.com https://shared.fastly.steamstatic.com https://cdn.akamai.steamstatic.com";
+import { adminHtmlResponse } from "../lib/http";
 
 export function adminPage(actor: string): Response {
   // Per-response nonce. The page's only script is inline, and a nonce is what
   // lets CSP stay strict without 'unsafe-inline' — which would otherwise be
   // granted on the one origin that holds a repository-write credential.
   const nonce = crypto.randomUUID().replace(/-/g, "");
-
-  const csp = [
-    "default-src 'none'",
-    `script-src 'nonce-${nonce}'`,
-    "style-src 'unsafe-inline'",
-    `img-src ${IMG_HOSTS} data:`,
-    "connect-src 'self'",
-    "base-uri 'none'",
-    "form-action 'none'",
-    "frame-ancestors 'none'",
-  ].join("; ");
-
-  return new Response(html(nonce, actor), {
-    status: 200,
-    headers: {
-      "Content-Type": "text/html; charset=utf-8",
-      // Per-identity and mutable; never let this sit in any cache.
-      "Cache-Control": "no-store, no-cache, must-revalidate",
-      "Content-Security-Policy": csp,
-      ...SECURITY_HEADERS,
-    },
-  });
+  return adminHtmlResponse(html(nonce, actor), nonce);
 }
 
 /** Escapes text interpolated into the document at render time. */

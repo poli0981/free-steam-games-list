@@ -95,9 +95,12 @@ To cut a release: tag `desktop-v1.0.0` and push. The matrix build creates a draf
 
 `vite-plugin-pwa` registers a Workbox service worker on every load. After the first visit the app shell loads from cache (offline-capable), and:
 
-- `data/data_*.jsonl` from `raw.githubusercontent.com` is **NetworkFirst** with a 5-second timeout — online users always get the freshest shard, offline users fall back to the last-known cached copy. (The earlier `StaleWhileRevalidate` strategy required two reloads to see your own edits because of Fastly's 5-minute CDN cache; switched in Phase 6.2.)
+- `data/data_*.jsonl` via the Worker proxy at `/api/data/*` is **NetworkFirst** with a 5-second timeout — online users always get the freshest shard, offline users fall back to the last-known cached copy. (The earlier `StaleWhileRevalidate` strategy required two reloads to see your own edits because of Fastly's 5-minute CDN cache; switched in Phase 6.2.)
 - Steam header images (`shared.akamai.steamstatic.com/.../header.jpg`) are **cache-first** for 30 days.
-- GitHub avatars are stale-while-revalidate for 7 days.
+- GitHub avatars are served through the same `/img/*` proxy (`/img/gh/{u|in}/{id}`),
+  so one cache-first rule covers artwork and avatars alike. There used to be a
+  separate rule for `avatars.githubusercontent.com`; the browser no longer
+  contacts GitHub at all.
 
 A small chip in the topbar shows **offline** / **Install** / **Update** when relevant. The browser's address-bar install button works too. On install the app launches as a standalone window.
 

@@ -15,39 +15,47 @@ import { Badge } from "../components/ui/badge";
 import { Button } from "../components/ui/button";
 import { LoadingState, ErrorState } from "../components/common/QueryState";
 import { useDocumentTitle } from "../hooks/useDocumentTitle";
-import { REPO_OWNER, REPO_NAME, DEFAULT_BRANCH } from "../lib/schema";
+import { DEFAULT_BRANCH } from "../lib/schema";
+import { API_ORIGIN } from "../lib/site";
 import { formatRelativeDate } from "../lib/utils";
 import { cn } from "../lib/utils";
 
+/**
+ * Flattened by the Worker, not by GitHub. /api/activity narrows the upstream
+ * payload to these fields, so the commit-author email GitHub returns for every
+ * commit never reaches the browser at all, `subject` is the first line only
+ * (the bodies carry Co-Authored-By trailers with real addresses, and nothing
+ * below renders them), and `avatar` arrives already rewritten to this site's
+ * own /img/gh/ proxy.
+ */
 interface Commit {
   sha: string;
   html_url: string;
-  commit: {
-    author: { name: string; email: string; date: string };
-    message: string;
-    verification: { verified: boolean; reason: string };
-  };
-  author: { login: string; avatar_url: string } | null;
-  committer: { login: string; avatar_url: string } | null;
+  subject: string;
+  author_date: string;
+  author_name: string;
+  login: string | null;
+  avatar: string | null;
+  verified: boolean;
+  reason: string;
 }
 
 // "mine" is gone with sign-in: with no signed-in identity there is no
 // "me" to filter against.
 type Filter = "all" | "bot";
 
+/** The pipeline's own commits are authored by this account. */
+const BOT_LOGIN = "github-actions[bot]";
+
 async function fetchCommits(): Promise<Commit[]> {
-  // Unauthenticated. The commit list is public; the lower anonymous rate limit
-  // is fine for a feed that refetches on focus with a 60s stale time.
-  const headers: HeadersInit = {
-    Accept: "application/vnd.github+json",
-    "X-GitHub-Api-Version": "2022-11-28",
-  };
-  const res = await fetch(
-    `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/commits?per_page=80&sha=${DEFAULT_BRANCH}`,
-    { headers },
-  );
-  if (!res.ok) throw new Error(`Commits API: ${res.status} ${res.statusText}`);
-  return (await res.json()) as Commit[];
+  // Same-origin through the Worker. This page used to call api.github.com
+  // directly, which leaked every visitor's IP to GitHub, forced
+  // https://api.github.com into the site-wide connect-src, and returned avatar
+  // URLs on a host no CSP here allowed - so every avatar was blocked outright.
+  const res = await fetch(`${API_ORIGIN}/api/activity`);
+  if (!res.ok) throw new Error(`Activity: ${res.status} ${res.statusText}`);
+  const body = (await res.json()) as { commits?: Commit[] };
+  return body.commits ?? [];
 }
 
 export function ActivityPage() {
@@ -65,7 +73,7 @@ export function ActivityPage() {
   const filtered = useMemo(() => {
     if (!q.data) return [];
     return q.data.filter((c) => {
-      const isBot = c.author?.login === "github-actions[bot]";
+      const isBot = c.login === BOT_LOGIN;
       if (filter === "bot") return isBot;
       return true;
     });
@@ -124,17 +132,17 @@ export function ActivityPage() {
 
 function CommitRow({ commit }: { commit: Commit }) {
   const { t } = useTranslation();
-  const verified = commit.commit.verification?.verified;
-  const reason = commit.commit.verification?.reason ?? "unsigned";
-  const subject = (commit.commit.message ?? "").split("\n")[0];
-  const isBot = commit.author?.login === "github-actions[bot]";
+  const verified = commit.verified;
+  const reason = commit.reason || "unsigned";
+  const subject = commit.subject;
+  const isBot = commit.login === BOT_LOGIN;
 
   return (
     <li className="flex items-start gap-3 px-4 py-3 hover:bg-accent/30">
       <div className="mt-0.5 shrink-0">
-        {commit.author?.avatar_url ? (
+        {commit.avatar ? (
           <img
-            src={commit.author.avatar_url}
+            src={`${API_ORIGIN}${commit.avatar}`}
             alt=""
             loading="lazy"
             decoding="async"
@@ -163,20 +171,20 @@ function CommitRow({ commit }: { commit: Commit }) {
           <ExternalLink className="h-3 w-3 shrink-0 text-muted-foreground opacity-50" />
         </div>
         <div className="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted-foreground">
-          {commit.author ? (
+          {commit.login ? (
             <span className="inline-flex items-center gap-1">
               {isBot ? <Bot className="h-3 w-3" /> : <User className="h-3 w-3" />}
-              {commit.author.login}
+              {commit.login}
             </span>
           ) : (
             <span className="inline-flex items-center gap-1">
               <User className="h-3 w-3" />
-              {commit.commit.author.name}
+              {commit.author_name}
             </span>
           )}
           <span>·</span>
-          <span title={commit.commit.author.date}>
-            {formatRelativeDate(commit.commit.author.date)}
+          <span title={commit.author_date}>
+            {formatRelativeDate(commit.author_date)}
           </span>
           <span>·</span>
           <code className="rounded bg-muted px-1 font-mono">

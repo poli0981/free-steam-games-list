@@ -9,7 +9,8 @@
  */
 import { handleData } from "./routes/data";
 import { handleImg } from "./routes/img";
-import { jsonError } from "./lib/http";
+import { handleActivity } from "./routes/activity";
+import { jsonError, withSecurityHeaders } from "./lib/http";
 import { verifyAccessJwt } from "./lib/access";
 import { handleAdminApi } from "./routes/admin";
 import { handleIngestApi } from "./routes/ingest";
@@ -28,6 +29,12 @@ export default {
 
     if (pathname.startsWith("/img/")) {
       return handleImg(request, url, env, ctx);
+    }
+
+    // Public, unauthenticated, edge-cached. Placed above the admin block so it
+    // is unmistakably outside it: this route must never acquire an Access gate.
+    if (pathname === "/api/activity") {
+      return handleActivity(request, url, ctx);
     }
 
     // Everything below is admin surface. Authenticate ONCE, here, before any
@@ -60,15 +67,20 @@ export default {
         // 404, not 401: an unauthenticated caller learns nothing about what
         // exists here, and Access has already redirected real humans to a
         // login before the request ever arrived.
+        // withSecurityHeaders, not a bare Response: this was the one path in
+        // the Worker that shipped no security headers at all, because every
+        // other site spreads SECURITY_HEADERS by hand and this one forgot.
         return isAdminApi || isIngestApi
           ? jsonError(404, "not found")
-          : new Response("Not found", {
-              status: 404,
-              headers: {
-                "Content-Type": "text/plain; charset=utf-8",
-                "Cache-Control": "no-store",
-              },
-            });
+          : withSecurityHeaders(
+              new Response("Not found", {
+                status: 404,
+                headers: {
+                  "Content-Type": "text/plain; charset=utf-8",
+                  "Cache-Control": "no-store",
+                },
+              }),
+            );
       }
 
       // Belt and braces on top of the per-route AUD. A service token must

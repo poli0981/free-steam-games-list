@@ -1,0 +1,28 @@
+# security.txt for free-steam-games.win — RFC 9116
+#
+# Served as a real static file: /.well-known/* is NOT in wrangler.jsonc's
+# `run_worker_first`, so it never invokes the Worker and Cloudflare's asset
+# server infers text/plain from the .txt extension.
+#
+# It has to exist as a file. `not_found_handling` is "single-page-application",
+# so before this file was added a request for it returned dist/index.html with
+# HTTP 200 — scanners got HTML and no error.
+#
+# Expires is mandatory and must stay under a year out. Renewal is listed as a
+# recurring task in docs/SECURITY_SETUP.md; an expired security.txt is treated
+# by scanners as no security.txt at all.
+
+Contact: mailto:contact@poli0981.dev
+Contact: https://poli0981.dev/links/
+Expires: 2027-09-01T00:00:00.000Z
+Preferred-Languages: en, vi
+Canonical: https://free-steam-games.win/.well-known/security.txt
+Policy: https://github.com/poli0981/free-steam-games-list/blob/main/SECURITY.md
+Acknowledgments: https://github.com/poli0981/free-steam-games-list/blob/main/docs/ACKNOWLEDGEMENTs.md
+
+# Preferred route is GitHub's private vulnerability reporting, which is enabled
+# on the repository: Security -> Report a vulnerability. It keeps the report
+# private between you and the maintainer and gives it a CVE path if warranted.
+#
+# In scope, out of scope, and what to expect: see the Policy link above.
+# No bounty programme. Credit in the Acknowledgments file if you want it.

@@ -21,7 +21,18 @@
   # 'unsafe-inline' is load-bearing for style-src. It is also low risk here:
   # the app renders no user-supplied HTML, and script-src stays strict, which
   # is the directive that actually stops code execution.
-  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://shared.akamai.steamstatic.com https://shared.fastly.steamstatic.com https://cdn.akamai.steamstatic.com; font-src 'self'; connect-src 'self' https://api.github.com; worker-src 'self'; manifest-src 'self'; media-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'
+  #
+  # connect-src is 'self' with no exceptions. It used to allow
+  # https://api.github.com for one page: /activity fetched the commit list
+  # straight from GitHub. That request now goes through the Worker at
+  # /api/activity, so the whole site no longer needs a third-party connect
+  # target. The Android in-app update check still calls api.github.com, but only
+  # under isTauri() && isAndroid() (see useAndroidUpdateCheck), and the packaged
+  # apps use the separate CSP in src-tauri/tauri.conf.json - not this file.
+  #
+  # img-src likewise stays without avatars.githubusercontent.com: GitHub avatars
+  # are proxied at /img/gh/{u|in}/{id}. Before that they were simply blocked.
+  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://shared.akamai.steamstatic.com https://shared.fastly.steamstatic.com https://cdn.akamai.steamstatic.com; font-src 'self'; connect-src 'self'; worker-src 'self'; manifest-src 'self'; media-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
   X-Frame-Options: DENY

@@ -10,16 +10,7 @@
  * wrangler.jsonc) — these variants currently select the source asset and the
  * cache key, not a paid resize.
  */
-import { isTauri } from "./external-open";
-
-/** Must match `vars.SITE_ORIGIN` in web/wrangler.jsonc. */
-const SITE_ORIGIN = "https://free-steam-games.win";
-
-/**
- * Same-origin on the web. The Tauri webview loads from tauri://localhost, so a
- * relative path would resolve against the app origin instead of the site.
- */
-const IMG_ORIGIN = isTauri() ? SITE_ORIGIN : "";
+import { API_ORIGIN as IMG_ORIGIN } from "./site";
 
 /**
  * Steam serves this catalog from two hosts — shared.akamai.steamstatic.com and

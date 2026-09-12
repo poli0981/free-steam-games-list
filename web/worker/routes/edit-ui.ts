@@ -16,33 +16,11 @@
  * says so, because a reviewer who assumes the catalogue changed immediately
  * will think the edit failed.
  */
-import { SECURITY_HEADERS } from "../lib/http";
-
-const IMG_HOSTS =
-  "https://shared.akamai.steamstatic.com https://shared.fastly.steamstatic.com https://cdn.akamai.steamstatic.com";
+import { adminHtmlResponse } from "../lib/http";
 
 export function editPage(actor: string): Response {
   const nonce = crypto.randomUUID().replace(/-/g, "");
-  const csp = [
-    "default-src 'none'",
-    `script-src 'nonce-${nonce}'`,
-    "style-src 'unsafe-inline'",
-    `img-src ${IMG_HOSTS} data:`,
-    "connect-src 'self'",
-    "base-uri 'none'",
-    "form-action 'none'",
-    "frame-ancestors 'none'",
-  ].join("; ");
-
-  return new Response(html(nonce, actor), {
-    status: 200,
-    headers: {
-      "Content-Type": "text/html; charset=utf-8",
-      "Cache-Control": "no-store, no-cache, must-revalidate",
-      "Content-Security-Policy": csp,
-      ...SECURITY_HEADERS,
-    },
-  });
+  return adminHtmlResponse(html(nonce, actor), nonce);
 }
 
 function esc(s: string): string {

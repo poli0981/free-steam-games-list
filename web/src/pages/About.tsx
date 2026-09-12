@@ -400,11 +400,11 @@ export function AboutPage() {
             trademarks of Valve Corporation. This site is not affiliated with
             Valve.
             <br />
-            Game data and artwork are served from this site, which fetches
-            them from GitHub and Valve&apos;s CDN server-side — your browser
-            does not contact either. The Activity page is the exception: it
-            calls <code>api.github.com</code> and loads avatars from GitHub
-            directly. See the Privacy Policy for the full picture.
+            Everything on this site is served from this site, which fetches it
+            from GitHub and Valve&apos;s CDN server-side — your browser contacts
+            neither. That now includes the Activity page, which used to call{" "}
+            <code>api.github.com</code> and load avatars from GitHub directly.
+            See the Privacy Policy for the full picture.
           </div>
         </CardContent>
       </Card>
