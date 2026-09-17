@@ -60,10 +60,19 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
   A game moves between `data_001.jsonl` and `data_005.jsonl` as records before
   it are added or removed. Never persist "game X lives in shard N".
 
-- **`data/index.json.last_updated` is the only cache-invalidation signal.**
-  `web/src/lib/cache.ts` keys its IndexedDB cache on it. Commit a shard without
-  bumping it and every browser keeps serving pre-edit records. Anything that
-  writes a shard must also bump it.
+- **`data/index.json` is the client's whole cache contract.** Two fields, both
+  computed by `_save_index()` and nothing else:
+  - `last_updated` changes **if and only if** a shard's bytes, the shard list
+    or the counts changed. A save that changed nothing keeps the old stamp,
+    leaves `index.json` byte-identical, and so produces no commit (it used to
+    force every visitor to re-download ~6 MB).
+  - `files[].sha256` is the hash of each shard's exact committed bytes.
+    `save_jsonl` writes with `newline="\n"` so a Windows run hashes the same LF
+    bytes Git stores. The client will not cache a shard whose bytes do not
+    match its entry, and the Worker caches a shard forever under that hash.
+
+  Commit a shard without going through `save_main()` and every browser keeps
+  serving pre-edit records. `scripts/tests/test_index_hash.py` pins both.
 
 - **`index.json` is rebuilt from scratch on every save.** `_save_index()` in
   `scripts/core/data_store.py` writes it from a fixed set of keys, so any key

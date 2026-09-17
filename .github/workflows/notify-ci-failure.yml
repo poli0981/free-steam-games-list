@@ -22,6 +22,10 @@ on:
       - "Discover New Games"
       - "Backfill Discovery (TEMPORARY)"
       - "CodeQL"
+      - "Web CI"
+      - "Python Tests"
+      - "Daily Snapshot"
+      - "Top Offline Leaderboard"
     types: [completed]
 
 # REQUIRED: declare permissions matching the reusable workflow's needs.

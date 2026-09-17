@@ -1,0 +1,34 @@
+name: Python Tests
+
+# The pipeline had no tests at all. These start with the one contract a
+# mistake in would silently strand every visitor on stale data: data/index.json
+# (per-shard sha256, and last_updated changing only when a shard changes).
+
+on:
+  pull_request:
+    paths: ['scripts/**', 'requirements*.txt', 'pyproject.toml', '.github/workflows/python-tests.yml']
+  push:
+    branches: [main]
+    paths: ['scripts/**', 'requirements*.txt', 'pyproject.toml', '.github/workflows/python-tests.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  # Reads nothing from data/ and writes nothing, so it does not join the
+  # data-write group.
+  group: python-tests-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - run: pip install --quiet -r requirements.txt -r requirements-dev.txt
+      - name: pytest
+        run: python -m pytest scripts/tests -q

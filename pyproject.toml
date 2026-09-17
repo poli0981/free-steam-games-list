@@ -2,4 +2,6 @@
 
 [tool.vulture]
 paths = ["scripts"]
+# pytest collects test_* functions and fixtures by name; vulture cannot see that.
+exclude = ["scripts/tests/"]
 min_confidence = 80

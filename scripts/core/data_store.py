@@ -8,6 +8,7 @@ Optimizations:
   - merge_extension_data() avoids repeated key lookups
 """
 import glob as _glob
+import hashlib
 import json
 import os
 import re
@@ -91,9 +92,15 @@ def load_jsonl(path: str) -> list[dict]:
 
 
 def save_jsonl(path: str, records: list[dict]):
-    """Atomic write: tmp → rename. Uses json.dumps directly (faster than jsonlines)."""
+    """Atomic write: tmp → rename. Uses json.dumps directly (faster than jsonlines).
+
+    newline="\n" is load-bearing for the shards. Text mode on Windows would
+    write CRLF; Git normalises the committed blob to LF (.gitattributes
+    eol=lf), and raw.githubusercontent.com serves that blob - so the sha256
+    that _save_index records would describe bytes no client ever receives.
+    """
     tmp = path + ".tmp"
-    with open(tmp, "w", encoding="utf-8") as f:
+    with open(tmp, "w", encoding="utf-8", newline="\n") as f:
         for rec in records:
             f.write(json.dumps(rec, ensure_ascii=False))
             f.write("\n")
@@ -239,20 +246,72 @@ def save_main(records: list[dict], apply_human_overrides: bool = True):
             os.remove(old)
 
 
+def _file_sha256(path: str) -> str:
+    h = hashlib.sha256()
+    with open(path, "rb") as f:
+        for block in iter(lambda: f.read(1 << 20), b""):
+            h.update(block)
+    return h.hexdigest()
+
+
+def _read_index(path: str) -> Optional[dict]:
+    """The previous index, or None if it is missing or unreadable."""
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+    except (OSError, ValueError):
+        return None
+    return data if isinstance(data, dict) else None
+
+
 def _save_index(chunks: list[list[dict]]):
-    """Write data/index.json with shard metadata."""
+    """Write data/index.json with shard metadata.
+
+    Two things here are the client's whole cache contract (web/src/lib/cache.ts,
+    web/src/lib/games-loader.ts):
+
+    - `files[].sha256` is the hash of each shard's exact bytes, as written above
+      and as committed. The client refuses to cache a shard whose bytes do not
+      match, which is what stops a CDN serving the PREVIOUS shard next to the
+      new index from being stored under the new generation. It also lets the
+      Worker cache a shard forever by its hash.
+
+    - `last_updated` changes if and only if something a client downloads
+      changed: a shard's bytes, the shard list, or the counts. It used to be
+      stamped on every save, so a run that changed nothing still forced every
+      visitor to re-download ~6 MB (the "Dead link check" commit of 2026-09-16
+      touched only this file). Keeping the old stamp when nothing changed also
+      leaves index.json byte-identical, so such a run produces no commit.
+    """
+    files = []
+    for i, c in enumerate(chunks, start=1):
+        name = f"{SHARD_PREFIX}{i:03d}.jsonl"
+        files.append({
+            "name": name,
+            "count": len(c),
+            "sha256": _file_sha256(os.path.join(DATA_DIR, name)),
+        })
+    total = sum(len(c) for c in chunks)
+
+    path = os.path.join(DATA_DIR, "index.json")
+    prev = _read_index(path)
+    unchanged = (
+        prev is not None
+        and prev.get("files") == files
+        and prev.get("total") == total
+        and prev.get("max_per_file") == MAX_RECORDS_PER_FILE
+        and isinstance(prev.get("last_updated"), str)
+        and bool(prev.get("last_updated"))
+    )
+
     index = {
         "max_per_file": MAX_RECORDS_PER_FILE,
-        "total": sum(len(c) for c in chunks),
-        "last_updated": now_iso(),
-        "files": [
-            {"name": f"{SHARD_PREFIX}{i:03d}.jsonl", "count": len(c)}
-            for i, c in enumerate(chunks, start=1)
-        ],
+        "total": total,
+        "last_updated": prev["last_updated"] if unchanged else now_iso(),
+        "files": files,
     }
-    path = os.path.join(DATA_DIR, "index.json")
     tmp = path + ".tmp"
-    with open(tmp, "w", encoding="utf-8") as f:
+    with open(tmp, "w", encoding="utf-8", newline="\n") as f:
         json.dump(index, f, indent=2, ensure_ascii=False)
         f.write("\n")
     os.replace(tmp, path)
