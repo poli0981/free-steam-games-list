@@ -17,6 +17,7 @@
   import { pwa } from "$lib/pwa-state.svelte";
   import { pwaInfo } from "virtual:pwa-info";
   import PwaIndicator from "$lib/common/PwaIndicator.svelte";
+  import DesktopUpdateDialog from "$lib/common/DesktopUpdateDialog.svelte";
   import { isTauri, isAndroid, openExternal } from "$lib/external-open";
   import { toast } from "svelte-sonner";
   import ConsentGate from "$lib/common/ConsentGate.svelte";
@@ -35,6 +36,8 @@
   let { children }: { children: Snippet } = $props();
 
   let menuOpen = $state(false);
+  // Set on mount: isTauri() reads a runtime global the prerenderer does not have.
+  let tauriDesktop = $state(false);
   // Module-level would leak across HMR reloads in dev; per-instance is enough
   // because the layout mounts once.
   let updateChecked = false;
@@ -91,6 +94,10 @@
     // Web only. Install and connectivity events now; the service worker itself
     // waits for consent (below).
     pwa.listen();
+
+    // Desktop only: the updater plugin is not compiled for Android, which
+    // checks for a newer APK below instead.
+    tauriDesktop = isTauri() && !isAndroid();
 
     // Android has no native Tauri updater (the plugin is desktop-only), so the
     // APK checks GitHub Releases itself, once per session. Best-effort: a
@@ -224,3 +231,4 @@
      card on a white page. -->
 <Toaster theme={theme.resolved} position="bottom-right" richColors closeButton />
 <PwaIndicator />
+{#if tauriDesktop}<DesktopUpdateDialog />{/if}

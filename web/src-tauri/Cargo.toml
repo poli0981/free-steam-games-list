@@ -43,6 +43,9 @@ tauri-plugin-shell = "2"
 [target.'cfg(not(any(target_os = "android", target_os = "ios")))'.dependencies]
 tauri-plugin-updater = "2"
 tauri-plugin-single-instance = "2"
+# relaunch() after an update installs. Desktop-only for the same reason: it
+# exists here only to serve the updater.
+tauri-plugin-process = "2"
 
 [features]
 # DO NOT REMOVE: feature flags consumed by the bundled tauri build.

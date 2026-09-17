@@ -59,11 +59,18 @@ third party any more.
 
 ### The one remaining exception, stated plainly
 
-**The desktop and Android apps** check the GitHub Releases API on launch to see
-whether an update exists. That request goes to GitHub from the app, so GitHub
-sees the IP address it comes from. It happens once per session, sends nothing
-about you beyond what any HTTP request carries, and has no equivalent on the
-website — the website uses its service worker instead.
+**The desktop and Android apps** check for a newer version once per session,
+after you have accepted the terms:
+
+- The **desktop app** asks free-steam-games.win, and only if an update exists
+  and you choose to install it does it download the installer from GitHub
+  Releases, so GitHub sees the IP address that download comes from.
+- The **Android app** asks the GitHub Releases API directly, so GitHub sees the
+  IP address of that check.
+
+Neither sends anything about you beyond what any HTTP request carries, and
+neither has an equivalent on the website — the website uses its service worker
+instead.
 
 GitHub's handling is covered by the
 [GitHub Privacy Statement](https://docs.github.com/en/site-policy/privacy-policies/github-privacy-statement).

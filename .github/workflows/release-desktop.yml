@@ -60,9 +60,12 @@ jobs:
         with:
           workspaces: 'web/src-tauri -> target'
 
+      # Plain `npm ci`, as in web-ci.yml. The `|| npm install` fallback is what
+      # hid a lockfile conflict for a month: a release must build from exactly
+      # the dependencies that were tested, or not at all.
       - name: Install web dependencies
         working-directory: web
-        run: npm ci || npm install
+        run: npm ci
 
       - name: Build Tauri app
         uses: tauri-apps/tauri-action@v0
@@ -71,9 +74,10 @@ jobs:
           # Inject the updater minisign private key so artefacts are signed
           # at build time. Public key is baked into tauri.conf.json. Set
           # `TAURI_SIGNING_PRIVATE_KEY` (and password if used) under
-          # repo Settings → Secrets and variables → Actions. Empty value
-          # → builds still succeed but updater clients will reject the
-          # unsigned binaries.
+          # repo Settings → Secrets and variables → Actions. The secret is
+          # required: bundle.createUpdaterArtifacts is on, and the updater in
+          # every installed copy rejects an artefact its public key cannot
+          # verify.
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
         with:
@@ -81,16 +85,16 @@ jobs:
           tagName: ${{ github.event.inputs.tag || github.ref_name }}
           releaseName: 'F2P Tracker ${{ github.event.inputs.tag || github.ref_name }}'
           releaseBody: |
-            Desktop builds of the F2P Tracker — a fixed-size 1400×900 window wrapping the same web UI deployed at https://poli0981.github.io/free-steam-games-list/.
+            Desktop builds of the F2P Tracker — a resizable window around the same app as https://free-steam-games.win.
 
             **Installation**
-            - Windows: download the `.msi` and run.
+            - Windows: download the `.msi` or `-setup.exe` and run.
             - macOS: download the `.dmg`, drag to Applications. Universal binary (Intel + Apple Silicon).
             - Linux: `.AppImage` (run directly) or `.deb` (Debian/Ubuntu).
 
-            **Auto-update**: from v1.0 onwards the desktop app polls this Releases page on launch and offers to download + verify (minisign) the next signed build. To take updates, install via the official binaries — sideloaded copies won't see the prompt.
+            **Updates**: from 2.0.0 the app checks free-steam-games.win for a newer desktop release a few seconds after launch and offers to install it. The download comes from this Releases page and is verified against the app's minisign key before it installs. Publishing this draft is what makes it visible to that check.
 
-            See `docs/DISCLAIMER.md` for accuracy caveats. The desktop app reads data live from `raw.githubusercontent.com`; offline functionality matches the PWA.
+            The app reads its data from free-steam-games.win (`/api/data`) and keeps the last verified copy for offline use. See `docs/DISCLAIMER.md` for accuracy caveats.
 
             Compiled from commit `${{ github.sha }}`.
           releaseDraft: true

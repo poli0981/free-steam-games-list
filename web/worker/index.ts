@@ -10,6 +10,7 @@
 import { handleData } from "./routes/data";
 import { handleImg } from "./routes/img";
 import { handleActivity } from "./routes/activity";
+import { handleDesktopUpdates } from "./routes/updates";
 import { jsonError, withSecurityHeaders } from "./lib/http";
 import { verifyAccessJwt, AccessUnavailableError } from "./lib/access";
 import { handleAdminApi } from "./routes/admin";
@@ -99,6 +100,12 @@ async function route(
   // is unmistakably outside it: this route must never acquire an Access gate.
   if (pathname === "/api/activity") {
     return handleActivity(request, url, ctx);
+  }
+
+  // Public too: the desktop app's update feed. Same rule - never behind an
+  // Access gate, never with the GitHub App token.
+  if (pathname === "/api/updates/desktop") {
+    return handleDesktopUpdates(request, url, ctx);
   }
 
   // Everything below is admin surface. Authenticate ONCE, here, before any

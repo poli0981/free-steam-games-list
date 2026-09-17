@@ -71,7 +71,9 @@ jobs:
 
       - name: Install web dependencies
         working-directory: web
-        run: npm ci || npm install
+        # Plain `npm ci`, as in web-ci.yml: build from the tested lockfile or
+        # not at all.
+        run: npm ci
 
       - name: Configure release keystore
         working-directory: web/src-tauri/gen/android
@@ -118,9 +120,8 @@ jobs:
           fail_on_unmatched_files: true
           files: web/src-tauri/gen/android/app/build/outputs/apk/universal/release/app-universal-release.apk
           body: |
-            Android build of the F2P Tracker — the same web UI as the desktop app
-            and https://poli0981.github.io/free-steam-games-list/, packaged as a
-            sideloadable APK.
+            Android build of the F2P Tracker — the same app as the desktop build
+            and https://free-steam-games.win, packaged as a sideloadable APK.
 
             **Install**
             1. Download `app-universal-release.apk`.
@@ -134,7 +135,8 @@ jobs:
             version stats: `docs/android-support.md`. Tested on emulator 11–16 and
             a real vivo 1907 (Android 12).
 
-            Reads data live from `raw.githubusercontent.com`; no telemetry. See
+            Reads its data from free-steam-games.win (`/api/data`) and keeps the
+            last verified copy for offline use; no telemetry. See
             `docs/DISCLAIMER.md` for accuracy caveats.
 
             Built from commit `${{ github.sha }}`.

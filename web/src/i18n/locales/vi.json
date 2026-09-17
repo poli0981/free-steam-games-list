@@ -145,7 +145,14 @@
   "appUpdate": {
     "available": "Có bản mới ({{version}})",
     "body": "Chạm để tải APK mới nhất từ GitHub Releases.",
-    "download": "Tải về"
+    "download": "Tải về",
+    "desktopTitle": "Đã có phiên bản {{version}}",
+    "desktopBody": "Bạn đang dùng bản {{current}}. Bản cập nhật được xác minh trước khi cài, và ứng dụng sẽ khởi động lại để hoàn tất.",
+    "later": "Để sau",
+    "installRestart": "Cài đặt và khởi động lại",
+    "downloading": "Đang tải… {{percent}}%",
+    "installing": "Đang cài đặt…",
+    "failed": "Không cài được bản cập nhật: {{error}}"
   },
   "dashboard": {
     "title": "Tổng quan",

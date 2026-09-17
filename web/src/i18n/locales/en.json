@@ -145,7 +145,14 @@
   "appUpdate": {
     "available": "New version available ({{version}})",
     "body": "Tap to download the latest APK from GitHub Releases.",
-    "download": "Download"
+    "download": "Download",
+    "desktopTitle": "Version {{version}} is available",
+    "desktopBody": "You are on {{current}}. The update is verified before it installs, and the app restarts to finish.",
+    "later": "Later",
+    "installRestart": "Install and restart",
+    "downloading": "Downloading… {{percent}}%",
+    "installing": "Installing…",
+    "failed": "The update could not be installed: {{error}}"
   },
   "dashboard": {
     "title": "Dashboard",

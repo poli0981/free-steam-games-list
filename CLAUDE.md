@@ -260,7 +260,20 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
   would do the fixing is the part being served stale. `vite.config.ts` omits the
   PWA plugin when `TAURI_ENV_PLATFORM` is set, and
   `src-tauri/src/lib.rs::purge_stale_webview_data` clears the webview's storage
-  once per version for anyone upgrading from a build that had one.
+  for an install whose previous version stamp is missing or older than 2.0.0 —
+  ONLY those. It used to clear on every version change, which with a working
+  updater would have wiped consent, theme, language and the cached catalogue
+  on every release. `needs_purge` has unit tests (`cargo test --lib`).
+- **The desktop updater's feed is `/api/updates/desktop`, not GitHub's "latest"
+  release.** This repository publishes dataset (`v*`), Android and desktop
+  releases on one page, so `releases/latest/download/latest.json` was usually
+  not a desktop release and 404ed. `worker/routes/updates.ts` reads
+  `releases.atom` (drafts never appear, no API rate limit), picks the highest
+  `desktop-vX.Y.Z`, validates its `latest.json` (version matches the tag, every
+  artefact URL is this repo's release download) and answers 204 — the updater's
+  "no update" — for anything unusable. Like `/api/activity` it is public and
+  must never use the GitHub App token. A desktop release is offered only once
+  its draft is published.
 - The app is behind a first-run legal consent gate
   (`web/src/lib/common/ConsentGate.svelte`). Only `/error/*` and `/legal/*`
   bypass it — the gate links to the legal documents it asks people to accept —

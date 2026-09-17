@@ -32,7 +32,10 @@ pub fn run() {
     // Cargo.toml so mobile builds don't pull it in.
     #[cfg(not(any(target_os = "android", target_os = "ios")))]
     {
-        builder = builder.plugin(tauri_plugin_updater::Builder::new().build());
+        builder = builder
+            .plugin(tauri_plugin_updater::Builder::new().build())
+            // relaunch() once an update has installed (lib/desktop-update.ts).
+            .plugin(tauri_plugin_process::init());
     }
 
     builder
@@ -62,7 +65,13 @@ pub fn run() {
 ///
 /// It has to happen out here, before the webview loads anything. The current
 /// build ships no service worker at all (see vite.config.ts), so this runs once
-/// per upgrade and then never again.
+/// - for an install that last ran a pre-2.0 build - and then never again.
+///
+/// ONCE, not once per version. It used to compare the stamp against the running
+/// version, so EVERY update would have wiped consent, theme, language and the
+/// cached catalogue - the moment 2.0.0 gained a working auto-updater, each
+/// release would have reset every user. Only a build from before 2.0.0 ever
+/// registered a service worker, so only an upgrade from one needs the clear.
 ///
 /// COST, STATED PLAINLY: this also clears localStorage and IndexedDB, so the
 /// legal consent, theme and language choices are asked for again, and the
@@ -80,8 +89,12 @@ fn purge_stale_webview_data<R: tauri::Runtime>(app: &tauri::AppHandle<R>) {
     };
     let stamp = dir.join("webview-data-version");
     let current = app.package_info().version.to_string();
+    let previous = std::fs::read_to_string(&stamp).ok();
 
-    if std::fs::read_to_string(&stamp).unwrap_or_default().trim() == current {
+    if !needs_purge(previous.as_deref()) {
+        if previous.as_deref().map(str::trim) != Some(current.as_str()) {
+            let _ = std::fs::write(&stamp, &current);
+        }
         return;
     }
 
@@ -110,4 +123,54 @@ fn purge_stale_webview_data<R: tauri::Runtime>(app: &tauri::AppHandle<R>) {
     // meant to cure.
     let _ = std::fs::create_dir_all(&dir);
     let _ = std::fs::write(&stamp, &current);
+}
+
+/// Whether the webview's storage must be cleared, given the version stamp the
+/// last launch wrote (None when there is none).
+///
+/// True only when the previous build could have registered a service worker:
+/// no stamp at all (1.4.x predates the stamp, and a fresh install clears an
+/// empty profile harmlessly), or a stamp older than 2.0.0.
+fn needs_purge(stamp: Option<&str>) -> bool {
+    let stamp = match stamp.map(str::trim) {
+        Some(s) if !s.is_empty() => s,
+        _ => return true,
+    };
+    match stamp.split('.').next().and_then(|major| major.parse::<u64>().ok()) {
+        Some(major) => major < 2,
+        // Unreadable: treat it like a missing stamp rather than risk leaving a
+        // stale worker in charge.
+        None => true,
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::needs_purge;
+
+    #[test]
+    fn purges_when_there_is_no_stamp() {
+        assert!(needs_purge(None));
+        assert!(needs_purge(Some("")));
+        assert!(needs_purge(Some("  \n")));
+    }
+
+    #[test]
+    fn purges_an_install_upgraded_from_before_2_0() {
+        assert!(needs_purge(Some("1.4.5")));
+        assert!(needs_purge(Some("0.9.0")));
+    }
+
+    #[test]
+    fn never_purges_on_a_2_x_update() {
+        assert!(!needs_purge(Some("2.0.0")));
+        assert!(!needs_purge(Some("2.0.0\n")));
+        assert!(!needs_purge(Some("2.1.3")));
+        assert!(!needs_purge(Some("10.0.0")));
+    }
+
+    #[test]
+    fn purges_an_unreadable_stamp() {
+        assert!(needs_purge(Some("garbage")));
+    }
 }

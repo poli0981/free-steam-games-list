@@ -55,7 +55,7 @@
   "plugins": {
     "updater": {
       "endpoints": [
-        "https://github.com/poli0981/free-steam-games-list/releases/latest/download/latest.json"
+        "https://free-steam-games.win/api/updates/desktop"
       ],
       "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDlGMzk3NzRBRTU0NTNDNTMKUldSVFBFWGxTbmM1bjV6VVU1Um40cXBwVncvOTJzWGtKZXpRM0J3QnJneWFFcUI2QzhJNjVnajQK"
     },

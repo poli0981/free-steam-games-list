@@ -75,3 +75,33 @@ jobs:
       # build. Flip the rules in knip.json to error when the backlog is clear.
       - name: Unused code report
         run: npm run knip
+
+  # The packaged apps are built from the same source with a different
+  # configuration (TAURI_ENV_PLATFORM): their own CSP flavour, no service
+  # worker, no manifest, no prerendered game pages. Nothing checked that build
+  # before a release tag, so a mistake in it surfaced only in a draft release.
+  # This builds the web half of it - no Rust toolchain needed - and verifies it.
+  tauri-flavour:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: 'npm'
+          cache-dependency-path: web/package-lock.json
+
+      - name: Install
+        run: npm ci
+
+      - name: Build (Tauri configuration)
+        env:
+          TAURI_ENV_PLATFORM: linux
+        run: npm run build:desktop
+
+      - name: Verify packaged-app output
+        run: node scripts/verify-dist.mjs --tauri
