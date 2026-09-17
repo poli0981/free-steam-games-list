@@ -14,6 +14,9 @@
   import { installExternalLinkInterceptor } from "$lib/external-link-interceptor";
   import { checkAndroidUpdate } from "$lib/android-update";
   import { purgeTauriServiceWorker, purgeLegacyDataCache } from "$lib/pwa";
+  import { pwa } from "$lib/pwa-state.svelte";
+  import { pwaInfo } from "virtual:pwa-info";
+  import PwaIndicator from "$lib/common/PwaIndicator.svelte";
   import { isTauri, isAndroid, openExternal } from "$lib/external-open";
   import { toast } from "svelte-sonner";
   import ConsentGate from "$lib/common/ConsentGate.svelte";
@@ -85,6 +88,10 @@
     void purgeTauriServiceWorker();
     void purgeLegacyDataCache();
 
+    // Web only. Install and connectivity events now; the service worker itself
+    // waits for consent (below).
+    pwa.listen();
+
     // Android has no native Tauri updater (the plugin is desktop-only), so the
     // APK checks GitHub Releases itself, once per session. Best-effort: a
     // network error or a rate limit stays silent, because this is a nicety and
@@ -116,6 +123,7 @@
   $effect(() => {
     if (!consent.accepted) return;
     void games.load();
+    void pwa.register();
     return installGamesRevalidation();
   });
 
@@ -151,6 +159,9 @@
        same-origin, or the preload is fetched twice. -->
   <link rel="preload" as="font" type="font/woff2" crossorigin="anonymous" href={displayFont} />
   <link rel="preload" as="font" type="font/woff2" crossorigin="anonymous" href={bodyFont} />
+  <!-- The web app manifest. Absent from every page until now, so the site was
+       never installable. Undefined in the Tauri build (vite.config.ts). -->
+  {#if pwaInfo}{@html pwaInfo.webManifest.linkTag}{/if}
 </svelte:head>
 
 {#if bare}
@@ -212,3 +223,4 @@
      the rest of the app had a working light mode, so every toast was a dark
      card on a white page. -->
 <Toaster theme={theme.resolved} position="bottom-right" richColors closeButton />
+<PwaIndicator />

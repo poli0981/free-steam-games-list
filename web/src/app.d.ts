@@ -1,3 +1,6 @@
+/// <reference types="vite-plugin-pwa/vanillajs" />
+/// <reference types="vite-plugin-pwa/info" />
+
 declare global {
   /** Injected by vite.config.ts from package.json - the single source of truth
    *  for the app version, which also matches the Android versionName.

@@ -4,6 +4,8 @@
   import Sun from "@lucide/svelte/icons/sun";
   import Moon from "@lucide/svelte/icons/moon";
   import Monitor from "@lucide/svelte/icons/monitor";
+  import Download from "@lucide/svelte/icons/download";
+  import { pwa } from "../pwa-state.svelte";
   import { goto } from "$app/navigation";
   import { filters } from "../filters.svelte";
   import { games } from "../games.svelte";
@@ -99,8 +101,27 @@
     </p>
   {/if}
 
+  {#if pwa.canInstall && !pwa.standalone}
+    <button
+      type="button"
+      onclick={() => void pwa.install()}
+      class={cn(
+        "hidden h-8 items-center gap-1.5 rounded-md border px-2.5 text-xs font-medium text-muted-foreground",
+        "hover:bg-accent hover:text-foreground sm:inline-flex",
+        total ? "" : "ml-auto",
+      )}
+      title={t("pwa.installHint")}
+    >
+      <Download class="size-3.5" />
+      {t("pwa.install")}
+    </button>
+  {/if}
+
   <div
-    class={cn("flex items-center gap-0.5 rounded-md border p-0.5", total ? "" : "ml-auto")}
+    class={cn(
+      "flex items-center gap-0.5 rounded-md border p-0.5",
+      total || (pwa.canInstall && !pwa.standalone) ? "" : "ml-auto",
+    )}
     role="group"
     aria-label={t("settings.theme")}
   >

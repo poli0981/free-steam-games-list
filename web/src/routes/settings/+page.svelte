@@ -5,6 +5,9 @@
   import Languages from "@lucide/svelte/icons/languages";
   import Info from "@lucide/svelte/icons/info";
   import Trash2 from "@lucide/svelte/icons/trash-2";
+  import Download from "@lucide/svelte/icons/download";
+  import { pwa } from "$lib/pwa-state.svelte";
+  import { isTauri } from "$lib/external-open";
   import { goto } from "$app/navigation";
   import { i18n, SUPPORTED_LANGUAGES, type SupportedLanguage } from "$lib/i18n.svelte";
   import { theme, welcome, type Theme } from "$lib/prefs.svelte";
@@ -106,6 +109,24 @@
       {/each}
     </div>
   </section>
+
+  {#if !isTauri() && (pwa.canInstall || pwa.standalone)}
+    <section class="rounded-lg border bg-card p-5">
+      <h2 class="flex items-center gap-2 text-base font-semibold">
+        <Download class="size-4 text-muted-foreground" />
+        {t("pwa.installTitle")}
+      </h2>
+      {#if pwa.standalone}
+        <p class="mt-1 text-sm text-muted-foreground">{t("pwa.installedHint")}</p>
+      {:else}
+        <p class="mt-1 text-sm text-muted-foreground">{t("pwa.installHint")}</p>
+        <Button class="mt-3" variant="outline" onclick={() => void pwa.install()}>
+          <Download class="size-4" />
+          {t("pwa.install")}
+        </Button>
+      {/if}
+    </section>
+  {/if}
 
   <section class="rounded-lg border bg-card p-5">
     <h2 class="flex items-center gap-2 text-base font-semibold">

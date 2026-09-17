@@ -96,6 +96,12 @@ if (flavour === "web") {
     if (!text.includes('id="game-seed"')) fail(`games/${name}: no #game-seed block (hydration would not match)`);
     if (!text.includes('type="application/ld+json"')) fail(`games/${name}: no JSON-LD`);
   }
+  // The installable web app: the manifest must be linked from the page, or
+  // the service worker registers but the browser never offers installation.
+  const home = readFileSync(join(DIST, "index.html"), "utf-8");
+  if (!/<link rel="manifest"/.test(home)) fail('index.html has no <link rel="manifest">');
+  if (!existsSync(join(DIST, "sw.js"))) fail("sw.js was not generated");
+
   // A universal load, not a server load: a __data.json here would mean client
   // navigation fetches one per game, and 404s (as index.html) for new games.
   if (files.some((f) => f.endsWith("__data.json") && f.includes(`${join("dist", "games")}`))) {
@@ -108,6 +114,9 @@ if (flavour === "tauri") {
   if (gamePages.length > 0) fail(`${gamePages.length} game pages in a Tauri build (expected none)`);
   // A service worker at tauri.localhost can never update (see lib/pwa.ts).
   if (existsSync(join(DIST, "sw.js"))) fail("sw.js exists in a Tauri build");
+  if (/<link rel="manifest"/.test(readFileSync(join(DIST, "index.html"), "utf-8"))) {
+    fail("index.html links a web manifest in a Tauri build");
+  }
   const index = readFileSync(join(DIST, "index.html"), "utf-8");
   if (!index.includes("https://free-steam-games.win")) {
     fail("index.html CSP does not allow https://free-steam-games.win (the Tauri connect-src)");

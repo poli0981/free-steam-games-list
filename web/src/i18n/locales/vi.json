@@ -136,7 +136,11 @@
     "backOnline": "Đã có mạng trở lại",
     "wentOffline": "Mất mạng — đang dùng cache",
     "installed": "Đã cài",
-    "installedBody": "F2P Tracker giờ chạy được như app riêng."
+    "installedBody": "F2P Tracker giờ chạy được như app riêng.",
+    "offlineReady": "Ứng dụng giờ mở được cả khi không có mạng.",
+    "installTitle": "Cài đặt ứng dụng",
+    "installHint": "Thêm F2P Tracker vào thiết bị thành một cửa sổ riêng, mở được cả khi không có mạng.",
+    "installedHint": "Bạn đang dùng bản ứng dụng đã cài."
   },
   "appUpdate": {
     "available": "Có bản mới ({{version}})",

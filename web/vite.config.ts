@@ -1,4 +1,4 @@
-import { defineConfig } from "vite";
+import { defineConfig, type Plugin } from "vite";
 import { sveltekit } from "@sveltejs/kit/vite";
 import { SvelteKitPWA } from "@vite-pwa/sveltekit";
 // Tailwind 4 runs as a Vite plugin instead of a PostCSS plugin;
@@ -31,6 +31,23 @@ const IS_TAURI = Boolean(process.env.TAURI_ENV_PLATFORM);
  */
 const PRERENDER_GAMES = !IS_TAURI && !process.env.F2P_SKIP_GAME_PRERENDER;
 
+/**
+ * The packaged apps omit the PWA plugin entirely (see below), so its virtual
+ * modules do not exist there. The app imports them unconditionally, so this
+ * resolves both to no-ops for that build.
+ */
+function pwaVirtualStubs(): Plugin {
+  const modules: Record<string, string> = {
+    "virtual:pwa-register": "export function registerSW() { return async () => {}; }",
+    "virtual:pwa-info": "export const pwaInfo = undefined;",
+  };
+  return {
+    name: "f2p-pwa-stubs",
+    resolveId: (id) => (id in modules ? `\0${id}` : null),
+    load: (id) => (id.startsWith("\0") ? (modules[id.slice(1)] ?? null) : null),
+  };
+}
+
 export default defineConfig(({ mode }) => ({
   // No `base`. SvelteKit owns the base path (kit.paths), and setting Vite's
   // would fight it.
@@ -60,10 +77,17 @@ export default defineConfig(({ mode }) => ({
      * and offline DATA lives in the IndexedDB cache in lib/cache.ts.
      * lib/pwa.ts removes any worker left behind by an older build.
      */
+    IS_TAURI && pwaVirtualStubs(),
     !IS_TAURI &&
       SvelteKitPWA({
-        registerType: "autoUpdate",
-        injectRegister: "auto",
+        // "prompt": a new version waits until the reader chooses to reload
+        // (lib/common/PwaIndicator.svelte), instead of the page reloading
+        // itself mid-read. injectRegister false: nothing was ever injected
+        // anyway - SvelteKit has no index.html for the plugin to write a
+        // <script> into, which is why the worker was built and never
+        // registered. lib/pwa-state.svelte.ts registers it, after consent.
+        registerType: "prompt",
+        injectRegister: false,
         manifest: {
           name: "Steam F2P Tracker",
           short_name: "F2P Tracker",

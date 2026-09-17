@@ -136,7 +136,11 @@
     "backOnline": "Back online",
     "wentOffline": "Offline — using cached data",
     "installed": "Installed",
-    "installedBody": "F2P Tracker is now available as a standalone app."
+    "installedBody": "F2P Tracker is now available as a standalone app.",
+    "offlineReady": "The app now opens without a connection.",
+    "installTitle": "Install the app",
+    "installHint": "Adds F2P Tracker to your device as its own window, which also opens without a connection.",
+    "installedHint": "You are using the installed app."
   },
   "appUpdate": {
     "available": "New version available ({{version}})",

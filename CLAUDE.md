@@ -241,6 +241,15 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
   `scripts/gen-icons.py` derives the PNG icons and `og.png` from it. Social
   platforms do not render SVG previews, and `apple-touch-icon` never accepted
   SVG.
+- **The web app registers its service worker itself, after consent.**
+  `@vite-pwa/sveltekit` cannot inject a registration script — SvelteKit has no
+  `index.html` for it to write into — so for the whole of 2.0.0 the worker was
+  built and never registered, and the manifest was linked from no page.
+  `lib/pwa-state.svelte.ts` calls `registerSW` (`registerType: "prompt"`, so a
+  new version waits for the reader's Reload instead of reloading under them),
+  and the root layout emits `pwaInfo.webManifest.linkTag`. The Tauri build gets
+  no-op stubs for both virtual modules. `verify-dist.mjs` checks the manifest
+  link on web and its absence in the Tauri build.
 - **The packaged apps must never register a service worker.** One registered
   at `tauri.localhost` can NEVER be updated — the update algorithm refetches
   the worker script bypassing the worker, and Tauri's custom protocol does not
