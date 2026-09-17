@@ -100,6 +100,28 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
 - New games ARE discovered automatically now, by `scripts/discover_new.py`
   into the D1 review queue — but discovery only PROPOSES. Publication stays a
   human decision made in `/admin`.
+- **Queue rules live in `web/shared/queue-rules.ts`, imported by the Worker AND
+  the admin UI.** A row is read-only when its status is not decidable
+  (`approved` = the request is committed to Git, `committed` = the game was
+  observed in `data/`, `rejected`) or when its GAME is already published (a
+  committed row or an approved decision for the appid — per game, because one
+  appid can have several rows). `/api/admin/decide` refuses such rows in its
+  read AND in every UPDATE's WHERE, and returns each refused id in `skipped`
+  with a reason; it never drops one silently. `queue-rules.test.ts` parses
+  `0001_init.sql` so the constants cannot drift from the CHECK constraint or
+  `uq_queue_open_appid`.
+- **`reconcile.ts` is still the only writer of `ingest_decisions('approved')`,**
+  and it now also sweeps: a pending/deferred/failed row whose appid is in
+  `data/` becomes `committed`, replacing a stale `rejected` decision. It holds a
+  D1 lease (`admin_locks`) and skips the ~6 MB fetch while `data/index.json`'s
+  generation is unchanged (`admin_state`). Migration `0002_admin_state.sql` is
+  applied by hand, so `lib/locks.ts` treats a missing table as "unavailable" and
+  every caller falls back — deploy order must never matter. Keep it that way for
+  any future migration a Worker change depends on.
+- `audit_log` and `commit_jobs` are pruned daily after `ADMIN_RETENTION_DAYS`
+  (wrangler.jsonc, 180). `docs/PRIVACY_POLICY.md` states the number: change
+  both together. `ingest_queue` and `ingest_decisions` are never pruned — the
+  decisions are what keep a rejected game out of the discovery sweep.
 - Every workflow that writes to `data/` shares `concurrency: {group: data-write}`.
   A new data-writing workflow without it will race jobs that run ~2 hours.
 - Workflows push with the built-in `GITHUB_TOKEN`; each declares

@@ -108,6 +108,9 @@ Cloudflare D1 database — what was changed, when, and by which Access identity.
 That log exists so a bad change can be traced. It records no visitor data,
 because visitors never reach it.
 
+Entries in that log, and the record of repository commits made from the admin
+area, are deleted automatically after 180 days.
+
 ## What is not collected
 
 No accounts. No analytics or telemetry of any kind. No advertising or

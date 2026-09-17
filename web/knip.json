@@ -15,7 +15,8 @@
   "project": [
     "src/**/*.{ts,svelte}",
     "src/**/*.css",
-    "worker/**/*.ts"
+    "worker/**/*.ts",
+    "shared/**/*.ts"
   ],
   // Ambient declaration for the Worker secrets, which wrangler types cannot
   // see because secrets are not in wrangler.jsonc. Nothing imports it by

@@ -18,5 +18,5 @@
     "noFallthroughCasesInSwitch": true,
     "skipLibCheck": true
   },
-  "include": ["worker/**/*.test.ts", "worker", "worker-configuration.d.ts"]
+  "include": ["worker/**/*.test.ts", "worker", "shared", "worker-configuration.d.ts"]
 }

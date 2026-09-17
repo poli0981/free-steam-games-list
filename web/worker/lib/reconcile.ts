@@ -11,13 +11,21 @@
  *
  * This reconciler is therefore the ONLY writer of ingest_decisions('approved'),
  * and it writes one only after observing the appid in the published dataset.
+ *
+ * It also SWEEPS: a pending, deferred or failed row whose game is already in
+ * data/ is marked committed. That happens when the browser extension queues a
+ * game discovery also proposed, and when an approval aged out to 'failed' (see
+ * STALE_AFTER_MS) and was published afterwards anyway - before the sweep such a
+ * row stayed 'failed' forever for a game that was live.
  */
-
-const RAW_BASE =
-  "https://raw.githubusercontent.com/poli0981/free-steam-games-list/main";
+import type { AdminDeps } from "./deps";
+import { acquireLease, releaseLease, readState, writeState } from "./locks";
 
 /** Bounded so one cron tick cannot run away; the next tick picks up the rest. */
 const MAX_PER_RUN = 200;
+
+/** Rows in one D1 batch. */
+const BATCH = 50;
 
 /**
  * How long an approval may sit unobserved before it is called failed.
@@ -31,20 +39,14 @@ const MAX_PER_RUN = 200;
  */
 const STALE_AFTER_MS = 12 * 60 * 60 * 1000;
 
-interface IndexFile {
-  files?: { name?: unknown }[];
-}
+/** A run fetches ~6 MB; a crashed isolate's lease frees itself after this. */
+const LEASE_MS = 10 * 60 * 1000;
 
-async function fetchText(path: string): Promise<string | null> {
-  // cacheTtl 0: this is the freshness check itself. A cached shard would keep
-  // reporting a game as unpublished after it landed, and the row would sit in
-  // 'approved' until the cache expired.
-  const res = await fetch(`${RAW_BASE}/${path}`, {
-    cf: { cacheTtl: 0 },
-    headers: { Accept: "text/plain, application/json, */*" },
-  });
-  return res.ok ? await res.text() : null;
-}
+/** admin_state key: the dataset generation the last sweep ran against. */
+const WATERMARK_KEY = "reconcile.index";
+
+/** Appids listed per outcome in the audit row. */
+const AUDIT_APPIDS = 200;
 
 export interface ReconcileResult {
   checked: number;
@@ -52,8 +54,19 @@ export interface ReconcileResult {
   removed: number;
   /** Approvals aged out because nothing ever observed them. */
   stale: number;
+  /** Undecided or failed rows marked committed because the game is live. */
+  swept: number;
   skipped?: string;
 }
+
+const empty = (skipped: string, checked = 0): ReconcileResult => ({
+  checked,
+  published: 0,
+  removed: 0,
+  stale: 0,
+  swept: 0,
+  skipped,
+});
 
 /**
  * appid -> when the pipeline removed it, from scripts/removed_games.jsonl.
@@ -89,104 +102,150 @@ function parseRemoved(text: string): Map<string, number> {
 }
 
 /**
- * Promote 'approved' rows that have since appeared in the dataset.
+ * Every appid in the published shards.
  *
- * Substring search rather than JSON parsing: the shards total ~6 MB, and
- * `"/app/<id>/"` is anchored on both sides by the canonical link format, so it
- * cannot collide with a longer appid or match inside a description.
+ * A regex over the canonical link rather than JSON parsing: the shards total
+ * ~6 MB, and `"link": ".../app/<id>/"` is anchored by the field name, so it
+ * cannot match inside a description or a note quoting a store URL.
  */
+export function publishedAppids(shards: string[]): Set<string> {
+  const out = new Set<string>();
+  const re = /"link"\s*:\s*"https?:\/\/store\.steampowered\.com\/app\/(\d+)\//g;
+  for (const text of shards) {
+    for (const m of text.matchAll(re)) out.add(m[1]);
+  }
+  return out;
+}
+
 /**
- * In-flight guard, per isolate.
- *
- * A full run fetches index.json, every shard and removed_games.jsonl - roughly
- * 6 MB. The 15-minute cron and the manual /admin button can both start one, and
- * the button had no busy state at all, so a double-click fired two.
- *
- * Scope is honest about its limit: this stops repeats within one isolate, which
- * covers the double-click and a cron tick overlapping its predecessor. Two
- * different isolates can still overlap, and that is left alone deliberately -
- * every write in this function is idempotent (`WHERE status='approved'`,
- * `ON CONFLICT DO NOTHING`), so the only cost is duplicated fetching, and a
- * real cross-isolate lock would mean a D1 migration for a purely wasteful race.
+ * The upsert that records a publication. Overwrites a 'rejected' decision:
+ * the game IS in data/, which is a fact, and a stale rejection would leave the
+ * admin screen offering to approve or reject a live game.
+ */
+function recordPublished(env: Env, appid: string, now: string): D1PreparedStatement {
+  return env.DB.prepare(
+    `INSERT INTO ingest_decisions (appid, decision, reason, decided_by, decided_at)
+     VALUES (?1, 'approved', 'observed in data/', 'reconcile', ?2)
+     ON CONFLICT(appid) DO UPDATE SET
+       decision = 'approved', reason = excluded.reason,
+       decided_by = excluded.decided_by, decided_at = excluded.decided_at
+     WHERE ingest_decisions.decision <> 'approved'`,
+  ).bind(appid, now);
+}
+
+/**
+ * Per-isolate guard, still kept under the D1 lease: it makes a double click
+ * within one isolate share one run instead of the second one being refused.
  */
 let inFlight: Promise<ReconcileResult> | null = null;
 
-export async function reconcileApproved(env: Env): Promise<ReconcileResult> {
+export async function reconcileApproved(
+  env: Env,
+  deps: AdminDeps,
+  options: { manual?: boolean } = {},
+): Promise<ReconcileResult> {
   if (inFlight) return inFlight;
-  inFlight = runReconcile(env).finally(() => {
+  inFlight = runLocked(env, deps, options).finally(() => {
     inFlight = null;
   });
   return inFlight;
 }
 
-async function runReconcile(env: Env): Promise<ReconcileResult> {
-  const open = await env.DB.prepare(
-    `SELECT id, appid, decided_at FROM ingest_queue WHERE status = 'approved'
-      ORDER BY decided_at ASC, id LIMIT ?`,
-  )
-    .bind(MAX_PER_RUN)
-    .all<{ id: string; appid: string; decided_at: string | null }>();
-
-  const rows = open.results ?? [];
-  // The common case by far. Returning before any fetch keeps the cron
-  // essentially free on the many ticks where nothing is awaiting publication.
-  if (!rows.length) {
-    return { checked: 0, published: 0, removed: 0, stale: 0, skipped: "nothing approved" };
+async function runLocked(env: Env, deps: AdminDeps, options: { manual?: boolean }): Promise<ReconcileResult> {
+  const owner = crypto.randomUUID();
+  const lease = await acquireLease(env.DB, "reconcile", owner, LEASE_MS, deps.now());
+  // "unavailable" = migration 0002 not applied yet: run anyway, guarded only
+  // per isolate, exactly as before the lease existed.
+  if (lease === "held") return empty("another run in progress");
+  try {
+    return await runReconcile(env, deps, options, lease !== "unavailable");
+  } finally {
+    if (lease === "acquired") await releaseLease(env.DB, "reconcile", owner);
   }
+}
 
-  const bail = (skipped: string): ReconcileResult => ({
-    checked: rows.length, published: 0, removed: 0, stale: 0, skipped,
-  });
+async function runReconcile(
+  env: Env,
+  deps: AdminDeps,
+  options: { manual?: boolean },
+  stateAvailable: boolean,
+): Promise<ReconcileResult> {
+  const [approvedRes, sweepableRes] = await Promise.all([
+    env.DB.prepare(
+      `SELECT id, appid, decided_at FROM ingest_queue WHERE status = 'approved'
+        ORDER BY decided_at ASC, id LIMIT ?`,
+    )
+      .bind(MAX_PER_RUN)
+      .all<{ id: string; appid: string; decided_at: string | null }>(),
+    env.DB.prepare(
+      "SELECT COUNT(*) AS n FROM ingest_queue WHERE status IN ('pending','deferred','failed')",
+    ).first<{ n: number }>(),
+  ]);
+  const approved = approvedRes.results ?? [];
+  const sweepable = sweepableRes?.n ?? 0;
 
-  const index = await fetchText("data/index.json");
-  if (!index) return bail("index unreachable");
+  // The common case by far: nothing to promote and nothing to sweep costs two
+  // indexed D1 queries and no fetch at all.
+  if (!approved.length && !sweepable) return empty("nothing approved");
+
+  const index = await deps.fetchRaw("data/index.json", 0);
+  if (!index) return empty("index unreachable", approved.length);
 
   let shardNames: string[];
+  let generation = "";
   try {
-    const parsed = JSON.parse(index) as IndexFile;
+    const parsed = JSON.parse(index) as {
+      last_updated?: unknown;
+      files?: { name?: unknown; sha256?: unknown }[];
+    };
     shardNames = (parsed.files ?? [])
       .map((f) => f?.name)
       .filter((n): n is string => typeof n === "string" && /^data_\d{3}\.jsonl$/.test(n));
+    generation = JSON.stringify([parsed.last_updated, (parsed.files ?? []).map((f) => f?.sha256 ?? f?.name)]);
   } catch {
-    return bail("index unparseable");
+    return empty("index unparseable", approved.length);
   }
-  if (!shardNames.length) return bail("no shards listed");
+  if (!shardNames.length) return empty("no shards listed", approved.length);
 
-  const shards = await Promise.all(shardNames.map((n) => fetchText(`data/${n}`)));
+  // Nothing approved, and the dataset has not changed since the last sweep:
+  // there is nothing new to observe, so skip the ~6 MB fetch. A manual run
+  // always looks. Without the state table there is no memory between ticks,
+  // so only approvals or a manual run justify the fetch.
+  if (!approved.length && !options.manual) {
+    if (!stateAvailable) return empty("nothing approved");
+    const last = await readState(env.DB, WATERMARK_KEY);
+    if (last === null || last === generation) return empty("dataset unchanged");
+  }
+
+  const shards = await Promise.all(shardNames.map((n) => deps.fetchRaw(`data/${n}`, 0)));
   // A partial read would look exactly like "these games were never published"
   // and would strand every row it touched, so treat it as a failed tick.
-  if (shards.some((s) => s === null)) return bail("shard unreachable");
+  if (shards.some((s) => s === null)) return empty("shard unreachable", approved.length);
+  const live = publishedAppids(shards as string[]);
 
   // Kept separate from the "" fallback: an unreadable removals file is not the
   // same as an empty one. Without it we cannot tell a pipeline rejection from
   // an unprocessed row, so neither of those two judgements may be made on this
   // tick — promotions still can, because those only need the shards.
-  const removedText = await fetchText("scripts/removed_games.jsonl");
+  const removedText = await deps.fetchRaw("scripts/removed_games.jsonl", 0);
   const removed = removedText === null ? null : parseRemoved(removedText);
 
-  const nowMs = Date.now();
-  const now = new Date(nowMs).toISOString();
+  const nowDate = deps.now();
+  const nowMs = nowDate.getTime();
+  const now = nowDate.toISOString();
   const writes: D1PreparedStatement[] = [];
-  let published = 0;
-  let rejected = 0;
-  let stale = 0;
+  const outcome = { published: [] as string[], removed: [] as string[], stale: [] as string[], swept: [] as string[] };
 
-  for (const row of rows) {
-    const needle = `/app/${row.appid}/`;
-
-    if (shards.some((s) => s!.includes(needle))) {
-      published++;
+  for (const row of approved) {
+    if (live.has(row.appid)) {
+      outcome.published.push(row.appid);
       writes.push(
         env.DB.prepare(
           `UPDATE ingest_queue SET status = 'committed' WHERE id = ? AND status = 'approved'`,
         ).bind(row.id),
         // Only NOW is the appid genuinely decided, and only now may
         // /api/ingest/known tell the sweep to stop offering it.
-        env.DB.prepare(
-          `INSERT INTO ingest_decisions (appid, decision, reason, decided_by, decided_at)
-           VALUES (?, 'approved', 'observed in data/', 'reconcile', ?)
-           ON CONFLICT(appid) DO NOTHING`,
-        ).bind(row.appid, now),
+        recordPublished(env, row.appid, now),
       );
       continue;
     }
@@ -200,7 +259,7 @@ async function runReconcile(env: Env): Promise<ReconcileResult> {
 
     // Only a removal recorded AFTER this approval describes this approval.
     if (removedMs !== undefined && !Number.isNaN(decidedMs) && removedMs > decidedMs) {
-      rejected++;
+      outcome.removed.push(row.appid);
       // Deliberately NOT written to ingest_decisions: that would hide the appid
       // from every future sweep on the strength of one bad day (a delisting, a
       // temporary outage). Left as 'failed' so it is visible in the admin queue
@@ -226,7 +285,7 @@ async function runReconcile(env: Env): Promise<ReconcileResult> {
     // would be permanently, silently lost. 'failed' is decidable, so the
     // reviewer can simply approve it again — which re-commits the link.
     if (!Number.isNaN(decidedMs) && nowMs - decidedMs > STALE_AFTER_MS) {
-      stale++;
+      outcome.stale.push(row.appid);
       writes.push(
         env.DB.prepare(
           `UPDATE ingest_queue
@@ -238,18 +297,64 @@ async function runReconcile(env: Env): Promise<ReconcileResult> {
     }
   }
 
+  // The sweep. Reads every undecided row once; the published set is already
+  // in memory, so this costs no further fetch.
+  if (sweepable) {
+    const rows = await env.DB.prepare(
+      "SELECT id, appid FROM ingest_queue WHERE status IN ('pending','deferred','failed')",
+    ).all<{ id: string; appid: string }>();
+    const seen = new Set<string>();
+    for (const row of rows.results ?? []) {
+      if (!live.has(row.appid)) continue;
+      writes.push(
+        env.DB.prepare(
+          `UPDATE ingest_queue
+              SET status = 'committed', decided_by = 'reconcile', decided_at = ?,
+                  reject_reason = 'observed in data/'
+            WHERE id = ? AND status IN ('pending','deferred','failed')`,
+        ).bind(now, row.id),
+      );
+      if (!seen.has(row.appid)) {
+        seen.add(row.appid);
+        outcome.swept.push(row.appid);
+        writes.push(recordPublished(env, row.appid, now));
+      }
+    }
+  }
+
+  for (let i = 0; i < writes.length; i += BATCH) {
+    await env.DB.batch(writes.slice(i, i + BATCH));
+  }
+  if (stateAvailable) await writeState(env.DB, WATERMARK_KEY, generation, nowDate);
+
+  const result: ReconcileResult = {
+    checked: approved.length,
+    published: outcome.published.length,
+    removed: outcome.removed.length,
+    stale: outcome.stale.length,
+    swept: outcome.swept.length,
+  };
+
   if (writes.length) {
-    await env.DB.batch(writes);
+    const cap = (xs: string[]) => xs.slice(0, AUDIT_APPIDS);
     await env.DB.prepare(
       `INSERT INTO audit_log (actor, action, target, detail_json, created_at)
        VALUES ('reconcile', 'reconcile.approved', NULL, ?, ?)`,
     )
       .bind(
-        JSON.stringify({ checked: rows.length, published, removed: rejected, stale }),
+        JSON.stringify({
+          ...result,
+          appids: {
+            published: cap(outcome.published),
+            removed: cap(outcome.removed),
+            stale: cap(outcome.stale),
+            swept: cap(outcome.swept),
+          },
+        }),
         now,
       )
       .run();
   }
 
-  return { checked: rows.length, published, removed: rejected, stale };
+  return result;
 }

@@ -18,6 +18,8 @@ import { handleIngestApi } from "./routes/ingest";
 import { adminPage } from "./routes/admin-ui";
 import { editPage } from "./routes/edit-ui";
 import { reconcileApproved } from "./lib/reconcile";
+import { defaultAdminDeps } from "./lib/deps";
+import { isPruneTick, pruneAdminHistory } from "./lib/prune";
 
 export default {
   async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
@@ -55,16 +57,28 @@ export default {
    * D1 query and no fetches.
    */
   async scheduled(_event: ScheduledController, env: Env, ctx: ExecutionContext) {
+    // Retention for audit_log and commit_jobs, once a day (lib/prune.ts).
+    const now = new Date();
+    if (isPruneTick(now)) {
+      ctx.waitUntil(
+        pruneAdminHistory(env, now)
+          .then((out) => {
+            if (out.audit || out.jobs) console.log("prune", out);
+          })
+          .catch((err) => console.error("prune failed", err instanceof Error ? err.message : String(err))),
+      );
+    }
+
     ctx.waitUntil(
-      reconcileApproved(env)
+      reconcileApproved(env, defaultAdminDeps)
         .then((out) => {
           // Log only what is worth reading. reconcileApproved RESOLVES (it does
           // not throw) when GitHub is unreachable, so without this an outage
           // that stops every reconcile would emit nothing at all. The idle skip
           // is excluded because it is the normal state ~96 times a day.
-          if (out.skipped && out.skipped !== "nothing approved") {
+          if (out.skipped && !["nothing approved", "dataset unchanged", "another run in progress"].includes(out.skipped)) {
             console.warn("reconcile skipped", out);
-          } else if (out.published || out.removed || out.stale) {
+          } else if (out.published || out.removed || out.stale || out.swept) {
             console.log("reconcile", out);
           }
         })

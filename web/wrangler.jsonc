@@ -86,6 +86,11 @@
     // decide. Passthrough still gets edge caching.
     "IMG_TRANSFORM": "false",
 
+    // Days audit_log and commit_jobs rows are kept (worker/lib/prune.ts, run
+    // once a day from the cron). docs/PRIVACY_POLICY.md states this number -
+    // change both together. Values under 7 are ignored as a safety floor.
+    "ADMIN_RETENTION_DAYS": "180",
+
     // Cloudflare Access. Neither value is a secret: the team domain appears in
     // the login redirect and the AUD tag identifies the application. They are
     // vars so the Worker can verify tokens itself rather than trusting that a

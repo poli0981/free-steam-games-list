@@ -30,7 +30,13 @@ export interface GameRecord {
   [k: string]: unknown;
 }
 
-async function fetchText(path: string, ttl: number): Promise<string | null> {
+/**
+ * One repository file as text, through Cloudflare's edge cache for `ttl`
+ * seconds (0 bypasses it). Exported as a dependency so the admin handlers and
+ * reconcile can be run against fixture data in tests and in `npm run
+ * dev:admin`.
+ */
+export async function fetchRaw(path: string, ttl: number): Promise<string | null> {
   const res = await fetch(`${RAW_BASE}/${path}`, {
     cf: { cacheTtl: ttl, cacheEverything: true },
     headers: { Accept: "text/plain, application/json, */*" },
@@ -41,7 +47,7 @@ async function fetchText(path: string, ttl: number): Promise<string | null> {
 async function shardNames(): Promise<string[]> {
   // index.json is ~170 bytes and is the catalogue's own manifest; hardcoding
   // five shard names would break the day the catalogue crosses 4,000 games.
-  const text = await fetchText("data/index.json", 30);
+  const text = await fetchRaw("data/index.json", 30);
   if (!text) return [];
   try {
     const parsed = JSON.parse(text) as { files?: { name?: unknown }[] };
@@ -61,7 +67,7 @@ export async function findRecord(appid: string): Promise<GameRecord | null> {
 
   const needle = `/app/${appid}/`;
   for (const name of names) {
-    const text = await fetchText(`data/${name}`, SHARD_TTL);
+    const text = await fetchRaw(`data/${name}`, SHARD_TTL);
     if (!text) continue;
     const hit = text.indexOf(needle);
     if (hit < 0) continue;
@@ -87,7 +93,7 @@ export async function findOverride(appid: string): Promise<Record<string, unknow
   // TTL 0, unlike the shards: a stale override read would let the edit screen
   // build its next version on top of a superseded one and silently drop
   // somebody's `was` value.
-  const text = await fetchText(`data/overrides/${appid}.json`, 0);
+  const text = await fetchRaw(`data/overrides/${appid}.json`, 0);
   if (!text) return null;
   try {
     const doc = JSON.parse(text) as Record<string, unknown>;
@@ -113,7 +119,7 @@ export async function genreCounts(): Promise<{ genre: string; count: number }[]>
   const re = /"genre"\s*:\s*"((?:[^"\\]|\\.)*)"/g;
 
   for (const name of names) {
-    const text = await fetchText(`data/${name}`, SHARD_TTL);
+    const text = await fetchRaw(`data/${name}`, SHARD_TTL);
     if (!text) continue;
     let m: RegExpExecArray | null;
     while ((m = re.exec(text)) !== null) {
@@ -159,7 +165,7 @@ export async function listByGenre(
   let total = 0;
 
   for (const name of names) {
-    const text = await fetchText(`data/${name}`, SHARD_TTL);
+    const text = await fetchRaw(`data/${name}`, SHARD_TTL);
     if (!text) continue;
     for (const line of text.split("\n")) {
       if (!line || (!line.includes(needle) && !line.includes(alt))) continue;

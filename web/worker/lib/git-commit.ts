@@ -6,8 +6,9 @@
  * in the repository shows as Verified. The REST path would require carrying a
  * signing key in the Worker, next to a credential that can already write.
  *
- * Scope: this module may append to ONE file, `scripts/temp_info.jsonl`. It
- * cannot touch `data/`. Publication stays the pipeline's job — the Worker only
+ * Scope: this module may append to `scripts/temp_info.jsonl` and write or
+ * delete `data/overrides/<appid>.json` (see WRITABLE). It cannot touch the
+ * data/ shards. Publication stays the pipeline's job — the Worker only
  * enqueues a request, `ingest_new.py` decides whether the game is real, free
  * and reachable, and Git remains the source of truth either way.
  */
@@ -68,8 +69,16 @@ function b64encode(text: string): string {
   return btoa(bin);
 }
 
-async function graphql<T>(env: Env, query: string, variables: unknown): Promise<T> {
-  const res = await gh(env, "/graphql", {
+/** How requests reach GitHub. `gh` in production; a fake in tests. */
+export type GitHubTransport = typeof gh;
+
+async function graphql<T>(
+  env: Env,
+  query: string,
+  variables: unknown,
+  transport: GitHubTransport = gh,
+): Promise<T> {
+  const res = await transport(env, "/graphql", {
     method: "POST",
     body: JSON.stringify({ query, variables }),
     headers: { "Content-Type": "application/json" },
@@ -102,7 +111,7 @@ interface HeadAndFile {
  * read and the mutation, the mutation is rejected rather than silently
  * overwriting the newer content.
  */
-async function readHeadAndFile(env: Env, path: string): Promise<HeadAndFile> {
+async function readHeadAndFile(env: Env, path: string, transport: GitHubTransport = gh): Promise<HeadAndFile> {
   const data = await graphql<{
     repository: {
       defaultBranchRef: { target: { oid: string } } | null;
@@ -117,6 +126,7 @@ async function readHeadAndFile(env: Env, path: string): Promise<HeadAndFile> {
        }
      }`,
     { owner: REPO_OWNER, name: REPO_NAME, expr: `${BRANCH}:${path}` },
+    transport,
   );
 
   const oid = data.repository?.defaultBranchRef?.target?.oid;
@@ -150,6 +160,8 @@ export async function appendLinks(
   env: Env,
   links: string[],
   actor: string,
+  reason = "",
+  transport: GitHubTransport = gh,
 ): Promise<CommitResult> {
   let lastError = "";
 
@@ -161,7 +173,7 @@ export async function appendLinks(
   const wanted = [...new Set(links)];
 
   for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
-    const { oid, text } = await readHeadAndFile(env, TEMP_INFO_PATH);
+    const { oid, text } = await readHeadAndFile(env, TEMP_INFO_PATH, transport);
 
     // Dedup against what is already queued. Without this, approving a game
     // twice before the pipeline runs queues it twice; ingest_new.py would
@@ -217,7 +229,10 @@ export async function appendLinks(
               // The reviewer's identity belongs in the commit, not only in the
               // audit table: the audit table is not part of the backup that
               // matters, and Git is.
-              body: `Approved in /admin by ${actor}.\n\nQueued for scripts/ingest_new.py, which decides whether each game is actually free, reachable and not already present. This commit is a request, not a publication.`,
+              body:
+                `Approved in /admin by ${actor}.` +
+                (reason ? `\n\nReason: ${reason}` : "") +
+                `\n\nQueued for scripts/ingest_new.py, which decides whether each game is actually free, reachable and not already present. This commit is a request, not a publication.`,
             },
             expectedHeadOid: oid,
             fileChanges: {
@@ -225,6 +240,7 @@ export async function appendLinks(
             },
           },
         },
+        transport,
       );
       return {
         sha: data.createCommitOnBranch.commit.oid,
@@ -255,7 +271,7 @@ export async function appendLinks(
       let moved = ((err as GraphQlError).types ?? []).includes("STALE_DATA");
       if (!moved) {
         try {
-          moved = (await readHeadAndFile(env, TEMP_INFO_PATH)).oid !== oid;
+          moved = (await readHeadAndFile(env, TEMP_INFO_PATH, transport)).oid !== oid;
         } catch {
           // Cannot establish it either way; do not paper over the original error.
         }
@@ -278,7 +294,8 @@ export async function appendLinks(
 async function readHeadAndFiles(
   env: Env,
   paths: string[],
-): Promise<{ oid: string; texts: string[] }> {
+  transport: GitHubTransport,
+): Promise<{ oid: string; files: { text: string; exists: boolean }[] }> {
   const aliases = paths
     .map((_, i) => `f${i}: object(expression: $e${i}) { ... on Blob { text isBinary } }`)
     .join("\n         ");
@@ -298,30 +315,37 @@ async function readHeadAndFiles(
        }
      }`,
     vars,
+    transport,
   );
 
   const repo = data.repository;
   const oid = repo?.defaultBranchRef?.target?.oid;
   if (!oid) throw new Error(`cannot read ${BRANCH} head`);
 
-  const texts = paths.map((path, i) => {
+  const files = paths.map((path, i) => {
     const obj = repo[`f${i}`];
     if (obj?.isBinary) throw new Error(`${path} is not text`);
-    return (obj?.text ?? "") as string;
+    // A null object is a file that does not exist on the branch - which a
+    // deletion must know, because deleting a missing path fails the commit.
+    return { text: (obj?.text ?? "") as string, exists: obj !== null && obj !== undefined };
   });
-  return { oid, texts };
+  return { oid, files };
 }
+
+/** Returned by FileEdit.build() to delete the file in the same commit. */
+export const DELETE_FILE = Symbol("delete-file");
 
 export interface FileEdit {
   path: string;
   /**
-   * Receives the file's CURRENT text (empty when it does not exist) and returns
-   * the new text, or null to leave the file alone. Called again on every retry,
-   * so it must derive its result from the text it is given rather than from
-   * anything captured earlier — that is what makes a retry merge with newer
-   * content instead of clobbering it.
+   * Receives the file's CURRENT text (empty when it does not exist) and
+   * whether it exists, and returns the new text, null to leave the file alone,
+   * or DELETE_FILE to remove it. Called again on every retry, so it must derive
+   * its result from what it is given rather than from anything captured
+   * earlier — that is what makes a retry merge with newer content instead of
+   * clobbering it.
    */
-  build: (current: string) => string | null;
+  build: (current: string, exists: boolean) => string | null | typeof DELETE_FILE;
 }
 
 /**
@@ -337,24 +361,29 @@ export async function commitFiles(
   edits: FileEdit[],
   headline: string,
   body: string,
+  transport: GitHubTransport = gh,
 ): Promise<string | null> {
   if (!edits.length) return null;
+  // Deletions pass the same allowlist as writes: the App can delete anything.
   for (const e of edits) assertWritable(e.path);
   let lastError = "";
 
   for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
     const paths = edits.map((e) => e.path);
-    const { oid, texts } = await readHeadAndFiles(env, paths);
+    const { oid, files } = await readHeadAndFiles(env, paths, transport);
 
     const additions: { path: string; contents: string }[] = [];
+    const deletions: { path: string }[] = [];
     edits.forEach((e, i) => {
-      const next = e.build(texts[i]);
-      if (next !== null && next !== texts[i]) {
+      const next = e.build(files[i].text, files[i].exists);
+      if (next === DELETE_FILE) {
+        if (files[i].exists) deletions.push({ path: e.path });
+      } else if (next !== null && next !== files[i].text) {
         additions.push({ path: e.path, contents: b64encode(next) });
       }
     });
     // Every file already said what it needed to; an empty commit is noise.
-    if (!additions.length) return null;
+    if (!additions.length && !deletions.length) return null;
 
     try {
       const data = await graphql<{ createCommitOnBranch: { commit: { oid: string } } }>(
@@ -370,9 +399,10 @@ export async function commitFiles(
             },
             message: { headline, body },
             expectedHeadOid: oid,
-            fileChanges: { additions },
+            fileChanges: deletions.length ? { additions, deletions } : { additions },
           },
         },
+        transport,
       );
       return data.createCommitOnBranch.commit.oid;
     } catch (err) {
@@ -383,7 +413,7 @@ export async function commitFiles(
       let moved = ((err as GraphQlError).types ?? []).includes("STALE_DATA");
       if (!moved) {
         try {
-          moved = (await readHeadAndFile(env, paths[0])).oid !== oid;
+          moved = (await readHeadAndFile(env, paths[0], transport)).oid !== oid;
         } catch {
           /* cannot tell; surface the original error */
         }

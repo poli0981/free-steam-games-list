@@ -18,17 +18,10 @@ import { jsonError, SECURITY_HEADERS, clampLimit, clampOffset } from "../lib/htt
 import { audit } from "../lib/audit";
 import { serialiseOverride } from "../lib/override-doc";
 import type { AccessIdentity } from "../lib/access";
-import { commitFiles } from "../lib/git-commit";
-import { findOverride, findRecord, genreCounts, listByGenre } from "../lib/records";
-
-/**
- * Games one request may change.
- *
- * Bounds the GraphQL read (one aliased field per file), the size of a single
- * commit, and how much one mis-click can do. Ten is the maintainer's number,
- * and it is small enough that a reviewer can still read what they selected.
- */
-const MAX_EDIT = 10;
+import { DELETE_FILE } from "../lib/git-commit";
+import { defaultAdminDeps, type AdminDeps } from "../lib/deps";
+import type { GameRecord } from "../lib/records";
+import { MAX_EDIT } from "../../shared/queue-rules";
 
 /** Mirrors MANUAL_FIELDS in scripts/core/constants.py. */
 const MANUAL_FIELDS = [
@@ -98,6 +91,43 @@ interface OverrideDoc {
   retired: Record<string, unknown>;
 }
 
+/**
+ * Whether an override document may be deleted, and if not, why.
+ *
+ * Deleting an override is NOT the same as retiring one (CLAUDE.md): a deleted
+ * file can no longer restore `was`, so any value it still pins stays pinned
+ * forever. It is therefore allowed only once the document is SETTLED:
+ *
+ *   - no active field is left (retire them first), and
+ *   - every retired value has already been restored by the pipeline - the
+ *     catalogue no longer holds the overridden value, or the override never
+ *     changed anything (`was` equals `value`).
+ *
+ * scripts/edit_game.py removes a file only when it has no entries at all; this
+ * is the same principle, extended to a file whose retirements have finished
+ * their one job.
+ */
+export function deletable(
+  doc: { fields?: unknown; retired?: unknown } | null,
+  record: Record<string, unknown>,
+): { ok: boolean; reason: string } {
+  if (!doc) return { ok: false, reason: "no override file" };
+  const fields = doc.fields && typeof doc.fields === "object" ? Object.keys(doc.fields) : [];
+  if (fields.length) return { ok: false, reason: `still overriding: ${fields.join(", ")} - retire them first` };
+  const retired = (doc.retired && typeof doc.retired === "object" ? doc.retired : {}) as Record<string, OverrideEntry>;
+  const pending = Object.entries(retired)
+    .filter(([field, entry]) => {
+      if (!entry || typeof entry !== "object") return false;
+      const same = JSON.stringify(entry.was ?? null) === JSON.stringify(entry.value ?? null);
+      return !same && JSON.stringify(record[field] ?? null) === JSON.stringify(entry.value ?? null);
+    })
+    .map(([field]) => field);
+  if (pending.length) {
+    return { ok: false, reason: `not restored yet: ${pending.join(", ")} - wait for the pipeline to run` };
+  }
+  return { ok: true, reason: "" };
+}
+
 function asDoc(raw: unknown, appid: string, link: string, name: string): OverrideDoc {
   const d = (raw ?? {}) as Partial<OverrideDoc>;
   return {
@@ -115,6 +145,7 @@ export async function handleEditApi(
   url: URL,
   env: Env,
   who: AccessIdentity,
+  deps: AdminDeps = defaultAdminDeps,
 ): Promise<Response> {
   const route = url.pathname.slice("/api/admin/".length);
 
@@ -123,9 +154,9 @@ export async function handleEditApi(
     const appid = url.searchParams.get("appid") ?? "";
     if (!/^\d{1,10}$/.test(appid)) return jsonError(400, "appid must be 1-10 digits");
 
-    const record = await findRecord(appid);
+    const record = await deps.findRecord(appid);
     if (!record) return jsonError(404, "not in the catalogue");
-    const override = await findOverride(appid);
+    const override = await deps.findOverride(appid);
 
     // Only the editable fields plus enough to identify the game. The whole
     // record is not the admin screen's business and would be a much larger
@@ -143,6 +174,7 @@ export async function handleEditApi(
       is_dead: record.is_dead ?? false,
       fields,
       override,
+      deletable: deletable(override, record),
     });
   }
 
@@ -150,7 +182,7 @@ export async function handleEditApi(
   // counts are the point: they are how the maintainer spots the vague buckets
   // worth breaking up.
   if (route === "genres" && request.method === "GET") {
-    return json({ genres: await genreCounts() });
+    return json({ genres: await deps.genreCounts() });
   }
 
   // The games carrying one genre, for bulk retagging.
@@ -159,14 +191,14 @@ export async function handleEditApi(
     if (!genre || genre.length > 100) return jsonError(400, "genre required");
     const limit = clampLimit(url.searchParams.get("limit"), 60, 200);
     const offset = clampOffset(url.searchParams.get("offset"));
-    const out = await listByGenre(genre, limit, offset);
+    const out = await deps.listByGenre(genre, limit, offset);
     return json({ genre, limit, offset, ...out });
   }
 
   if (route === "edit" && request.method === "POST") {
     let body: {
       appid?: unknown; appids?: unknown;
-      set?: unknown; retire?: unknown; reason?: unknown;
+      set?: unknown; retire?: unknown; reason?: unknown; delete?: unknown;
     };
     try {
       body = (await request.json()) as typeof body;
@@ -188,6 +220,53 @@ export async function handleEditApi(
       if (!/^\d{1,10}$/.test(a)) return jsonError(400, `${a}: appid must be 1-10 digits`);
     }
 
+    const reason = typeof body.reason === "string" ? body.reason.slice(0, 300) : "";
+
+    // Deleting a settled override file: one game at a time, nothing else in
+    // the same request, re-checked against the file as it is at commit time.
+    if (body.delete === true) {
+      if (appids.length !== 1) return jsonError(400, "delete takes exactly one appid");
+      if (body.set !== undefined || body.retire !== undefined) {
+        return jsonError(400, "delete cannot be combined with set or retire");
+      }
+      const appid = appids[0];
+      const record = await deps.findRecord(appid);
+      if (!record) return jsonError(404, "not in the catalogue");
+      const check = deletable(await deps.findOverride(appid), record);
+      if (!check.ok) return jsonError(409, check.reason);
+
+      return commitOverride(env, deps, who, {
+        kind: "override.delete",
+        appids: [appid],
+        targetPath: `data/overrides/${appid}.json`,
+        headline: `override: remove settled file for ${record.name || appid}`,
+        body:
+          `Removed in /admin by ${who.email}.${reason ? `\n\nReason: ${reason}` : ""}\n\n` +
+          "Every entry in it was retired and already restored, so it no longer changes anything.",
+        edits: [
+          {
+            path: `data/overrides/${appid}.json`,
+            build: (current: string, exists: boolean) => {
+              if (!exists) return null;
+              let doc: unknown;
+              try {
+                doc = JSON.parse(current);
+              } catch {
+                throw new Error(`existing override for ${appid} is not valid JSON`);
+              }
+              // Re-checked on the text being deleted, not the text read above:
+              // a field set in between must not be deleted with the file.
+              const again = deletable(doc as { fields?: unknown; retired?: unknown }, record);
+              if (!again.ok) throw new Error(`not deletable any more: ${again.reason}`);
+              return DELETE_FILE;
+            },
+          },
+        ],
+        auditDetail: { appids: [appid], delete: true, reason },
+        response: { appids: [appid], deleted: true },
+      });
+    }
+
     const set = (body.set && typeof body.set === "object" ? body.set : {}) as Record<string, unknown>;
     const retire = Array.isArray(body.retire)
       ? body.retire.filter((f): f is string => typeof f === "string")
@@ -195,7 +274,6 @@ export async function handleEditApi(
     if (!Object.keys(set).length && !retire.length) {
       return jsonError(400, "nothing to set or retire");
     }
-    const reason = typeof body.reason === "string" ? body.reason.slice(0, 300) : "";
 
     for (const [field, value] of Object.entries(set)) {
       const why = validateValue(field, value);
@@ -212,7 +290,7 @@ export async function handleEditApi(
     // what a later retire restores, so a client-supplied `was` would let a
     // crafted request rewrite history. It is also why a bulk edit cannot just
     // reuse one `was` across games.
-    const records = await Promise.all(appids.map((a) => findRecord(a)));
+    const records = await Promise.all(appids.map((a) => deps.findRecord(a)));
     const missing = appids.filter((_, i) => !records[i]);
     if (missing.length) {
       return jsonError(404, `not in the catalogue: ${missing.join(", ")}`);
@@ -227,9 +305,16 @@ export async function handleEditApi(
         ? `override: ${first.name || appids[0]} (${touched.join(", ")})`
         : `override: ${appids.length} games (${touched.join(", ")})`;
 
-    const sha = await commitFiles(
-      env,
-      appids.map((appid, i) => {
+    return commitOverride(env, deps, who, {
+      kind: "override",
+      appids,
+      targetPath: appids.length === 1 ? `data/overrides/${appids[0]}.json` : `data/overrides/{${appids.join(",")}}.json`,
+      headline,
+      body:
+        `Edited in /admin by ${who.email}.${reason ? `\n\nReason: ${reason}` : ""}\n\n` +
+        `Standing instruction re-applied by save_main() on every write to data/. ` +
+        `See scripts/core/overrides.py.`,
+      edits: appids.map((appid, i) => {
         const record = records[i]!;
         return {
           path: `data/overrides/${appid}.json`,
@@ -245,7 +330,7 @@ export async function handleEditApi(
                 throw new Error(`existing override for ${appid} is not valid JSON`);
               }
             }
-            const doc = asDoc(existing, appid, record.link, record.name ?? "");
+            const doc = asDoc(existing, appid, record.link, (record as GameRecord).name ?? "");
 
             for (const [field, value] of Object.entries(set)) {
               // `was` is captured the FIRST time a field is overridden and
@@ -280,33 +365,81 @@ export async function handleEditApi(
           },
         };
       }),
-      headline,
-      `Edited in /admin by ${who.email}.${reason ? `\n\nReason: ${reason}` : ""}\n\n` +
-        `Standing instruction re-applied by save_main() on every write to data/. ` +
-        `See scripts/core/overrides.py.`,
-    );
-
-    // Shared helper, and best-effort on purpose: this runs after commitFiles
-    // has already landed a commit, so a D1 failure here must not report the
-    // override as failed. See lib/audit.ts.
-    await audit(env, who.email, "override", appids.join(","), {
-      appids,
-      set: Object.keys(set),
-      retire,
-      sha,
-      reason,
-    });
-
-    return json({
-      appids,
-      commit: sha,
-      set: Object.keys(set),
-      retired: retire,
-      // data/ is untouched until the pipeline runs; say so rather than letting
-      // the reviewer assume the catalogue changed.
-      applied: false,
+      auditDetail: { appids, set: Object.keys(set), retire, reason },
+      response: {
+        appids,
+        set: Object.keys(set),
+        retired: retire,
+        // data/ is untouched until the pipeline runs; say so rather than
+        // letting the reviewer assume the catalogue changed.
+        applied: false,
+      },
     });
   }
 
   return jsonError(404, "not found");
+}
+
+/**
+ * One override commit, with its commit_jobs row.
+ *
+ * Override commits used to leave no job at all - only an audit row written
+ * AFTER the commit - so an edit whose Worker died mid-flight left no trace, and
+ * the admin "Commit jobs" view never showed an override. The job is written
+ * before the attempt, like an approval's.
+ */
+async function commitOverride(
+  env: Env,
+  deps: AdminDeps,
+  who: AccessIdentity,
+  plan: {
+    kind: "override" | "override.delete";
+    appids: string[];
+    targetPath: string;
+    headline: string;
+    body: string;
+    edits: { path: string; build: (current: string, exists: boolean) => string | null | typeof DELETE_FILE }[];
+    auditDetail: Record<string, unknown>;
+    response: Record<string, unknown>;
+  },
+): Promise<Response> {
+  const jobId = crypto.randomUUID();
+  const startedAt = deps.now().toISOString();
+  try {
+    await env.DB.prepare(
+      `INSERT INTO commit_jobs (id, kind, status, target_path, requested_by, created_at)
+       VALUES (?, ?, 'pending', ?, ?, ?)`,
+    )
+      .bind(jobId, plan.kind, plan.targetPath.slice(0, 500), who.email, startedAt)
+      .run();
+  } catch (err) {
+    // The commit is the point; a bookkeeping failure must not block it.
+    console.error("override: commit_jobs insert failed", err instanceof Error ? err.message : String(err));
+  }
+
+  let sha: string | null;
+  try {
+    sha = await deps.commitFiles(env, plan.edits, plan.headline, plan.body);
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    await env.DB.prepare("UPDATE commit_jobs SET status='failed', error=?, finished_at=? WHERE id=?")
+      .bind(message.slice(0, 500), deps.now().toISOString(), jobId)
+      .run()
+      .catch(() => undefined);
+    await audit(env, who.email, `${plan.kind}.failed`, plan.appids.join(","), { ...plan.auditDetail, message });
+    return jsonError(502, "commit failed: " + message);
+  }
+
+  await env.DB.prepare("UPDATE commit_jobs SET status='committed', commit_sha=?, error=?, finished_at=? WHERE id=?")
+    .bind(sha, sha ? null : "nothing to commit: the files already said this", deps.now().toISOString(), jobId)
+    .run()
+    .catch((err: unknown) =>
+      console.error("override: commit_jobs update failed", err instanceof Error ? err.message : String(err)),
+    );
+
+  // Best-effort on purpose: the commit has already landed, so a D1 failure
+  // here must not report the override as failed. See lib/audit.ts.
+  await audit(env, who.email, plan.kind, plan.appids.join(","), { ...plan.auditDetail, sha, job: jobId });
+
+  return json({ ...plan.response, commit: sha, job: jobId });
 }
