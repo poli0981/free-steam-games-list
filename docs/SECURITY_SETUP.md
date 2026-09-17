@@ -70,9 +70,9 @@ does not inherit its result — re-walk, or the claim rots.
 
 Two directives are the way they are for measured reasons, not by preference:
 
-- **`style-src` needs `'unsafe-inline'`.** Radix (via shadcn/ui) positions
-  popovers and dialogs with inline `style` attributes, and ECharts sizes its
-  canvas the same way — `/games` alone renders 471 inline-styled elements.
+- **`style-src` needs `'unsafe-inline'`.** Bits UI positions popovers and
+  dialogs with inline `style` attributes, the virtualised table places its rows
+  that way, and ECharts sizes its canvas the same way.
   This is the acceptable half of the trade: the app renders no user-supplied
   HTML, and `script-src` stays strict, which is the directive that actually
   stops code execution.
@@ -101,9 +101,13 @@ visitor's IP to GitHub, which the privacy policy says does not happen.
 
 ### Why there is no CSP on API responses
 
-They are JSON and images, not documents; a policy would govern nothing. The two
-HTML pages the Worker *does* serve — `/admin` and `/admin/edit` — build their
-own stricter CSP with a per-response nonce.
+They are JSON and images, not documents; a policy would govern nothing. The one
+HTML document the Worker *does* serve — the admin app's shell, for `/admin` and
+its four sibling routes — carries its own stricter CSP: `default-src 'none'`
+and a `script-src` of a per-response nonce and nothing else
+(`worker/routes/admin-spa.ts`). `worker/routes/admin-spa.test.ts` checks the
+nonce is fresh per response and that `script-src` never gains
+`'unsafe-inline'`.
 
 ### Why `Cross-Origin-Resource-Policy` is static-only
 
@@ -454,8 +458,43 @@ charts and everything else work; only images are affected.
 
 ---
 
+## 11. Continuous script monitoring adds a report-only CSP to some responses
+
+Found 2026-09-17 in the browser console on the live site, on roughly one page
+load in thirty:
+
+```
+[Report Only] Refused to ... because it violates the following Content Security
+Policy directive ... report-uri /cdn-cgi/script_monitor/report
+```
+
+It is not in the repository. Cloudflare's **Continuous script monitoring**
+(Page Shield) samples responses at the edge and adds a
+`Content-Security-Policy-Report-Only` header whose reports go to
+`/cdn-cgi/script_monitor/report`. Report-only means it blocks nothing, so the
+site works; the cost is console noise, and that the reports send page and
+script URLs from visitors' browsers to Cloudflare, which
+`docs/PRIVACY_POLICY.md` does not mention.
+
+It also adds nothing this site needs: every script is first-party, the app's
+own CSP already refuses anything else, and the admin shell's nonce policy is
+stricter still.
+
+**Recommended: turn it OFF** (dashboard → Security → Settings → Continuous
+script monitoring). Dashboard action, so it is the maintainer's to do. If it is
+ever wanted on, say so in the privacy policy first.
+
+**Check** (repeat a few times; the header is sampled):
+
+```bash
+for i in 1 2 3 4 5 6 7 8; do curl -sI https://free-steam-games.win/ | grep -ci "content-security-policy-report-only"; done
+```
+
+Every line must print `0`.
+
+---
+
 ## Still open
 
-`audit_log` has no pruning job. It grows only with admin actions so it is not
-urgent, but it is unbounded — pick a retention window and make it agree with
-`docs/PRIVACY_POLICY.md` before it matters.
+Nothing from this list. `audit_log` and `commit_jobs` are pruned daily after
+`ADMIN_RETENTION_DAYS` (180), which `docs/PRIVACY_POLICY.md` states.

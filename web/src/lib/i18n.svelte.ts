@@ -4,9 +4,9 @@
  * The React app used i18next + react-i18next + i18next-browser-languagedetector
  * — three dependencies and ~40 KB — to do four things: look up a dotted key,
  * interpolate `{{var}}`, pick `_one`/`_other` by count, and fall back to `en`.
- * Two locales and 353 keys do not need a library for that, and swapping in
- * Paraglide would have meant converting every key, which is 706 chances to
- * introduce a typo in text nobody proofreads.
+ * Two locales and a few hundred keys do not need a library for that, and
+ * swapping in Paraglide would have meant converting every key, twice over, with
+ * a chance of a typo in text nobody proofreads each time.
  *
  * So: the locale JSON files are untouched, byte for byte, and this reads them.
  *
@@ -103,10 +103,9 @@ class I18n {
    * Look up `key`, interpolating `vars`.
    *
    * `vars.count` additionally selects between `key_one` and `key_other` when
-   * those exist. Only four keys in the catalogue use that, and all four belong
-   * to the removed in-app editing feature — but the suffix convention is
-   * i18next's and the JSON still carries it, so honouring it costs nothing and
-   * avoids a silent miss if one is ever reused.
+   * those exist. No key uses that today (the four that did belonged to the
+   * removed in-app editing), but the suffix convention is i18next's, so
+   * honouring it costs nothing and avoids a silent miss the day one is added.
    */
   t = (key: string, vars?: Record<string, unknown>): string => {
     // Read the rune so Svelte tracks this call against a language change.

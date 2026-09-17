@@ -2,18 +2,24 @@
 
 All notable changes to this awesome noob repo will be documented here.
 
-## [v4.0.0] – 2026-09-12 (The "Rewrite" Edition)
+## [v4.0.0] – 2026-09-17 (The "Rewrite" Edition)
 
 The end-user web app was rewritten from React 19 to **SvelteKit 2 / Svelte 5**,
 given a typeface and a palette of its own, and gained the pages it had been
-missing. `/admin` was completed and hardened in place. Web app +
-desktop/Android bumped `1.4.5` → `2.0.0`; repo public-facing version `3.4.3` →
-`4.0.0`.
+missing. `/admin` was rebuilt as an app of its own, embedded in the Worker. The
+data path now verifies every shard it caches, every game has a page search
+engines can read, the web app is installable, and the desktop app updates
+itself. Web app + desktop/Android bumped `1.4.5` → `2.0.0`; repo public-facing
+version `3.4.3` → `4.0.0`.
 
 Breaking for anyone who packaged or embedded the old build: the desktop window
 is now resizable, the `tauri-plugin-http` native bridge is gone, and the
 Content-Security-Policy is emitted by the app itself rather than by
 `_headers`.
+
+Deploying it needs one manual step: `npx wrangler d1 migrations apply f2p-admin
+--remote` (migration `0002_admin_state.sql`). The Worker runs without it,
+degraded, and `/admin/health` says so.
 
 ### 🎨 A front end that looks like something
 
@@ -39,11 +45,21 @@ Content-Security-Policy is emitted by the app itself rather than by
 - `/legal/:doc` — all eight documents, rendered from the repo's markdown **at
   build time**, so no markdown parser or sanitiser reaches the browser. The
   welcome screen used to intercept these links and redirect to `/about`.
-- `/games/:appid` — a real page per game, with its own title and description.
+- `/games/:appid` — a real page per game, **prerendered for all ~3,600 games**
+  from build-time seeds with `VideoGame` structured data, and listed in the
+  sitemap. Player counts and reviews still come live from the catalogue.
+- `/welcome` — a first-run introduction, shown once after the terms are
+  accepted: what the list is and is not, three ways in, the language, and the
+  documents just accepted.
+- `/legal` — an index of the documents. An unknown document is a translated
+  404 rather than the dashboard.
 - `/developers`, `/developers/:name`, `/publishers/:name` — `developer[]` and
   `publisher[]` were on every record and used by nothing.
 - `/stats` — the fields no chart covered: Metacritic distribution, peak-vs-now
-  retention, safety flags, language coverage, review-label buckets.
+  retention, safety flags, language coverage, review-label buckets, and when
+  games went quiet.
+- `/charts/time` gains catalogue growth (added per month, running total), and
+  the anti-cheat index is a searchable, sortable table.
 
 ### 🔎 Findable
 
@@ -56,17 +72,58 @@ Content-Security-Policy is emitted by the app itself rather than by
 - PNG icons for the PWA manifest and `apple-touch-icon`, which never accepted
   SVG.
 
-### 🛠️ `/admin` finished
+### 🛠️ `/admin` rebuilt
 
-- Three endpoints that had no UI at all are now reachable: the audit log,
-  health, and commit jobs — the evidence trail for a commit that landed
-  without a queue update was previously readable only through
-  `wrangler d1 execute`.
-- Server-side search and sorting. The filter box used to search only the 60
-  rows on screen, so an appid on page 3 reported "nothing matches".
-- Approve/Reject are disabled on tabs where they can only 409, Reconcile is
-  busy-guarded, and leaving with unsaved edits warns.
-- `/admin/edti` served the queue page. Unknown `/admin/*` now 404s.
+- **Its own app.** The two Worker-rendered pages (1,400 lines of HTML and
+  script inside template literals) are replaced by a Svelte 5 app in
+  `web/admin/`, embedded in the Worker and served only behind Cloudflare
+  Access, with a nonce-only script policy. None of it reaches `dist/`, the
+  service worker or the packaged apps, and the build fails if any does.
+- **Decided rows are read-only.** Approved, committed and rejected rows, and
+  undecided rows for a game that is already published, have no checkbox and
+  are skipped by select-all. The server enforces the same rules from one shared
+  module, and every row a decision cannot touch comes back with a reason
+  instead of being dropped silently.
+- **Reopen** a rejected row from its details, with the reason when it cannot be.
+- Every decision is confirmed first; tabs, search, sort and page live in the
+  URL; keyboard shortcuts; a phone layout.
+- **Corrections** are reviewed as a diff before the commit, bulk changes can set
+  or retire any field across pages, and a settled override file can be deleted.
+- **Jobs, Audit and Health** have their own pages. Health still draws its table
+  when the answer is a 503, and Test write proves the write path.
+- Deferring or requeueing a failed row next to an open one no longer 500s; an
+  approval whose commit landed but whose queue update failed says exactly that
+  and leaves its job marked committed.
+- **Reconcile** holds a D1 lease, sweeps undecided rows whose game appeared in
+  `data/` by another route, and skips the dataset fetch while nothing changed.
+- `audit_log` and `commit_jobs` are pruned after 180 days, as the privacy
+  policy now says.
+- `npm run dev:admin` runs the real handlers against an in-memory database, so
+  the admin can be worked on without deploying it.
+
+### 🧮 Data you can trust
+
+- `data/index.json` carries a **SHA-256 per shard**, and `last_updated` changes
+  only when the data did — a pipeline run that changed nothing no longer makes
+  every visitor re-download ~6 MB.
+- The Worker serves `?v=<sha256>` shard requests content-addressed and
+  immutable, and refuses (503) while GitHub's CDN still has the previous bytes.
+- The app caches only a generation whose hashes verified, keeps the last good
+  one for offline use, and re-checks when the tab comes back. A long-lived tab
+  used to show a count and date days out of date.
+
+### 📲 Installable, and updatable
+
+- The web app registers its service worker (it never had, on the SvelteKit
+  build), offers installation, works offline, and asks before reloading into an
+  update.
+- The **desktop app updates itself**: it checks a feed at
+  `/api/updates/desktop`, which offers only a published `desktop-v*` release,
+  shows the notes, and restarts into the new version. The old endpoint pointed
+  at the repository's "latest" release, usually a dataset release, and 404'd.
+- Updating no longer wipes settings: the webview is cleared once, only when
+  coming from a build older than 2.0.
+- `steam://` links open the Steam client from the apps.
 
 ### 🔐 Security
 
@@ -92,8 +149,11 @@ Content-Security-Policy is emitted by the app itself rather than by
 
 `docs/ADMIN.md` claimed the override byte-parity between `scripts/edit_game.py`
 and the Worker was "asserted by a parity test". No test existed anywhere in the
-repo. There are now 95 across the Worker and the app, including that one — and
-each was checked by mutation, not merely by passing.
+repo. Vitest now covers the app, the Worker (against a real SQLite database with
+the real migrations) and the admin app; pytest covers the index hashing; cargo
+covers the upgrade purge. The first 95 were each checked by mutation, not
+merely by passing. `verify-dist.mjs` reads the built HTML in CI for the
+mistakes that only exist there.
 
 ### 🖥️ Binary 2.0.0
 
@@ -108,6 +168,24 @@ each was checked by mutation, not merely by passing.
   `/games/730` through its own fallback chain; the note claiming the webview
   had no server-side fallback was out of date. Links from released 1.4.x
   builds are still upgraded on load.
+
+### 🐛 Fixed on the live site
+
+- Raw placeholders on screen: `Languages ({{count}})`, `(PEAK {{PEAK}})` as a
+  field label, `(peak {{peak}})` on a chart axis, and one in a prerendered meta
+  description. A test now reads every call site.
+- Hovering a chart tile, bar or slice blanked it (the colour format zrender
+  cannot parse), the genre treemap tooltip printed `({d}%)`, and axis names
+  were clipped on `/stats`.
+- The command palette crashed on open (a duplicate route), the consent overlay
+  covered the documents it asked people to read, unknown URLs rendered the
+  dashboard, and old `/#/` links changed the address bar without the page.
+- Vietnamese readers saw English for the legal document names, the table's
+  data-issue hints and the About page's stack. 137 locale keys nothing used any
+  more are gone, and a test fails on the next one.
+- The report-only CSP messages in the console come from Cloudflare's
+  Continuous script monitoring, not the site; `docs/SECURITY_SETUP.md` says how
+  to turn it off.
 
 ### 🐛 Console
 

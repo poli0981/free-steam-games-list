@@ -5,8 +5,8 @@ behind it, and the Tauri desktop/Android shells — all from this one directory.
 
 It is **read-only for visitors.** Sign-in, in-browser editing and client-side
 GPG signing were removed in September 2026; the only write path left is
-`/admin`, which is server-rendered by the Worker and gated by Cloudflare
-Access.
+`/admin`, a separate Svelte app (`admin/`) that is embedded in the Worker and
+served only behind Cloudflare Access. See [docs/ADMIN.md](../docs/ADMIN.md).
 
 ## Stack
 
@@ -57,33 +57,43 @@ Worker:
 - `/api/activity` — recent commits, so `api.github.com` is absent from the
   site's `connect-src`
 
-The IndexedDB cache is keyed on `index.last_updated`, so the app revalidates
-only when shards actually change.
+`index.json` lists a SHA-256 for every shard. The app requests shards as
+`?v=<sha256>`, which the Worker serves content-addressed and immutable (or 503s
+while GitHub's CDN still has the previous bytes), and hashes what it receives
+before caching it. IndexedDB holds the last generation that verified; the app
+re-checks the index when the tab regains focus and every ten minutes while it is
+visible, and falls back to that cache offline.
 
 ## Layout
 
 ```
 web/
 ├── src/
-│   ├── routes/                 # 30 routes; +layout, +error, sitemap.xml
+│   ├── routes/                 # pages; +layout, +error, sitemap.xml
+│   ├── params/                 # route param matchers (legal document slugs)
 │   ├── lib/
-│   │   ├── *.svelte.ts         # rune state: games, filters, prefs, i18n
+│   │   ├── *.svelte.ts         # rune state: games, filters, prefs, i18n, pwa
 │   │   ├── schema.ts           # mirrors scripts/core/constants.py
-│   │   ├── fetcher.ts          # shard fetch + JSONL parse
-│   │   ├── cache.ts            # IndexedDB read/write/freshness
+│   │   ├── games-loader.ts     # verified shard generations, offline fallback
+│   │   ├── cache.ts            # IndexedDB read/write
 │   │   ├── fallback-route.ts   # re-renders routes served the SPA shell
 │   │   ├── charts/             # EChart wrapper, registration, ChartPage
 │   │   ├── common/             # Seo, ConsentGate, QueryState, ErrorView, …
 │   │   ├── games/              # virtualised table, columns, filtering
 │   │   ├── server/markdown.ts  # /legal/* rendering, BUILD TIME ONLY
-│   │   └── ui/                 # Button, Badge, Input, Dialog, …
+│   │   └── ui/                 # Button, Badge, Input (also used by admin/)
+│   ├── styles/theme.css        # design tokens, shared with admin/
 │   ├── workers/jsonl-parser.ts # Web Worker
 │   ├── i18n/locales/{en,vi}.json
 │   ├── app.html
-│   └── index.css               # theme tokens + @theme inline
+│   └── index.css
+├── admin/                      # the /admin app: own Vite build, embedded in the Worker
 ├── worker/                     # the Cloudflare Worker (routes, lib, migrations)
+├── shared/                     # queue rules and API types for the Worker and admin/
+├── build/game-seeds.ts         # build-time seeds for the prerendered game pages
 ├── src-tauri/                  # desktop + Android shell
 ├── static/                     # _headers, robots.txt, security.txt, generated art
+├── scripts/verify-dist.mjs     # checks the built output (run in CI)
 ├── scripts/gen-fontface.py     # subsetted @font-face rules
 ├── scripts/gen-icons.py        # icons + og.png, from static/icon.svg
 ├── svelte.config.js            # adapter, CSP, prerender entries
@@ -94,10 +104,14 @@ web/
 
 ## Rendering
 
-Every route is prerendered except three: `/games/[appid]`,
-`/developers/[name]` and `/publishers/[name]`, each of which would be several
-thousand near-identical pages. Those are served the app shell and rendered from
-the catalogue the client already holds.
+Every route is prerendered, including one page per game on the web build: the
+`gameSeeds` Vite plugin (`build/game-seeds.ts`) reads `../data` at build time,
+and each page carries the slow-changing fields as a `#game-seed` block that
+the same universal load reads back while hydrating. Player counts and reviews
+are never seeded; they come from the live catalogue. The Tauri build
+prerenders no game pages, and `/developers/[name]` and `/publishers/[name]` are
+never prerendered: those are served the app shell and rendered from the
+catalogue.
 
 Two things about that are load-bearing and easy to break — both are explained
 at length in `svelte.config.js` and `src/lib/fallback-route.ts`:
@@ -107,7 +121,8 @@ at length in `svelte.config.js` and `src/lib/fallback-route.ts`:
   moment a page is served as the fallback.
 - Both hosts answer an unmatched path with `index.html` — the prerendered
   dashboard — and a prerendered page hydrates as its own route.
-  `fallback-route.ts` corrects that on first mount.
+  `fallback-route.ts` corrects that on first mount for the routes that can
+  fall back, and an unmatched URL renders the 404 in place.
 
 ## Content-Security-Policy
 
@@ -126,14 +141,18 @@ and the packaged apps need the site's origin named explicitly.
 
 ## PWA
 
-`@vite-pwa/sveltekit` registers a Workbox service worker.
+`@vite-pwa/sveltekit` builds a Workbox service worker, registered only after
+the legal consent step and never in the Tauri build (a worker at
+`tauri.localhost` can never update).
 
-- `/api/data/*` is **NetworkFirst** with a 5-second timeout. It must not be
-  cache-first: `index.json` carries `last_updated`, the client's only
-  cache-invalidation signal, so serving that from cache strands every reader on
-  stale records.
+- Updates prompt ("Update available" → Reload) rather than swapping the app
+  under an open page, and the worker checks for a new version hourly.
+- `/api/data/*` is **not** cached by the worker. IndexedDB is the offline
+  store, and only for a generation whose hashes verified.
 - `/img/*` is **CacheFirst** for 30 days, status 200 only. Steam's `?t=` is an
   asset mtime, so a changed image arrives as a different URL.
+- The prerendered game pages are left out of the precache (they would add
+  about 120 MB).
 - `/api/*`, `/img/*` and `/admin` are on the navigation-fallback denylist. An
   installed worker answering `/admin` from the app shell would serve the public
   shell where the Access gate belongs.
@@ -148,9 +167,10 @@ persists in `localStorage` under `f2p:lang`.
 Long-form legal copy stays English on purpose — keeping the wording
 byte-identical across languages avoids weakening it in translation.
 
-`src/lib/i18n.test.ts` scans the source for literal `t("…")` keys and fails on
-any that do not exist in both locales. It was written after three invented keys
-shipped.
+`src/lib/i18n.test.ts` scans the source and fails on a key that does not
+exist, a placeholder a call site does not fill, a template-literal key, an
+English key nothing uses any more, and a Vietnamese value that is just the
+English copied across (names and formats are allowlisted there).
 
 ## Desktop and Android
 
@@ -195,9 +215,10 @@ See [docs/DEPLOYMENT.md](../docs/DEPLOYMENT.md) and
 ## Checks
 
 ```bash
-npm run check      # svelte-check
+npm run typecheck  # builds admin/, then svelte-check (app + admin) and tsc (Worker, tests)
 npm test           # vitest
 npm run knip       # dead code and dependencies
-npm run build
+npm run build      # site, then admin/
+node scripts/verify-dist.mjs --web
 node node_modules/wrangler/bin/wrangler.js deploy --dry-run --config wrangler.jsonc
 ```

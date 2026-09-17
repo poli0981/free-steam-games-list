@@ -65,8 +65,8 @@ Manual fields preserved through the ingest pipeline: `type_game`, `genre`, `anti
 - **Games must be free-to-play on Steam.** No demos, no paid-now games, no malware-flagged ones.
 - **Notes / safe fields** are optional but useful. Examples: `"safe": "y"`, `"notes": "Toxic max"`, `"notes": "Grind phê Easy mode"`.
 - **Spam / off-topic** issues get closed without comment. Don't be that person.
-- **Code style:** match the surrounding file. No hard rules. The Python pipeline is intentionally low-ceremony; the React/Vite side is TS-strict.
-- **Tests:** there's no formal test suite for the data pipeline. For web changes, `npm run typecheck && npm run build` must pass.
+- **Code style:** match the surrounding file. No hard rules. The Python pipeline is intentionally low-ceremony; the web side (SvelteKit, the Worker, `admin/`) is TS-strict.
+- **Tests:** for web changes, `npm run typecheck && npm test && npm run build` must pass (in `web/`). For pipeline changes, `python -m pytest scripts/tests`.
 
 ## Code of conduct
 

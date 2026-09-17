@@ -7,7 +7,7 @@ IDE, toolchain ngôn ngữ, và workflow hàng ngày khi phát triển repo này
 | Tool       | Dùng cho                                                          |
 | ---------- | ----------------------------------------------------------------- |
 | PyCharm    | `scripts/` Python pipeline (fetcher, scraper, generator)          |
-| WebStorm   | `web/src/` React + TypeScript + Vite                              |
+| WebStorm   | `web/` SvelteKit + Svelte 5 + TypeScript, Worker, `admin/`       |
 | RustRover  | `web/src-tauri/` Tauri 2 desktop wrapper (Rust)                   |
 
 Lineup JetBrains, bản trả phí, channel **2026.x**. Editor khác (VS Code, Neovim, ...) cũng OK — repo không bind editor cụ thể.
@@ -23,7 +23,7 @@ Lineup JetBrains, bản trả phí, channel **2026.x**. Editor khác (VS Code, N
 | Git        | mới                 | GPG signing on (`commit.gpgsign=true`)            |
 | Tauri CLI  | 2.x                 | gọi qua `npm run tauri ...`                       |
 
-CI workflow trong [`.github/workflows/`](../../../.github/workflows) đã pin các version này. Xem [`release-desktop.yml`](../../../.github/workflows/release-desktop.yml) cho matrix build desktop và [`deploy-pages.yml`](../../../.github/workflows/deploy-pages.yml) cho deploy web.
+CI workflow trong [`.github/workflows/`](../../../.github/workflows) đã pin các version này. Xem [`release-desktop.yml`](../../../.github/workflows/release-desktop.yml) cho matrix build desktop và [`web-ci.yml`](../../../.github/workflows/web-ci.yml) cho các bước kiểm tra web. Bản thân trang web được Cloudflare Workers Builds deploy mỗi khi push lên `main` — xem [`DEPLOYMENT.md`](../../DEPLOYMENT.md).
 
 ## Workflow dev
 
@@ -33,12 +33,14 @@ CI workflow trong [`.github/workflows/`](../../../.github/workflows) đã pin c�
 cd web
 npm ci                   # cài lần đầu
 npm run dev              # http://localhost:5173 (Vite)
-npm run typecheck        # TS strict
-npm run build            # bundle production vào web/dist
-npm run preview          # serve bundle đã build
+npm run dev:admin        # http://localhost:5174/admin, app admin chạy trên backend giả lập
+npm run typecheck        # TS strict: app, admin, Worker, test
+npm test                 # vitest
+npm run build            # site vào web/dist, admin vào bundle của Worker
+node scripts/verify-dist.mjs --web
 ```
 
-Cả `typecheck` lẫn `build` phải pass trước khi mở PR — phía React không có test suite chính thức, type-strict là safety net.
+`typecheck`, `test` và `build` đều phải pass trước khi mở PR; `web-ci.yml` chạy đúng các bước đó, kèm một bản build cấu hình Tauri.
 
 ### Tauri desktop
 
@@ -60,13 +62,13 @@ python update_data.py                        # daily full refresh
 python top_online.py                         # rebuild games/top-online.md
 ```
 
-Pipeline cố ý low-ceremony, không có unit test. Lint bằng `ruff` nếu có; còn lại dựa vào review.
+`python -m pytest scripts/tests` (chạy từ thư mục gốc) kiểm tra phần băm index; `python-tests.yml` chạy nó mỗi khi `scripts/` thay đổi. Phần còn lại của pipeline cố ý low-ceremony. Lint bằng `ruff` nếu có; còn lại dựa vào review.
 
 ### Git + GPG
 
 - **Luôn** sign commit: `git config --local commit.gpgsign true`.
 - Mỗi commit hiện **Verified ✓** trên GitHub khi GPG key đã unlock.
-- Edit từ web-app đi qua Git Data API và lấy OpenPGP private key user paste vào Settings — xem note GPG trong [`../../../CONTRIBUTING.md`](../../../CONTRIBUTING.md).
+- Web app không còn tự commit. Commit từ `/admin` do một GitHub App tạo qua `createCommitOnBranch` và được GitHub tự ký — xem [`ADMIN.md`](../../ADMIN.md).
 
 ## Branch + PR flow
 

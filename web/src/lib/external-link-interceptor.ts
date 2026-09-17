@@ -1,12 +1,11 @@
 // Global click interceptor: route external-link clicks through the Tauri
 // shell so they open in the system browser. The Tauri webview (desktop AND
 // Android) blocks window.open() / <a target="_blank"> to external HTTP(S),
-// so without this every plain external <a> across the app (~20 call sites:
-// About, Sidebar, GameDetailDrawer, auth panels, …) would dead-click. One
-// capture-phase listener handles them all instead of editing each anchor.
+// so without this every plain external <a> across the app (About, Sidebar,
+// the game page, the legal documents, …) would dead-click. One capture-phase
+// listener handles them all instead of editing each anchor.
 //
-// No-op outside Tauri — on the web/PWA build native anchor behaviour is kept,
-// so the GitHub Pages deploy is unaffected.
+// No-op outside Tauri — the web build keeps native anchor behaviour.
 
 import { isTauri, openExternal } from "./external-open";
 
@@ -25,8 +24,7 @@ export function installExternalLinkInterceptor(): void {
       const href = anchor?.getAttribute("href");
       if (!href) return;
 
-      // Internal hash-router links (#/games) and root-relative paths stay in
-      // the webview.
+      // In-page anchors and root-relative app paths stay in the webview.
       if (href.startsWith("#") || href.startsWith("/")) return;
 
       let url: URL;

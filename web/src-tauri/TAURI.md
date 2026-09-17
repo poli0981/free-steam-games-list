@@ -1,6 +1,6 @@
 # Tauri 2 desktop + Android build
 
-This file documents how to build and run the Tauri wrapper around the React web app — both the **desktop** bundles and the sideloadable **Android** APK. CI builds use the same recipes via [`.github/workflows/release-desktop.yml`](../../.github/workflows/release-desktop.yml) and [`.github/workflows/release-android.yml`](../../.github/workflows/release-android.yml).
+This file documents how to build and run the Tauri wrapper around the SvelteKit web app — both the **desktop** bundles and the sideloadable **Android** APK. CI builds use the same recipes via [`.github/workflows/release-desktop.yml`](../../.github/workflows/release-desktop.yml) and [`.github/workflows/release-android.yml`](../../.github/workflows/release-android.yml).
 
 ## Prerequisites
 
@@ -41,7 +41,7 @@ npm ci                  # install web deps once
 npm run tauri dev       # dev build with hot reload
 ```
 
-This boots Vite (`npm run dev`) under the hood and wires Tauri to it. The window opens at fixed 1400×900, dark theme, no resize.
+This boots Vite (`npm run dev`) under the hood and wires Tauri to it. The window opens at 1280×860 and can be resized down to 880×600.
 
 ## Production build
 
@@ -60,7 +60,11 @@ Output bundles land in `web/src-tauri/target/release/bundle/`:
 
 ## Auto-update + signing
 
-From v1.0 onwards the app polls the GitHub Releases page on launch and offers to download the next signed build. Updater clients reject unsigned binaries.
+The desktop app checks for an update a few seconds after it starts, once per session, and offers to install it and restart. Updater clients reject unsigned binaries.
+
+The update feed is **`https://free-steam-games.win/api/updates/desktop`** (`plugins.updater.endpoints` in `tauri.conf.json`), not a GitHub `releases/latest` URL. "Latest" on this repository is usually a dataset `v*` release, which has no `latest.json`, so that URL 404'd. The Worker route (`web/worker/routes/updates.ts`) reads the repository's releases feed, picks the highest **published** `desktop-vX.Y.Z` release, validates its `latest.json` and returns it, or answers 204 ("no update"). A draft release is therefore never offered: publish it after smoke-testing, and clients see it within about five minutes.
+
+Updating keeps the app's settings. The webview's storage is cleared once, only when upgrading from a build older than 2.0 (`needs_purge` in `src/lib.rs`), to evict a service worker those builds registered.
 
 - Public minisign key is baked into [`tauri.conf.json`](tauri.conf.json).
 - Private key + (optional) password live in repo Secrets:
@@ -75,7 +79,7 @@ From v1.0 onwards the app polls the GitHub Releases page on launch and offers to
 - Push of any `desktop-v*` tag (e.g. `desktop-v1.1.0`)
 - Manual `workflow_dispatch` with a tag input
 
-It runs the build matrix (Win / macOS-universal / Linux), uploads installers as draft Release assets, and emits `latest.json` for the auto-updater (`includeUpdaterJson: true`).
+It runs the build matrix (Win / macOS-universal / Linux), uploads installers as draft Release assets, and emits `latest.json` for the auto-updater (`includeUpdaterJson: true`). It needs `TAURI_SIGNING_PRIVATE_KEY`, because `createUpdaterArtifacts` signs every bundle.
 
 ## Android build
 
@@ -129,9 +133,8 @@ keytool -genkeypair -v -keystore f2p-tracker-release.jks \
 ### Notes
 
 - **Minimum Android 11 (API 30)** — `minSdk = 30` in [`gen/android/app/build.gradle.kts`](gen/android/app/build.gradle.kts). Android's installer blocks the APK below that (`INSTALL_FAILED_OLDER_SDK`), so it's also the OS-level version gate — no in-app check needed. Floor chosen for security (Android 7–10 are EOL with no Google OS patches and old WebViews) over raw reach; tested on emulator 11→16 + a real vivo 1907 (Android 12). Full rationale + version stats: [`docs/android-support.md`](../../docs/android-support.md). Don't re-run `tauri android init` — it would reset this.
-- **No auto-updater on Android** — `tauri-plugin-updater` is desktop-only. Updates are manual: install a newer APK over the top (same signing key → no uninstall).
+- **No auto-updater on Android** — `tauri-plugin-updater` is desktop-only. The app checks GitHub Releases once per session and offers the newer APK as a download; installing it over the top keeps your data (same signing key → no uninstall).
 - **Edge-to-edge** — targetSdk 36 forces it; the layout uses `env(safe-area-inset-*)` to dodge the status / gesture-nav bars.
-- **OAuth Device Flow** routes through `@tauri-apps/plugin-http` because the Android System WebView enforces CORS on the `github.com/login/*` endpoints (desktop's webview doesn't). PAT sign-in needs no native bridge.
 - **Kotlin cross-drive warning** — if the Cargo registry (`C:`) and the project (`E:`) are on different drives, Kotlin incremental compilation falls back to non-incremental every build (slower, harmless). Move `CARGO_HOME` to the project's drive, or set `kotlin.incremental=false` in `gen/android/gradle.properties`, to avoid it.
 
 ## Troubleshooting
@@ -140,6 +143,7 @@ keytool -genkeypair -v -keystore f2p-tracker-release.jks \
 - **`napi-rs` build fails** — verify Rust toolchain is `stable` and `rustup target list --installed` includes the host triple.
 - **macOS universal binary** — ensure both `aarch64-apple-darwin` and `x86_64-apple-darwin` targets are added (`rustup target add ...`). CI does this in the `dtolnay/rust-toolchain` step.
 - **Updater silent on sideloaded copies** — sideloaded installs have a different bundle identifier; only the official MSI/DMG/AppImage receive update prompts.
+- **No update offered after a release** — the release is still a draft (drafts are never offered), or the tag is not a strict `desktop-vX.Y.Z`. `curl -i https://free-steam-games.win/api/updates/desktop` shows what clients see.
 
 ## Known advisories
 

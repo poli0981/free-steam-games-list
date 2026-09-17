@@ -45,8 +45,6 @@ export async function checkAndroidUpdate(): Promise<AndroidUpdate | null> {
     Accept: "application/vnd.github+json",
     "X-GitHub-Api-Version": "2022-11-28",
   };
-  // Use the signed-in token if present (raises the API rate limit); the
-  // releases list is public so an anonymous call works too.
   // Unauthenticated: the release list is public, and there is no sign-in to
   // borrow a token from any more. The lower rate limit is ample for a check
   // that runs once per app launch.

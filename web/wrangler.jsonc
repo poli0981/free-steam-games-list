@@ -24,20 +24,23 @@
   "workers_dev": false,
 
   "assets": {
-    // Vite's build output. NOT "." — pointing this at the source directory is
-    // what currently serves an unbuilt index.html (referencing /src/main.tsx)
-    // along with the whole source tree.
+    // Vite's build output. NOT "." — pointing this at the source directory
+    // once served an unbuilt index.html (referencing /src/main.tsx) along with
+    // the whole source tree. The admin app is NOT in here: it is embedded in
+    // the Worker script (admin/, worker/generated/admin-bundle.ts).
     "directory": "./dist",
 
     // Lets worker/index.ts fall through via env.ASSETS.fetch(request).
     "binding": "ASSETS",
 
-    // Any path matching no file returns index.html with HTTP 200, which is what
-    // BrowserRouter needs. Replaces the GitHub Pages 404.html trick.
+    // Any path matching no file returns index.html with HTTP 200 - the
+    // PRERENDERED dashboard, which src/lib/fallback-route.ts corrects for the
+    // routes that can arrive this way. Replaces the GitHub Pages 404.html trick.
     //
     // Consequence worth remembering: a request for a DELETED hashed chunk also
     // gets index.html at 200, so the browser rejects it on MIME type rather
-    // than status. lib/lazy.ts's isChunkLoadError matches that message.
+    // than status. src/lib/chunk-error.ts's isChunkLoadError matches that
+    // message.
     "not_found_handling": "single-page-application",
 
     // Worker code runs ONLY for these prefixes; everything else is served
@@ -45,8 +48,9 @@
     // /img/* must be listed or image requests fall through to the SPA handler
     // and come back as index.html with Content-Type: text/html. /admin must be
     // listed or the SPA fallback serves the public shell where Access is
-    // expected. /assets/* is deliberately NOT listed — routing hashed bundles
-    // through the Worker would bill every JS/CSS request.
+    // expected, and it covers the admin app's own /admin/assets/*. /_app/* is
+    // deliberately NOT listed — routing the site's hashed bundles through the
+    // Worker would bill every JS/CSS request.
     "run_worker_first": ["/api/*", "/img/*", "/admin", "/admin/*"]
   },
 

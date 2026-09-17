@@ -7,7 +7,7 @@ IDE, language toolchains, and the day-to-day workflow used to develop this repo.
 | Tool       | Used for                                                           |
 | ---------- | ------------------------------------------------------------------ |
 | PyCharm    | `scripts/` Python pipeline (data fetcher, scraper, generator)      |
-| WebStorm   | `web/src/` React + TypeScript + Vite                                |
+| WebStorm   | `web/` SvelteKit + Svelte 5 + TypeScript, the Worker, `admin/`     |
 | RustRover  | `web/src-tauri/` Tauri 2 desktop wrapper (Rust)                    |
 
 JetBrains lineup, paid version, channel **2026.x**. Any equivalent editor (VS Code, Neovim, etc.) works — the repo is editor-agnostic.
@@ -17,13 +17,13 @@ JetBrains lineup, paid version, channel **2026.x**. Any equivalent editor (VS Co
 | Tool        | Version             | Notes                                         |
 | ----------- | ------------------- | --------------------------------------------- |
 | Python      | 3.12                | `scripts/` pipeline + Steam client            |
-| Node.js     | ≥ 22 (LTS)          | web build, Tauri build pipeline               |
+| Node.js     | 24 (CI), ≥ 22.5     | web build, tests (`node:sqlite`), Tauri build |
 | Rust        | stable (via rustup) | Tauri runtime                                 |
 | npm         | bundled with Node   | `web/package-lock.json` is the source of truth |
 | Git         | recent              | GPG signing on (`commit.gpgsign=true`)         |
 | Tauri CLI   | 2.x                 | invoked via `npm run tauri ...`                |
 
-The CI workflows in [`.github/workflows/`](../.github/workflows) pin these versions explicitly. See [`release-desktop.yml`](../.github/workflows/release-desktop.yml) for the desktop build matrix and [`deploy-pages.yml`](../.github/workflows/deploy-pages.yml) for the web deploy.
+The CI workflows in [`.github/workflows/`](../.github/workflows) pin these versions explicitly. See [`release-desktop.yml`](../.github/workflows/release-desktop.yml) for the desktop build matrix and [`web-ci.yml`](../.github/workflows/web-ci.yml) for the web checks. The site itself is deployed by Cloudflare Workers Builds on a push to `main` — see [`DEPLOYMENT.md`](DEPLOYMENT.md).
 
 ## Dev workflow
 
@@ -33,12 +33,14 @@ The CI workflows in [`.github/workflows/`](../.github/workflows) pin these versi
 cd web
 npm ci                   # one-time install
 npm run dev              # http://localhost:5173 (Vite)
-npm run typecheck        # strict TS
-npm run build            # production bundle into web/dist
-npm run preview          # serve the built bundle
+npm run dev:admin        # http://localhost:5174/admin, the admin app on a local mock backend
+npm run typecheck        # strict TS: app, admin, Worker, tests
+npm test                 # vitest
+npm run build            # site into web/dist, admin into the Worker bundle
+node scripts/verify-dist.mjs --web
 ```
 
-Both `typecheck` and `build` must pass before opening a PR — there is no formal test suite for the React side, type-strictness is the safety net.
+`typecheck`, `test` and `build` must all pass before opening a PR; `web-ci.yml` runs the same, plus a Tauri-flavour build.
 
 ### Tauri desktop
 
@@ -60,13 +62,13 @@ python update_data.py                        # daily full refresh
 python top_online.py                         # rebuild games/top-online.md
 ```
 
-There is no formal unit-test suite — the pipeline is intentionally low-ceremony. Lint with `ruff` if you have it; otherwise rely on review.
+`python -m pytest scripts/tests` (from the repo root) covers the index hashing; `python-tests.yml` runs it on every change under `scripts/`. The rest of the pipeline is intentionally low-ceremony. Lint with `ruff` if you have it; otherwise rely on review.
 
 ### Git + GPG
 
 - **Always** sign commits: `git config --local commit.gpgsign true`.
 - Each commit lands as **Verified ✓** on GitHub when the GPG key is unlocked.
-- Web-app edits go through the Git Data API and pick up the OpenPGP private key the maintainer pasted into Settings → see the GPG note in [`../CONTRIBUTING.md`](../CONTRIBUTING.md).
+- The web app no longer commits anything. Commits made from `/admin` are created by a GitHub App through `createCommitOnBranch`, which GitHub signs itself — see [`ADMIN.md`](ADMIN.md).
 
 ## Branch + PR flow
 

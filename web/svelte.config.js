@@ -49,13 +49,13 @@ const config = {
       // "single-page-application"` and Tauri's get_asset both fall back to
       // index.html, which is now the DASHBOARD. An unmatched path therefore
       // gets dashboard markup for one frame before the client router corrects
-      // it. That only affects the routes that opt out of prerendering
-      // (/games/[appid], /developers/[name], /publishers/[name]), and those
-      // are not indexed anyway.
+      // it. That only affects the routes that are not prerendered (studio
+      // pages, a game added after the last deploy, and every game page in the
+      // Tauri build), and those are not indexed anyway.
       fallback: "200.html",
       precompress: false,
       // Not strict: /games/[appid] is deliberately NOT prerendered in the
-      // Tauri build (3,400 HTML files would bloat the APK), and strict mode
+      // Tauri build (3,600 HTML files would bloat the APK), and strict mode
       // treats a route with no prerendered entry as an error even when a
       // fallback exists to serve it.
       strict: false,

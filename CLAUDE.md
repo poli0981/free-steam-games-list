@@ -181,8 +181,12 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
   `<path>.html`, `<path>/index.html`, then `index.html`, so the Tauri webview
   resolves `/games/730` on its own. The old claim that it "has no server-side
   fallback" was out of date. See `docs/plan/15-sveltekit-migration.md`.
-  HashRouter-era `/#/…` URLs from released 1.4.x builds are still upgraded on
-  load by `upgradeLegacyHashUrl()` — do not remove it.
+  HashRouter-era `/#/…` URLs still arrive - from released 1.4.x builds, and from
+  old links to the GitHub Pages site, whose tombstone redirect forwards the
+  fragment - and `upgradeLegacyHashUrl()` upgrades them on load with
+  `goto(…, {replaceState})`. Do not remove it, and do not reduce it to a
+  `history.replaceState`: that fixed the address bar and left the dashboard
+  rendered.
 - **The CSP lives in `web/svelte.config.js` (`kit.csp`), not in `_headers`.**
   SvelteKit emits one inline bootstrap script per page and hashes it there. A
   header CSP cannot coexist: browsers enforce the INTERSECTION of header and
@@ -244,9 +248,10 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
   prerender, so anything behind it ships an empty body and the SEO reason for
   prerendering is gone. The consent gate is an OVERLAY for this reason, not a
   replacement for the page.
-- **`/api/data/*` sends `Access-Control-Allow-Origin: *` on purpose.** The
-  Tauri apps fetch it cross-origin (`tauri://localhost`,
-  `http://tauri.localhost`); without it they cannot load the catalogue at all.
+- **`/api/data/*` and `/api/activity` send `Access-Control-Allow-Origin: *` on
+  purpose.** The Tauri apps fetch them cross-origin (`tauri://localhost`,
+  `http://tauri.localhost`); without it they cannot load the catalogue or the
+  activity feed at all.
   Never add CORS to `/api/admin/*` or `/api/ingest/*`, and never set
   `Cross-Origin-Resource-Policy` on Worker responses — the same apps load
   `/img/*` cross-site.

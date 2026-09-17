@@ -30,10 +30,10 @@ install gate. (Set in [`gen/android/app/build.gradle.kts`](../web/src-tauri/gen/
    tail (Android 7–10) while still covering the large installed base on 11–13.
    **Be aware:** Android 11–13 no longer receive OS security patches from Google,
    even though they can still install the app.
-2. **WebView / React compatibility.** The app is a thin native shell around the
+2. **WebView compatibility.** The app is a thin native shell around the
    web UI; everything renders in the **Android System WebView** (Chromium). Old
    Android releases tend to carry an outdated WebView, which can choke on the
-   modern ES2022 / React 19 output of our Vite 8 / Rolldown build. A newer OS
+   modern ES2022 / Svelte 5 output of our Vite 8 / Rolldown build. A newer OS
    floor raises the guaranteed Chromium baseline and reduces that breakage risk.
    (The WebView itself updates independently via the Play Store, so users who
    keep it current fare better — but we can't rely on that on EOL devices.)

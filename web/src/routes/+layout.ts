@@ -6,8 +6,9 @@
  * here would give up that HTML, and with it the whole SEO reason for
  * prerendering. It stays ON.
  *
- * `prerender = true` — every route is prerendered by default. The one route
- * that opts out is /games/[appid] in the Tauri build, which sets its own value.
+ * `prerender = true` — every route is prerendered by default. The routes that
+ * opt out set their own value: /games/[appid] in the Tauri build only, and
+ * /developers/[name] and /publishers/[name] always.
  */
 export const prerender = true;
 

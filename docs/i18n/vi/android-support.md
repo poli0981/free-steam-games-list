@@ -28,9 +28,9 @@ cách bypass trong app — nên ngưỡng phiên bản cũng chính là cổng c
    chủ đích: bỏ phần đuôi *chết hẳn* (Android 7–10) mà vẫn phủ lượng lớn người
    dùng đang ở 11–13. **Lưu ý:** Android 11–13 không còn nhận bản vá bảo mật OS
    từ Google, dù vẫn cài được app.
-2. **Tương thích WebView / React.** App là lớp vỏ native mỏng bọc UI web; mọi thứ
+2. **Tương thích WebView.** App là lớp vỏ native mỏng bọc UI web; mọi thứ
    render trong **Android System WebView** (Chromium). Các bản Android cũ thường
-   mang WebView lỗi thời, dễ vỡ với output ES2022 / React 19 của bản build Vite 8
+   mang WebView lỗi thời, dễ vỡ với output ES2022 / Svelte 5 của bản build Vite 8
    / Rolldown. Ngưỡng OS cao hơn nâng nền Chromium tối thiểu và giảm rủi ro này.
    (WebView tự cập nhật độc lập qua Play Store, nên ai giữ nó mới thì ổn hơn —
    nhưng không thể trông cậy điều đó trên máy đã EOL.)
