@@ -197,12 +197,27 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
   became `/200`). The symptom is subtle — `page.route.id` and `page.url` are
   CORRECT, so the canonical tag and og:url look right; only the rendered
   components are the dashboard's. `web/src/lib/fallback-route.ts` re-navigates
-  on first mount for the three routes that are never prerendered, and
-  `fallback-route.test.ts` holds its list against the routes that actually
-  declare `prerender = false`. A path that matches NO route hydrates the same
+  on first mount for the routes in `MAY_FALL_BACK` — unless the route's own page
+  hydrated, which each of those pages announces by calling
+  `markRouteRendered()` from its top-level script. That check is what lets a
+  PRERENDERED `/games/730` skip the re-render while a game added after the last
+  deploy, every Tauri game page and every studio page still recover.
+  `fallback-route.test.ts` holds the list against the routes whose `prerender`
+  is not literally `true`, and checks each one marks itself. A path that matches NO route hydrates the same
   way with `page.route.id === null`; the root layout renders the 404 view in
   place. Never `goto()` an unmatched URL — SvelteKit falls back to a native
   load, the host answers with `index.html` again, and it loops forever.
+- **Game pages are prerendered from build-time seeds, through a UNIVERSAL load.**
+  `build/game-seeds.ts` serves `virtual:game-seeds`: in the SSR build it reads
+  `../data` and inlines a seed per game (slow-changing fields only — never
+  players or reviews); in the client build `seedFor()` reads the page's own
+  `#game-seed` JSON block, so the load returns the same value while hydrating.
+  Do not turn it into `+page.server.ts`: client navigation would then fetch
+  `__data.json`, which for a game added after the deploy is `index.html` at
+  200, and the page errors. `__PRERENDER_GAMES__` is false for Tauri.
+  `kit.prerender.handleHttpError` ignores 404s under `/img/` and `/api/` only,
+  because the crawler follows the page's `<img>` into a Worker route that does
+  not exist at build time.
 - **Nothing may gate the markup behind `onMount`.** onMount does not run during
   prerender, so anything behind it ships an empty body and the SEO reason for
   prerendering is gone. The consent gate is an OVERLAY for this reason, not a

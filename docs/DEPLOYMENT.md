@@ -49,6 +49,28 @@ build watch paths must include `data/**` — otherwise the site silently serves
 a frozen dataset with no error anywhere, and a health check that reads the repo
 rather than production will report green while it happens.
 
+### The one exception: prerendered game pages
+
+Every `/games/<appid>` page is prerendered on the web build from `data/` as it
+stood at build time, so a crawler - which never accepts the terms and never
+loads the catalogue - gets real content. Only the slow-changing fields are
+baked in (name, description, artwork, studios, genre, platforms, tags); player
+counts and reviews always come from `/api/data/*` in the browser.
+
+That snapshot is therefore **as fresh as the last deploy**, and it should stay
+that way:
+
+- **Confirm the Workers Builds watch paths exclude `data/**`** (dashboard →
+  Worker → Settings → Build). If they included it, every bot data commit — several a
+  day — would rebuild and re-upload ~3,650 pages.
+- A game added after the last deploy has no file. The host answers with the
+  SPA fallback and `lib/fallback-route.ts` renders it client-side, so it works;
+  it simply is not indexable until the next deploy.
+- A game removed since the last deploy keeps its file until then. Once the live
+  catalogue loads, the page shows "Game not found" with `noindex`.
+- `F2P_SKIP_GAME_PRERENDER=1 npm run build` skips them for quick local builds.
+  The Tauri builds never prerender them.
+
 ## Verifying a deploy
 
 ```bash
@@ -88,8 +110,10 @@ Stop `wrangler dev` before running `npm ci`. On Windows the install deletes
 ## Checks
 
 `.github/workflows/web-ci.yml` runs on pull requests and on pushes to `main`
-touching `web/**`: `npm ci`, both typechecks (app and Worker), the build,
-`wrangler deploy --dry-run`, and `knip`.
+touching `web/**`: `npm ci`, the typechecks (app, Worker and tests), `npm test`,
+the build, `scripts/verify-dist.mjs --web` over the prerendered HTML,
+`wrangler deploy --dry-run`, and `knip`. `python-tests.yml` runs the pipeline's
+pytest suite on changes under `scripts/`.
 
 It uses a plain `npm ci`, never `npm ci || npm install`. That fallback is what
 hid a lockfile conflict which broke installs for a month.

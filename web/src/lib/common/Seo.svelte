@@ -35,6 +35,10 @@
     noindex?: boolean;
     /** Structured data, already shaped. Serialised here. */
     jsonld?: Record<string, unknown>;
+    /** Dimensions of `image`. The defaults describe og.png; pass null for an
+     *  image whose size is not known, so no wrong size is claimed. */
+    imageWidth?: number | null;
+    imageHeight?: number | null;
   }
 
   let {
@@ -44,6 +48,8 @@
     type = "website",
     noindex = false,
     jsonld,
+    imageWidth = 1200,
+    imageHeight = 630,
   }: Props = $props();
 
   const SITE = "Steam F2P Tracker";
@@ -75,8 +81,10 @@
   <meta property="og:image" content={ogImage} />
   <!-- Dimensions let a crawler lay out the card before it has fetched the
        image; without them some clients fall back to the small square card. -->
-  <meta property="og:image:width" content="1200" />
-  <meta property="og:image:height" content="630" />
+  {#if imageWidth && imageHeight}
+    <meta property="og:image:width" content={String(imageWidth)} />
+    <meta property="og:image:height" content={String(imageHeight)} />
+  {/if}
   <meta property="og:image:alt" content={fullTitle} />
 
   <!-- summary_large_image is what turns an X card from a thumbnail strip into

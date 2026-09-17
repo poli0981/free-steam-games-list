@@ -7,6 +7,7 @@ import tailwindcss from "@tailwindcss/vite";
 import { visualizer } from "rollup-plugin-visualizer";
 import path from "node:path";
 import { readFileSync } from "node:fs";
+import { gameSeeds } from "./build/game-seeds";
 
 // Version sourced from package.json (single source of truth, matches the Android
 // versionName) and exposed to the bundle as `__APP_VERSION__` for the update check.
@@ -21,16 +22,29 @@ const appVersion = JSON.parse(
  */
 const IS_TAURI = Boolean(process.env.TAURI_ENV_PLATFORM);
 
+/**
+ * Prerender one page per game (web only).
+ *
+ * Off for Tauri: 3,650 HTML files is real APK weight, and the packaged apps
+ * resolve /games/<appid> through the SPA fallback anyway. Off when
+ * F2P_SKIP_GAME_PRERENDER is set, for quick local builds.
+ */
+const PRERENDER_GAMES = !IS_TAURI && !process.env.F2P_SKIP_GAME_PRERENDER;
+
 export default defineConfig(({ mode }) => ({
   // No `base`. SvelteKit owns the base path (kit.paths), and setting Vite's
   // would fight it.
   define: {
     __APP_VERSION__: JSON.stringify(appVersion),
+    // Read by routes/games/[appid]/+page.ts. A route file cannot read
+    // process.env itself - it also ships to the browser.
+    __PRERENDER_GAMES__: JSON.stringify(PRERENDER_GAMES),
   },
   plugins: [
     // Tailwind before sveltekit: the Svelte plugin needs the CSS transform
     // already registered when it processes <style> blocks.
     tailwindcss(),
+    gameSeeds({ enabled: PRERENDER_GAMES, dataDir: path.resolve(__dirname, "../data") }),
     sveltekit(),
     /**
      * WEB ONLY. A service worker registered at tauri.localhost can never be
@@ -84,7 +98,10 @@ export default defineConfig(({ mode }) => ({
           // for crawlers. @vite-pwa/sveltekit adds every static asset to the
           // precache on its own, regardless of globPatterns, so keeping it
           // out of every install takes an explicit ignore.
-          globIgnores: ["**/og.png"],
+          // The prerendered game pages: ~3,650 HTML files, ~120 MB. The glob
+          // runs over .svelte-kit/output, not dist, and without this every
+          // install would precache all of them.
+          globIgnores: ["**/og.png", "prerendered/pages/games/**", "**/games/*.html"],
           navigateFallback: "/200.html",
           // These are Worker routes, not app navigations. Without the denylist an
           // installed service worker answers them from the app shell and they

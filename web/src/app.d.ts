@@ -6,6 +6,8 @@ declare global {
    *  export, which makes it a module, and a bare `declare const` in a module is
    *  local to it rather than ambient. */
   const __APP_VERSION__: string;
+  /** vite.config.ts: whether this build prerenders a page per game (web only). */
+  const __PRERENDER_GAMES__: boolean;
 
   namespace App {
     // interface Error {}

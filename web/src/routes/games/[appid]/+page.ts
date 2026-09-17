@@ -1,19 +1,29 @@
 /**
- * NOT prerendered.
+ * One prerendered page per game, on the web build.
  *
- * The plan proposed prerendering all ~3,600 game pages for SEO from a
- * build-time read of ../data/*.jsonl. That is deferred rather than done,
- * deliberately:
+ * `prerender` is the build-mode flag from vite.config.ts: true on the web,
+ * false for Tauri (3,650 HTML files is real APK weight - the packaged apps
+ * resolve game pages through the SPA fallback instead).
  *
- *   - The Tauri build would have to skip it anyway (3,600 HTML files is real
- *     APK weight), so it needs a build-mode split before it is safe.
- *   - Every prerendered page would go stale against the daily data commits,
- *     which do NOT trigger a rebuild - that is the whole reason data is proxied
- *     at /api/data/* rather than bundled. Only the slow-changing fields could
- *     be baked in, with players and reviews hydrated client-side.
+ * The load returns only the build-time SEED (lib/game-seed.ts): the
+ * slow-changing fields, so a crawler - which never accepts the terms and so
+ * never loads the catalogue - still gets the real page. Players, peak and
+ * reviews are never baked in; the page reads those from the live catalogue.
  *
- * Until that split exists these are served by the SPA fallback and rendered
- * from the catalogue the client already holds, which is correct - just not
- * indexable.
+ * This is a UNIVERSAL load on purpose. A +page.server.ts would make every
+ * client-side navigation fetch /games/<appid>/__data.json, and for a game added
+ * after the last deploy that file does not exist: the host answers with
+ * index.html at HTTP 200, SvelteKit fails to parse it, and the page errors.
+ * Here the browser half reads the seed back out of the page's own #game-seed
+ * block (build/game-seeds.ts) - the same value the server rendered with, so
+ * hydration matches, and null after a client-side navigation, where the live
+ * catalogue is what renders.
  */
-export const prerender = false;
+import { seedAppids, seedFor } from "virtual:game-seeds";
+import type { EntryGenerator, PageLoad } from "./$types";
+
+export const prerender = __PRERENDER_GAMES__;
+
+export const entries: EntryGenerator = () => seedAppids().map((appid) => ({ appid }));
+
+export const load: PageLoad = ({ params }) => ({ seed: seedFor(params.appid) });

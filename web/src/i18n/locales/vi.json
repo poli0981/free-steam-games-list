@@ -495,7 +495,8 @@
     "playersPeak": "(đỉnh {{peak}})",
     "viewSteamPage": "trang Steam",
     "viewHealth": "Health",
-    "descriptionSource": "Mô tả do nhà phát hành viết, lấy từ Steam — đã rút gọn."
+    "descriptionSource": "Mô tả do nhà phát hành viết, lấy từ Steam — đã rút gọn.",
+    "removedOn": "Đã bị gỡ khỏi danh mục ngày {{date}}: {{reason}}"
   },
   "errors": {
     "code": "LỖI {{code}}",

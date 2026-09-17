@@ -495,7 +495,8 @@
     "playersPeak": "(peak {{peak}})",
     "viewSteamPage": "the Steam page",
     "viewHealth": "Health",
-    "descriptionSource": "Blurb by the publisher, via Steam — shortened."
+    "descriptionSource": "Blurb by the publisher, via Steam — shortened.",
+    "removedOn": "Removed from the catalogue on {{date}}: {{reason}}"
   },
   "errors": {
     "code": "ERROR {{code}}",

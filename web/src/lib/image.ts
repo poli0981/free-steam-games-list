@@ -49,6 +49,18 @@ export function headerToCapsule(url: string): string {
   return proxied(url, "t");
 }
 
+/**
+ * Root-relative /img/ path for a social card, or null when the URL is not a
+ * Steam asset the proxy serves. Always without an origin: Seo.svelte prefixes
+ * SITE_ORIGIN itself, and in the Tauri build IMG_ORIGIN is already absolute.
+ */
+export function socialImagePath(url: string): string | null {
+  const m = url ? STEAM_PATH_RE.exec(url) : null;
+  if (!m) return null;
+  const [, path, stamp] = m;
+  return `/img/d2/${path}${stamp ? `?t=${stamp}` : ""}`;
+}
+
 /** Larger image for the detail drawer. */
 export function preferWebp(url: string, width?: number): string {
   return proxied(url, width && width > 600 ? "d2" : "d");

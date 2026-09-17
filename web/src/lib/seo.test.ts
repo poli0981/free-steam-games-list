@@ -125,6 +125,14 @@ describe("sitemap", () => {
     expect(_paths()).toEqual(expected);
   });
 
+  it("lists the prerendered game pages", async () => {
+    // Under Vitest the seeds are build/game-seeds.ts's fixture (730 and 570).
+    const mod = await import("../routes/sitemap.xml/+server");
+    const body = await (await mod.GET()).text();
+    expect(body).toContain(`${SITE_ORIGIN}/games/730</loc>`);
+    expect(body).toContain(`${SITE_ORIGIN}/games/570</loc>`);
+  });
+
   it("covers each legal document", async () => {
     const mod = await import("../routes/sitemap.xml/+server");
     const body = await (await mod.GET()).text();

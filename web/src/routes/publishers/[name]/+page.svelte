@@ -11,8 +11,12 @@
   import PageHeader from "$lib/common/PageHeader.svelte";
   import Badge from "$lib/ui/Badge.svelte";
   import Seo from "$lib/common/Seo.svelte";
+  import { markRouteRendered } from "$lib/fallback-route";
 
   const t = i18n.t;
+
+  // This page, not the dashboard shell, is what hydrated (lib/fallback-route.ts).
+  markRouteRendered("/publishers/[name]");
 
   // Already decoded by SvelteKit. A second decodeURIComponent threw URIError
   // on any studio whose name contains "%" - "90% Studios" is in the data.

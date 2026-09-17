@@ -1,4 +1,5 @@
 import { SITE_ORIGIN } from "$lib/site";
+import { seedAppids } from "virtual:game-seeds";
 
 /**
  * The sitemap, derived from the router itself.
@@ -59,12 +60,12 @@ export function _paths(): string[] {
     const path =
       file.replace("/src/routes", "").replace("/+page.svelte", "") || "/";
     // Dynamic segments cannot be enumerated from the route table. /legal/[doc]
-    // is added back below from its own manifest; /games/[appid],
-    // /developers/[name] and /publishers/[name] are intentionally absent -
-    // they are not prerendered and each is one of several thousand near-
-    // duplicate pages, which is what a crawler penalises. This also drops
-    // /error/[code], which is exactly right: ErrorView sends robots=noindex,
-    // so listing it would contradict the page's own tag.
+    // and /games/[appid] are added back below from their own sources.
+    // /developers/[name] and /publishers/[name] stay absent: they are not
+    // prerendered, and thousands of one-game studio pages are the near-duplicate
+    // content a crawler penalises. This also drops /error/[code], which is
+    // exactly right: ErrorView sends robots=noindex, so listing it would
+    // contradict the page's own tag.
     if (path.includes("[")) continue;
     out.push(path);
   }
@@ -100,6 +101,9 @@ export async function GET() {
       freq: "yearly",
       priority: "0.4",
     })),
+    // One page per game, prerendered from the same build-time seeds. Empty in
+    // the Tauri build, which prerenders none.
+    ...seedAppids().map((appid) => ({ loc: `/games/${appid}`, freq: "weekly", priority: "0.6" })),
   ];
 
   return new Response(xml(urls, lastmod), {

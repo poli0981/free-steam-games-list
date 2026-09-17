@@ -80,6 +80,40 @@ for (const file of html) {
   if (seen.includes(CONSENT_TITLE)) fail(`${rel}: prerendered consent dialog ("${CONSENT_TITLE}")`);
 }
 
+/* ── per-flavour expectations ─────────────────────────────────────────── */
+
+const gamesDir = join(DIST, "games");
+const gamePages = existsSync(gamesDir)
+  ? readdirSync(gamesDir).filter((n) => /^\d+\.html$/.test(n))
+  : [];
+
+if (flavour === "web") {
+  // One prerendered page per game (routes/games/[appid]/+page.ts). A build
+  // that silently produced none would ship a site crawlers see as empty.
+  if (gamePages.length < 3000) fail(`only ${gamePages.length} prerendered game pages (expected 3,000+)`);
+  for (const name of gamePages) {
+    const text = readFileSync(join(gamesDir, name), "utf-8");
+    if (!text.includes('id="game-seed"')) fail(`games/${name}: no #game-seed block (hydration would not match)`);
+    if (!text.includes('type="application/ld+json"')) fail(`games/${name}: no JSON-LD`);
+  }
+  // A universal load, not a server load: a __data.json here would mean client
+  // navigation fetches one per game, and 404s (as index.html) for new games.
+  if (files.some((f) => f.endsWith("__data.json") && f.includes(`${join("dist", "games")}`))) {
+    fail("games/*/__data.json exists - the game route must not have a server load");
+  }
+}
+
+if (flavour === "tauri") {
+  // 3,650 HTML files is real APK weight; the packaged apps use the fallback.
+  if (gamePages.length > 0) fail(`${gamePages.length} game pages in a Tauri build (expected none)`);
+  // A service worker at tauri.localhost can never update (see lib/pwa.ts).
+  if (existsSync(join(DIST, "sw.js"))) fail("sw.js exists in a Tauri build");
+  const index = readFileSync(join(DIST, "index.html"), "utf-8");
+  if (!index.includes("https://free-steam-games.win")) {
+    fail("index.html CSP does not allow https://free-steam-games.win (the Tauri connect-src)");
+  }
+}
+
 if (failures.length) {
   console.error(`verify-dist (${flavour}): ${failures.length} problem(s)`);
   for (const f of failures.slice(0, 60)) console.error(`  - ${f}`);

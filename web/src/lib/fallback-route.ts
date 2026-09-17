@@ -30,22 +30,39 @@ import { goto } from "$app/navigation";
  * of this file tested `route.id === "/"` for that reason and never fired.
  *
  * THE TEST THAT DOES WORK
- * These routes are never prerendered, so a document delivered for one of them
- * is always the substituted shell - there is no case where the initial HTML
- * legitimately belongs to the route. Hence: on first mount only, ask the
- * router to render the URL it already knows it is on.
+ * A route in MAY_FALL_BACK can arrive as the substituted shell. Whether it DID
+ * is answered by the page itself: each of these pages calls
+ * markRouteRendered() from its top-level script, which runs while hydrating -
+ * before the layout's onMount calls recoverFallbackRoute(). If the page that
+ * hydrated is not the route's own, nothing marked it, and the router is asked
+ * to render the URL it already knows it is on.
+ *
+ * That distinction became necessary when game pages started being
+ * prerendered on the web. /games/730 is now normally its own document and must
+ * NOT be re-rendered - but a game added after the last deploy has no file, the
+ * Tauri build prerenders none, and studio pages never are, so all of those
+ * still fall back.
  *
  * Only on first mount. A later client-side navigation renders these routes
  * correctly on its own, and re-running this would loop.
  */
-const NOT_PRERENDERED = new Set([
+const MAY_FALL_BACK = new Set([
   "/games/[appid]",
   "/developers/[name]",
   "/publishers/[name]",
 ]);
 
+let rendered: string | null = null;
+
+/** Called by each MAY_FALL_BACK page from its top-level script. */
+export function markRouteRendered(routeId: string): void {
+  rendered = routeId;
+}
+
 export function recoverFallbackRoute(routeId: string | null): void {
-  if (!routeId || !NOT_PRERENDERED.has(routeId)) return;
+  if (!routeId || !MAY_FALL_BACK.has(routeId)) return;
+  // The route's own page hydrated: it was a real (prerendered) document.
+  if (rendered === routeId) return;
 
   // invalidateAll so the route's own load() runs; without it SvelteKit can
   // reuse the shell's `data: [null, null]`. replaceState so the shell does not
@@ -57,6 +74,5 @@ export function recoverFallbackRoute(routeId: string | null): void {
   });
 }
 
-/** The list above, exported so a test can hold it against the routes that
- *  actually declare `prerender = false`. */
-export const NOT_PRERENDERED_ROUTES: ReadonlySet<string> = NOT_PRERENDERED;
+/** The list above, exported so a test can hold it against the route files. */
+export const MAY_FALL_BACK_ROUTES: ReadonlySet<string> = MAY_FALL_BACK;

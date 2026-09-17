@@ -177,6 +177,20 @@ const config = {
       // page, so the crawler never finds it and it would be left to the SPA
       // fallback - which answers it with HTML at HTTP 200 and no error.
       entries: ["*", "/sitemap.xml"],
+      // ~3,650 game pages. SvelteKit's default of 1 renders them one at a
+      // time; 4 keeps the build short without starving the machine.
+      concurrency: 4,
+      /**
+       * The crawler follows every same-origin `src` and `href` it finds, and a
+       * prerendered game page carries <img src="/img/d2/..."> for its header.
+       * /img/* and /api/* are Worker routes (wrangler.jsonc run_worker_first):
+       * they exist at runtime, never in the build, so a 404 for them here is
+       * expected. Anything else still fails the build.
+       */
+      handleHttpError: ({ path, message }) => {
+        if (path.startsWith("/img/") || path.startsWith("/api/")) return;
+        throw new Error(message);
+      },
     },
 
     typescript: {
