@@ -15,10 +15,17 @@
  * worker/routes/admin-spa.ts replaces per response. The checks below fail the
  * build if the output ever stops fitting that model (a second script, an
  * inline script, code splitting, a runaway size).
+ *
+ * `writeBundle`, reading the bundle Vite hands it - NOT `closeBundle` reading
+ * the output directory. closeBundle also runs when the build has FAILED (Vite
+ * closes the bundle in a `finally`), so on a clean checkout it threw ENOENT for
+ * the missing index.html and that replaced the build's real error in the log.
+ * And on a machine with an earlier build, reading the directory could pick up
+ * that earlier build's files.
  */
 import { createHash } from "node:crypto";
-import { mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
-import { dirname, extname, join, relative } from "node:path";
+import { mkdirSync, writeFileSync } from "node:fs";
+import { dirname, extname } from "node:path";
 import type { Plugin } from "vite";
 
 const TEXT = new Map([
@@ -38,21 +45,14 @@ const BINARY = new Map([
 const MAX_TOTAL_BYTES = 1.5 * 1024 * 1024;
 const PLACEHOLDER = "__ADMIN_NONCE__";
 
-function walk(dir: string, out: string[] = []): string[] {
-  for (const name of readdirSync(dir)) {
-    const full = join(dir, name);
-    if (statSync(full).isDirectory()) walk(full, out);
-    else out.push(full);
-  }
-  return out;
-}
-
-export function emitWorkerBundle(options: { outDir: string; target: string }): Plugin {
+export function emitWorkerBundle(options: { target: string }): Plugin {
   return {
     name: "f2p-admin-worker-bundle",
     apply: "build",
-    closeBundle() {
-      let shell = readFileSync(join(options.outDir, "index.html"), "utf-8");
+    writeBundle(_output, bundle) {
+      const html = bundle["index.html"];
+      if (!html || html.type !== "asset") throw new Error("admin bundle: the build emitted no index.html");
+      let shell = typeof html.source === "string" ? html.source : Buffer.from(html.source).toString("utf-8");
 
       const scripts = [...shell.matchAll(/<script\b[^>]*>([\s\S]*?)<\/script>/g)];
       if (scripts.length !== 1) {
@@ -68,10 +68,17 @@ export function emitWorkerBundle(options: { outDir: string; target: string }): P
       const assets: Record<string, { contentType: string; encoding: "utf8" | "base64"; body: string }> = {};
       let total = Buffer.byteLength(shell);
       let scriptsOut = 0;
-      for (const file of walk(join(options.outDir, "assets"))) {
-        const ext = extname(file);
-        const key = `/admin/${relative(options.outDir, file).split("\\").join("/")}`;
-        const bytes = readFileSync(file);
+      for (const [fileName, output] of Object.entries(bundle)) {
+        if (fileName === "index.html") continue;
+        if (!fileName.startsWith("assets/")) throw new Error(`admin bundle: unexpected output ${fileName}`);
+        const ext = extname(fileName);
+        const key = `/admin/${fileName}`;
+        const bytes =
+          output.type === "chunk"
+            ? Buffer.from(output.code, "utf-8")
+            : typeof output.source === "string"
+              ? Buffer.from(output.source, "utf-8")
+              : Buffer.from(output.source);
         total += bytes.length;
         if (ext === ".js") scriptsOut += 1;
         if (TEXT.has(ext)) {

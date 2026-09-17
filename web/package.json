@@ -5,10 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "vite dev",
-    "dev:admin": "vite --config admin/vite.config.ts",
+    "dev:admin": "svelte-kit sync && vite --config admin/vite.config.ts",
     "preview:admin": "npm run build:admin && vite --config admin/vite.config.ts --mode preview",
     "build": "vite build && npm run build:admin",
-    "build:admin": "vite build --config admin/vite.config.ts",
+    "build:admin": "svelte-kit sync && vite build --config admin/vite.config.ts",
     "build:desktop": "vite build",
     "build:mobile": "vite build",
     "analyze": "vite build --mode analyze",

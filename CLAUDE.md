@@ -339,6 +339,12 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
 - **`npm run build` must keep running `build:admin`,** and `typecheck` builds it
   first: `worker/index.ts` imports the generated module, so a bare
   `wrangler deploy` or `tsc` without it fails. That failure is intended.
+  `build:admin` runs `svelte-kit sync` first: the admin imports files under
+  `web/src`, whose `tsconfig.json` extends `.svelte-kit/tsconfig.json`, and on a
+  clean checkout (CI) that file does not exist until SvelteKit has synced. The
+  emitter reads the bundle in `writeBundle`, never the output directory in
+  `closeBundle`, which also runs after a FAILED build and hid that error behind
+  an ENOENT.
 - **One script, no code splitting.** The shell's CSP is `script-src` with a
   per-response nonce and nothing else, so a lazily imported chunk would be
   blocked. The emitter fails the build on a second script, an inline script or

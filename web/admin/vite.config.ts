@@ -31,7 +31,6 @@ export default defineConfig(({ command, mode }) => ({
     command === "serve" && adminDevApi({ preview: mode === "preview" }),
     command === "build" &&
       emitWorkerBundle({
-        outDir: path.join(WEB, ".admin-build"),
         target: path.join(WEB, "worker", "generated", "admin-bundle.ts"),
       }),
   ],
