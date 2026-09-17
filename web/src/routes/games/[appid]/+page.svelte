@@ -99,7 +99,7 @@
   {t("nav.games")}
 </a>
 
-<QueryState loading={games.loading && !games.data} error={games.error} retry={() => games.refetch()}>
+<QueryState loading={games.pending} error={games.error} retry={() => games.refetch()}>
   {#if !game}
     <div class="py-16 text-center">
       <h1 class="font-display text-xl font-semibold">{t("dialogs.gameNotFound")}</h1>

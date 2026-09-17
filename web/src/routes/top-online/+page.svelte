@@ -51,7 +51,7 @@
 
 <PageHeader title={t("nav.topOnline")} subtitle={t("topOnline.subtitle")} />
 
-<QueryState loading={games.loading && !games.data} error={games.error} retry={() => games.refetch()}>
+<QueryState loading={games.pending} error={games.error} retry={() => games.refetch()}>
   <div class="rounded-lg border bg-card p-4">
     <EChart {option} height={560} label={t("nav.topOnline")} />
   </div>

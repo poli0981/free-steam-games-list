@@ -81,11 +81,11 @@
   );
 </script>
 
-<Seo title={t("health.title")} description={subtitle} />
+<Seo title={t("health.title")} description={t("health.seoDescription")} />
 
-<PageHeader title={t("health.title")} subtitle={subtitle} />
+<PageHeader title={t("health.title")} subtitle={games.data ? subtitle : t("health.seoDescription")} />
 
-<QueryState loading={games.loading && !games.data} error={games.error} retry={() => games.refetch()}>
+<QueryState loading={games.pending} error={games.error} retry={() => games.refetch()}>
   {#if !groups.length}
     <div class="rounded-lg border bg-card py-16 text-center">
       <HeartPulse class="mx-auto mb-3 size-8 text-success" />

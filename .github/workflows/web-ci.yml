@@ -57,6 +57,14 @@ jobs:
       - name: Build
         run: npm run build
 
+      # Reads the prerendered HTML. The bugs it looks for - an unfilled
+      # placeholder in a meta description, a count baked in as "0", an empty
+      # state or the consent dialog shipped as page content - are invisible in
+      # dev and in unit tests, because they only exist when a page is rendered
+      # with no browser, no storage and no data.
+      - name: Verify prerendered output
+        run: node scripts/verify-dist.mjs --web
+
       # Bundles the Worker and resolves every binding in wrangler.jsonc without
       # deploying or needing credentials. Catches a broken config here rather
       # than in the Cloudflare dashboard after a push.

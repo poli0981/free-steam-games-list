@@ -61,11 +61,13 @@
   const shown = $derived(filter === "bot" ? commits.filter((c) => c.login === BOT_LOGIN) : commits);
 </script>
 
-<Seo title={t("activity.title")} description={t("activity.subtitle", { count: commits.length, branch: DEFAULT_BRANCH })} />
+<Seo title={t("activity.title")} description={t("activity.seoDescription")} />
 
 <PageHeader
   title={t("activity.title")}
-  subtitle={t("activity.subtitle", { count: commits.length, branch: DEFAULT_BRANCH })}
+  subtitle={activity.data
+    ? t("activity.subtitle", { count: commits.length, branch: DEFAULT_BRANCH })
+    : t("activity.seoDescription")}
 >
   {#snippet actions()}
     <div class="flex items-center gap-1 rounded-md border p-0.5 text-xs">
@@ -85,7 +87,7 @@
 </PageHeader>
 
 <QueryState
-  loading={activity.loading && !activity.data}
+  loading={activity.pending}
   error={activity.error}
   retry={() => activity.refetch()}
 >

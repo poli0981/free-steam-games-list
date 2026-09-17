@@ -21,14 +21,16 @@
   );
 </script>
 
-<Seo title={t("studios.publishersTitle")} description={t("studios.publishersSubtitle", { count: studios.length })} />
+<Seo title={t("studios.publishersTitle")} description={t("studios.publishersSeo")} />
 
 <PageHeader
   title={t("studios.publishersTitle")}
-  subtitle={t("studios.publishersSubtitle", { count: formatNumber(studios.length) })}
+  subtitle={games.data
+    ? t("studios.publishersSubtitle", { count: formatNumber(studios.length) })
+    : t("studios.publishersSeo")}
 />
 
-<QueryState loading={games.loading && !games.data} error={games.error} retry={() => games.refetch()}>
+<QueryState loading={games.pending} error={games.error} retry={() => games.refetch()}>
   <div class="mb-3 max-w-sm">
     <Input bind:value={q} type="search" placeholder={t("common.search")} aria-label={t("common.search")} />
   </div>

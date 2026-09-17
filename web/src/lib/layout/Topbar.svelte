@@ -26,6 +26,18 @@
     { value: "system", icon: Monitor, label: "settings.themeSystem" },
   ];
 
+  // "Ctrl K" is what the prerendered HTML says, because the build cannot know
+  // the reader's platform; an Apple keyboard gets "⌘K" once the page is live.
+  // An $effect rather than a render-time check, so hydration still matches.
+  let shortcut = $state("Ctrl K");
+  $effect(() => {
+    const platform =
+      (navigator as Navigator & { userAgentData?: { platform?: string } }).userAgentData?.platform ??
+      navigator.platform ??
+      "";
+    if (/mac|iphone|ipad|ipod/i.test(platform)) shortcut = "⌘K";
+  });
+
   // Typing in the header search jumps to /games, because the box filters the
   // table and staying on /charts while it silently filtered a table you cannot
   // see is the kind of thing that reads as a broken search.
@@ -66,7 +78,7 @@
              font-mono text-[10px] text-muted-foreground hover:text-foreground sm:block"
       aria-label={t("cmdk.open")}
     >
-      Ctrl K
+      {shortcut}
     </button>
   </div>
 

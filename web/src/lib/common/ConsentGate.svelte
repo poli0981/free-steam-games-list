@@ -15,14 +15,23 @@
   let declined = $state(false);
 
   /**
-   * The error system must reach the user even before consent: a chunk-load 503
-   * after a mid-session deploy, or an /error/:code deep link, would otherwise
-   * be swallowed behind the gate with no way to read it.
+   * Routes that must be readable BEFORE consent:
+   *
+   *   - /error/*: a chunk-load 503 after a mid-session deploy, or an
+   *     /error/:code deep link, would otherwise be swallowed behind the gate.
+   *   - /legal/*: the gate links to these documents and asks the reader to
+   *     accept them. Covering them with the same overlay made the terms
+   *     impossible to read before agreeing to them.
    *
    * ANY new route that must be reachable pre-consent has to join this check.
    */
-  const isErrorRoute = $derived(page.url.pathname.startsWith("/error"));
-  const open = $derived(!consent.accepted && !isErrorRoute);
+  const PRE_CONSENT = /^\/(error|legal)(\/|$)/;
+  const exempt = $derived(PRE_CONSENT.test(page.url.pathname));
+
+  // `hydrated` first: during prerender and until storage has been read,
+  // `accepted` is false for everyone, and rendering the gate then put the whole
+  // dialog into every page's HTML.
+  const open = $derived(consent.hydrated && !consent.accepted && !exempt);
 
   // No scroll lock on <body>. It would be dead code: the shell is a fixed-height
   // flex layout whose scroller is <main>, so body never scrolls in the first

@@ -22,7 +22,7 @@
   );
 </script>
 
-<Seo title={name} description={t("studios.gamesCount", { count: titles.length })} />
+<Seo title={name} description={t("studios.studioSeo", { name })} />
 
 <a
   href="/developers"
@@ -32,7 +32,7 @@
   {t("studios.backToList")}
 </a>
 
-<QueryState loading={games.loading && !games.data} error={games.error} retry={() => games.refetch()}>
+<QueryState loading={games.pending} error={games.error} retry={() => games.refetch()}>
   {#if !titles.length}
     <p class="py-16 text-center text-sm text-muted-foreground">{t("studios.notFound")}</p>
   {:else}

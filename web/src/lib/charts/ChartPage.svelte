@@ -27,7 +27,7 @@
 <PageHeader {title} {subtitle} />
 
 <QueryState
-  loading={games.loading && !games.data}
+  loading={games.pending}
   error={games.error}
   retry={() => games.refetch()}
 >

@@ -52,7 +52,7 @@
   </nav>
 
   <div class="mt-6 px-2.5 pb-1 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
-    {t("nav.manage")}
+    {t("nav.project")}
   </div>
 
   <nav aria-label={t("nav.secondary")} class="flex flex-col gap-0.5">

@@ -19,10 +19,10 @@ import History from "@lucide/svelte/icons/history";
 import Info from "@lucide/svelte/icons/info";
 import LayoutDashboard from "@lucide/svelte/icons/layout-dashboard";
 import Settings from "@lucide/svelte/icons/settings";
-import Swords from "@lucide/svelte/icons/swords";
 import Trophy from "@lucide/svelte/icons/trophy";
 import Users from "@lucide/svelte/icons/users";
 import Building2 from "@lucide/svelte/icons/building-2";
+import Landmark from "@lucide/svelte/icons/landmark";
 import Sigma from "@lucide/svelte/icons/sigma";
 
 export interface NavItem {
@@ -47,6 +47,7 @@ export const PRIMARY: NavItem[] = [
   { to: "/charts", i18n: "nav.charts", icon: BarChart3 },
   { to: "/stats", i18n: "nav.stats", icon: Sigma },
   { to: "/developers", i18n: "nav.developers", icon: Building2 },
+  { to: "/publishers", i18n: "nav.publishers", icon: Landmark },
 ];
 
 /** Everything that is about the project rather than the catalogue. */
@@ -58,12 +59,27 @@ export const SECONDARY: NavItem[] = [
   { to: "/settings", i18n: "nav.settings", icon: Settings },
 ];
 
-/** Not in the rail, but reachable from the palette and linked from About. */
-export const EXTRA: NavItem[] = [
-  { to: "/welcome", i18n: "nav.welcome", icon: Info },
-  { to: "/publishers", i18n: "nav.publishers", icon: Building2 },
-  { to: "/charts/anti-cheat/list", i18n: "nav.antiCheatList", icon: Swords },
-];
+/** Not in the rail, but reachable from the palette. */
+export const EXTRA: NavItem[] = [{ to: "/welcome", i18n: "nav.welcome", icon: Info }];
+
+/**
+ * Everything the command palette lists, deduplicated by path.
+ *
+ * The palette renders this in a KEYED each, and a duplicate key throws in a
+ * Svelte 5 production build - /charts/anti-cheat/list sat in both CHART_PAGES
+ * and EXTRA, so Ctrl-K crashed the moment it opened with an empty query.
+ * nav.test.ts holds the result unique.
+ */
+export function paletteRoutes(charts: readonly { to: string; i18n: string; icon: NavItem["icon"] }[]): NavItem[] {
+  const seen = new Set<string>();
+  const out: NavItem[] = [];
+  for (const item of [...PRIMARY, ...charts, ...SECONDARY, ...EXTRA]) {
+    if (seen.has(item.to)) continue;
+    seen.add(item.to);
+    out.push({ to: item.to, i18n: item.i18n, icon: item.icon });
+  }
+  return out;
+}
 
 /**
  * Is `href` the active route for `path`?

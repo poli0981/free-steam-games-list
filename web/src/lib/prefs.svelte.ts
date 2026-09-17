@@ -50,11 +50,22 @@ interface StoredConsent {
 
 class Consent {
   accepted = $state(false);
+  /**
+   * False until storage has been read.
+   *
+   * The gate opens only once this is true. Before it existed the gate rendered
+   * whenever `accepted` was false - which it always is during prerender - so
+   * EVERY prerendered page shipped the full consent dialog in its HTML, and a
+   * returning visitor who had long since accepted saw it flash on each full
+   * page load until hydration hid it again.
+   */
+  hydrated = $state(false);
 
   /** Read from storage. Called once the app is mounted, never during
    *  prerender, where there is no localStorage. */
   hydrate(): void {
     this.accepted = readJson<StoredConsent>(CONSENT_KEY)?.version === TERMS_VERSION;
+    this.hydrated = true;
   }
 
   accept(): void {

@@ -41,6 +41,19 @@ export class Resource<T> {
     }
   }
 
+  /**
+   * Nothing to show yet: no data, and no error to explain why.
+   *
+   * Use this, not `loading && !data`, to decide between a loading state and
+   * the page. `loading` is false BEFORE a load starts - during prerender, and
+   * until consent is given - so the old check rendered the empty state instead:
+   * the prerendered /games said "No game matches these filters." and /health
+   * said "Nothing flagged".
+   */
+  get pending(): boolean {
+    return this.data === undefined && this.error === undefined;
+  }
+
   get stale(): boolean {
     return Date.now() - this.#loadedAt > this.#staleTime;
   }

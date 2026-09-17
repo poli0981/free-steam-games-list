@@ -208,7 +208,7 @@
 
 <PageHeader title={t("stats.title")} subtitle={t("stats.subtitle")} />
 
-<QueryState loading={games.loading && !games.data} error={games.error} retry={() => games.refetch()}>
+<QueryState loading={games.pending} error={games.error} retry={() => games.refetch()}>
   <div class="space-y-6">
     <section class="rounded-lg border bg-card p-5">
       <h2 class="text-base font-semibold">{t("stats.metacriticTitle")}</h2>

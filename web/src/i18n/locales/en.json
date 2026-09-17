@@ -72,7 +72,8 @@
     "welcome": "Introduction",
     "primary": "Main navigation",
     "secondary": "Project links",
-    "sourceOnGitHub": "Source on GitHub"
+    "sourceOnGitHub": "Source on GitHub",
+    "project": "Project"
   },
   "common": {
     "save": "Save",
@@ -147,7 +148,8 @@
     "platformsTitle": "Platforms",
     "genreTitle": "Genre distribution",
     "topGenres": "Top genres",
-    "playingNow": "Playing right now"
+    "playingNow": "Playing right now",
+    "seoDescription": "A live overview of the free-to-play games on Steam: who plays them, what they are, and what they ask of your machine."
   },
   "games": {
     "title": "Games",
@@ -330,7 +332,8 @@
     "noMessage": "(no message)",
     "verifiedBadge": "Verified",
     "unsignedBadge": "unsigned",
-    "reasonPrefix": "reason: {{reason}}"
+    "reasonPrefix": "reason: {{reason}}",
+    "seoDescription": "Recent commits to the dataset and the app behind it."
   },
   "system": {
     "failedToLoadData": "Failed to load data",
@@ -375,7 +378,8 @@
     "games": "Games",
     "noResults": "Nothing matches.",
     "toSelect": "to select",
-    "toClose": "to close"
+    "toClose": "to close",
+    "escKey": "Esc"
   },
   "donate": {
     "title": "Support the project",
@@ -459,7 +463,8 @@
     "triggeredToast": "Triggered {{name}}",
     "viewRuns": "View runs",
     "failedToast": "{{name}} failed",
-    "allClear": "Nothing flagged. Every record has its manual fields and a recent refresh."
+    "allClear": "Nothing flagged. Every record has its manual fields and a recent refresh.",
+    "seoDescription": "Data-quality checks across the catalogue: delisted, stale and unreviewed records."
   },
   "detail": {
     "openOnSteam": "appid {{appid}} · open on Steam",
@@ -555,7 +560,10 @@
     "gamesCount": "{{count}} games",
     "oneGame": "1 game",
     "notFound": "No studio by that name is in the catalogue.",
-    "backToList": "Back to the list"
+    "backToList": "Back to the list",
+    "developersSeo": "Every studio behind a free-to-play game in the catalogue, with the games each one makes.",
+    "publishersSeo": "Every publisher of a free-to-play game in the catalogue, with the games each one publishes.",
+    "studioSeo": "Free-to-play Steam games from {{name}}."
   },
   "legal": {
     "title": "Legal documents",

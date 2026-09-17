@@ -38,7 +38,7 @@
     : t("antiCheatList.seoDescription")}
 />
 
-<QueryState loading={games.loading && !games.data} error={games.error} retry={() => games.refetch()}>
+<QueryState loading={games.pending} error={games.error} retry={() => games.refetch()}>
   <div class="space-y-4">
     {#each buckets as bucket (bucket.key)}
       {@const kernel = bucket.games.some((g) => g.is_kernel_ac === true)}

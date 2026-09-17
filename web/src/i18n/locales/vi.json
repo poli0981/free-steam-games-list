@@ -72,7 +72,8 @@
     "welcome": "Giới thiệu",
     "primary": "Điều hướng chính",
     "secondary": "Liên kết dự án",
-    "sourceOnGitHub": "Mã nguồn trên GitHub"
+    "sourceOnGitHub": "Mã nguồn trên GitHub",
+    "project": "Dự án"
   },
   "common": {
     "save": "Lưu",
@@ -147,7 +148,8 @@
     "platformsTitle": "Nền tảng",
     "genreTitle": "Phân bố thể loại",
     "topGenres": "Thể loại phổ biến",
-    "playingNow": "Đang chơi ngay bây giờ"
+    "playingNow": "Đang chơi ngay bây giờ",
+    "seoDescription": "Tổng quan trực tiếp về các game miễn phí trên Steam: ai chơi, chúng là gì, và chúng đòi hỏi gì ở máy của bạn."
   },
   "games": {
     "title": "Trò chơi",
@@ -330,7 +332,8 @@
     "noMessage": "(không có message)",
     "verifiedBadge": "Đã verify",
     "unsignedBadge": "không ký",
-    "reasonPrefix": "lý do: {{reason}}"
+    "reasonPrefix": "lý do: {{reason}}",
+    "seoDescription": "Các commit gần đây của bộ dữ liệu và ứng dụng đứng sau nó."
   },
   "system": {
     "failedToLoadData": "Tải dữ liệu thất bại",
@@ -375,7 +378,8 @@
     "games": "Trò chơi",
     "noResults": "Không có kết quả.",
     "toSelect": "để chọn",
-    "toClose": "để đóng"
+    "toClose": "để đóng",
+    "escKey": "Esc"
   },
   "donate": {
     "title": "Ủng hộ dự án",
@@ -459,7 +463,8 @@
     "triggeredToast": "Đã trigger {{name}}",
     "viewRuns": "Xem runs",
     "failedToast": "{{name}} thất bại",
-    "allClear": "Không có cảnh báo nào. Mọi bản ghi đều đủ trường thủ công và được cập nhật gần đây."
+    "allClear": "Không có cảnh báo nào. Mọi bản ghi đều đủ trường thủ công và được cập nhật gần đây.",
+    "seoDescription": "Kiểm tra chất lượng dữ liệu trên toàn danh mục: game đã gỡ, dữ liệu cũ và bản ghi chưa được xem xét."
   },
   "detail": {
     "openOnSteam": "appid {{appid}} · mở trên Steam",
@@ -555,7 +560,10 @@
     "gamesCount": "{{count}} game",
     "oneGame": "1 game",
     "notFound": "Không có studio nào tên như vậy trong danh mục.",
-    "backToList": "Về danh sách"
+    "backToList": "Về danh sách",
+    "developersSeo": "Mọi studio đứng sau một game miễn phí trong danh mục, kèm các game của từng studio.",
+    "publishersSeo": "Mọi nhà phát hành game miễn phí trong danh mục, kèm các game họ phát hành.",
+    "studioSeo": "Các game miễn phí trên Steam của {{name}}."
   },
   "legal": {
     "title": "Tài liệu pháp lý",

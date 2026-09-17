@@ -117,7 +117,7 @@
 <PageHeader title={t("nav.delisted")} subtitle={t("charts.desc.delisted")} />
 
 <QueryState
-  loading={removedGames.loading && !removedGames.data}
+  loading={removedGames.pending}
   error={removedGames.error}
   retry={() => removedGames.refetch()}
 >

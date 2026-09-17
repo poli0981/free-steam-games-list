@@ -79,7 +79,7 @@
   {/snippet}
 </PageHeader>
 
-<QueryState loading={games.loading && !games.data} error={games.error} retry={() => games.refetch()}>
+<QueryState loading={games.pending} error={games.error} retry={() => games.refetch()}>
   <div class="mb-3 flex flex-wrap items-center gap-2">
     <select
       bind:value={filters.genre}

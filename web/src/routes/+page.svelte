@@ -58,11 +58,18 @@
   });
 </script>
 
-<Seo title={t("dashboard.title")} description={t("dashboard.subtitle", { count: kpis.total })} />
+<!-- Static description: prerendered pages have no data, and a count here was
+     baked into the HTML as "Overview of 0 F2P Steam games". -->
+<Seo title={t("dashboard.title")} description={t("dashboard.seoDescription")} />
 
-<PageHeader title={t("dashboard.title")} subtitle={t("dashboard.subtitle", { count: formatNumber(kpis.total) })} />
+<PageHeader
+  title={t("dashboard.title")}
+  subtitle={games.data
+    ? t("dashboard.subtitle", { count: formatNumber(kpis.total) })
+    : t("dashboard.seoDescription")}
+/>
 
-<QueryState loading={games.loading && !games.data} error={games.error} retry={() => games.refetch()}>
+<QueryState loading={games.pending} error={games.error} retry={() => games.refetch()}>
   <div class="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
     {#each [
       { icon: Gamepad2, label: t("charts.kpi.totalGames"), value: formatNumber(kpis.total), hint: t("charts.kpi.totalGamesHint") },
