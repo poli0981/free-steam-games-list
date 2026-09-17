@@ -25,10 +25,13 @@
   // Two entries, not nine. Every other channel now lives at
   // poli0981.dev/links/, so a retired account cannot leave a dead link in a
   // shipped build - which had already happened three times.
-  const CONTACTS = [
-    { icon: Mail, label: "Email", handle: "contact@poli0981.dev", href: "mailto:contact@poli0981.dev" },
+  //
+  // $derived: a plain const called t() once, at mount, so these labels stayed
+  // in whatever language the page first rendered in.
+  const CONTACTS = $derived([
+    { icon: Mail, label: t("about.email"), handle: "contact@poli0981.dev", href: "mailto:contact@poli0981.dev" },
     { icon: LinkIcon, label: t("about.everyOtherChannel"), handle: "poli0981.dev/links", href: "https://poli0981.dev/links/" },
-  ];
+  ]);
 
   /**
    * The real stack. The React page advertised React 18, TypeScript 5, Tailwind
@@ -54,11 +57,11 @@
     { name: "Tauri 2", role: "desktop + Android shell", href: "https://v2.tauri.app/", licence: "MIT or Apache-2.0" },
   ];
 
-  const ISSUE_TEMPLATES = [
+  const ISSUE_TEMPLATES = $derived([
     { id: "bug_report", label: t("about.tplBug"), icon: Bug },
     { id: "feature_request", label: t("about.tplFeature"), icon: Sparkles },
     { id: "delete_game", label: t("about.tplDelete"), icon: TriangleAlert },
-  ];
+  ]);
 </script>
 
 <Seo title={t("about.title")} description={t("about.subtitle")} />

@@ -57,7 +57,16 @@
   import Button from "../ui/Button.svelte";
   import { cn } from "../utils";
 
-  let { code, detail }: { code: ErrorCode; detail?: string } = $props();
+  let {
+    code,
+    detail,
+    inline = false,
+  }: {
+    code: ErrorCode;
+    detail?: string;
+    /** Inside the app shell (the soft 404) rather than a full standalone page. */
+    inline?: boolean;
+  } = $props();
 
   const t = i18n.t;
   const meta = $derived(META[code]);
@@ -70,7 +79,7 @@
   <meta name="robots" content="noindex" />
 </svelte:head>
 
-<div class="flex min-h-dvh items-center justify-center p-4">
+<div class={cn("flex items-center justify-center p-4", inline ? "min-h-[60vh]" : "min-h-dvh")}>
   <div class="w-full max-w-md text-center">
     <span
       class={cn(

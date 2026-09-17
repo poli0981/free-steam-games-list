@@ -2,7 +2,9 @@
   import "../index.css";
   import { onMount, type Snippet } from "svelte";
   import { Toaster } from "svelte-sonner";
+  import { Dialog } from "bits-ui";
   import { page } from "$app/state";
+  import { afterNavigate } from "$app/navigation";
   import { i18n } from "$lib/i18n.svelte";
   import { consent, theme, welcome } from "$lib/prefs.svelte";
   import { installPaletteShortcut } from "$lib/palette.svelte";
@@ -19,6 +21,8 @@
   import Topbar from "$lib/layout/Topbar.svelte";
   import CommandPalette from "$lib/common/CommandPalette.svelte";
   import BackToTop from "$lib/common/BackToTop.svelte";
+  import ErrorView from "$lib/common/ErrorView.svelte";
+  import { clearStaleChunkFlag } from "$lib/chunk-error";
   // ?url so Vite returns the fingerprinted path. A hand-typed content hash
   // stops matching the moment the font or the bundler changes, and a preload
   // that 404s is worse than no preload - the browser still pays for it.
@@ -117,6 +121,24 @@
     void page.url.pathname;
     menuOpen = false;
   });
+
+  // A navigation that completed means the current deploy's chunks load, so the
+  // next stale-chunk failure (hooks.client.ts) gets its own single reload.
+  afterNavigate(() => clearStaleChunkFlag());
+
+  /**
+   * No route matched this URL.
+   *
+   * Both hosts answer an unknown path with index.html - the prerendered
+   * dashboard - at HTTP 200, so /no-such-page used to show the dashboard. The
+   * router does know: `page.route.id` is null. That is rendered as a 404 in
+   * place.
+   *
+   * NEVER goto() here. Navigating to an unmatched URL makes SvelteKit fall back
+   * to a native page load, the host serves index.html again, and the page
+   * reloads itself forever.
+   */
+  const unmatched = $derived(page.route.id === null);
 </script>
 
 <svelte:head>
@@ -138,17 +160,20 @@
       <Sidebar />
     </aside>
 
-    {#if menuOpen}
-      <!-- svelte-ignore a11y_click_events_have_key_events -->
-      <!-- svelte-ignore a11y_no_static_element_interactions -->
-      <div class="fixed inset-0 z-40 bg-black/60 lg:hidden" onclick={() => (menuOpen = false)}></div>
-      <aside
-        class="fixed inset-y-0 left-0 z-50 w-72 border-r bg-card shadow-xl lg:hidden"
-        aria-label={i18n.t("nav.menu")}
-      >
-        <Sidebar onNavigate={() => (menuOpen = false)} />
-      </aside>
-    {/if}
+    <!-- A real dialog: focus moves into the drawer and stays there, Escape
+         closes it, and focus returns to the menu button. The hand-rolled
+         overlay it replaces did none of that. -->
+    <Dialog.Root bind:open={menuOpen}>
+      <Dialog.Portal>
+        <Dialog.Overlay class="fixed inset-0 z-40 bg-black/60 lg:hidden" />
+        <Dialog.Content
+          class="fixed inset-y-0 left-0 z-50 w-72 border-r bg-card shadow-xl outline-none lg:hidden"
+        >
+          <Dialog.Title class="sr-only">{i18n.t("nav.menu")}</Dialog.Title>
+          <Sidebar onNavigate={() => (menuOpen = false)} />
+        </Dialog.Content>
+      </Dialog.Portal>
+    </Dialog.Root>
 
     <div class="flex min-w-0 flex-1 flex-col">
       <Topbar onOpenMenu={() => (menuOpen = true)} />
@@ -159,7 +184,11 @@
         style="padding-bottom: env(safe-area-inset-bottom)"
       >
         <div class="container py-6">
-          {@render children()}
+          {#if unmatched}
+            <ErrorView code="404" inline />
+          {:else}
+            {@render children()}
+          {/if}
         </div>
       </main>
     </div>

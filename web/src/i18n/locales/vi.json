@@ -423,7 +423,8 @@
     "tplBug": "Báo lỗi",
     "tplFeature": "Đề xuất tính năng",
     "tplDelete": "Xóa một game",
-    "trademarkNote": "Steam, Steam Store, Steam Community và logo Steam là thương hiệu của Valve Corporation. Trang này không liên kết với Valve. Mọi thứ trang tải đều được phục vụ từ chính trang này, vốn lấy dữ liệu từ GitHub và CDN của Valve ở phía máy chủ - trình duyệt của bạn không liên hệ với bên nào."
+    "trademarkNote": "Steam, Steam Store, Steam Community và logo Steam là thương hiệu của Valve Corporation. Trang này không liên kết với Valve. Mọi thứ trang tải đều được phục vụ từ chính trang này, vốn lấy dữ liệu từ GitHub và CDN của Valve ở phía máy chủ - trình duyệt của bạn không liên hệ với bên nào.",
+    "email": "Email"
   },
   "dialogs": {
     "gameNotFound": "Không tìm thấy game",

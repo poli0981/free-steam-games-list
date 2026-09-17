@@ -13,6 +13,7 @@
   import { headerToCapsule } from "../image";
   import { recordIssues } from "../validation";
   import { formatNumber, parseReviewPercent, cn } from "../utils";
+  import { openExternal } from "../external-open";
   import Badge from "../ui/Badge.svelte";
 
   let { rows }: { rows: GameRecord[] } = $props();
@@ -198,13 +199,17 @@
                     onclick={(e) => {
                       e.preventDefault();
                       e.stopPropagation();
-                      window.open(g.link, "_blank", "noopener,noreferrer");
+                      // openExternal, not window.open: the Tauri webview blocks
+                      // window.open to external URLs, and the global link
+                      // interceptor only sees <a> elements - this is a span
+                      // inside the row's own internal link.
+                      void openExternal(g.link);
                     }}
                     onkeydown={(e) => {
                       if (e.key === "Enter") {
                         e.preventDefault();
                         e.stopPropagation();
-                        window.open(g.link, "_blank", "noopener,noreferrer");
+                        void openExternal(g.link);
                       }
                     }}
                     class="inline-grid size-6 place-items-center text-muted-foreground hover:text-primary"

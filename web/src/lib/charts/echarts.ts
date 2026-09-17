@@ -6,6 +6,11 @@
  * chart means adding its import here too — ScatterChart was added for the
  * retention plot on /stats.
  *
+ * The same silence applies to COMPONENTS an option uses. The /stats scatter
+ * declared a dashed `markLine` diagonal - the reference its description tells
+ * the reader to compare against - and it never drew, because MarkLineComponent
+ * was not registered. Nothing warns.
+ *
  * Kept out of the Svelte component so the component file has no side effects
  * and the whole ~700 KB graph sits behind one dynamic import boundary.
  */
@@ -22,6 +27,7 @@ import {
   DatasetComponent,
   GridComponent,
   LegendComponent,
+  MarkLineComponent,
   TitleComponent,
   TooltipComponent,
   VisualMapComponent,
@@ -39,6 +45,7 @@ echarts.use([
   DatasetComponent,
   GridComponent,
   LegendComponent,
+  MarkLineComponent,
   TitleComponent,
   TooltipComponent,
   VisualMapComponent,

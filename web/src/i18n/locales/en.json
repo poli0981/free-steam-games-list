@@ -423,7 +423,8 @@
     "tplBug": "Bug report",
     "tplFeature": "Feature request",
     "tplDelete": "Delete a game",
-    "trademarkNote": "Steam, Steam Store, Steam Community and the Steam logo are trademarks of Valve Corporation. This site is not affiliated with Valve. Everything the page loads is served from this site, which fetches it from GitHub and Valve's CDN server-side - your browser contacts neither."
+    "trademarkNote": "Steam, Steam Store, Steam Community and the Steam logo are trademarks of Valve Corporation. This site is not affiliated with Valve. Everything the page loads is served from this site, which fetches it from GitHub and Valve's CDN server-side - your browser contacts neither.",
+    "email": "Email"
   },
   "dialogs": {
     "gameNotFound": "Game not found",

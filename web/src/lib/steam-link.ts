@@ -5,8 +5,9 @@
  * The web build always renders BOTH buttons because there is no reliable
  * way to detect whether the Steam protocol handler is registered. Users
  * with the desktop client installed get the native flow; users without it
- * fall back to the browser. The Tauri desktop wrapper allows steam://
- * navigation by default.
+ * fall back to the browser. The packaged apps do NOT allow steam:// by
+ * default: tauri-plugin-shell's built-in scope is mailto/tel/http(s) only, so
+ * tauri.conf.json widens `plugins.shell.open` to include it.
  */
 
 /** `steam://store/<appid>` — opens the store page in the desktop client. */

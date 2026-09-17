@@ -1,6 +1,9 @@
 /**
  * Tiny single-worker JSONL parser proxy.
- * For 2 shards, a 1-worker pool is enough; expand to N if more shards added.
+ *
+ * One worker parses the shards (five of them at ~800 records each) off the main
+ * thread, one message per shard. If the worker itself fails, every shard still
+ * waiting on it is parsed on the main thread instead - see onerror.
  */
 import type { GameRecord } from "./schema";
 import { parseJsonl } from "./fetcher";
@@ -9,7 +12,7 @@ let worker: Worker | null = null;
 let nextId = 1;
 const pending = new Map<
   number,
-  { resolve: (r: GameRecord[]) => void; reject: (e: Error) => void }
+  { text: string; resolve: (r: GameRecord[]) => void; reject: (e: Error) => void }
 >();
 
 function getWorker(): Worker | null {
@@ -34,6 +37,18 @@ function getWorker(): Worker | null {
       console.warn("[worker] error, falling back to main-thread parse:", ev.message);
       worker?.terminate();
       worker = null;
+      // The worker is gone, so no reply is coming for anything still queued.
+      // Previously those promises were simply never settled, and the catalogue
+      // load hung on "Loading…" forever.
+      const orphans = [...pending.values()];
+      pending.clear();
+      for (const p of orphans) {
+        try {
+          p.resolve(parseJsonl(p.text));
+        } catch (err) {
+          p.reject(err instanceof Error ? err : new Error(String(err)));
+        }
+      }
     };
     return worker;
   } catch {
@@ -49,7 +64,7 @@ export function parseShard(text: string): Promise<GameRecord[]> {
   }
   return new Promise((resolve, reject) => {
     const id = nextId++;
-    pending.set(id, { resolve, reject });
+    pending.set(id, { text, resolve, reject });
     w.postMessage({ id, text });
   });
 }

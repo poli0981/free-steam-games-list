@@ -55,6 +55,38 @@ describe("no chart depends on the mouse wheel", () => {
   });
 });
 
+describe("registered components", () => {
+  /**
+   * An option that uses an unregistered component is silently ignored - the
+   * /stats scatter's diagonal reference line never drew, because markLine was
+   * used and MarkLineComponent was not registered in echarts.ts.
+   */
+  const REQUIRES: Record<string, string> = {
+    markLine: "MarkLineComponent",
+    markPoint: "MarkPointComponent",
+    markArea: "MarkAreaComponent",
+    legend: "LegendComponent",
+    visualMap: "VisualMapComponent",
+    tooltip: "TooltipComponent",
+    dataset: "DatasetComponent",
+    title: "TitleComponent",
+    toolbox: "ToolboxComponent",
+  };
+  const registry = code(join(SRC, "lib", "charts", "echarts.ts"));
+  const used = walk(SRC)
+    .filter((f) => !f.endsWith("echarts.ts"))
+    .map((f) => code(f))
+    .filter((text) => /chartTheme\(|<EChart\b/.test(text));
+
+  it("every option key used by a chart has its component registered", () => {
+    const missing = Object.entries(REQUIRES)
+      .filter(([key]) => used.some((text) => new RegExp(`\\b${key}:\\s*[{\\[]`).test(text)))
+      .filter(([, component]) => !new RegExp(`\\b${component},`).test(registry))
+      .map(([key, component]) => `${key} needs ${component}`);
+    expect(missing).toEqual([]);
+  });
+});
+
 describe("grid layout", () => {
   it("uses gridBox() rather than containLabel", () => {
     // In echarts 6 containLabel reserves room for tick labels but NOT axis

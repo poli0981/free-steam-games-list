@@ -10,9 +10,9 @@
  *
  *   - Only `#/…` is rewritten. An in-page anchor like `#vac` must survive, or
  *     every deep link into a long document breaks instead.
- *   - `replaceState`, not a navigation. A navigation would leave the old URL in
- *     history, so Back would bounce the reader straight to the hash URL and
- *     round again.
+ *   - A REPLACING navigation. A pushing one would leave the old URL in history,
+ *     so Back would bounce the reader straight to the hash URL and round
+ *     again.
  *
  * Unlike the React version this is NOT skipped under Tauri. The packaged apps
  * now use real paths too — `tauri::manager::get_asset()` falls back to
@@ -23,9 +23,16 @@
  * already on `/` is a same-document fragment change. No page load happens, so
  * load-time code never runs. Navigate via a different path first.
  */
+import { goto } from "$app/navigation";
+
 export function upgradeLegacyHashUrl(): void {
   if (typeof window === "undefined") return;
   const { hash } = window.location;
   if (!hash.startsWith("#/")) return;
-  window.history.replaceState(window.history.state, "", hash.slice(1) || "/");
+  // goto, not history.replaceState. By the time this runs the router has
+  // already rendered the document it was given - "/", the dashboard - and a
+  // bare replaceState changed the address bar while leaving the dashboard on
+  // screen. goto renders the route the hash names; replaceState keeps the hash
+  // URL out of history, so Back does not bounce through it.
+  void goto(hash.slice(1) || "/", { replaceState: true, noScroll: true });
 }
