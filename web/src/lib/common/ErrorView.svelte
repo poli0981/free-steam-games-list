@@ -23,17 +23,26 @@
     return (ERROR_CODES as readonly string[]).includes(v);
   }
 
+  /**
+   * Title and description are LITERAL keys rather than `errors.${code}.title`,
+   * so i18n.test.ts can see every key this component asks for.
+   */
   const META: Record<
     ErrorCode,
-    { icon: Component<{ class?: string }>; tone: "neutral" | "warn" | "destructive" }
+    {
+      icon: Component<{ class?: string }>;
+      tone: "neutral" | "warn" | "destructive";
+      title: string;
+      description: string;
+    }
   > = {
-    "403": { icon: ShieldX, tone: "warn" },
-    "404": { icon: FileQuestion, tone: "neutral" },
-    "500": { icon: ServerCrash, tone: "destructive" },
-    "502": { icon: Network, tone: "destructive" },
-    "503": { icon: CloudOff, tone: "destructive" },
-    "504": { icon: Hourglass, tone: "destructive" },
-    offline: { icon: WifiOff, tone: "warn" },
+    "403": { icon: ShieldX, tone: "warn", title: "errors.403.title", description: "errors.403.description" },
+    "404": { icon: FileQuestion, tone: "neutral", title: "errors.404.title", description: "errors.404.description" },
+    "500": { icon: ServerCrash, tone: "destructive", title: "errors.500.title", description: "errors.500.description" },
+    "502": { icon: Network, tone: "destructive", title: "errors.502.title", description: "errors.502.description" },
+    "503": { icon: CloudOff, tone: "destructive", title: "errors.503.title", description: "errors.503.description" },
+    "504": { icon: Hourglass, tone: "destructive", title: "errors.504.title", description: "errors.504.description" },
+    offline: { icon: WifiOff, tone: "warn", title: "errors.offline.title", description: "errors.offline.description" },
   };
 
   export const REPORT_ISSUE_URL =
@@ -56,7 +65,7 @@
 </script>
 
 <svelte:head>
-  <title>{t(`errors.${code}.title`)} · Steam F2P Tracker</title>
+  <title>{t(meta.title)} · Steam F2P Tracker</title>
   <!-- An error page must never be indexed as content. -->
   <meta name="robots" content="noindex" />
 </svelte:head>
@@ -77,8 +86,8 @@
     <p class="font-mono text-xs uppercase tracking-widest text-muted-foreground">
       {code === "offline" ? t("errors.offline.badge") : t("errors.code", { code })}
     </p>
-    <h1 class="mt-1 text-2xl font-semibold">{t(`errors.${code}.title`)}</h1>
-    <p class="mt-2 text-sm text-muted-foreground">{t(`errors.${code}.description`)}</p>
+    <h1 class="mt-1 text-2xl font-semibold">{t(meta.title)}</h1>
+    <p class="mt-2 text-sm text-muted-foreground">{t(meta.description)}</p>
 
     {#if detail}
       <pre

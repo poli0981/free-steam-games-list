@@ -28,6 +28,15 @@
 
   const STALE_DAYS = 30;
 
+  /** Literal keys, so i18n.test.ts can see them. */
+  const GROUP_TEXT: Record<GroupKey, { title: string; desc: string }> = {
+    Delisted: { title: "health.groupDelisted", desc: "health.groupDelistedDesc" },
+    Stale: { title: "health.groupStale", desc: "health.groupStaleDesc" },
+    Missing: { title: "health.groupMissing", desc: "health.groupMissingDesc" },
+    Kernel: { title: "health.groupKernel", desc: "health.groupKernelDesc" },
+    OnlineAcUnknown: { title: "health.groupOnlineAcUnknown", desc: "health.groupOnlineAcUnknownDesc" },
+  };
+
   const groups = $derived.by((): Group[] => {
     const delisted: GameRecord[] = [];
     const stale: GameRecord[] = [];
@@ -89,11 +98,11 @@
           <header class="flex flex-wrap items-center gap-2 border-b px-4 py-3">
             <group.icon class="size-4 shrink-0 text-muted-foreground" />
             <h2 class="font-display text-base font-semibold">
-              {t(`health.group${group.key}`)}
+              {t(GROUP_TEXT[group.key].title)}
             </h2>
             <Badge variant={group.variant}>{formatNumber(group.records.length)}</Badge>
             <p class="w-full text-sm text-muted-foreground sm:w-auto sm:flex-1">
-              {t(`health.group${group.key}Desc`)}
+              {t(GROUP_TEXT[group.key].desc)}
             </p>
           </header>
 

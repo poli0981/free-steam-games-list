@@ -55,6 +55,18 @@ describe("no chart depends on the mouse wheel", () => {
   });
 });
 
+describe("grid layout", () => {
+  it("uses gridBox() rather than containLabel", () => {
+    // In echarts 6 containLabel reserves room for tick labels but NOT axis
+    // names, which is how the /stats scatter lost both of its axis titles.
+    // chart-theme.ts gridBox() contains "all".
+    const offenders = walk(SRC).filter(
+      (f) => !f.endsWith("chart-theme.ts") && /containLabel/.test(code(f)),
+    );
+    expect(offenders).toEqual([]);
+  });
+});
+
 describe("EChart.svelte", () => {
   const src = code(join(SRC, "lib", "charts", "EChart.svelte"));
 

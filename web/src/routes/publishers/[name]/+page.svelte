@@ -14,7 +14,9 @@
 
   const t = i18n.t;
 
-  const name = $derived(decodeURIComponent(page.params.name ?? ""));
+  // Already decoded by SvelteKit. A second decodeURIComponent threw URIError
+  // on any studio whose name contains "%" - "90% Studios" is in the data.
+  const name = $derived(page.params.name ?? "");
   const titles = $derived(
     (games.data?.records ?? []).filter((r) => (r.publisher ?? []).includes(name)),
   );

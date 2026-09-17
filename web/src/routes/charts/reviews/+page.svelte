@@ -1,10 +1,11 @@
 <script lang="ts">
   import { games } from "$lib/games.svelte";
   import { i18n } from "$lib/i18n.svelte";
-  import { chartTheme } from "$lib/chart-theme";
+  import { chartTheme, gridBox } from "$lib/chart-theme";
   import ChartPage from "$lib/charts/ChartPage.svelte";
   import EChart from "$lib/charts/EChart.svelte";
   import { parseReviewPercent } from "$lib/utils";
+  import { reviewBand } from "$lib/games/columns";
 
   const t = i18n.t;
 
@@ -22,8 +23,9 @@
 
   const option = $derived.by(() => {
     const theme = chartTheme();
+    const TONE = { positive: theme.success, mixed: theme.warning, negative: theme.destructive };
     return {
-      grid: { left: 8, right: 16, top: 16, bottom: 8, containLabel: true },
+      grid: gridBox(),
       tooltip: { trigger: "axis", axisPointer: { type: "shadow" } },
       xAxis: {
         type: "category",
@@ -43,14 +45,10 @@
             value,
             // Meaning-bearing: the same three tones the table uses for a
             // review score, so a reader who learned them there reads this
-            // without a legend.
+            // without a legend. Bin i covers i*10..i*10+9, so its lower edge
+            // decides the band.
             itemStyle: {
-              color:
-                i >= 8
-                  ? "hsl(var(--success))"
-                  : i >= 7
-                    ? "hsl(var(--warning))"
-                    : "hsl(var(--destructive))",
+              color: TONE[reviewBand(i * 10)],
               borderRadius: [4, 4, 0, 0],
             },
           })),

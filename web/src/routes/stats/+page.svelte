@@ -1,9 +1,9 @@
 <script lang="ts">
   import { games } from "$lib/games.svelte";
   import { i18n } from "$lib/i18n.svelte";
-  import { chartTheme } from "$lib/chart-theme";
+  import { chartTheme, gridBox } from "$lib/chart-theme";
   import { computeKpis } from "$lib/stats";
-  import { formatNumber, parseIntSafe, reviewLabel } from "$lib/utils";
+  import { formatCompact, formatNumber, parseIntSafe, reviewLabel } from "$lib/utils";
   import QueryState from "$lib/common/QueryState.svelte";
   import PageHeader from "$lib/common/PageHeader.svelte";
   import EChart from "$lib/charts/EChart.svelte";
@@ -31,7 +31,7 @@
   const metacriticOption = $derived.by(() => {
     const theme = chartTheme();
     return {
-      grid: { left: 8, right: 16, top: 16, bottom: 8, containLabel: true },
+      grid: gridBox(),
       tooltip: { trigger: "axis", axisPointer: { type: "shadow" } },
       xAxis: {
         type: "category",
@@ -63,26 +63,35 @@
     const theme = chartTheme();
     const max = Math.max(1, ...retention.map(([p]) => p));
     return {
-      grid: { left: 8, right: 24, top: 16, bottom: 8, containLabel: true },
+      grid: gridBox({ right: 24, top: 12 }),
       tooltip: {
         trigger: "item",
         formatter: (p: { value: [number, number] }) =>
-          `${t("detail.playersPeak")}: ${formatNumber(p.value[0])}<br>${t("detail.labelPlayers")}: ${formatNumber(p.value[1])}`,
+          `${t("stats.peakToday")}: ${formatNumber(p.value[0])}<br>${t("detail.labelPlayers")}: ${formatNumber(p.value[1])}`,
       },
       // Log scales: the range runs from single digits to ~500,000, so a linear
       // axis puts every game except Counter-Strike in one corner.
+      //
+      // Names sit in the MIDDLE of each axis, outside the tick labels, and the
+      // grid contains "all" (see gridBox) - at the default "end" location the
+      // x name ran off the right edge and the y name off the top. Compact tick
+      // labels keep the y name from having to clear a seven-digit number.
       xAxis: {
         type: "log",
-        name: t("detail.playersPeak"),
+        name: t("stats.peakToday"),
+        nameLocation: "middle",
+        nameGap: 28,
         nameTextStyle: { color: theme.mutedText },
-        axisLabel: { color: theme.mutedText },
+        axisLabel: { color: theme.mutedText, formatter: (v: number) => formatCompact(v) },
         splitLine: { lineStyle: { color: theme.grid } },
       },
       yAxis: {
         type: "log",
         name: t("detail.labelPlayers"),
+        nameLocation: "middle",
+        nameGap: 44,
         nameTextStyle: { color: theme.mutedText },
-        axisLabel: { color: theme.mutedText },
+        axisLabel: { color: theme.mutedText, formatter: (v: number) => formatCompact(v) },
         splitLine: { lineStyle: { color: theme.grid } },
       },
       series: [
@@ -107,9 +116,18 @@
   });
 
   /* ── safety flags ──────────────────────────────────────────────────────── */
+  // `safe` is a hand-entered field, so normalise before counting: the data
+  // carries at least one "yes", and an unrecognised value belongs under
+  // "unknown" rather than silently in no slice at all.
   const safety = $derived.by(() => {
-    const counts: Record<string, number> = { y: 0, n: 0, "?": 0, "": 0 };
-    for (const r of records) counts[r.safe ?? ""] = (counts[r.safe ?? ""] ?? 0) + 1;
+    const counts = { y: 0, n: 0, "?": 0, "": 0 };
+    for (const r of records) {
+      const v = (r.safe ?? "").trim().toLowerCase();
+      if (v === "y" || v === "yes") counts.y += 1;
+      else if (v === "n" || v === "no") counts.n += 1;
+      else if (v === "") counts[""] += 1;
+      else counts["?"] += 1;
+    }
     return counts;
   });
 
@@ -125,9 +143,9 @@
           itemStyle: { borderColor: theme.card, borderWidth: 2 },
           label: { show: false },
           data: [
-            { name: t("common.yes"), value: safety.y, itemStyle: { color: "hsl(var(--success))" } },
-            { name: t("common.no"), value: safety.n, itemStyle: { color: "hsl(var(--destructive))" } },
-            { name: t("common.unknown"), value: safety["?"], itemStyle: { color: "hsl(var(--warning))" } },
+            { name: t("common.yes"), value: safety.y, itemStyle: { color: theme.success } },
+            { name: t("common.no"), value: safety.n, itemStyle: { color: theme.destructive } },
+            { name: t("common.unknown"), value: safety["?"], itemStyle: { color: theme.warning } },
             { name: t("common.none"), value: safety[""], itemStyle: { color: theme.grid } },
           ],
         },
@@ -164,7 +182,7 @@
   const langOption = $derived.by(() => {
     const theme = chartTheme();
     return {
-      grid: { left: 8, right: 24, top: 8, bottom: 8, containLabel: true },
+      grid: gridBox({ right: 24, top: 8 }),
       tooltip: { trigger: "axis", axisPointer: { type: "shadow" } },
       xAxis: { type: "value", axisLabel: { color: theme.mutedText }, splitLine: { lineStyle: { color: theme.grid } } },
       yAxis: {
@@ -197,7 +215,10 @@
       <p class="mt-1 text-sm text-muted-foreground">
         {t("stats.metacriticDesc")}
         <span class="tnum">
-          {t("games.showing", { shown: formatNumber(metacritic.scored), total: formatNumber(kpis.total) })}
+          {t("stats.metacriticCoverage", {
+            scored: formatNumber(metacritic.scored),
+            total: formatNumber(kpis.total),
+          })}
         </span>
       </p>
       <EChart option={metacriticOption} height={320} label={t("stats.metacriticTitle")} class="mt-3" />

@@ -73,10 +73,14 @@ function lookup(bundle: Bundle | undefined, key: string): unknown {
  * looks like data.
  */
 function interpolate(text: string, vars?: Record<string, unknown>): string {
-  if (!vars) return text;
-  return text.replace(/\{\{(\w+)\}\}/g, (whole, name: string) =>
-    name in vars ? String(vars[name]) : whole,
-  );
+  return text.replace(/\{\{(\w+)\}\}/g, (whole, name: string) => {
+    if (vars && name in vars) return String(vars[name]);
+    // Loud in development, where it is a bug to fix; silent in production,
+    // where the visible placeholder is already the report. i18n.test.ts
+    // catches the literal call sites - this catches the rest.
+    if (import.meta.env?.DEV) console.warn(`[i18n] "${text}" rendered without {{${name}}}`);
+    return whole;
+  });
 }
 
 class I18n {

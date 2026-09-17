@@ -6,7 +6,7 @@
   import { headerToCapsule } from "$lib/image";
   import { formatNumber, parseReviewPercent } from "$lib/utils";
   import { reviewTone } from "$lib/games/columns";
-  import { chartTheme } from "$lib/chart-theme";
+  import { chartTheme, gridBox } from "$lib/chart-theme";
   import QueryState from "$lib/common/QueryState.svelte";
   import PageHeader from "$lib/common/PageHeader.svelte";
   import EChart from "$lib/charts/EChart.svelte";
@@ -21,7 +21,7 @@
     const theme = chartTheme();
     const rows = top.slice(0, 20);
     return {
-      grid: { left: 8, right: 40, top: 8, bottom: 8, containLabel: true },
+      grid: gridBox({ right: 40, top: 8 }),
       tooltip: { trigger: "axis", axisPointer: { type: "shadow" } },
       xAxis: {
         type: "value",

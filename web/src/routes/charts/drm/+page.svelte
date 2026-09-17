@@ -1,7 +1,7 @@
 <script lang="ts">
   import { games } from "$lib/games.svelte";
   import { i18n } from "$lib/i18n.svelte";
-  import { chartTheme } from "$lib/chart-theme";
+  import { chartTheme, gridBox } from "$lib/chart-theme";
   import ChartPage from "$lib/charts/ChartPage.svelte";
   import EChart from "$lib/charts/EChart.svelte";
 
@@ -25,12 +25,12 @@
     return [clean, drmOnly, dlcOnly, both];
   });
 
-  const LABELS = ["Clean F2P", "DRM only", "Paid DLC only", "DRM + paid DLC"];
+  const LABELS = ["charts.drm.clean", "charts.drm.drmOnly", "charts.drm.dlcOnly", "charts.drm.both"];
 
   const option = $derived.by(() => {
     const theme = chartTheme();
     return {
-      grid: { left: 8, right: 24, top: 8, bottom: 8, containLabel: true },
+      grid: gridBox({ right: 24, top: 8 }),
       tooltip: { trigger: "axis", axisPointer: { type: "shadow" } },
       xAxis: {
         type: "value",
@@ -40,7 +40,7 @@
       yAxis: {
         type: "category",
         inverse: true,
-        data: LABELS,
+        data: LABELS.map((key) => t(key)),
         axisLabel: { color: theme.mutedText },
         axisLine: { lineStyle: { color: theme.grid } },
       },
@@ -50,7 +50,7 @@
           data: buckets.map((value, i) => ({
             value,
             itemStyle: {
-              color: i === 0 ? "hsl(var(--success))" : theme.series[i],
+              color: i === 0 ? theme.success : theme.series[i + 2],
               borderRadius: [0, 4, 4, 0],
             },
           })),

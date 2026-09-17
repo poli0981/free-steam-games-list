@@ -14,11 +14,11 @@
   // faster than any label, and they are the same three everywhere the app
   // mentions a platform.
   const BRAND: Record<string, string> = {
-    Windows: "hsl(207 90% 54%)",
-    Mac: "hsl(258 70% 66%)",
-    macOS: "hsl(258 70% 66%)",
-    Linux: "hsl(36 92% 55%)",
-    SteamOS: "hsl(152 56% 48%)",
+    Windows: "hsl(207, 90%, 54%)",
+    Mac: "hsl(258, 70%, 66%)",
+    macOS: "hsl(258, 70%, 66%)",
+    Linux: "hsl(36, 92%, 55%)",
+    SteamOS: "hsl(152, 56%, 48%)",
   };
 
   const option = $derived.by(() => {

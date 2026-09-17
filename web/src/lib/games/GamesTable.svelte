@@ -194,7 +194,7 @@
                   <span
                     role="link"
                     tabindex="0"
-                    title={t("detail.openOnSteam")}
+                    title={t("detail.openOnSteam", { appid: appidOf(g) })}
                     onclick={(e) => {
                       e.preventDefault();
                       e.stopPropagation();

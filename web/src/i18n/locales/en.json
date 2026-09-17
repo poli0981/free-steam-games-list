@@ -196,7 +196,8 @@
     "game": "Game",
     "genre": "Genre",
     "kernel": "Kernel",
-    "players": "Players"
+    "players": "Players",
+    "seoDescription": "Every anti-cheat product in the catalogue, with the free-to-play games that ship it."
   },
   "topOffline": {
     "title": "Top offline",
@@ -255,7 +256,11 @@
     "drm": {
       "title": "DRM & paid DLC",
       "subtitle": "F2P shouldn't mean clean — many titles still ship with third-party DRM and/or paid DLC. This breakdown helps spot the \"truly free\" pool.",
-      "drmDlcBreakdown": "DRM × paid-DLC breakdown"
+      "drmDlcBreakdown": "DRM × paid-DLC breakdown",
+      "clean": "Clean F2P",
+      "drmOnly": "DRM only",
+      "dlcOnly": "Paid DLC only",
+      "both": "DRM + paid DLC"
     },
     "delisted": {
       "title": "Delisted games",
@@ -271,7 +276,10 @@
     "languages": {
       "title": "Languages",
       "subtitle": "For each of the top 30 languages, how many games support it via interface, audio, and subtitles.",
-      "languageCoverage": "Language support coverage"
+      "languageCoverage": "Language support coverage",
+      "interface": "Interface",
+      "audio": "Audio",
+      "subtitles": "Subtitles"
     },
     "platforms": {
       "title": "Platforms",
@@ -535,7 +543,9 @@
     "languageTitle": "Language coverage",
     "languageDesc": "How many interface languages each game ships.",
     "reviewLabelTitle": "Review wording",
-    "reviewLabelDesc": "Steam's own label, which is a band rather than the raw percentage."
+    "reviewLabelDesc": "Steam's own label, which is a band rather than the raw percentage.",
+    "peakToday": "Peak today",
+    "metacriticCoverage": "{{scored}} of {{total}} games have a Metacritic score."
   },
   "studios": {
     "developersTitle": "Developers",

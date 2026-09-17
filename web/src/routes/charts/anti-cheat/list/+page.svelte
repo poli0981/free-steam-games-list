@@ -23,9 +23,20 @@
   );
 </script>
 
-<Seo title={t("antiCheatList.title")} description={t("antiCheatList.subtitle")} />
+<!-- A static description: this page is prerendered with no data, so any
+     count baked in here would read "0" - and before the fix it shipped the
+     raw "{{total}}" placeholder into the search-result snippet. -->
+<Seo title={t("antiCheatList.title")} description={t("antiCheatList.seoDescription")} />
 
-<PageHeader title={t("antiCheatList.title")} subtitle={t("antiCheatList.subtitle")} />
+<PageHeader
+  title={t("antiCheatList.title")}
+  subtitle={games.data
+    ? t("antiCheatList.subtitle", {
+        total: formatNumber(buckets.reduce((sum, b) => sum + b.games.length, 0)),
+        families: formatNumber(buckets.length),
+      })
+    : t("antiCheatList.seoDescription")}
+/>
 
 <QueryState loading={games.loading && !games.data} error={games.error} retry={() => games.refetch()}>
   <div class="space-y-4">

@@ -15,12 +15,18 @@
   // Donation links, NOT contact channels - the contact list collapsed to
   // poli0981.dev/links/, these did not. They are separate surfaces with
   // separate URLs and belong here.
-  const PLATFORMS: { key: string; href: string; icon: Component<{ class?: string }> }[] = [
-    { key: "github", href: "https://github.com/sponsors/poli0981", icon: Github },
-    { key: "kofi", href: "https://ko-fi.com/skullmute", icon: Coffee },
-    { key: "bmc", href: "https://buymeacoffee.com/skullmute", icon: Coffee },
-    { key: "patreon", href: "https://patreon.com/skullmute", icon: Gift },
-    { key: "paypal", href: "https://paypal.me/DungDang212", icon: CreditCard },
+  const PLATFORMS: {
+    key: string;
+    label: string;
+    desc: string;
+    href: string;
+    icon: Component<{ class?: string }>;
+  }[] = [
+    { key: "github", label: "donate.platform.github", desc: "donate.platform.githubDesc", href: "https://github.com/sponsors/poli0981", icon: Github },
+    { key: "kofi", label: "donate.platform.kofi", desc: "donate.platform.kofiDesc", href: "https://ko-fi.com/skullmute", icon: Coffee },
+    { key: "bmc", label: "donate.platform.bmc", desc: "donate.platform.bmcDesc", href: "https://buymeacoffee.com/skullmute", icon: Coffee },
+    { key: "patreon", label: "donate.platform.patreon", desc: "donate.platform.patreonDesc", href: "https://patreon.com/skullmute", icon: Gift },
+    { key: "paypal", label: "donate.platform.paypal", desc: "donate.platform.paypalDesc", href: "https://paypal.me/DungDang212", icon: CreditCard },
   ];
 </script>
 
@@ -47,9 +53,9 @@
           <p.icon class="size-4" />
         </span>
         <span class="min-w-0 flex-1">
-          <span class="block font-medium">{t(`donate.platform.${p.key}`)}</span>
+          <span class="block font-medium">{t(p.label)}</span>
           <span class="mt-0.5 block text-sm text-muted-foreground">
-            {t(`donate.platform.${p.key}Desc`)}
+            {t(p.desc)}
           </span>
         </span>
         <ExternalLink class="mt-0.5 size-3.5 shrink-0 text-muted-foreground" />

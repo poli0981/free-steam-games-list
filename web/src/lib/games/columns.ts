@@ -108,11 +108,28 @@ export const COLS: ColDef[] = [
 
 export const TOTAL_WIDTH = COLS.reduce((sum, c) => sum + c.width, 0);
 
+/**
+ * Steam's own review bands, reduced to three.
+ *
+ * Steam words a score as Positive (80%+), Mostly Positive (70-79), Mixed
+ * (40-69), and Mostly Negative / Negative below that. The old cut-offs painted
+ * "Mostly Positive" amber and "Mixed" red, so a 65% game read as a failure
+ * next to a label that says it is mixed.
+ */
+export type ReviewBand = "positive" | "mixed" | "negative";
+
+export function reviewBand(pct: number): ReviewBand {
+  if (pct >= 70) return "positive";
+  if (pct >= 40) return "mixed";
+  return "negative";
+}
+
 /** Review percentage to a meaning-bearing token class. Not the accent colour:
  *  these three have to stay distinguishable from each other and from the
  *  brand. */
 export function reviewTone(pct: number): string {
-  if (pct >= 80) return "text-success";
-  if (pct >= 70) return "text-warning";
+  const band = reviewBand(pct);
+  if (band === "positive") return "text-success";
+  if (band === "mixed") return "text-warning";
   return "text-destructive";
 }

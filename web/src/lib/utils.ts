@@ -28,6 +28,12 @@ export function formatNumber(n: number | string | null | undefined): string {
   return num.toLocaleString(activeLocale());
 }
 
+/** "1.2K", "3M" - for axis ticks, where a full "1,000,000" is wider than the
+ *  axis name it has to leave room for. */
+export function formatCompact(n: number): string {
+  return new Intl.NumberFormat(activeLocale(), { notation: "compact", maximumFractionDigits: 1 }).format(n);
+}
+
 export function parseIntSafe(val: unknown): number {
   if (typeof val === "number") return val;
   if (typeof val !== "string") return 0;

@@ -1,7 +1,7 @@
 <script lang="ts">
   import { games } from "$lib/games.svelte";
   import { i18n } from "$lib/i18n.svelte";
-  import { chartTheme } from "$lib/chart-theme";
+  import { chartTheme, gridBox } from "$lib/chart-theme";
   import { acLevel, type AcLevel } from "$lib/anti-cheat";
   import { countBy } from "$lib/stats";
   import ChartPage from "$lib/charts/ChartPage.svelte";
@@ -12,6 +12,12 @@
   // Stacked by genre, because "which genres demand kernel access" is the
   // question this field is actually interesting for.
   const LEVELS: AcLevel[] = ["kernel", "user", "unknown", "none"];
+  const LEVEL_LABEL: Record<AcLevel, string> = {
+    kernel: "charts.acLevel.kernel",
+    user: "charts.acLevel.user",
+    unknown: "charts.acLevel.unknown",
+    none: "charts.acLevel.none",
+  };
 
   const stacked = $derived.by(() => {
     const records = games.data?.records ?? [];
@@ -39,13 +45,13 @@
     // rest descend in prominence. "unknown" is deliberately NOT folded into
     // "none" - is_kernel_ac is tri-state and null means nobody checked.
     const COLOR: Record<AcLevel, string> = {
-      kernel: "hsl(var(--destructive))",
-      user: "hsl(var(--warning))",
+      kernel: theme.destructive,
+      user: theme.warning,
       unknown: theme.mutedText,
       none: theme.grid,
     };
     return {
-      grid: { left: 8, right: 16, top: 8, bottom: 30, containLabel: true },
+      grid: gridBox({ top: 8, bottom: 30 }),
       tooltip: { trigger: "axis", axisPointer: { type: "shadow" } },
       legend: { bottom: 0, textStyle: { color: theme.mutedText } },
       xAxis: {
@@ -61,7 +67,7 @@
         axisLine: { lineStyle: { color: theme.grid } },
       },
       series: LEVELS.map((level) => ({
-        name: t(`charts.acLevel.${level}`),
+        name: t(LEVEL_LABEL[level]),
         type: "bar",
         stack: "ac",
         data: stacked.series[level],

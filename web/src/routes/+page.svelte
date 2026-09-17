@@ -17,7 +17,7 @@
   import QueryState from "$lib/common/QueryState.svelte";
   import PageHeader from "$lib/common/PageHeader.svelte";
   import EChart from "$lib/charts/EChart.svelte";
-  import { chartTheme } from "$lib/chart-theme";
+  import { chartTheme, gridBox } from "$lib/chart-theme";
   import Seo from "$lib/common/Seo.svelte";
 
   const t = i18n.t;
@@ -36,7 +36,7 @@
   const genreOption = $derived.by(() => {
     const theme = chartTheme();
     return {
-      grid: { left: 8, right: 16, top: 8, bottom: 8, containLabel: true },
+      grid: gridBox({ top: 8 }),
       xAxis: { type: "value", axisLabel: { color: theme.mutedText }, splitLine: { lineStyle: { color: theme.grid } } },
       yAxis: {
         type: "category",

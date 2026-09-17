@@ -1,7 +1,7 @@
 <script lang="ts">
   import { games } from "$lib/games.svelte";
   import { i18n } from "$lib/i18n.svelte";
-  import { chartTheme } from "$lib/chart-theme";
+  import { chartTheme, gridBox } from "$lib/chart-theme";
   import ChartPage from "$lib/charts/ChartPage.svelte";
   import EChart from "$lib/charts/EChart.svelte";
   import { releaseYears } from "$lib/stats";
@@ -13,7 +13,7 @@
   const option = $derived.by(() => {
     const theme = chartTheme();
     return {
-      grid: { left: 8, right: 16, top: 16, bottom: 8, containLabel: true },
+      grid: gridBox(),
       tooltip: { trigger: "axis", axisPointer: { type: "shadow" } },
       xAxis: {
         type: "category",

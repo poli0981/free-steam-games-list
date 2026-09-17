@@ -1,7 +1,7 @@
 <script lang="ts">
   import { games } from "$lib/games.svelte";
   import { i18n } from "$lib/i18n.svelte";
-  import { chartTheme } from "$lib/chart-theme";
+  import { chartTheme, gridBox } from "$lib/chart-theme";
   import ChartPage from "$lib/charts/ChartPage.svelte";
   import EChart from "$lib/charts/EChart.svelte";
 
@@ -46,11 +46,14 @@
   const option = $derived.by(() => {
     const theme = chartTheme();
     return {
-      grid: { left: 8, right: 8, top: 30, bottom: 60, containLabel: true },
+      grid: gridBox({ right: 8, top: 30, bottom: 60 }),
       tooltip: { position: "top" },
       xAxis: {
         type: "category",
-        data: AXES.map((a) => t(`detail.label${a[0].toUpperCase()}${a.slice(1)}`) || a),
+        // Literal keys. The old `detail.label${...}` names did not exist, and
+        // t() answers a miss with the key itself, so the `|| a` fallback never
+        // ran and the axis printed "detail.labelInterface".
+        data: [t("charts.languages.interface"), t("charts.languages.audio"), t("charts.languages.subtitles")],
         position: "top",
         axisLabel: { color: theme.mutedText },
         splitArea: { show: true },

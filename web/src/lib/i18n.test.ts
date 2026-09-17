@@ -133,3 +133,186 @@ describe("keys that carry placeholders", () => {
     expect(withPlaceholders.length).toBeGreaterThan(5);
   });
 });
+
+/* ────────────────────────── call sites ────────────────────────── */
+
+/**
+ * The checks above prove a key EXISTS. None of them noticed the key being used
+ * wrongly, which is how v4.0.0 shipped seven visible placeholders:
+ * "Languages ({{count}})", "(PEAK {{PEAK}})" as a field label, "(peak
+ * {{peak}})" as a chart axis, "appid {{appid}} · open on Steam" on every table
+ * row, and a prerendered meta description reading "{{total}} active games".
+ *
+ * These read every call site. Comments are stripped first so prose that
+ * mentions a key is not mistaken for a call.
+ */
+function stripComments(text: string): string {
+  return text
+    .replace(/<!--[\s\S]*?-->/g, "")
+    .replace(/\/\*[\s\S]*?\*\//g, "")
+    // A line comment, but not the "//" inside "https://".
+    .replace(/(^|[^:"'`\\])\/\/.*$/gm, "$1");
+}
+
+function placeholdersOf(text: string): string[] {
+  return [...new Set([...text.matchAll(/\{\{(\w+)\}\}/g)].map((m) => m[1]))];
+}
+
+type CallArgs =
+  | { kind: "none" }
+  | { kind: "other" }
+  | { kind: "object"; keys: Set<string>; spread: boolean };
+
+/** Skip a quoted string starting at `i`; returns the index of its closing quote. */
+function skipString(src: string, i: number): number {
+  const quote = src[i];
+  let j = i + 1;
+  while (j < src.length && src[j] !== quote) {
+    if (src[j] === "\\") {
+      j += 2;
+      continue;
+    }
+    if (quote === "`" && src[j] === "$" && src[j + 1] === "{") {
+      let depth = 1;
+      j += 2;
+      while (j < src.length && depth > 0) {
+        if (src[j] === "{") depth++;
+        else if (src[j] === "}") depth--;
+        j++;
+      }
+      continue;
+    }
+    j++;
+  }
+  return j;
+}
+
+/** Top-level property names of the object literal whose `{` is at `start`. */
+function objectKeys(src: string, start: number): { keys: Set<string>; spread: boolean } {
+  const keys = new Set<string>();
+  let spread = false;
+  let depth = 0;
+  let expectKey = true;
+  for (let j = start; j < src.length; j++) {
+    const c = src[j];
+    if (c === '"' || c === "'" || c === "`") {
+      j = skipString(src, j);
+      expectKey = false;
+      continue;
+    }
+    if (c === "{" || c === "(" || c === "[") {
+      depth++;
+      continue;
+    }
+    if (c === "}" || c === ")" || c === "]") {
+      depth--;
+      if (depth === 0) break;
+      continue;
+    }
+    if (depth !== 1) continue;
+    if (c === ",") {
+      expectKey = true;
+      continue;
+    }
+    if (/\s/.test(c) || !expectKey) continue;
+    if (src.startsWith("...", j)) {
+      spread = true;
+      expectKey = false;
+      j += 2;
+      continue;
+    }
+    const m = /^[A-Za-z_$][\w$]*/.exec(src.slice(j, j + 80));
+    if (m) {
+      let k = j + m[0].length;
+      while (/\s/.test(src[k] ?? "")) k++;
+      if ([":", ",", "}", "("].includes(src[k] ?? "")) keys.add(m[0]);
+      j = k - 1;
+    }
+    expectKey = false;
+  }
+  return { keys, spread };
+}
+
+function argsAfter(src: string, i: number): CallArgs {
+  let j = i;
+  while (/\s/.test(src[j] ?? "")) j++;
+  if (src[j] === ")") return { kind: "none" };
+  if (src[j] !== ",") return { kind: "other" };
+  j++;
+  while (/\s/.test(src[j] ?? "")) j++;
+  if (src[j] !== "{") return { kind: "other" };
+  return { kind: "object", ...objectKeys(src, j) };
+}
+
+describe("call sites pass what the text needs", () => {
+  const sources = walk(SRC).map((file) => ({
+    file: file.slice(SRC.length + 1).replace(/\\/g, "/"),
+    text: stripComments(readFileSync(file, "utf8")),
+  }));
+
+  it("has no template-literal keys", () => {
+    // `t(\`errors.${code}.title\`)` cannot be checked by anything in this file,
+    // and `t(\`detail.${f.key}\`)` is exactly how a suffix got used as a label.
+    // Use a table of literal keys instead.
+    const offenders = sources
+      .filter(({ text }) => /\bt\(\s*`/.test(text))
+      .map(({ file }) => file);
+    expect(offenders).toEqual([]);
+  });
+
+  it("every placeholder in a literal key's text is supplied", () => {
+    const problems: string[] = [];
+    const call = /\bt\(\s*"([a-zA-Z][\w.]*)"/g;
+    for (const { file, text } of sources) {
+      for (const m of text.matchAll(call)) {
+        const value = lookup(en as Tree, m[1]);
+        if (typeof value !== "string") continue; // reported by the existence test
+        const needed = placeholdersOf(value);
+        if (!needed.length) continue;
+        const args = argsAfter(text, (m.index ?? 0) + m[0].length);
+        if (args.kind === "other") continue; // a variable - cannot be read statically
+        if (args.kind === "none") {
+          problems.push(`${file}: t("${m[1]}") without {${needed.join(", ")}}`);
+          continue;
+        }
+        if (args.spread) continue;
+        const missing = needed.filter((n) => !args.keys.has(n));
+        if (missing.length) problems.push(`${file}: t("${m[1]}") missing {${missing.join(", ")}}`);
+      }
+    }
+    expect(problems).toEqual([]);
+  });
+
+  it("a key that carries placeholders is never stored in a lookup table", () => {
+    // Tables of literal keys (field labels, legend entries) are rendered with
+    // t(entry.label) and no arguments, so a placeholder key in one is a bug.
+    const NAMESPACES = Object.keys(en as Tree).join("|");
+    const tableEntry = new RegExp(`(?:label|title|desc|description|i18n)\\s*:\\s*"((?:${NAMESPACES})\\.[\\w.]+)"`, "g");
+    const problems: string[] = [];
+    for (const { file, text } of sources) {
+      for (const m of text.matchAll(tableEntry)) {
+        const value = lookup(en as Tree, m[1]);
+        if (typeof value === "string" && placeholdersOf(value).length) {
+          problems.push(`${file}: ${m[1]}`);
+        }
+      }
+    }
+    expect(problems).toEqual([]);
+  });
+
+  it("every key-shaped string literal exists", () => {
+    // Catches the tables above: `{ label: "detail.labelGenre" }` never passes
+    // through a literal t() call, so the existence test cannot see it.
+    const NAMESPACES = Object.keys(en as Tree).join("|");
+    const literal = new RegExp(`"((?:${NAMESPACES})\\.[A-Za-z][\\w.]*)"`, "g");
+    const FILE_LIKE = /\.(svelte|ts|js|json|css|html|md|svg|png|webp|woff2|jsonl)$/;
+    const missing: string[] = [];
+    for (const { file, text } of sources) {
+      for (const m of text.matchAll(literal)) {
+        if (FILE_LIKE.test(m[1])) continue;
+        if (typeof lookup(en as Tree, m[1]) !== "string") missing.push(`${file} -> ${m[1]}`);
+      }
+    }
+    expect(missing).toEqual([]);
+  });
+});

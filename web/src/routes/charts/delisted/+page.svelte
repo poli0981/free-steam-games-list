@@ -1,7 +1,7 @@
 <script lang="ts">
   import { removedGames } from "$lib/games.svelte";
   import { i18n } from "$lib/i18n.svelte";
-  import { chartTheme } from "$lib/chart-theme";
+  import { chartTheme, gridBox } from "$lib/chart-theme";
   import { formatNumber } from "$lib/utils";
   import QueryState from "$lib/common/QueryState.svelte";
   import PageHeader from "$lib/common/PageHeader.svelte";
@@ -56,8 +56,8 @@
   const reasonOption = $derived.by(() => {
     const theme = chartTheme();
     const COLOR: Record<Kind, string> = {
-      not_free: "hsl(var(--warning))",
-      unavailable: "hsl(var(--destructive))",
+      not_free: theme.warning,
+      unavailable: theme.destructive,
       other: theme.mutedText,
     };
     return {
@@ -82,12 +82,12 @@
   const timelineOption = $derived.by(() => {
     const theme = chartTheme();
     const COLOR: Record<Kind, string> = {
-      not_free: "hsl(var(--warning))",
-      unavailable: "hsl(var(--destructive))",
+      not_free: theme.warning,
+      unavailable: theme.destructive,
       other: theme.mutedText,
     };
     return {
-      grid: { left: 8, right: 16, top: 16, bottom: 30, containLabel: true },
+      grid: gridBox({ bottom: 30 }),
       tooltip: { trigger: "axis", axisPointer: { type: "shadow" } },
       legend: { bottom: 0, textStyle: { color: theme.mutedText } },
       xAxis: {

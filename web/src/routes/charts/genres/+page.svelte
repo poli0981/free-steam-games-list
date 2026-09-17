@@ -3,6 +3,7 @@
   import { countBy } from "$lib/stats";
   import { i18n } from "$lib/i18n.svelte";
   import { chartTheme } from "$lib/chart-theme";
+  import { formatNumber } from "$lib/utils";
   import ChartPage from "$lib/charts/ChartPage.svelte";
   import EChart from "$lib/charts/EChart.svelte";
 
@@ -11,8 +12,15 @@
 
   const option = $derived.by(() => {
     const theme = chartTheme();
+    const total = genres.reduce((sum, g) => sum + g.value, 0) || 1;
     return {
-      tooltip: { trigger: "item", formatter: "{b}: {c} ({d}%)" },
+      // A function, not "{b}: {c} ({d}%)": {d} is a pie/funnel template
+      // variable, and a treemap leaves it in the tooltip as literal text.
+      tooltip: {
+        trigger: "item",
+        formatter: (p: { name: string; value: number }) =>
+          `${p.name}: ${formatNumber(p.value)} (${((p.value / total) * 100).toFixed(1)}%)`,
+      },
       series: [
         {
           type: "treemap",
