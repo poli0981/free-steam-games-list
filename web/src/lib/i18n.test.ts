@@ -147,8 +147,14 @@ describe("keys that carry placeholders", () => {
  * mentions a key is not mistaken for a call.
  */
 function stripComments(text: string): string {
-  return text
-    .replace(/<!--[\s\S]*?-->/g, "")
+  // Until nothing changes: a single pass over "<!-<!-- -->-" leaves a "<!--"
+  // behind (CodeQL js/incomplete-multi-character-sanitization).
+  let html = text;
+  for (let previous = ""; previous !== html; ) {
+    previous = html;
+    html = html.replace(/<!--[\s\S]*?-->/g, "");
+  }
+  return html
     .replace(/\/\*[\s\S]*?\*\//g, "")
     // A line comment, but not the "//" inside "https://".
     .replace(/(^|[^:"'`\\])\/\/.*$/gm, "$1");

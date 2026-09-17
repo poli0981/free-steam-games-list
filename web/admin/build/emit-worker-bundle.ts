@@ -54,7 +54,9 @@ export function emitWorkerBundle(options: { target: string }): Plugin {
       if (!html || html.type !== "asset") throw new Error("admin bundle: the build emitted no index.html");
       let shell = typeof html.source === "string" ? html.source : Buffer.from(html.source).toString("utf-8");
 
-      const scripts = [...shell.matchAll(/<script\b[^>]*>([\s\S]*?)<\/script>/g)];
+      // Case-insensitive, and end tags with trailing whitespace or attributes
+      // count too: a check that misses `<SCRIPT>` would pass a second script.
+      const scripts = [...shell.matchAll(/<script\b[^>]*>([\s\S]*?)<\/script[^>]*>/gi)];
       if (scripts.length !== 1) {
         throw new Error(`admin bundle: expected exactly one <script> in the shell, found ${scripts.length}`);
       }
@@ -63,7 +65,7 @@ export function emitWorkerBundle(options: { target: string }): Plugin {
       if (!/type="module"/.test(tag) || !/src="\/admin\/assets\/[^"]+\.js"/.test(tag)) {
         throw new Error(`admin bundle: unexpected script tag ${tag}`);
       }
-      shell = shell.replace(tag, tag.replace("<script", `<script nonce="${PLACEHOLDER}"`));
+      shell = shell.replace(tag, tag.replace(/^<script/i, `<script nonce="${PLACEHOLDER}"`));
 
       const assets: Record<string, { contentType: string; encoding: "utf8" | "base64"; body: string }> = {};
       let total = Buffer.byteLength(shell);

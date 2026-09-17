@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { readdirSync, readFileSync, statSync } from "node:fs";
+import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { MAY_FALL_BACK_ROUTES } from "./fallback-route";
 
@@ -31,9 +31,12 @@ function stripComments(text: string): string {
  */
 function routesThatMayFallBack(dir = ROUTES, prefix = ""): string[] {
   const out: string[] = [];
-  for (const name of readdirSync(dir)) {
+  // withFileTypes: the entry's type comes from the directory listing, not from
+  // a stat of the path followed by a read of it (CodeQL js/file-system-race).
+  for (const entry of readdirSync(dir, { withFileTypes: true })) {
+    const name = entry.name;
     const full = join(dir, name);
-    if (statSync(full).isDirectory()) {
+    if (entry.isDirectory()) {
       out.push(...routesThatMayFallBack(full, `${prefix}/${name}`));
     } else if (/^\+page(\.server)?\.ts$/.test(name)) {
       const m = /export const prerender\s*=\s*([^;\n]+)/.exec(stripComments(readFileSync(full, "utf-8")));

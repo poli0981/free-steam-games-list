@@ -21,7 +21,7 @@
  *   node scripts/verify-dist.mjs --web      + web-only expectations
  *   node scripts/verify-dist.mjs --tauri    + packaged-app expectations
  */
-import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -35,9 +35,9 @@ const failures = [];
 const fail = (msg) => failures.push(msg);
 
 function walk(dir, out = []) {
-  for (const name of readdirSync(dir)) {
-    const full = join(dir, name);
-    if (statSync(full).isDirectory()) walk(full, out);
+  for (const entry of readdirSync(dir, { withFileTypes: true })) {
+    const full = join(dir, entry.name);
+    if (entry.isDirectory()) walk(full, out);
     else out.push(full);
   }
   return out;
@@ -54,11 +54,28 @@ const html = files.filter((f) => f.endsWith(".html"));
 if (!existsSync(join(DIST, "200.html"))) fail("200.html (the SPA fallback) is missing");
 if (html.length < 10) fail(`only ${html.length} HTML files - prerendering did not run`);
 
-/** Text a reader or a crawler actually sees: scripts and styles removed. */
+/**
+ * Text a reader or a crawler actually sees: scripts and styles removed.
+ * End tags may carry whitespace (`</script >`), and removal repeats until
+ * nothing changes, so no nested remnant survives a single pass.
+ */
 function visible(text) {
-  return text
-    .replace(/<script\b[\s\S]*?<\/script>/gi, "")
-    .replace(/<style\b[\s\S]*?<\/style>/gi, "");
+  let out = text;
+  for (let previous = ""; previous !== out; ) {
+    previous = out;
+    out = out.replace(/<script\b[\s\S]*?<\/script[^>]*>/gi, "").replace(/<style\b[\s\S]*?<\/style[^>]*>/gi, "");
+  }
+  return out;
+}
+
+/** One directive of a page's CSP meta tag, as a list of its sources. */
+function cspSources(html, directive) {
+  const policy = /<meta http-equiv="content-security-policy" content="([^"]*)"/i.exec(html)?.[1] ?? "";
+  const found = policy
+    .split(";")
+    .map((part) => part.trim().split(/\s+/))
+    .find(([name]) => name === directive);
+  return found ? found.slice(1) : [];
 }
 
 // Strings that must never be baked into a page before data exists.
@@ -133,8 +150,10 @@ if (flavour === "tauri") {
   if (/<link rel="manifest"/.test(readFileSync(join(DIST, "index.html"), "utf-8"))) {
     fail("index.html links a web manifest in a Tauri build");
   }
+  // An exact source in connect-src, not a substring of the page: the origin
+  // appearing anywhere else (a link, a longer host) must not pass.
   const index = readFileSync(join(DIST, "index.html"), "utf-8");
-  if (!index.includes("https://free-steam-games.win")) {
+  if (!cspSources(index, "connect-src").includes("https://free-steam-games.win")) {
     fail("index.html CSP does not allow https://free-steam-games.win (the Tauri connect-src)");
   }
 }
