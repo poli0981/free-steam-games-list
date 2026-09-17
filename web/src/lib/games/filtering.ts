@@ -8,6 +8,7 @@ import Fuse from "fuse.js";
 import type { GameRecord } from "../schema";
 import { COLS } from "./columns";
 import type { SortDir } from "../filters.svelte";
+import { safeClass, type SafeClass } from "../safety";
 
 /**
  * Fuse options, carried over verbatim.
@@ -28,7 +29,7 @@ export interface FilterCriteria {
   genre: string | null;
   typeGame: "online" | "offline" | null;
   platform: string | null;
-  safe: string | null;
+  safe: SafeClass | null;
   status: "active" | "delisted" | null;
   hasAntiCheat: boolean | null;
   hideDead: boolean;
@@ -53,7 +54,8 @@ export function applyFilters(
   if (c.genre) out = out.filter((g) => g.genre === c.genre);
   if (c.typeGame) out = out.filter((g) => g.type_game === c.typeGame);
   if (c.platform) out = out.filter((g) => (g.platforms ?? []).includes(c.platform!));
-  if (c.safe) out = out.filter((g) => g.safe === c.safe);
+  // !== null, not truthiness: "" (never filled in) is a real choice.
+  if (c.safe !== null) out = out.filter((g) => safeClass(g.safe) === c.safe);
   if (c.status) out = out.filter((g) => g.status === c.status);
   if (c.hasAntiCheat !== null) {
     // "-" is the skeleton default for "none recorded", not a real anti-cheat.

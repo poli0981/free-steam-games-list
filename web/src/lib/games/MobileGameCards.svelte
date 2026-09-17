@@ -70,7 +70,7 @@
             {#if issues.length}
               <TriangleAlert
                 class="size-3.5 shrink-0 text-warning"
-                aria-label={issues.map((i) => i.label).join(" · ")}
+                aria-label={issues.map((i) => t(i.message, i.vars)).join(" · ")}
               />
             {/if}
           </div>

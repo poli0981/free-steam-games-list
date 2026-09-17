@@ -11,18 +11,18 @@
   const t = i18n.t;
 </script>
 
-<Seo title={data.meta.label} description={data.meta.hint} type="article" />
+<Seo title={t(data.meta.label)} description={t(data.meta.hint)} type="article" />
 
 <div class="mx-auto max-w-3xl">
   <a
-    href="/about"
+    href="/legal"
     class="mb-4 inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground"
   >
     <ArrowLeft class="size-3.5" />
-    {t("nav.about")}
+    {t("legal.allDocuments")}
   </a>
 
-  <PageHeader title={data.heading ?? data.meta.label} subtitle={data.meta.hint}>
+  <PageHeader title={data.heading ?? t(data.meta.label)} subtitle={t(data.meta.hint)}>
     {#snippet actions()}
       <a
         href={data.sourceUrl}

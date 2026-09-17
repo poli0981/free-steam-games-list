@@ -1,8 +1,11 @@
 <script lang="ts">
+  import { onMount, untrack } from "svelte";
   import X from "@lucide/svelte/icons/x";
   import Download from "@lucide/svelte/icons/download";
+  import { page as appPage } from "$app/state";
+  import { replaceState } from "$app/navigation";
   import { games } from "$lib/games.svelte";
-  import { filters, PAGE_SIZES } from "$lib/filters.svelte";
+  import { filters, FILTER_PARAMS, PAGE_SIZES } from "$lib/filters.svelte";
   import { i18n } from "$lib/i18n.svelte";
   import { buildSearchIndex, applyFilters, applySort, facets } from "$lib/games/filtering";
   import { formatNumber } from "$lib/utils";
@@ -44,18 +47,65 @@
   const pageCount = $derived(
     filters.pageSize === -1 ? 1 : Math.max(1, Math.ceil(sorted.length / filters.pageSize)),
   );
-  let page = $state(0);
 
-  // A filter change can leave you past the end of the shorter result set.
+  /* ── the URL ─────────────────────────────────────────────────────────────
+     Filters, sort and page are mirrored into the query string, so a filtered
+     view can be linked (/health links its groups here) and survives a reload.
+
+     Browser-only, on purpose. This page is prerendered, and reading
+     url.search during prerender throws; the static HTML is the unfiltered
+     page, and the query string is applied once mounted. A link WITH filter
+     parameters replaces the stored filters; a plain /games keeps whatever the
+     reader had, and writes it back into the address bar. */
+  let urlReady = false;
+
+  onMount(() => {
+    const params = new URLSearchParams(location.search);
+    if ([...params.keys()].some((k) => FILTER_PARAMS.has(k))) filters.fromQuery(params);
+    urlReady = true;
+  });
+
   $effect(() => {
-    void sorted.length;
-    if (page >= pageCount) page = 0;
+    const query = filters.toQuery().toString();
+    if (!urlReady) return;
+    // Debounced: typing in the search box would otherwise rewrite history
+    // state on every keystroke.
+    const timer = setTimeout(() => {
+      const next = location.pathname + (query ? `?${query}` : "") + location.hash;
+      if (next !== location.pathname + location.search + location.hash) {
+        replaceState(next, appPage.state);
+      }
+    }, 250);
+    return () => clearTimeout(timer);
+  });
+
+  /* ── the page number ─────────────────────────────────────────────────────
+     Kept in the filter store, so opening a game and coming Back returns to
+     the same page. Different criteria start again at the first page. */
+  $effect(() => {
+    const signature = filters.signature;
+    untrack(() => {
+      if (signature === filters.pageFor) return;
+      if (filters.pageFor !== "") filters.page = 0;
+      filters.pageFor = signature;
+    });
+  });
+
+  // Past the end of a shorter result set - but only once there ARE results to
+  // measure: while the catalogue loads, every page is "past the end", and
+  // clamping then threw away a linked or remembered page.
+  $effect(() => {
+    if (!games.data) return;
+    const count = pageCount;
+    untrack(() => {
+      if (filters.page >= count) filters.page = 0;
+    });
   });
 
   const visible = $derived(
     filters.pageSize === -1
       ? sorted
-      : sorted.slice(page * filters.pageSize, (page + 1) * filters.pageSize),
+      : sorted.slice(filters.page * filters.pageSize, (filters.page + 1) * filters.pageSize),
   );
 
   function exportAs(kind: "csv" | "json") {
@@ -121,6 +171,18 @@
       <option value={null}>{t("games.filterAllStatus")}</option>
       <option value="active">{t("common.active")}</option>
       <option value="delisted">{t("common.delisted")}</option>
+    </select>
+
+    <select
+      bind:value={filters.safe}
+      aria-label={t("games.filterAllSafe")}
+      class="h-8 rounded-md border border-input bg-background px-2 text-xs"
+    >
+      <option value={null}>{t("games.filterAllSafe")}</option>
+      <option value="y">{t("games.safeYes")}</option>
+      <option value="n">{t("games.safeNo")}</option>
+      <option value="?">{t("games.safeUnreviewed")}</option>
+      <option value="">{t("games.safeUnset")}</option>
     </select>
 
     <select
@@ -196,17 +258,17 @@
           <Button
             variant="outline"
             size="sm"
-            disabled={page === 0}
-            onclick={() => (page = Math.max(0, page - 1))}
+            disabled={filters.page === 0}
+            onclick={() => (filters.page = Math.max(0, filters.page - 1))}
           >
             {t("common.previous")}
           </Button>
-          <span class="tnum">{t("common.page", { current: page + 1, total: pageCount })}</span>
+          <span class="tnum">{t("common.page", { current: filters.page + 1, total: pageCount })}</span>
           <Button
             variant="outline"
             size="sm"
-            disabled={page >= pageCount - 1}
-            onclick={() => (page = Math.min(pageCount - 1, page + 1))}
+            disabled={filters.page >= pageCount - 1}
+            onclick={() => (filters.page = Math.min(pageCount - 1, filters.page + 1))}
           >
             {t("common.next")}
           </Button>

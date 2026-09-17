@@ -99,8 +99,23 @@ const processor = unified()
 
 export interface RenderedDoc {
   html: string;
-  /** First H1, used as the page title when the document has one. */
+  /** First H1, used as the page title when the document has one. It is
+   *  removed from `html`, so the page does not print its title twice. */
   heading: string | null;
+}
+
+/**
+ * Remove the document's first top-level <h1>.
+ *
+ * The page renders that heading itself, in its header. Left in the body as
+ * well, every legal page opened with the same title twice, and had two <h1>
+ * elements, which is one more than a document outline has room for.
+ */
+function dropFirstH1(root: unknown): void {
+  const node = root as { children?: { type?: string; tagName?: string }[] };
+  const children = node.children ?? [];
+  const i = children.findIndex((c) => c.type === "element" && c.tagName === "h1");
+  if (i >= 0) children.splice(i, 1);
 }
 
 /**
@@ -119,7 +134,8 @@ export function renderRepoMarkdown(
   const raw = readFileSync(join(REPO_ROOT, pathInRepo), "utf8");
   const tree = processor.runSync(processor.parse(raw));
   rewriteLinks(tree, slugByPath);
-  const html = processor.stringify(tree as never);
   const heading = /^#\s+(.+)$/m.exec(raw)?.[1]?.trim() ?? null;
+  if (heading) dropFirstH1(tree);
+  const html = processor.stringify(tree as never);
   return { html, heading };
 }

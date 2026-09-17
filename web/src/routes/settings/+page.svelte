@@ -9,7 +9,7 @@
   import { pwa } from "$lib/pwa-state.svelte";
   import { isTauri } from "$lib/external-open";
   import { goto } from "$app/navigation";
-  import { i18n, SUPPORTED_LANGUAGES, type SupportedLanguage } from "$lib/i18n.svelte";
+  import { i18n, LANGUAGE_NAMES, SUPPORTED_LANGUAGES } from "$lib/i18n.svelte";
   import { theme, welcome, type Theme } from "$lib/prefs.svelte";
   import { clearCache } from "$lib/cache";
   import { games } from "$lib/games.svelte";
@@ -19,11 +19,6 @@
   import Seo from "$lib/common/Seo.svelte";
 
   const t = i18n.t;
-
-  const LANG_NAMES: Record<SupportedLanguage, { flag: string; native: string; english: string }> = {
-    en: { flag: "🇬🇧", native: "English", english: "English" },
-    vi: { flag: "🇻🇳", native: "Tiếng Việt", english: "Vietnamese" },
-  };
 
   const THEMES: { value: Theme; icon: typeof Sun; label: string }[] = [
     { value: "light", icon: Sun, label: "settings.themeLight" },
@@ -59,7 +54,7 @@
     <p class="mt-1 text-sm text-muted-foreground">{t("settings.languageHint")}</p>
     <div class="mt-3 grid gap-2 sm:grid-cols-2">
       {#each SUPPORTED_LANGUAGES as lang (lang)}
-        {@const meta = LANG_NAMES[lang]}
+        {@const meta = LANGUAGE_NAMES[lang]}
         <button
           type="button"
           onclick={() => void i18n.setLanguage(lang)}

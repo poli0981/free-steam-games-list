@@ -197,7 +197,15 @@
     "filterHasAc": "Has anti-cheat",
     "filterNoAc": "No anti-cheat",
     "deadTitle": "Dead game - no players recorded",
-    "sortBy": "Sort by {{column}}"
+    "sortBy": "Sort by {{column}}",
+    "safeYes": "Safe",
+    "safeNo": "Not safe",
+    "safeUnreviewed": "Not reviewed yet",
+    "safeUnset": "Safety not set",
+    "issueNoGenre": "No genre",
+    "issueNoType": "No type (online or offline)",
+    "issueStale": "Not refreshed for {{days}} days",
+    "issueKernelUnknown": "Kernel-level anti-cheat unknown"
   },
   "topOnline": {
     "title": "Top online",
@@ -241,7 +249,7 @@
       "title": "Time",
       "subtitle": "Release-year histogram of the catalog, plus a cumulative timeline of how the dataset grew.",
       "releasesByYear": "Releases by year",
-      "catalogGrowth": "Catalog growth (added_at)",
+      "catalogGrowth": "Catalogue growth",
       "addedPerMonth": "Games added per month"
     },
     "tags": {
@@ -437,7 +445,24 @@
     "tplFeature": "Feature request",
     "tplDelete": "Delete a game",
     "trademarkNote": "Steam, Steam Store, Steam Community and the Steam logo are trademarks of Valve Corporation. This site is not affiliated with Valve. Everything the page loads is served from this site, which fetches it from GitHub and Valve's CDN server-side - your browser contacts neither.",
-    "email": "Email"
+    "email": "Email",
+    "deps": {
+      "svelte": "UI runtime",
+      "sveltekit": "routing and prerendering",
+      "typescript": "type system",
+      "vite": "build",
+      "tailwind": "styling",
+      "bitsUi": "headless UI primitives",
+      "echarts": "charts",
+      "virtual": "virtualised 3,600-row table",
+      "fuse": "fuzzy search",
+      "idbKeyval": "IndexedDB cache",
+      "unified": "legal documents, at build time only",
+      "displayFont": "display typeface",
+      "bodyFont": "body typeface",
+      "monoFont": "monospace typeface",
+      "tauri": "desktop and Android shell"
+    }
   },
   "dialogs": {
     "gameNotFound": "Game not found",
@@ -478,7 +503,10 @@
     "viewRuns": "View runs",
     "failedToast": "{{name}} failed",
     "allClear": "Nothing flagged. Every record has its manual fields and a recent refresh.",
-    "seoDescription": "Data-quality checks across the catalogue: delisted, stale and unreviewed records."
+    "seoDescription": "Data-quality checks across the catalogue: delisted, stale and unreviewed records.",
+    "groupUnreviewed": "Safety not reviewed yet",
+    "groupUnreviewedDesc": "safe is \"?\": nobody has judged these games yet. Not an error, a to-do list.",
+    "openInGames": "Open in the games list"
   },
   "detail": {
     "openOnSteam": "appid {{appid}} · open on Steam",
@@ -565,7 +593,8 @@
     "reviewLabelTitle": "Review wording",
     "reviewLabelDesc": "Steam's own label, which is a band rather than the raw percentage.",
     "peakToday": "Peak today",
-    "metacriticCoverage": "{{scored}} of {{total}} games have a Metacritic score."
+    "metacriticCoverage": "{{scored}} of {{total}} games have a Metacritic score.",
+    "deadNow": "{{count}} games are marked dead right now."
   },
   "studios": {
     "developersTitle": "Developers",
@@ -585,6 +614,43 @@
     "subtitle": "The binding documents, rendered here rather than sent to GitHub.",
     "notFound": "No legal document by that name.",
     "viewSource": "View the source on GitHub",
-    "lastCommitted": "Rendered from the repository at build time."
+    "lastCommitted": "Rendered from the repository at build time.",
+    "docs": {
+      "license": {
+        "label": "MIT License (code)",
+        "hint": "covers the source code"
+      },
+      "licenseData": {
+        "label": "Data Licence (CC BY 4.0)",
+        "hint": "covers the dataset, and names what it cannot cover"
+      },
+      "disclaimer": {
+        "label": "Disclaimer",
+        "hint": "no warranty, accuracy caveats, limits of liability"
+      },
+      "tos": {
+        "label": "Terms of Use",
+        "hint": "what you agree to by using the repository or the site"
+      },
+      "eula": {
+        "label": "EULA",
+        "hint": "overlaps with the MIT licence, kept for completeness"
+      },
+      "privacy": {
+        "label": "Privacy Policy",
+        "hint": "no accounts, analytics or tracking; what the host logs"
+      },
+      "acknowledgements": {
+        "label": "Acknowledgements",
+        "hint": "credits to contributors and the AI assistants used"
+      },
+      "contact": {
+        "label": "Contact",
+        "hint": "how to reach the maintainer"
+      }
+    },
+    "binding": "Accepted at the consent step",
+    "otherDocs": "Also available",
+    "allDocuments": "All legal documents"
   }
 }

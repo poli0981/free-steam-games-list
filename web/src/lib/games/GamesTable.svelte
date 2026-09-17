@@ -149,7 +149,7 @@
                   {#if issues.length}
                     <span
                       class="grid size-5 place-items-center text-warning"
-                      title={issues.map((i) => i.label).join(" · ")}
+                      title={issues.map((i) => t(i.message, i.vars)).join(" · ")}
                     >
                       <TriangleAlert class="size-3.5" />
                     </span>

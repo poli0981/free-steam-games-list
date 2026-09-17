@@ -4,7 +4,7 @@
   import { Toaster } from "svelte-sonner";
   import { Dialog } from "bits-ui";
   import { page } from "$app/state";
-  import { afterNavigate } from "$app/navigation";
+  import { afterNavigate, goto } from "$app/navigation";
   import { i18n } from "$lib/i18n.svelte";
   import { consent, theme, welcome } from "$lib/prefs.svelte";
   import { installPaletteShortcut } from "$lib/palette.svelte";
@@ -42,6 +42,9 @@
   // because the layout mounts once.
   let updateChecked = false;
   let main: HTMLElement | undefined = $state();
+  // Whether this visit STARTED on the dashboard. Only such a visit may be sent
+  // to the introduction; see the effect below.
+  let landedOnHome = false;
 
   // Chrome-less routes: the introduction and the error pages stand alone, with
   // no sidebar or topbar around them.
@@ -77,6 +80,8 @@
     consent.hydrate();
     welcome.hydrate();
     void i18n.init();
+    // After the legacy upgrade: "/#/games/730" is a deep link, not the home page.
+    landedOnHome = location.pathname === "/" && !location.hash.startsWith("#/");
 
     // Tauri only. The webview blocks window.open() and target="_blank" to
     // external http(s), so without this every plain external <a> in the app
@@ -132,6 +137,21 @@
     void games.load();
     void pwa.register();
     return installGamesRevalidation();
+  });
+
+  /**
+   * The introduction, once.
+   *
+   * Only for a visit that started on the dashboard, from someone who has
+   * accepted the terms and never seen it - so a first visitor lands there right
+   * after the consent step. Never for a deep link, never mid-session, and never
+   * for a crawler: crawlers do not consent, so "/" stays the indexable page.
+   * replaceState, so Back leaves the site instead of returning to a redirect.
+   */
+  $effect(() => {
+    if (!landedOnHome || !consent.hydrated || !consent.accepted || welcome.seen) return;
+    landedOnHome = false;
+    if (page.url.pathname === "/") void goto("/welcome", { replaceState: true });
   });
 
   // Close the mobile drawer on navigation, or it stays open over the new page.

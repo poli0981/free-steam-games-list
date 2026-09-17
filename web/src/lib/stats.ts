@@ -140,3 +140,56 @@ export function releaseYears(records: GameRecord[]): { name: string; value: numb
     .sort((a, b) => a[0] - b[0])
     .map(([y, value]) => ({ name: String(y), value }));
 }
+
+/** "2026-05" from an ISO-like timestamp, or null for anything implausible. */
+export function monthKey(value: string | null | undefined): string | null {
+  const m = /^(\d{4})-(\d{2})/.exec(value ?? "");
+  if (!m) return null;
+  const year = Number(m[1]);
+  const month = Number(m[2]);
+  if (year < 2000 || year > 2100 || month < 1 || month > 12) return null;
+  return `${m[1]}-${m[2]}`;
+}
+
+/**
+ * How many values fall in each calendar month, with EVERY month between the
+ * first and the last present - empty ones as zero. A time axis that skips a
+ * month with no events draws two distant months side by side and hides the
+ * quiet stretch between them, which is often the finding.
+ */
+export function countByMonth(values: (string | null | undefined)[]): { month: string; count: number }[] {
+  const counts = new Map<string, number>();
+  for (const v of values) {
+    const key = monthKey(v);
+    if (key) counts.set(key, (counts.get(key) ?? 0) + 1);
+  }
+  if (!counts.size) return [];
+  const keys = [...counts.keys()].sort();
+  let [year, month] = keys[0].split("-").map(Number);
+  const [lastYear, lastMonth] = keys[keys.length - 1].split("-").map(Number);
+  const out: { month: string; count: number }[] = [];
+  while (year < lastYear || (year === lastYear && month <= lastMonth)) {
+    const key = `${year}-${String(month).padStart(2, "0")}`;
+    out.push({ month: key, count: counts.get(key) ?? 0 });
+    month += 1;
+    if (month > 12) {
+      month = 1;
+      year += 1;
+    }
+  }
+  return out;
+}
+
+/** The running total of a monthly series. */
+export function runningTotal(series: { count: number }[]): number[] {
+  let total = 0;
+  return series.map((s) => (total += s.count));
+}
+
+/** "May 2026" / "thg 5, 2026" for a month key, in the reader's language. */
+export function monthLabel(key: string, locale: string): string {
+  const [year, month] = key.split("-").map(Number);
+  return new Intl.DateTimeFormat(locale, { month: "short", year: "numeric", timeZone: "UTC" }).format(
+    Date.UTC(year, month - 1, 1),
+  );
+}

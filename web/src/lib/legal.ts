@@ -8,23 +8,30 @@ import { REPO_OWNER, REPO_NAME } from "./schema";
  * the repo `docs/` folder); only the surrounding UI chrome is translated.
  */
 export interface LegalDoc {
+  /** i18n key: render with t(). The document title as the lists show it. */
   label: string;
   /** Path relative to the repo root, e.g. "docs/EULA.md" or "LICENSE". */
   path: string;
+  /** i18n key: a one-line summary of what the document covers. */
   hint: string;
   /** True for the binding documents shown in the consent gate checkbox flow. */
   consent?: boolean;
 }
 
+/**
+ * Literal keys, so i18n.test.ts can check every one exists. These used to be
+ * English strings, which is why a Vietnamese reader saw the whole consent list,
+ * the About page's legal section and every document title in English.
+ */
 export const LEGAL_DOCS: LegalDoc[] = [
-  { label: "MIT License (code)", path: "LICENSE", hint: "covers the source code", consent: true },
-  { label: "Data Licence (CC BY 4.0)", path: "LICENSE-DATA", hint: "covers the dataset, and names what it cannot cover", consent: true },
-  { label: "Disclaimer", path: "docs/DISCLAIMER.md", hint: "no warranty, accuracy caveats, liability shrug", consent: true },
-  { label: "Terms of Use", path: "docs/ToS.md", hint: "what you agree to by using the repo / site", consent: true },
-  { label: "EULA", path: "docs/EULA.md", hint: "redundant with MIT but exists for paranoia", consent: true },
-  { label: "Privacy Policy", path: "docs/PRIVACY_POLICY.md", hint: "no data collected by the site itself", consent: true },
-  { label: "Acknowledgements", path: "docs/ACKNOWLEDGEMENTs.md", hint: "credits to AI assistants + contributors" },
-  { label: "Contact", path: "docs/Contact.md", hint: "where to find me" },
+  { label: "legal.docs.license.label", path: "LICENSE", hint: "legal.docs.license.hint", consent: true },
+  { label: "legal.docs.licenseData.label", path: "LICENSE-DATA", hint: "legal.docs.licenseData.hint", consent: true },
+  { label: "legal.docs.disclaimer.label", path: "docs/DISCLAIMER.md", hint: "legal.docs.disclaimer.hint", consent: true },
+  { label: "legal.docs.tos.label", path: "docs/ToS.md", hint: "legal.docs.tos.hint", consent: true },
+  { label: "legal.docs.eula.label", path: "docs/EULA.md", hint: "legal.docs.eula.hint", consent: true },
+  { label: "legal.docs.privacy.label", path: "docs/PRIVACY_POLICY.md", hint: "legal.docs.privacy.hint", consent: true },
+  { label: "legal.docs.acknowledgements.label", path: "docs/ACKNOWLEDGEMENTs.md", hint: "legal.docs.acknowledgements.hint" },
+  { label: "legal.docs.contact.label", path: "docs/Contact.md", hint: "legal.docs.contact.hint" },
 ];
 
 /** The binding documents the user accepts at the consent gate - six of them,
@@ -49,4 +56,11 @@ export function legalDocSlug(path: string): string {
 /** Canonical GitHub URL for a legal doc, matching the About page's links. */
 export function legalDocUrl(path: string): string {
   return `https://github.com/${REPO_OWNER}/${REPO_NAME}/blob/main/${path}`;
+}
+
+/** Whether a /legal/<slug> names a document. The route's param matcher
+ *  (src/params/legaldoc.ts), so an unknown slug matches no route at all and
+ *  renders the layout's translated 404 instead of the dashboard. */
+export function isLegalDocSlug(slug: string): boolean {
+  return LEGAL_DOCS.some((d) => legalDocSlug(d.path) === slug);
 }

@@ -2,7 +2,8 @@
   import { games } from "$lib/games.svelte";
   import { i18n } from "$lib/i18n.svelte";
   import { chartTheme, gridBox } from "$lib/chart-theme";
-  import { computeKpis } from "$lib/stats";
+  import { computeKpis, countByMonth, monthLabel } from "$lib/stats";
+  import { safeClass } from "$lib/safety";
   import { formatCompact, formatNumber, parseIntSafe, reviewLabel } from "$lib/utils";
   import QueryState from "$lib/common/QueryState.svelte";
   import PageHeader from "$lib/common/PageHeader.svelte";
@@ -115,19 +116,43 @@
     };
   });
 
+  /* ── games going quiet ─────────────────────────────────────────────────
+     zero_player_since is set when a game first reports no players and stays
+     that way; nothing charted it. The shape over time says whether the
+     catalogue is shedding games in a burst or steadily. */
+  const quiet = $derived(countByMonth(records.map((r) => r.zero_player_since)));
+
+  const quietOption = $derived.by(() => {
+    const theme = chartTheme();
+    return {
+      grid: gridBox(),
+      tooltip: { trigger: "axis", axisPointer: { type: "shadow" } },
+      xAxis: {
+        type: "category",
+        data: quiet.map((q) => monthLabel(q.month, i18n.lang)),
+        axisLabel: { color: theme.mutedText },
+        axisLine: { lineStyle: { color: theme.grid } },
+      },
+      yAxis: { type: "value", minInterval: 1, axisLabel: { color: theme.mutedText }, splitLine: { lineStyle: { color: theme.grid } } },
+      series: [
+        {
+          type: "bar",
+          name: t("stats.deadTitle"),
+          data: quiet.map((q) => q.count),
+          itemStyle: { color: theme.warning, borderRadius: [4, 4, 0, 0] },
+          barMaxWidth: 48,
+        },
+      ],
+    };
+  });
+
   /* ── safety flags ──────────────────────────────────────────────────────── */
-  // `safe` is a hand-entered field, so normalise before counting: the data
-  // carries at least one "yes", and an unrecognised value belongs under
-  // "unknown" rather than silently in no slice at all.
+  // `safe` is hand-entered, so it is normalised before counting (safeClass,
+  // shared with the /games filter): the data carries at least one "yes", and an
+  // unrecognised value belongs under "unknown" rather than in no slice at all.
   const safety = $derived.by(() => {
     const counts = { y: 0, n: 0, "?": 0, "": 0 };
-    for (const r of records) {
-      const v = (r.safe ?? "").trim().toLowerCase();
-      if (v === "y" || v === "yes") counts.y += 1;
-      else if (v === "n" || v === "no") counts.n += 1;
-      else if (v === "") counts[""] += 1;
-      else counts["?"] += 1;
-    }
+    for (const r of records) counts[safeClass(r.safe)] += 1;
     return counts;
   });
 
@@ -229,6 +254,17 @@
       <p class="mt-1 text-sm text-muted-foreground">{t("stats.retentionDesc")}</p>
       <EChart option={retentionOption} height={420} label={t("stats.retentionTitle")} class="mt-3" />
     </section>
+
+    {#if quiet.length}
+      <section class="rounded-lg border bg-card p-5">
+        <h2 class="text-base font-semibold">{t("stats.deadTitle")}</h2>
+        <p class="mt-1 text-sm text-muted-foreground">
+          {t("stats.deadDesc")}
+          <span class="tnum">{t("stats.deadNow", { count: formatNumber(kpis.dead) })}</span>
+        </p>
+        <EChart option={quietOption} height={300} label={t("stats.deadTitle")} class="mt-3" />
+      </section>
+    {/if}
 
     <div class="grid gap-4 lg:grid-cols-2">
       <section class="rounded-lg border bg-card p-5">

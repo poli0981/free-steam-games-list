@@ -23,6 +23,13 @@ import en from "../i18n/locales/en.json";
 export const SUPPORTED_LANGUAGES = ["en", "vi"] as const;
 export type SupportedLanguage = (typeof SUPPORTED_LANGUAGES)[number];
 
+/** Each language named in itself and in English. Never translated: a reader
+ *  looking for their own language has to recognise it whatever the UI says. */
+export const LANGUAGE_NAMES: Record<SupportedLanguage, { flag: string; native: string; english: string }> = {
+  en: { flag: "🇬🇧", native: "English", english: "English" },
+  vi: { flag: "🇻🇳", native: "Tiếng Việt", english: "Vietnamese" },
+};
+
 const STORAGE_KEY = "f2p:lang";
 
 type Bundle = Record<string, unknown>;

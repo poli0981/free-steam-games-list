@@ -197,7 +197,15 @@
     "filterHasAc": "Có anti-cheat",
     "filterNoAc": "Không anti-cheat",
     "deadTitle": "Game chết - không ghi nhận người chơi",
-    "sortBy": "Sắp xếp theo {{column}}"
+    "sortBy": "Sắp xếp theo {{column}}",
+    "safeYes": "An toàn",
+    "safeNo": "Không an toàn",
+    "safeUnreviewed": "Chưa được xem xét",
+    "safeUnset": "Chưa đặt mức an toàn",
+    "issueNoGenre": "Chưa có thể loại",
+    "issueNoType": "Chưa có loại (online hay offline)",
+    "issueStale": "{{days}} ngày chưa được làm mới",
+    "issueKernelUnknown": "Chưa rõ anti-cheat có chạy ở kernel không"
   },
   "topOnline": {
     "title": "Top online",
@@ -241,7 +249,7 @@
       "title": "Thời gian",
       "subtitle": "Histogram năm phát hành của catalog, kèm timeline cộng dồn cho thấy dataset đã lớn lên thế nào.",
       "releasesByYear": "Phát hành theo năm",
-      "catalogGrowth": "Catalog tăng trưởng (added_at)",
+      "catalogGrowth": "Danh mục lớn lên theo thời gian",
       "addedPerMonth": "Số game thêm theo tháng"
     },
     "tags": {
@@ -437,7 +445,24 @@
     "tplFeature": "Đề xuất tính năng",
     "tplDelete": "Xóa một game",
     "trademarkNote": "Steam, Steam Store, Steam Community và logo Steam là thương hiệu của Valve Corporation. Trang này không liên kết với Valve. Mọi thứ trang tải đều được phục vụ từ chính trang này, vốn lấy dữ liệu từ GitHub và CDN của Valve ở phía máy chủ - trình duyệt của bạn không liên hệ với bên nào.",
-    "email": "Email"
+    "email": "Email",
+    "deps": {
+      "svelte": "runtime giao diện",
+      "sveltekit": "định tuyến và prerender",
+      "typescript": "hệ thống kiểu",
+      "vite": "build",
+      "tailwind": "định kiểu giao diện",
+      "bitsUi": "thành phần UI không định kiểu",
+      "echarts": "biểu đồ",
+      "virtual": "bảng ảo hóa 3.600 dòng",
+      "fuse": "tìm kiếm mờ",
+      "idbKeyval": "bộ nhớ đệm IndexedDB",
+      "unified": "tài liệu pháp lý, chỉ lúc build",
+      "displayFont": "phông tiêu đề",
+      "bodyFont": "phông nội dung",
+      "monoFont": "phông đơn cách",
+      "tauri": "vỏ ứng dụng desktop và Android"
+    }
   },
   "dialogs": {
     "gameNotFound": "Không tìm thấy game",
@@ -478,7 +503,10 @@
     "viewRuns": "Xem runs",
     "failedToast": "{{name}} thất bại",
     "allClear": "Không có cảnh báo nào. Mọi bản ghi đều đủ trường thủ công và được cập nhật gần đây.",
-    "seoDescription": "Kiểm tra chất lượng dữ liệu trên toàn danh mục: game đã gỡ, dữ liệu cũ và bản ghi chưa được xem xét."
+    "seoDescription": "Kiểm tra chất lượng dữ liệu trên toàn danh mục: game đã gỡ, dữ liệu cũ và bản ghi chưa được xem xét.",
+    "groupUnreviewed": "Chưa xem xét mức an toàn",
+    "groupUnreviewedDesc": "safe là \"?\": chưa ai đánh giá các game này. Không phải lỗi, mà là việc cần làm.",
+    "openInGames": "Mở trong danh sách game"
   },
   "detail": {
     "openOnSteam": "appid {{appid}} · mở trên Steam",
@@ -565,7 +593,8 @@
     "reviewLabelTitle": "Nhãn đánh giá",
     "reviewLabelDesc": "Nhãn của Steam, là một khoảng chứ không phải số phần trăm.",
     "peakToday": "Đỉnh hôm nay",
-    "metacriticCoverage": "{{scored}} trên {{total}} game có điểm Metacritic."
+    "metacriticCoverage": "{{scored}} trên {{total}} game có điểm Metacritic.",
+    "deadNow": "Hiện có {{count}} game bị đánh dấu là đã chết."
   },
   "studios": {
     "developersTitle": "Nhà phát triển",
@@ -585,6 +614,43 @@
     "subtitle": "Các tài liệu ràng buộc, hiển thị ngay tại đây thay vì chuyển sang GitHub.",
     "notFound": "Không có tài liệu nào tên như vậy.",
     "viewSource": "Xem mã nguồn trên GitHub",
-    "lastCommitted": "Được kết xuất từ kho lúc build."
+    "lastCommitted": "Được kết xuất từ kho lúc build.",
+    "docs": {
+      "license": {
+        "label": "Giấy phép MIT (mã nguồn)",
+        "hint": "áp dụng cho mã nguồn"
+      },
+      "licenseData": {
+        "label": "Giấy phép dữ liệu (CC BY 4.0)",
+        "hint": "áp dụng cho bộ dữ liệu, và nêu rõ phần nó không thể áp dụng"
+      },
+      "disclaimer": {
+        "label": "Tuyên bố miễn trừ trách nhiệm",
+        "hint": "không bảo hành, lưu ý về độ chính xác, giới hạn trách nhiệm"
+      },
+      "tos": {
+        "label": "Điều khoản sử dụng",
+        "hint": "những gì bạn đồng ý khi dùng kho mã hoặc trang web"
+      },
+      "eula": {
+        "label": "EULA (thỏa thuận người dùng cuối)",
+        "hint": "trùng một phần với giấy phép MIT, giữ lại cho đầy đủ"
+      },
+      "privacy": {
+        "label": "Chính sách quyền riêng tư",
+        "hint": "không tài khoản, không phân tích hay theo dõi; những gì nhà cung cấp hạ tầng ghi nhật ký"
+      },
+      "acknowledgements": {
+        "label": "Lời cảm ơn",
+        "hint": "ghi công người đóng góp và các trợ lý AI đã dùng"
+      },
+      "contact": {
+        "label": "Liên hệ",
+        "hint": "cách liên hệ người duy trì dự án"
+      }
+    },
+    "binding": "Đã chấp nhận ở bước đồng ý",
+    "otherDocs": "Tài liệu khác",
+    "allDocuments": "Tất cả tài liệu pháp lý"
   }
 }

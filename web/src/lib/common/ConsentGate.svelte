@@ -95,8 +95,8 @@
               class="flex items-center gap-2 rounded-md border bg-background px-3 py-2 text-sm
                      transition-colors hover:border-border-strong hover:bg-accent"
             >
-              <span class="min-w-0 flex-1 truncate font-medium">{doc.label}</span>
-              <span class="hidden truncate text-xs text-muted-foreground sm:block">{doc.hint}</span>
+              <span class="min-w-0 flex-1 truncate font-medium">{t(doc.label)}</span>
+              <span class="hidden truncate text-xs text-muted-foreground sm:block">{t(doc.hint)}</span>
               <ChevronRight class="size-4 shrink-0 text-muted-foreground" />
             </a>
           </li>

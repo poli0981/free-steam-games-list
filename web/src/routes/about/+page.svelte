@@ -39,22 +39,24 @@
    * one of them wrong by the end, and OpenPGP.js was not even a dependency, so
    * the page credited a library that did not ship.
    */
+  /** Roles are i18n keys (literal, for i18n.test.ts); names and licence ids
+   *  are proper nouns and stay as written. */
   const DEPS = [
-    { name: "Svelte 5", role: "UI runtime", href: "https://svelte.dev/", licence: "MIT" },
-    { name: "SvelteKit 2", role: "routing + prerendering", href: "https://svelte.dev/docs/kit", licence: "MIT" },
-    { name: "TypeScript 6", role: "type system", href: "https://www.typescriptlang.org/", licence: "Apache-2.0" },
-    { name: "Vite 8 / Rolldown", role: "build", href: "https://vitejs.dev/", licence: "MIT" },
-    { name: "Tailwind CSS 4", role: "styling", href: "https://tailwindcss.com/", licence: "MIT" },
-    { name: "Bits UI", role: "headless UI primitives", href: "https://bits-ui.com/", licence: "MIT" },
-    { name: "Apache ECharts 6", role: "charts", href: "https://echarts.apache.org/", licence: "Apache-2.0" },
-    { name: "TanStack Virtual", role: "virtualised 3,600-row table", href: "https://tanstack.com/virtual", licence: "MIT" },
-    { name: "Fuse.js", role: "fuzzy search", href: "https://www.fusejs.io/", licence: "Apache-2.0" },
-    { name: "idb-keyval", role: "IndexedDB cache", href: "https://github.com/jakearchibald/idb-keyval", licence: "Apache-2.0" },
-    { name: "unified / remark / rehype", role: "legal docs, at build time only", href: "https://unifiedjs.com/", licence: "MIT" },
-    { name: "Bricolage Grotesque", role: "display typeface", href: "https://github.com/ateliertriay/bricolage", licence: "OFL-1.1" },
-    { name: "IBM Plex Sans", role: "body typeface", href: "https://github.com/IBM/plex", licence: "OFL-1.1" },
-    { name: "JetBrains Mono", role: "monospace typeface", href: "https://github.com/JetBrains/JetBrainsMono", licence: "OFL-1.1" },
-    { name: "Tauri 2", role: "desktop + Android shell", href: "https://v2.tauri.app/", licence: "MIT or Apache-2.0" },
+    { name: "Svelte 5", role: "about.deps.svelte", href: "https://svelte.dev/", licence: "MIT" },
+    { name: "SvelteKit 2", role: "about.deps.sveltekit", href: "https://svelte.dev/docs/kit", licence: "MIT" },
+    { name: "TypeScript 6", role: "about.deps.typescript", href: "https://www.typescriptlang.org/", licence: "Apache-2.0" },
+    { name: "Vite 8 / Rolldown", role: "about.deps.vite", href: "https://vitejs.dev/", licence: "MIT" },
+    { name: "Tailwind CSS 4", role: "about.deps.tailwind", href: "https://tailwindcss.com/", licence: "MIT" },
+    { name: "Bits UI", role: "about.deps.bitsUi", href: "https://bits-ui.com/", licence: "MIT" },
+    { name: "Apache ECharts 6", role: "about.deps.echarts", href: "https://echarts.apache.org/", licence: "Apache-2.0" },
+    { name: "TanStack Virtual", role: "about.deps.virtual", href: "https://tanstack.com/virtual", licence: "MIT" },
+    { name: "Fuse.js", role: "about.deps.fuse", href: "https://www.fusejs.io/", licence: "Apache-2.0" },
+    { name: "idb-keyval", role: "about.deps.idbKeyval", href: "https://github.com/jakearchibald/idb-keyval", licence: "Apache-2.0" },
+    { name: "unified / remark / rehype", role: "about.deps.unified", href: "https://unifiedjs.com/", licence: "MIT" },
+    { name: "Bricolage Grotesque", role: "about.deps.displayFont", href: "https://github.com/ateliertriay/bricolage", licence: "OFL-1.1" },
+    { name: "IBM Plex Sans", role: "about.deps.bodyFont", href: "https://github.com/IBM/plex", licence: "OFL-1.1" },
+    { name: "JetBrains Mono", role: "about.deps.monoFont", href: "https://github.com/JetBrains/JetBrainsMono", licence: "OFL-1.1" },
+    { name: "Tauri 2", role: "about.deps.tauri", href: "https://v2.tauri.app/", licence: "MIT or Apache-2.0" },
   ];
 
   const ISSUE_TEMPLATES = $derived([
@@ -180,8 +182,8 @@
             href="/legal/{legalDocSlug(doc.path)}"
             class="flex items-center justify-between gap-2 rounded-md border bg-background px-3 py-2 text-sm hover:bg-accent"
           >
-            <span class="font-medium">{doc.label}</span>
-            <span class="ml-2 hidden truncate text-xs text-muted-foreground sm:block">{doc.hint}</span>
+            <span class="font-medium">{t(doc.label)}</span>
+            <span class="ml-2 hidden truncate text-xs text-muted-foreground sm:block">{t(doc.hint)}</span>
           </a>
         </li>
       {/each}
@@ -199,7 +201,7 @@
           <a href={d.href} target="_blank" rel="noreferrer" class="min-w-0 truncate font-medium hover:text-primary">
             {d.name}
           </a>
-          <span class="hidden truncate text-xs text-muted-foreground sm:inline">{d.role}</span>
+          <span class="hidden truncate text-xs text-muted-foreground sm:inline">{t(d.role)}</span>
           <Badge variant="outline" class="shrink-0 font-mono">{d.licence}</Badge>
         </li>
       {/each}

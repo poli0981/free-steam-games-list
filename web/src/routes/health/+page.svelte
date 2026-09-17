@@ -4,11 +4,14 @@
   import Calendar from "@lucide/svelte/icons/calendar";
   import ShieldQuestion from "@lucide/svelte/icons/shield-question-mark";
   import HeartPulse from "@lucide/svelte/icons/heart-pulse";
+  import ShieldEllipsis from "@lucide/svelte/icons/shield-ellipsis";
+  import ArrowRight from "@lucide/svelte/icons/arrow-right";
   import type { Component } from "svelte";
   import { games } from "$lib/games.svelte";
   import { i18n } from "$lib/i18n.svelte";
   import { isEmpty, appidOf } from "$lib/data-store";
   import { formatNumber, formatRelativeDate } from "$lib/utils";
+  import { safeClass } from "$lib/safety";
   import type { GameRecord } from "$lib/schema";
   import QueryState from "$lib/common/QueryState.svelte";
   import PageHeader from "$lib/common/PageHeader.svelte";
@@ -17,13 +20,15 @@
 
   const t = i18n.t;
 
-  type GroupKey = "Delisted" | "Stale" | "Missing" | "Kernel" | "OnlineAcUnknown";
+  type GroupKey = "Delisted" | "Stale" | "Missing" | "Unreviewed" | "Kernel" | "OnlineAcUnknown";
 
   interface Group {
     key: GroupKey;
     records: GameRecord[];
     icon: Component<{ class?: string }>;
-    variant: "warning" | "destructive" | "secondary";
+    variant: "warning" | "destructive" | "secondary" | "info";
+    /** The same records as a filtered /games view, where one exists. */
+    href?: string;
   }
 
   const STALE_DAYS = 30;
@@ -33,6 +38,7 @@
     Delisted: { title: "health.groupDelisted", desc: "health.groupDelistedDesc" },
     Stale: { title: "health.groupStale", desc: "health.groupStaleDesc" },
     Missing: { title: "health.groupMissing", desc: "health.groupMissingDesc" },
+    Unreviewed: { title: "health.groupUnreviewed", desc: "health.groupUnreviewedDesc" },
     Kernel: { title: "health.groupKernel", desc: "health.groupKernelDesc" },
     OnlineAcUnknown: { title: "health.groupOnlineAcUnknown", desc: "health.groupOnlineAcUnknownDesc" },
   };
@@ -41,6 +47,7 @@
     const delisted: GameRecord[] = [];
     const stale: GameRecord[] = [];
     const missing: GameRecord[] = [];
+    const unreviewed: GameRecord[] = [];
     const kernel: GameRecord[] = [];
     const acUnknown: GameRecord[] = [];
     const now = Date.now();
@@ -54,8 +61,14 @@
       }
 
       // The three MANUAL_FIELDS a human is expected to fill in. isEmpty rather
-      // than a falsy check: "-" and "?" are meaningful skeleton defaults.
-      if (isEmpty(r.genre) || isEmpty(r.type_game) || isEmpty(r.safe)) missing.push(r);
+      // than a falsy check, because "-" and "N/A" are skeleton defaults - but
+      // NOT for safe: "?" there is a deliberate "not reviewed yet", which is
+      // most of the catalogue. Counted as missing, it buried the handful of
+      // records with a genuinely empty field under thousands of reviewed-later
+      // ones, so it is its own group.
+      const safe = safeClass(r.safe);
+      if (isEmpty(r.genre) || isEmpty(r.type_game) || safe === "") missing.push(r);
+      if (safe === "?") unreviewed.push(r);
 
       const ac = (r.anti_cheat ?? "").trim();
       const acBlank = ac === "" || ac === "-";
@@ -67,11 +80,12 @@
     }
 
     return [
-      { key: "Delisted", records: delisted, icon: Trash2, variant: "destructive" },
+      { key: "Delisted", records: delisted, icon: Trash2, variant: "destructive", href: "/games?status=delisted" },
       { key: "Stale", records: stale, icon: Calendar, variant: "warning" },
       { key: "Missing", records: missing, icon: TriangleAlert, variant: "warning" },
+      { key: "Unreviewed", records: unreviewed, icon: ShieldEllipsis, variant: "info", href: "/games?safe=unreviewed" },
       { key: "Kernel", records: kernel, icon: ShieldQuestion, variant: "secondary" },
-      { key: "OnlineAcUnknown", records: acUnknown, icon: ShieldQuestion, variant: "secondary" },
+      { key: "OnlineAcUnknown", records: acUnknown, icon: ShieldQuestion, variant: "secondary", href: "/games?type=online&ac=no" },
     ].filter((g) => g.records.length > 0) as Group[];
   });
 
@@ -125,9 +139,17 @@
             {/each}
           </ul>
 
-          {#if group.records.length > 10}
-            <p class="border-t px-4 py-2 text-xs text-muted-foreground">
-              {t("games.showing", { shown: 10, total: formatNumber(group.records.length) })}
+          {#if group.records.length > 10 || group.href}
+            <p class="flex flex-wrap items-center gap-3 border-t px-4 py-2 text-xs text-muted-foreground">
+              {#if group.records.length > 10}
+                <span class="tnum">{t("games.showing", { shown: 10, total: formatNumber(group.records.length) })}</span>
+              {/if}
+              {#if group.href}
+                <a href={group.href} class="ml-auto inline-flex items-center gap-1 font-medium text-primary hover:underline">
+                  {t("health.openInGames")}
+                  <ArrowRight class="size-3.5" />
+                </a>
+              {/if}
             </p>
           {/if}
         </section>

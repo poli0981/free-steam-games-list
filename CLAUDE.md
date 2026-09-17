@@ -303,6 +303,23 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
   The gate renders only after `consent.hydrated`: rendered before storage was
   read, it was baked into every prerendered page and flashed for returning
   visitors.
+- **`/welcome` is shown once, by the layout, and only to a visit that STARTED
+  on `/`** (not a deep link, not `/#/…`, not mid-session), after consent. It
+  uses `replaceState`, and the page marks itself seen on mount, so Back cannot
+  loop into it. Crawlers never consent, so `/` stays the indexable page.
+- **`/legal/[doc=legaldoc]` has a param matcher** (`src/params/legaldoc.ts`).
+  An unknown slug therefore matches NO route and gets the layout's translated
+  404; without it the host's fallback (the prerendered dashboard) hydrated as
+  the doc route. Legal labels and hints in `lib/legal.ts` are i18n keys.
+- **`/games` mirrors its filters into the query string, browser-only**:
+  `onMount` reads `location.search` (a link with filter parameters replaces the
+  stored filters) and a debounced `replaceState` writes back. Never read
+  `url.search` in markup or a load - prerender throws on it. The page number
+  lives in the filter store, keyed to the criteria (`filters.pageFor`), so Back
+  from a game keeps the page and a changed filter starts again at page 1.
+- **`safe` is classified by `lib/safety.ts`** (`y`, `n`, `?` = not reviewed,
+  `""` = never set). `/games`, `/stats` and `/health` all use it; `?` is a
+  to-do, not missing data, so /health reports it as its own group.
 
 ## Admin SPA (`web/admin/`)
 
