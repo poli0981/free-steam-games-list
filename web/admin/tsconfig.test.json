@@ -1,0 +1,18 @@
+{
+  // The admin SPA's unit tests: browser code (DOM types) run by Vitest on Node.
+  // The mock backend's test is Worker-shaped and lives in ../tsconfig.test.json.
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "types": ["node"],
+    "noEmit": true,
+    "isolatedModules": true,
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "skipLibCheck": true
+  },
+  "include": ["src/**/*.test.ts", "security.test.ts"]
+}

@@ -74,7 +74,7 @@ into the Svelte port.
 | `wrangler.jsonc` | unchanged |
 | `/games/[appid]` | prerendered on the web from a build-time read of `../data/*.jsonl` for SEO; **skipped in the Tauri build** (3,400 HTML files would bloat the APK) and served by the fallback instead |
 | Volatile fields | `current_players`, `reviews` hydrate client-side from `/api/data/*`, so a daily data commit does not require a rebuild — which is the whole point of the proxy |
-| `/admin` | untouched. Still Worker-rendered HTML, outside the SPA entirely |
+| `/admin` | untouched by this migration: Worker-rendered HTML, outside the SPA entirely. (Since v4.0.0 it is its own Svelte SPA, `web/admin/`, embedded in the Worker and still never in `dist/`; see docs/ADMIN.md.) |
 
 ## What must not be lost in the port
 

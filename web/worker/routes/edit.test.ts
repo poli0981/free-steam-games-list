@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { deletable, handleEditApi } from "./edit";
+import { deletable, handleEditApi, validateValue } from "./edit";
+import { MANUAL_FIELDS, toWire, validate } from "../../admin/src/lib/fields";
 import { ADMIN, fakeDeps, makeEnv, request } from "../testing/fixtures";
 
 const RECORD = { link: "https://store.steampowered.com/app/730/", name: "Counter-Strike 2", genre: "FPS", safe: "?" };
@@ -93,5 +94,23 @@ describe("POST /api/admin/edit", () => {
     const { status } = await call(env, deps, "POST", "/api/admin/edit", { appid: "730", set: { safe: "y" } });
     expect(status).toBe(502);
     expect((env.sqlite.db.prepare("SELECT status FROM commit_jobs").get() as any).status).toBe("failed");
+  });
+});
+
+describe("the admin form's validation mirror (admin/src/lib/fields.ts)", () => {
+  // The form warns before a commit is attempted. If its rules drift from the
+  // Worker's, it either blocks a valid correction or lets the reviewer reach a
+  // 400 it said would not happen.
+  const TEXT = ["", "   ", "Action", " Action ", "online", "offline", "Online", "y", "n", "?", "yes", "x".repeat(500), "x".repeat(501)];
+
+  it("agrees with validateValue() for every field", () => {
+    for (const field of MANUAL_FIELDS) {
+      const inputs = field === "is_kernel_ac" ? ["true", "false", "null"] : TEXT;
+      for (const text of inputs) {
+        const client = validate(field, text) === null;
+        const server = validateValue(field, toWire(field, text)) === null;
+        expect(client, `${field} = ${JSON.stringify(text.length > 20 ? `${text.length} chars` : text)}`).toBe(server);
+      }
+    }
   });
 });

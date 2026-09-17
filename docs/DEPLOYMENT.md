@@ -11,12 +11,14 @@ deploys — there is deliberately no deploy workflow in `.github/workflows/`.
 push to main
    └─> Cloudflare Workers Builds  (root directory: web)
           npm ci  →  npm run build  →  wrangler deploy
-                                          └─> Worker "free-steam-games-list"
-                                                ├─ static assets from web/dist
-                                                ├─ /api/data/*  → proxies GitHub raw
-                                                ├─ /img/*       → proxies Valve's CDN
-                                                ├─ /admin       → Access-gated review UI
-                                                └─ /api/ingest/* → Access service token
+                     │                    └─> Worker "free-steam-games-list"
+                     │                          ├─ static assets from web/dist
+                     │                          ├─ /api/data/*  → proxies GitHub raw
+                     │                          ├─ /img/*       → proxies Valve's CDN
+                     │                          ├─ /admin       → Access-gated admin SPA (embedded)
+                     │                          └─ /api/ingest/* → Access service token
+                     ├─ vite build                   → web/dist (the public site)
+                     └─ vite build -c admin/…        → web/worker/generated/admin-bundle.ts
 ```
 
 `web/wrangler.jsonc` is the only deployment config. Several fields in it are
@@ -38,6 +40,14 @@ load-bearing and easy to break:
   listing it here and every request through it is refused with
   `access: aud mismatch`. They are scoped by route on purpose — see
   docs/ADMIN.md.
+- **The admin SPA is part of the Worker script, not of `dist/`.**
+  `npm run build` runs `build:admin` after the site build, which writes the
+  gitignored `worker/generated/admin-bundle.ts` that `worker/index.ts` imports.
+  A `wrangler deploy` without that step fails to bundle, and that is the
+  intended failure: the alternative, serving the admin from `dist/`, would hand
+  its code to anyone, to the service worker's precache and to the packaged
+  apps. `scripts/verify-dist.mjs` fails the CI build if any admin code reaches
+  `dist/`. The bundle adds about 0.5 MB to the Worker upload.
 
 ## Data does not redeploy the site
 

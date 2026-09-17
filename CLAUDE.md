@@ -303,3 +303,41 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
   The gate renders only after `consent.hydrated`: rendered before storage was
   read, it was baked into every prerendered page and flashed for returning
   visitors.
+
+## Admin SPA (`web/admin/`)
+
+- **It is part of the Worker script, never of `dist/`.** `admin/vite.config.ts`
+  builds it and `admin/build/emit-worker-bundle.ts` writes the gitignored
+  `worker/generated/admin-bundle.ts`, which `worker/routes/admin-spa.ts` serves
+  only after `worker/index.ts` has done the Access, credential-class and CSRF
+  checks. `dist/` is readable by anyone, precached by the service worker and
+  packaged into the apps, so admin code there would be public whatever Access
+  says. `scripts/verify-dist.mjs` fails on `dist/admin` or any `/api/admin/`
+  string in `dist/`.
+- **`npm run build` must keep running `build:admin`,** and `typecheck` builds it
+  first: `worker/index.ts` imports the generated module, so a bare
+  `wrangler deploy` or `tsc` without it fails. That failure is intended.
+- **One script, no code splitting.** The shell's CSP is `script-src` with a
+  per-response nonce and nothing else, so a lazily imported chunk would be
+  blocked. The emitter fails the build on a second script, an inline script or
+  a second JS file. Do not add `'unsafe-inline'` or `'strict-dynamic'` to make a
+  chunk load.
+- **Routes are `shared/admin-routes.ts`.** `serveAdmin` 404s every other path
+  under `/admin` (the old Worker served the queue for any typo). A new page goes
+  there AND in `App.svelte`'s `NAV`; `admin/security.test.ts` holds them equal.
+- **It may import only pure modules of the public app**: `src/lib/ui/*`,
+  `src/lib/utils.ts`, `src/lib/prefs.svelte.ts`, `src/fonts.css`,
+  `src/styles/theme.css` (the design tokens, shared by both builds). Never
+  `$app/*` or `$lib/*`; that build cannot resolve them.
+- **`admin/mock/` is a dev server, not a mode.** `npm run dev:admin` runs the
+  real handlers against an in-memory D1 and fake GitHub; nothing under `worker/`
+  or `admin/src` may import it, and the Worker has no flag that skips
+  authentication. Keep it that way.
+- **No raw HTML.** Game names, reasons, payloads and audit detail are text
+  other people wrote; `{@html}` and `innerHTML` are banned by
+  `admin/security.test.ts`.
+- **`admin/src/lib/api.ts` fetches with `redirect: "manual"`.** An opaque
+  redirect, 401 or 403 is a lapsed Access session and reloads the page ONCE
+  (guarded in sessionStorage, so a persistent refusal cannot loop). A non-JSON
+  body is a server error, never "session expired": that misreport hid real
+  Worker crashes in the old admin pages.

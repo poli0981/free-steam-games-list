@@ -1,0 +1,24 @@
+{
+  // The admin SPA: browser code, checked by `npm run check:admin`
+  // (svelte-check). It reaches into ../shared and a few pure modules of the
+  // public app (ui components, utils, prefs); none of those may import
+  // SvelteKit's $app/* or $lib aliases, or this build cannot resolve them.
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "types": ["svelte", "vite/client"],
+    "noEmit": true,
+    "isolatedModules": true,
+    "verbatimModuleSyntax": true,
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true
+  },
+  "include": ["src/**/*.ts", "src/**/*.svelte", "../shared/**/*.ts"],
+  "exclude": ["../shared/**/*.test.ts", "src/**/*.test.ts"]
+}

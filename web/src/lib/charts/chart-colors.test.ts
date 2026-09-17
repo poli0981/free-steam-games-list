@@ -68,7 +68,7 @@ describe("zrender can parse every chart colour", () => {
   });
 
   it("every colour token, in both themes, after conversion", () => {
-    const css = readFileSync(join(SRC, "index.css"), "utf-8");
+    const css = readFileSync(join(SRC, "styles", "theme.css"), "utf-8");
     let checked = 0;
     for (const selector of [":root", ".dark"]) {
       for (const [name, raw] of tokensIn(css, selector)) {

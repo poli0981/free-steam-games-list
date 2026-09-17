@@ -70,7 +70,7 @@ const FIXTURE: Record<string, GameSeed> = Object.fromEntries(
   }),
 );
 
-export function readSeeds(dataDir: string): Record<string, GameSeed> {
+function readSeeds(dataDir: string): Record<string, GameSeed> {
   const indexPath = join(dataDir, "index.json");
   if (!existsSync(indexPath)) {
     throw new Error(

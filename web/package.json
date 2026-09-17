@@ -5,12 +5,15 @@
   "type": "module",
   "scripts": {
     "dev": "vite dev",
-    "build": "vite build",
+    "dev:admin": "vite --config admin/vite.config.ts",
+    "preview:admin": "npm run build:admin && vite --config admin/vite.config.ts --mode preview",
+    "build": "vite build && npm run build:admin",
+    "build:admin": "vite build --config admin/vite.config.ts",
     "build:desktop": "vite build",
     "build:mobile": "vite build",
     "analyze": "vite build --mode analyze",
     "preview": "vite preview",
-    "typecheck": "npm run check && tsc -p tsconfig.worker.json && tsc -p tsconfig.test.json",
+    "typecheck": "npm run build:admin && npm run check && npm run check:admin && tsc -p admin/tsconfig.node.json && tsc -p admin/tsconfig.test.json && tsc -p tsconfig.worker.json && tsc -p tsconfig.test.json",
     "knip": "knip",
     "test": "vitest run",
     "test:watch": "vitest",
@@ -22,8 +25,9 @@
     "tauri:android:build": "tauri android build --apk",
     "typecheck:worker": "tsc -p tsconfig.worker.json",
     "cf:types": "wrangler types",
-    "cf:check": "wrangler deploy --dry-run",
+    "cf:check": "npm run build:admin && wrangler deploy --dry-run",
     "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+    "check:admin": "svelte-check --tsconfig ./admin/tsconfig.json",
     "fonts": "python scripts/gen-fontface.py"
   },
   "dependencies": {
@@ -68,6 +72,7 @@
     "typescript": "^6.0.3",
     "unified": "^11.0.5",
     "vite": "^8.0.16",
+    "vite-plugin-pwa": "^1.3.0",
     "vitest": "^5.0.0",
     "wrangler": "^4.130.0"
   },

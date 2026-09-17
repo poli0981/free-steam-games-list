@@ -17,3 +17,9 @@ dist-ssr
 # holds the generated tsconfig, route manifest and type declarations that
 # tsconfig.json extends - regenerated, never edited, never committed.
 .svelte-kit
+
+# The admin SPA build (admin/vite.config.ts): its output directory, and the
+# module it generates for the Worker. Both are rebuilt by `npm run build:admin`;
+# a committed copy could deploy an admin older than its source.
+.admin-build/
+worker/generated/

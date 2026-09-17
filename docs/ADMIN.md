@@ -139,15 +139,34 @@ D1, remains the source of truth.
 ## 6. The database
 
 `f2p-admin` (D1, region APAC) already exists and is bound as `DB` in
-`web/wrangler.jsonc`. It holds four tables — `ingest_queue`, `ingest_decisions`, `commit_jobs`
-and `audit_log` — and never game records. (This used to say "edit drafts";
-there is no such table. `/api/admin/edit` commits straight to Git with no
-draft stage.) Migrations live in `web/worker/migrations/` and are
-applied out of band:
+`web/wrangler.jsonc`. It never holds game records. Its tables:
+
+| Table | Holds | Migration |
+|---|---|---|
+| `ingest_queue` | candidate games and their review status | `0001_init.sql` |
+| `ingest_decisions` | the durable approved/rejected decision per appid | `0001_init.sql` |
+| `commit_jobs` | every commit the Worker attempted, written before the attempt | `0001_init.sql` |
+| `audit_log` | every admin action | `0001_init.sql` |
+| `admin_locks` | the reconcile lease, so the cron and a manual run never overlap | `0002_admin_state.sql` |
+| `admin_state` | the dataset generation the last sweep saw | `0002_admin_state.sql` |
+
+(An older version of this page mentioned "edit drafts"; there is no such table.
+`/api/admin/edit` commits straight to Git with no draft stage.) Migrations live
+in `web/worker/migrations/` and are applied out of band:
 
 ```bash
 npx wrangler d1 migrations apply f2p-admin --remote
 ```
+
+The Worker tolerates a missing `0002`: reconcile falls back to its per-isolate
+guard and skips the sweep watermark, and `/admin/health` lists the migrations
+that are not applied yet. Deploying the Worker before applying the migration is
+therefore safe, just degraded.
+
+`audit_log` and `commit_jobs` rows older than `ADMIN_RETENTION_DAYS` (180 by
+default, set in `wrangler.jsonc`) are deleted once a day by the cron, and the
+deletion itself is recorded as an `admin.prune` audit row. The privacy policy
+states the same window; change both together.
 
 Confirm the database is on a paid plan before depending on it: since
 2026-09-01, queries that exceed the free daily row limits **fail** rather than
@@ -332,10 +351,14 @@ When the backlog is closed, delete `scripts/backfill_discover.py`, delete
 
 ## 9. Reviewing the queue
 
-`/admin` is the review screen. It is served by the Worker, not by the SPA:
-the public app has no sign-in and no editing, so admin markup and admin
-endpoint names never enter the bundle visitors download, and `/admin` cannot
-fall through to the public app shell if a route changes.
+`/admin` is the review screen. It is a small Svelte app (`web/admin/`) built
+separately from the public site and **embedded in the Worker**
+(`worker/generated/admin-bundle.ts`), never placed in `dist/`. Everything in
+`dist/` is served to anyone, precached by the service worker and packaged into
+the desktop and Android apps, so admin code there would be public whatever
+Access says. The Worker serves the app's shell and assets only after the Access
+checks, with a per-response nonce CSP, and answers 404 for any other path under
+`/admin`.
 
 Tabs across the top are the row's status, with live counts:
 
@@ -344,12 +367,44 @@ Tabs across the top are the row's status, with live counts:
 | `pending` | proposed by the discovery sweep, awaiting a decision |
 | `deferred` | set aside; still blocks the appid from being re-proposed |
 | `approved` | committed to the queue file, waiting for the pipeline |
-| `committed` | observed in `data/` — genuinely published |
-| `failed` | the pipeline refused it, **or** nothing observed it within 12h and it aged out — read `reject_reason` |
-| `rejected` | you refused it; never proposed again |
+| `committed` | observed in `data/`, so genuinely published |
+| `failed` | the pipeline refused it, **or** nothing observed it within 12h and it aged out. Read `reject_reason` |
+| `rejected` | you refused it; never proposed again unless you reopen it |
 
-Select with the checkboxes (or *Select all on this page*, 60 at a time), then
-choose an action. The action bar appears only when something is selected.
+**Read-only rows.** A row you can no longer decide has no checkbox. It shows a
+lock, and *select all* skips it:
+
+- `approved`, `committed` and `rejected` rows are already decided;
+- a `pending`, `deferred` or `failed` row whose **game** is already published
+  (it has a committed row or an approved decision) is locked too. Approving it
+  would queue a link that is already live, and rejecting it would record a
+  rejection for a game the catalogue carries.
+
+The server enforces the same rules (`web/shared/queue-rules.ts` is the single
+definition both sides import). Anything a decision cannot touch comes back in a
+**skipped** list with a reason, never silently dropped: `published`,
+`not-decidable`, `open-row-exists`, `duplicate-in-request`, `no-op`,
+`changed-concurrently` or `not-found`.
+
+Select rows, then choose an action from the bar that appears at the bottom. A
+confirmation lists every row, says what the action will do, and takes an
+optional reason. At most 100 rows go into one decision.
+
+Search matches a name or an appid in the current tab; tick *Search every
+status* to look everywhere at once. The tab, search, sort, page and page size
+are all in the URL, so a reload or a shared link lands on the same view.
+
+Keyboard: `j`/`k` move, `x` selects, `a` approves, `r` rejects, `d` defers (or
+sends back to pending), `e` opens the row, `/` searches, `Esc` clears the
+selection, `?` lists them. Keys are ignored while you type in a field or while
+a dialog is open, and never interrupt IME composition.
+
+Click a game (or press `e`) for its details: the payload as submitted, the
+durable decision for the game, and every other row the queue holds for the same
+appid. A `rejected` row has **Reopen** there. It moves that one row back to
+`pending` and deletes the rejection, but only if no other row for the game is
+open or committed and the game has no approved decision; otherwise the dialog
+says which of those stopped it. There is no bulk reopen, on purpose.
 
 ### The three actions are not symmetric
 
@@ -393,7 +448,14 @@ watched the pipeline finish.
 
 A row the pipeline refused becomes `failed` rather than rejected — deliberately,
 so one bad day (a delisting, a Steam outage) does not permanently hide a game.
-On the `failed` tab the middle button becomes **Send back to pending**.
+A `failed` row can be approved again, deferred, or sent **Back to pending**.
+
+The same pass also **sweeps** undecided rows. A `pending`, `deferred` or
+`failed` row whose game has appeared in `data/` by some other route (the
+browser extension, a manual edit) is marked `committed` by `reconcile`, with an
+approved decision, so it stops asking for a review it no longer needs. The
+sweep reads the dataset only when something is approved, when you press
+Reconcile, or when `data/index.json` has changed since the last sweep.
 
 `reject_reason` says which of three things happened:
 
@@ -413,21 +475,34 @@ schedule is close to free.
 
 ### If something goes wrong
 
-Every action writes to `audit_log`, and every approval writes a `commit_jobs`
-row *before* the commit is attempted, so a Worker that dies mid-flight leaves a
-`pending` job as evidence rather than silence:
+Every action writes to `audit_log`, and every commit writes a `commit_jobs`
+row *before* it is attempted, so a Worker that dies mid-flight leaves a
+`pending` job as evidence rather than silence. Both have their own pages,
+filterable and paged: **Jobs** (`/admin/jobs`) and **Audit** (`/admin/audit`).
+The queue header warns when any job is `failed` or stuck in `pending`.
 
-```bash
-npx wrangler d1 execute f2p-admin --remote --command "SELECT status, target_path, commit_sha, error, requested_by, created_at FROM commit_jobs ORDER BY created_at DESC LIMIT 10"
-```
+**Health** (`/admin/health`) checks D1, the GitHub App installation, the applied
+migrations and the reconcile lock live, and still draws its table when the
+answer is a 503. **Test write** records a `ping` audit row, which proves the
+whole write path from your browser through Access to D1.
 
 If a commit fails the rows are left untouched, on purpose: a row marked
 approved with no commit behind it is invisible to both the queue and the
-reconciler. Re-approving is safe — already-queued links are skipped.
+reconciler. Re-approving is safe, because already-queued links are skipped.
 
-Read the queue directly with:
+If the commit lands but D1 then fails to update the rows, the error says
+exactly that, names the commit, and records an `approve.desynced` audit row.
+Approving again is safe, and once the pipeline publishes the games the sweep
+marks the rows committed on its own.
+
+When the Access session lapses, the page reloads once so Access can sign you in
+again. If the API still refuses straight after that reload, the page says so
+instead of reloading in a loop.
+
+The same data from the command line:
 
 ```bash
+npx wrangler d1 execute f2p-admin --remote --command "SELECT status, target_path, commit_sha, error, requested_by, created_at FROM commit_jobs ORDER BY created_at DESC LIMIT 10"
 npx wrangler d1 execute f2p-admin --remote --command "SELECT appid, name, release_date, status FROM ingest_queue ORDER BY first_seen_at DESC LIMIT 40"
 ```
 
@@ -480,59 +555,90 @@ re-added. Your text is combined with them rather than replacing them.
 
 ### The same thing from `/admin/edit`
 
-`/admin/edit` (linked from the review queue) does exactly what the command
-above does, and writes a byte-identical file. A formatting difference between
-the two producers would turn every alternating edit into a whole-file diff, so
-the equality is asserted by `web/worker/lib/override-doc.test.ts`, which
-round-trips every committed `data/overrides/*.json` — all Python-written —
-through the TypeScript serialiser and compares bytes. It runs in `web-ci.yml`
-and in `check-overrides.yml`.
+`/admin/edit` does exactly what the command above does, and writes a
+byte-identical file. A formatting difference between the two producers would
+turn every alternating edit into a whole-file diff, so the equality is asserted
+by `web/worker/lib/override-doc.test.ts`, which round-trips every committed
+`data/overrides/*.json` — all Python-written — through the TypeScript
+serialiser and compares bytes. It runs in `web-ci.yml` and in
+`check-overrides.yml`.
 
-(Until 2026-09-12 this paragraph asserted that test existed. It did not; there
-were no tests in the repository at all.)
+**One game.** Load a game by appid, or paste its Steam URL. Each field shows
+what the catalogue holds now and, where an override is active, its value, the
+value from before the first edit, who set it and why. Change what you want, add
+a reason, then **Review and save**: a dialog lists every change against the
+catalogue and the current override before anything is committed. An overridden
+field has **Retire**, which restores the pre-edit value once on the next
+pipeline run. Leaving the page with unsaved changes asks first.
 
-Load a game by appid, change the fields you want, add a reason, Save. A field
-already carrying an override is marked, shows the value from before the edit,
-and gets a **Retire** button. The Worker writes only
-`data/overrides/<appid>.json`; it cannot touch `data/`, and the page says so
-rather than letting you assume the catalogue changed.
+**Several games.** Pick games by genre, up to 10 at a time; the selection is
+kept across pages and genres. Choose any one field and either set a value or
+retire its override, then review: the dialog loads every selected game and
+shows what the change does to each, including the ones it leaves unchanged.
+One commit, one override file per game.
+
+**Deleting an override file.** Once every entry in a file is retired *and* the
+pipeline has restored each value, the file no longer changes anything, and the
+page offers **Delete override file**. Until then it says what is still active
+or not yet restored, and the Worker checks again against the file as it is at
+commit time. (`scripts/edit_game.py` removes a file only when it holds no
+entries at all, active or retired, so a file with retired entries stays until
+you delete it here.)
+
+The Worker writes only `data/overrides/<appid>.json`; it cannot touch `data/`,
+and the page says so rather than letting you assume the catalogue changed.
 
 Two safeguards worth knowing:
 
 - The Worker's validation is a deliberately weaker MIRROR of
-  `validate_value()` in `scripts/core/overrides.py`. It exists so you are told
-  immediately. The Python one is authoritative and runs on every pipeline
-  write, and `check-overrides.yml` runs it on every push — so anything the UI
-  accepts but Python would reject fails CI within a minute instead of sitting
-  inert. Change one, change the other.
+  `validate_value()` in `scripts/core/overrides.py`, and the page's own checks
+  mirror the Worker's (`worker/routes/edit.test.ts` holds those two equal). They
+  exist so you are told immediately. The Python one is authoritative and runs on
+  every pipeline write, and `check-overrides.yml` runs it on every push — so
+  anything the UI accepts but Python would reject fails CI within a minute
+  instead of sitting inert. Change one, change the others.
 - `was` is read server-side from the catalogue, never taken from the request.
   It is what Retire restores, so a client-supplied value would let a crafted
   request rewrite history.
 
 ---
 
-## What is not built yet
+## Working on the admin locally
 
-The loop is closed: new games arrive by discovery and are approved in
-`/admin`, corrections are made in `/admin/edit` or from the command line, and
-both land in Git. What remains:
+A real Worker cannot show the admin locally: every `/admin` and `/api/admin`
+request needs an Access JWT, which cannot be minted offline, so `wrangler dev`
+answers 404. The admin has its own dev server instead. It runs the **real**
+handlers (`worker/routes/admin.ts`, `edit.ts`) against an in-memory D1 with the
+real migrations, fed by the real `data/` shards, with GitHub faked. Nothing
+leaves the machine and nothing is written to disk.
 
-- **`audit_log` pruning.** It grows only with admin actions, so it is not
-  urgent, but it is unbounded — decide a retention window and make it agree
-  with `docs/PRIVACY_POLICY.md` before that matters.
-- **The Worker cannot DELETE an override file.** `scripts/edit_game.py`
-  removes it once the last entry is retired; the Worker's `build()` returns
-  `null` ("leave the file alone") in the same state, and `createCommitOnBranch`
-  is only ever given `fileChanges.additions`. So `/admin/edit` leaves an empty
-  override document where the CLI would tidy it away. Harmless — an empty
-  document applies nothing — but the two tools diverge here.
-- **Bulk mode sets one field.** `set: { genre }` is hardcoded; there is no
-  bulk retire and no multi-field bulk set.
-- **Bulk selection does not survive pagination** (`loadBulk()` clears it).
-- **Un-rejecting is raw SQL.** Removing a row from `ingest_decisions` has no
-  endpoint and writes no audit row, and there is no `suppress_until`, so a
-  rejection is permanent until someone runs `wrangler d1 execute`.
-- **No cross-isolate reconcile lock.** The in-flight guard in
-  `lib/reconcile.ts` covers one isolate; the cron and a manual click in
-  different isolates can still overlap. Left alone deliberately — every write
-  there is idempotent, so the only cost is duplicated fetching.
+```bash
+cd web
+npm run dev:admin       # http://localhost:5174/admin, hot reload, demo data
+npm run preview:admin   # the built bundle through the real serveAdmin(), production CSP
+```
+
+The demo data (`web/admin/mock/seed.ts`) has every status, rows locked because
+their game is published, a rejected row that cannot be reopened, commit jobs in
+every state, audit history, and an override on 730 to edit. Two switches, as
+cookies set from the browser console:
+
+| Cookie | Effect |
+|---|---|
+| `mock_github=down` | health reports GitHub unreachable, a 503 (or start the server with `MOCK_GITHUB=down`) |
+| `mock_session=expired` | the API answers the way Access does for a lapsed session |
+
+None of this exists in the Worker. Nothing under `worker/` or `admin/src`
+imports the mock (`admin/security.test.ts` checks), and there is no flag that
+could switch authentication off.
+
+`npm run build` builds the admin after the site, and `npm run typecheck` builds
+it first, because the Worker imports the generated bundle.
+
+## Known limits
+
+- **A rejection stays until you reopen it.** There is no `suppress_until`, so a
+  game rejected for a temporary reason is not offered again on its own.
+- **One field per bulk change.** Several fields on several games means several
+  commits.
+- **English only.** The admin has one audience, so it has no translations.

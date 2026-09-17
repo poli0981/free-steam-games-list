@@ -14,6 +14,8 @@
  *   - the full consent dialog in every page (the gate rendered before storage
  *     was read).
  *
+ * It also fails if any part of the admin SPA reached dist/.
+ *
  * Usage (from web/, after a build):
  *   node scripts/verify-dist.mjs            common checks
  *   node scripts/verify-dist.mjs --web      + web-only expectations
@@ -78,6 +80,20 @@ for (const file of html) {
     if (seen.includes(phrase)) fail(`${rel}: prerendered empty state "${phrase}"`);
   }
   if (seen.includes(CONSENT_TITLE)) fail(`${rel}: prerendered consent dialog ("${CONSENT_TITLE}")`);
+}
+
+/* ── the admin never ships in dist/ ───────────────────────────────────── */
+
+// dist/ is served to anyone, precached by the service worker and packaged into
+// the Tauri apps. The admin SPA is embedded in the Worker instead
+// (admin/build/emit-worker-bundle.ts), so no trace of it may appear here.
+if (existsSync(join(DIST, "admin"))) fail("dist/admin exists - the admin SPA must only be served by the Worker");
+const TEXT_EXT = /\.(html|js|mjs|css|json|webmanifest|txt|xml|map)$/;
+for (const file of files) {
+  if (!TEXT_EXT.test(file)) continue;
+  if (readFileSync(file, "utf-8").includes("/api/admin/")) {
+    fail(`${relative(DIST, file).replace(/\\/g, "/")}: references /api/admin/ - admin code leaked into the public build`);
+  }
 }
 
 /* ── per-flavour expectations ─────────────────────────────────────────── */
