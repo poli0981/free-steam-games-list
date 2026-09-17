@@ -59,7 +59,6 @@
     "time": "Time",
     "drmDlc": "DRM/DLC",
     "delisted": "Delisted",
-    "manage": "Manage",
     "health": "Health",
     "activity": "Activity",
     "about": "About",
@@ -76,24 +75,8 @@
     "project": "Project"
   },
   "common": {
-    "save": "Save",
-    "cancel": "Cancel",
-    "edit": "Edit",
-    "delete": "Delete",
-    "close": "Close",
-    "back": "Back",
     "search": "Search",
-    "filter": "Filter",
-    "clear": "Clear",
-    "submit": "Submit",
-    "confirm": "Confirm",
     "loading": "Loading…",
-    "saving": "Saving…",
-    "verifying": "Verifying…",
-    "saved": "Saved",
-    "failed": "Failed",
-    "of": "of",
-    "selected": "selected",
     "rowsPerPage": "{{n}}/page",
     "all": "All",
     "page": "{{current}}/{{total}}",
@@ -110,26 +93,16 @@
     "retry": "Try again",
     "viewAll": "View all",
     "skipToContent": "Skip to content",
-    "none": "None",
-    "copy": "Copy",
-    "copied": "Copied"
+    "none": "None"
   },
   "topbar": {
     "searchPlaceholder": "Search by name, tag, description…",
-    "gamesCount": "{{count}} games",
-    "updated": "updated {{date}}",
-    "signIn": "Sign in",
-    "signed": "signed",
-    "locked": "locked",
-    "menuOpen": "Open menu",
     "gamesTracked": "games tracked",
     "offlineCached": "Offline · data from {{date}}",
     "updating": "Newer data is on its way"
   },
   "pwa": {
-    "offline": "offline",
     "install": "Install",
-    "update": "Update",
     "updateAvailable": "Update available",
     "updateBody": "A new version of the app is ready.",
     "reload": "Reload",
@@ -157,9 +130,6 @@
   "dashboard": {
     "title": "Dashboard",
     "subtitle": "Overview of {{count}} F2P Steam games tracked in this repository.",
-    "topOnlineTitle": "Top online (current players)",
-    "platformsTitle": "Platforms",
-    "genreTitle": "Genre distribution",
     "topGenres": "Top genres",
     "playingNow": "Playing right now",
     "seoDescription": "A live overview of the free-to-play games on Steam: who plays them, what they are, and what they ask of your machine."
@@ -172,23 +142,7 @@
     "filterAllPlatforms": "All platforms",
     "filterAllStatus": "All status",
     "hideDead": "Hide dead",
-    "selectAllVisible": "Select all visible ({{count}})",
-    "bulkEdit": "Bulk edit",
-    "bulkDelete": "Delete",
-    "willSign": "will sign",
-    "unsigned": "unsigned",
-    "exportLabel": "Export",
-    "exportTitle": "Export {{count}} filtered rows",
-    "ofTotalGames": "of {{total}} games",
-    "exportRowsCount": "{{count}} rows",
-    "bulkDeleteConfirm_one": "Delete {{count}} game from data shards?\nThe records also get appended to scripts/removed_games.jsonl.\n\nThis is destructive — cannot be undone via the UI.",
-    "bulkDeleteConfirm_other": "Delete {{count}} games from data shards?\nThe records also get appended to scripts/removed_games.jsonl.\n\nThis is destructive — cannot be undone via the UI.",
-    "deletedToast_one": "Deleted {{count}} game",
-    "deletedToast_other": "Deleted {{count}} games",
-    "bulkDeleteFailedToast": "Bulk delete failed",
-    "clearSelection": "Clear",
     "colName": "Name",
-    "colIssues": "Data issues",
     "noResults": "No game matches these filters.",
     "clearFilters": "Clear filters",
     "showing": "{{shown}} of {{total}}",
@@ -208,9 +162,7 @@
     "issueKernelUnknown": "Kernel-level anti-cheat unknown"
   },
   "topOnline": {
-    "title": "Top online",
-    "subtitle": "Top 100 currently most-played online F2P titles.",
-    "cardTitle": "Current players · top 100"
+    "subtitle": "Top 100 currently most-played online F2P titles."
   },
   "antiCheatList": {
     "title": "Anti-Cheat Index",
@@ -218,14 +170,12 @@
     "families": "Families",
     "game": "Game",
     "genre": "Genre",
-    "kernel": "Kernel",
+    "kernel": "Runs at",
     "players": "Players",
     "seoDescription": "Every anti-cheat product in the catalogue, with the free-to-play games that ship it."
   },
   "topOffline": {
-    "title": "Top offline",
-    "subtitle": "Top 100 single-player or non-online F2P titles by concurrent players.",
-    "cardTitle": "Current players · top 100"
+    "subtitle": "Top 100 single-player or non-online F2P titles by concurrent players."
   },
   "settings": {
     "title": "Settings",
@@ -246,50 +196,17 @@
   },
   "charts": {
     "time": {
-      "title": "Time",
-      "subtitle": "Release-year histogram of the catalog, plus a cumulative timeline of how the dataset grew.",
       "releasesByYear": "Releases by year",
       "catalogGrowth": "Catalogue growth",
       "addedPerMonth": "Games added per month"
     },
-    "tags": {
-      "title": "Tags",
-      "subtitle": "Top 100 community tags. Generic tags (Free to Play, Indie, etc.) are filtered out.",
-      "tagCloud": "Tag cloud"
-    },
-    "reviews": {
-      "title": "Reviews",
-      "subtitle": "Distribution of user-review percentages, binned by 10%.",
-      "reviewDistribution": "Review % distribution"
-    },
-    "players": {
-      "title": "Player tiers",
-      "subtitle": "Online F2P games bucketed by current concurrent players.",
-      "onlineTiers": "Online concurrent player tiers"
-    },
-    "genres": {
-      "title": "Genres",
-      "distribution": "Genre distribution"
-    },
-    "antiCheat": {
-      "title": "Anti-cheat",
-      "subtitle": "Distribution of kernel-level / user-mode / no anti-cheat across the top 18 genres.",
-      "byGenre": "Anti-cheat by genre"
-    },
     "drm": {
-      "title": "DRM & paid DLC",
-      "subtitle": "F2P shouldn't mean clean — many titles still ship with third-party DRM and/or paid DLC. This breakdown helps spot the \"truly free\" pool.",
-      "drmDlcBreakdown": "DRM × paid-DLC breakdown",
       "clean": "Clean F2P",
       "drmOnly": "DRM only",
       "dlcOnly": "Paid DLC only",
       "both": "DRM + paid DLC"
     },
     "delisted": {
-      "title": "Delisted games",
-      "subtitle": "{{count}} games that have been removed from the catalogue — either no longer free-to-play or fully delisted from Steam. Source: scripts/removed_games.jsonl.",
-      "timeline": "Removed per month (stacked by reason)",
-      "breakdown": "Removal reason",
       "notFreeLabel": "No longer free",
       "unavailableLabel": "Unavailable",
       "otherLabel": "Other",
@@ -297,16 +214,9 @@
       "reasonTitle": "Why they were removed"
     },
     "languages": {
-      "title": "Languages",
-      "subtitle": "For each of the top 30 languages, how many games support it via interface, audio, and subtitles.",
-      "languageCoverage": "Language support coverage",
       "interface": "Interface",
       "audio": "Audio",
       "subtitles": "Subtitles"
-    },
-    "platforms": {
-      "title": "Platforms",
-      "platformSupport": "Platform support"
     },
     "indexTitle": "Charts",
     "indexSubtitle": "Eleven views over the catalog — what these games are, who plays them, and what they ask of your machine.",
@@ -346,7 +256,6 @@
     "title": "Activity",
     "subtitle": "Recent {{count}} commits on {{branch}}. Verified commits are signed by the author's registered GPG key.",
     "filterAll": "All",
-    "filterMe": "Me",
     "filterBots": "Bots",
     "showingCount": "Showing {{count}} commits",
     "noMatches": "No commits match this filter.",
@@ -356,43 +265,9 @@
     "reasonPrefix": "reason: {{reason}}",
     "seoDescription": "Recent commits to the dataset and the app behind it."
   },
-  "system": {
-    "failedToLoadData": "Failed to load data",
-    "comingInPhase23": "Coming in Phase 2 / Phase 3 of the roadmap.",
-    "gpgUnlockTitle": "Unlock GPG",
-    "gpgPassphrasePlaceholder": "Passphrase",
-    "gpgUnlock": "Unlock",
-    "gpgUnlocking": "Unlocking…",
-    "gpgSettingsLink": "Settings",
-    "autoDetectedLanguage": "auto-detected from your browser on first load",
-    "apiRateLimitTitle": "API rate limit",
-    "apiRateLimitRemaining": "Remaining",
-    "apiRateLimitLimit": "Limit",
-    "apiRateLimitResets": "Resets",
-    "gpgUnlockedTooltip": "GPG unlocked · {{id}} · click to lock",
-    "gpgLockedTooltip": "GPG locked · {{id}} · click to unlock",
-    "signedInAsTooltip": "Signed in as @{{login}}",
-    "themeLight": "Light",
-    "themeDark": "Dark",
-    "themeSystem": "System",
-    "rowsPerPageTitle": "Rows per page",
-    "previousPage": "Previous page",
-    "nextPage": "Next page",
-    "noNetworkTooltip": "No network — reads served from cache",
-    "installAsApp": "Install as app",
-    "updateReadyTooltip": "A new version is ready — click to reload"
-  },
   "cmdk": {
     "placeholder": "Type a page, game name, or command…",
-    "noMatches": "No matches.",
-    "groupPages": "Pages",
-    "groupCharts": "Charts",
-    "groupGpg": "GPG",
-    "groupGames": "Games",
     "kbdNavigate": "to navigate",
-    "kbdSelect": "to select",
-    "lockGpgKey": "Lock GPG key",
-    "unlockGpgSettings": "Unlock GPG key (Settings)",
     "title": "Command palette",
     "open": "Open the command palette",
     "pages": "Pages",
@@ -405,7 +280,6 @@
   "donate": {
     "title": "Support the project",
     "subtitle": "If this list saved you a Steam-search rabbit hole, consider buying the maintainer a coffee or a sale-priced indie game. 100% goes to instant noodles + the next $5 sale binge.",
-    "cta": "Open",
     "footnote": "Same handles as in .github/FUNDING.yml. The GitHub repo's Sponsor button at the top of every page also funnels here.",
     "platform": {
       "github": "GitHub Sponsors",
@@ -481,27 +355,6 @@
     "groupKernelDesc": "type_game=online with an anti-cheat name set but is_kernel_ac is null.",
     "groupOnlineAcUnknown": "Online · anti-cheat unknown / none",
     "groupOnlineAcUnknownDesc": "type_game=online with anti_cheat empty or '-'. May be unknown, may genuinely have none.",
-    "moreItems": "+{{count}} more…",
-    "maintenanceTriggers": "Maintenance triggers",
-    "maintenanceDesc": "Manually fire the existing GitHub Actions workflows. Requires sign-in with {{scope}} scope.",
-    "triggerUpdateJson": "Update JSON",
-    "triggerUpdateJsonDesc": "Full metadata refresh",
-    "triggerUpdateReviews": "Update reviews",
-    "triggerUpdateReviewsDesc": "Reviews-only refresh",
-    "triggerTopOnline": "Top online",
-    "triggerTopOnlineDesc": "Player leaderboard",
-    "triggerTopOffline": "Top offline",
-    "triggerTopOfflineDesc": "Single-player concurrents (bi-weekly)",
-    "triggerCheckLinks": "Check dead links",
-    "triggerCheckLinksDesc": "HEAD scan all app pages",
-    "triggerPurge": "Purge unhealthy",
-    "triggerPurgeDesc": "Remove delisted/blocked",
-    "triggerGenerate": "Generate tables",
-    "triggerGenerateDesc": "Regenerate markdown",
-    "signInFirst": "Sign in first",
-    "triggeredToast": "Triggered {{name}}",
-    "viewRuns": "View runs",
-    "failedToast": "{{name}} failed",
     "allClear": "Nothing flagged. Every record has its manual fields and a recent refresh.",
     "seoDescription": "Data-quality checks across the catalogue: delisted, stale and unreviewed records.",
     "groupUnreviewed": "Safety not reviewed yet",
@@ -530,10 +383,7 @@
     "labelTags": "Tags",
     "labelLanguages": "Languages ({{count}})",
     "labelNotes": "Notes",
-    "kernelLevel": "kernel-level",
     "playersPeak": "(peak {{peak}})",
-    "viewSteamPage": "the Steam page",
-    "viewHealth": "Health",
     "descriptionSource": "Blurb by the publisher, via Steam — shortened.",
     "removedOn": "Removed from the catalogue on {{date}}: {{reason}}"
   },
@@ -612,7 +462,6 @@
   "legal": {
     "title": "Legal documents",
     "subtitle": "The binding documents, rendered here rather than sent to GitHub.",
-    "notFound": "No legal document by that name.",
     "viewSource": "View the source on GitHub",
     "lastCommitted": "Rendered from the repository at build time.",
     "docs": {

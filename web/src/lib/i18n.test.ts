@@ -316,3 +316,70 @@ describe("call sites pass what the text needs", () => {
     expect(missing).toEqual([]);
   });
 });
+
+/* ────────────────────────── coverage ────────────────────────── */
+
+/**
+ * The two ways a locale file rots without anything failing: keys nothing asks
+ * for any more (137 of them had piled up by v4.0.0 - the React app's sign-in,
+ * GPG, bulk-delete and maintenance-trigger screens, all long gone), and
+ * Vietnamese values that are just the English copied across.
+ */
+describe("locale coverage", () => {
+  const source = walk(SRC)
+    .map((file) => readFileSync(file, "utf8"))
+    .join("\n");
+
+  it("every en key is used by the app", () => {
+    // A key is used when it appears as a quoted string anywhere in the source:
+    // a literal t() call, or an entry in a table of literal keys (which is the
+    // only other form the call-site tests allow). Plural forms are asked for
+    // by their base key.
+    const unused = leaves(en as Tree).filter((key) => {
+      const base = key.replace(/_(zero|one|two|few|many|other)$/, "");
+      return ![`"${key}"`, `'${key}'`, `"${base}"`].some((q) => source.includes(q));
+    });
+    expect(unused).toEqual([]);
+  });
+
+  /** Values that are the same in both languages on purpose. */
+  const SAME_IN_VI = new Set([
+    // Product and brand names.
+    "donate.platform.github",
+    "donate.platform.kofi",
+    "donate.platform.bmc",
+    "donate.platform.patreon",
+    "donate.platform.paypal",
+    "detail.openOnSteamDesktop",
+    "detail.labelMetacritic",
+    // Terms Vietnamese gaming usage borrows as they are.
+    "nav.topOnline",
+    "nav.topOffline",
+    "nav.antiCheat",
+    "nav.drmDlc",
+    "detail.labelAntiCheat",
+    "detail.labelDrm",
+    "common.online",
+    "common.offline",
+    "antiCheatList.game",
+    "studios.oneGame",
+    "about.email",
+    // Formats and key names.
+    "common.page",
+    "cmdk.escKey",
+  ]);
+
+  it("vi translates every key, apart from names and formats", () => {
+    const copied = leaves(en as Tree).filter(
+      (key) => !SAME_IN_VI.has(key) && lookup(vi as Tree, key) === lookup(en as Tree, key),
+    );
+    expect(copied).toEqual([]);
+  });
+
+  it("the allowlist only names keys that exist and are still identical", () => {
+    const stale = [...SAME_IN_VI].filter(
+      (key) => typeof lookup(en as Tree, key) !== "string" || lookup(vi as Tree, key) !== lookup(en as Tree, key),
+    );
+    expect(stale).toEqual([]);
+  });
+});

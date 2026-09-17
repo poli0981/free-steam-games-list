@@ -59,7 +59,6 @@
     "time": "Thời gian",
     "drmDlc": "DRM/DLC",
     "delisted": "Đã gỡ",
-    "manage": "Quản lý",
     "health": "Sức khoẻ",
     "activity": "Hoạt động",
     "about": "Giới thiệu",
@@ -76,24 +75,8 @@
     "project": "Dự án"
   },
   "common": {
-    "save": "Lưu",
-    "cancel": "Huỷ",
-    "edit": "Sửa",
-    "delete": "Xoá",
-    "close": "Đóng",
-    "back": "Quay lại",
     "search": "Tìm",
-    "filter": "Lọc",
-    "clear": "Xoá lọc",
-    "submit": "Gửi",
-    "confirm": "Xác nhận",
     "loading": "Đang tải…",
-    "saving": "Đang lưu…",
-    "verifying": "Đang xác thực…",
-    "saved": "Đã lưu",
-    "failed": "Thất bại",
-    "of": "trong",
-    "selected": "đã chọn",
     "rowsPerPage": "{{n}}/trang",
     "all": "Tất cả",
     "page": "{{current}}/{{total}}",
@@ -110,26 +93,16 @@
     "retry": "Thử lại",
     "viewAll": "Xem tất cả",
     "skipToContent": "Bỏ qua tới nội dung",
-    "none": "Không có",
-    "copy": "Sao chép",
-    "copied": "Đã sao chép"
+    "none": "Không có"
   },
   "topbar": {
     "searchPlaceholder": "Tìm theo tên, tag, mô tả…",
-    "gamesCount": "{{count}} game",
-    "updated": "cập nhật {{date}}",
-    "signIn": "Đăng nhập",
-    "signed": "đã ký",
-    "locked": "đã khoá",
-    "menuOpen": "Mở menu",
     "gamesTracked": "trò chơi đang theo dõi",
     "offlineCached": "Ngoại tuyến · dữ liệu ngày {{date}}",
     "updating": "Đang chờ dữ liệu mới hơn"
   },
   "pwa": {
-    "offline": "offline",
     "install": "Cài đặt",
-    "update": "Cập nhật",
     "updateAvailable": "Có bản cập nhật",
     "updateBody": "Phiên bản mới đã sẵn sàng.",
     "reload": "Tải lại",
@@ -157,9 +130,6 @@
   "dashboard": {
     "title": "Tổng quan",
     "subtitle": "Tổng hợp {{count}} game F2P trên Steam được track trong repo.",
-    "topOnlineTitle": "Top online (số người chơi hiện tại)",
-    "platformsTitle": "Nền tảng",
-    "genreTitle": "Phân bố thể loại",
     "topGenres": "Thể loại phổ biến",
     "playingNow": "Đang chơi ngay bây giờ",
     "seoDescription": "Tổng quan trực tiếp về các game miễn phí trên Steam: ai chơi, chúng là gì, và chúng đòi hỏi gì ở máy của bạn."
@@ -172,23 +142,7 @@
     "filterAllPlatforms": "Mọi nền tảng",
     "filterAllStatus": "Mọi trạng thái",
     "hideDead": "Ẩn dead",
-    "selectAllVisible": "Chọn tất cả ({{count}})",
-    "bulkEdit": "Sửa hàng loạt",
-    "bulkDelete": "Xoá",
-    "willSign": "sẽ ký",
-    "unsigned": "không ký",
-    "exportLabel": "Xuất",
-    "exportTitle": "Xuất {{count}} dòng đã lọc",
-    "ofTotalGames": "trong {{total}} game",
-    "exportRowsCount": "{{count}} dòng",
-    "bulkDeleteConfirm_one": "Xoá {{count}} game khỏi data shards?\nCác record cũng được append vào scripts/removed_games.jsonl.\n\nThao tác này không thể hoàn tác qua UI.",
-    "bulkDeleteConfirm_other": "Xoá {{count}} game khỏi data shards?\nCác record cũng được append vào scripts/removed_games.jsonl.\n\nThao tác này không thể hoàn tác qua UI.",
-    "deletedToast_one": "Đã xoá {{count}} game",
-    "deletedToast_other": "Đã xoá {{count}} game",
-    "bulkDeleteFailedToast": "Xoá hàng loạt thất bại",
-    "clearSelection": "Xoá chọn",
     "colName": "Tên",
-    "colIssues": "Vấn đề dữ liệu",
     "noResults": "Không có game nào khớp bộ lọc này.",
     "clearFilters": "Xóa bộ lọc",
     "showing": "{{shown}} trên {{total}}",
@@ -208,9 +162,7 @@
     "issueKernelUnknown": "Chưa rõ anti-cheat có chạy ở kernel không"
   },
   "topOnline": {
-    "title": "Top online",
-    "subtitle": "Top 100 game F2P online đang nhiều người chơi nhất.",
-    "cardTitle": "Người chơi hiện tại · top 100"
+    "subtitle": "Top 100 game F2P online đang nhiều người chơi nhất."
   },
   "antiCheatList": {
     "title": "Danh sách Anti-Cheat",
@@ -218,14 +170,12 @@
     "families": "Hệ AC",
     "game": "Game",
     "genre": "Thể loại",
-    "kernel": "Kernel",
+    "kernel": "Chạy ở mức",
     "players": "Người chơi",
     "seoDescription": "Mọi hệ anti-cheat trong danh mục, kèm các game miễn phí đang dùng nó."
   },
   "topOffline": {
-    "title": "Top offline",
-    "subtitle": "Top 100 game F2P single-player / không-online theo số người chơi đồng thời.",
-    "cardTitle": "Người chơi hiện tại · top 100"
+    "subtitle": "Top 100 game F2P single-player / không-online theo số người chơi đồng thời."
   },
   "settings": {
     "title": "Cài đặt",
@@ -246,50 +196,17 @@
   },
   "charts": {
     "time": {
-      "title": "Thời gian",
-      "subtitle": "Histogram năm phát hành của catalog, kèm timeline cộng dồn cho thấy dataset đã lớn lên thế nào.",
       "releasesByYear": "Phát hành theo năm",
       "catalogGrowth": "Danh mục lớn lên theo thời gian",
       "addedPerMonth": "Số game thêm theo tháng"
     },
-    "tags": {
-      "title": "Tag",
-      "subtitle": "Top 100 tag từ cộng đồng. Các tag chung (Free to Play, Indie...) đã được lọc bỏ.",
-      "tagCloud": "Đám mây tag"
-    },
-    "reviews": {
-      "title": "Đánh giá",
-      "subtitle": "Phân bố % đánh giá người dùng, chia thành nhóm theo bước 10%.",
-      "reviewDistribution": "Phân bố % đánh giá"
-    },
-    "players": {
-      "title": "Phân hạng người chơi",
-      "subtitle": "Game F2P online được chia nhóm theo số người chơi đồng thời hiện tại.",
-      "onlineTiers": "Phân hạng người chơi online đồng thời"
-    },
-    "genres": {
-      "title": "Thể loại",
-      "distribution": "Phân bố thể loại"
-    },
-    "antiCheat": {
-      "title": "Anti-cheat",
-      "subtitle": "Phân bố anti-cheat kernel-level / user-mode / không có trong top 18 thể loại.",
-      "byGenre": "Anti-cheat theo thể loại"
-    },
     "drm": {
-      "title": "DRM & DLC trả phí",
-      "subtitle": "F2P không có nghĩa là sạch — nhiều game vẫn dùng DRM bên thứ ba và/hoặc DLC trả phí. Bảng phân tích này giúp tìm ra pool \"thực sự miễn phí\".",
-      "drmDlcBreakdown": "Phân tích DRM × DLC trả phí",
       "clean": "F2P sạch",
       "drmOnly": "Chỉ DRM",
       "dlcOnly": "Chỉ DLC trả phí",
       "both": "DRM + DLC trả phí"
     },
     "delisted": {
-      "title": "Game đã gỡ",
-      "subtitle": "{{count}} game đã bị gỡ khỏi catalog — không còn free-to-play hoặc đã bị Steam gỡ hẳn. Nguồn: scripts/removed_games.jsonl.",
-      "timeline": "Số game gỡ theo tháng (stacked theo lý do)",
-      "breakdown": "Lý do gỡ",
       "notFreeLabel": "Không còn miễn phí",
       "unavailableLabel": "Không khả dụng",
       "otherLabel": "Khác",
@@ -297,16 +214,9 @@
       "reasonTitle": "Lý do bị gỡ"
     },
     "languages": {
-      "title": "Ngôn ngữ",
-      "subtitle": "Với mỗi ngôn ngữ trong top 30, có bao nhiêu game hỗ trợ qua giao diện, audio và phụ đề.",
-      "languageCoverage": "Phạm vi hỗ trợ ngôn ngữ",
       "interface": "Giao diện",
       "audio": "Âm thanh",
       "subtitles": "Phụ đề"
-    },
-    "platforms": {
-      "title": "Nền tảng",
-      "platformSupport": "Hỗ trợ nền tảng"
     },
     "indexTitle": "Biểu đồ",
     "indexSubtitle": "Mười một góc nhìn về danh sách — đây là những game gì, ai chơi, và đòi hỏi gì ở máy bạn.",
@@ -346,7 +256,6 @@
     "title": "Hoạt động",
     "subtitle": "{{count}} commit gần đây trên {{branch}}. Commit verified được ký bằng GPG key đã đăng ký của tác giả.",
     "filterAll": "Tất cả",
-    "filterMe": "Tôi",
     "filterBots": "Bot",
     "showingCount": "Đang xem {{count}} commit",
     "noMatches": "Không có commit nào khớp filter này.",
@@ -356,43 +265,9 @@
     "reasonPrefix": "lý do: {{reason}}",
     "seoDescription": "Các commit gần đây của bộ dữ liệu và ứng dụng đứng sau nó."
   },
-  "system": {
-    "failedToLoadData": "Tải dữ liệu thất bại",
-    "comingInPhase23": "Sẽ có ở Phase 2 / Phase 3 của roadmap.",
-    "gpgUnlockTitle": "Unlock GPG",
-    "gpgPassphrasePlaceholder": "Passphrase",
-    "gpgUnlock": "Unlock",
-    "gpgUnlocking": "Đang unlock…",
-    "gpgSettingsLink": "Settings",
-    "autoDetectedLanguage": "tự nhận diện từ trình duyệt khi load lần đầu",
-    "apiRateLimitTitle": "API rate limit",
-    "apiRateLimitRemaining": "Còn lại",
-    "apiRateLimitLimit": "Giới hạn",
-    "apiRateLimitResets": "Reset",
-    "gpgUnlockedTooltip": "GPG đã unlock · {{id}} · click để khoá",
-    "gpgLockedTooltip": "GPG đã khoá · {{id}} · click để unlock",
-    "signedInAsTooltip": "Đăng nhập với @{{login}}",
-    "themeLight": "Sáng",
-    "themeDark": "Tối",
-    "themeSystem": "Hệ thống",
-    "rowsPerPageTitle": "Dòng/trang",
-    "previousPage": "Trang trước",
-    "nextPage": "Trang sau",
-    "noNetworkTooltip": "Không có mạng — đọc từ cache",
-    "installAsApp": "Cài như app",
-    "updateReadyTooltip": "Phiên bản mới đã sẵn sàng — click để reload"
-  },
   "cmdk": {
     "placeholder": "Gõ tên trang, tên game, hoặc command…",
-    "noMatches": "Không có kết quả.",
-    "groupPages": "Trang",
-    "groupCharts": "Biểu đồ",
-    "groupGpg": "GPG",
-    "groupGames": "Game",
     "kbdNavigate": "để di chuyển",
-    "kbdSelect": "để chọn",
-    "lockGpgKey": "Khoá GPG key",
-    "unlockGpgSettings": "Unlock GPG key (mở Settings)",
     "title": "Bảng lệnh",
     "open": "Mở bảng lệnh",
     "pages": "Trang",
@@ -405,7 +280,6 @@
   "donate": {
     "title": "Ủng hộ dự án",
     "subtitle": "Nếu cái list này tiết kiệm cho bạn cả buổi search trên Steam, mời maintainer 1 ly cà phê hoặc 1 game indie sale giá rẻ. 100% đi vào mì tôm + lần sale $5 tiếp theo.",
-    "cta": "Mở",
     "footnote": "Cùng handle với .github/FUNDING.yml. Nút Sponsor trên đầu mọi page của repo GitHub cũng dẫn về đây.",
     "platform": {
       "github": "GitHub Sponsors",
@@ -423,7 +297,7 @@
   "about": {
     "title": "Giới thiệu",
     "subtitle": "Repo, dev, stack, phần legal, và những lưu ý về độ chính xác.",
-    "repositoryTitle": "Repository",
+    "repositoryTitle": "Kho mã nguồn",
     "headsUpTitle": "Lưu ý trước khi bạn tin vào dữ liệu",
     "aiDisclosureTitle": "Disclosure về AI",
     "maintainerTitle": "Bảo trì bởi SkullMute",
@@ -450,7 +324,7 @@
       "svelte": "runtime giao diện",
       "sveltekit": "định tuyến và prerender",
       "typescript": "hệ thống kiểu",
-      "vite": "build",
+      "vite": "đóng gói bản build",
       "tailwind": "định kiểu giao diện",
       "bitsUi": "thành phần UI không định kiểu",
       "echarts": "biểu đồ",
@@ -481,27 +355,6 @@
     "groupKernelDesc": "type_game=online có anti-cheat name nhưng is_kernel_ac là null.",
     "groupOnlineAcUnknown": "Online · chưa biết / không có anti-cheat",
     "groupOnlineAcUnknownDesc": "type_game=online với anti_cheat rỗng hoặc '-'. Có thể chưa biết, có thể thật sự không có.",
-    "moreItems": "+{{count}} mục nữa…",
-    "maintenanceTriggers": "Nút maintenance",
-    "maintenanceDesc": "Trigger thủ công các workflow GitHub Actions hiện có. Cần đăng nhập với scope {{scope}}.",
-    "triggerUpdateJson": "Update JSON",
-    "triggerUpdateJsonDesc": "Refresh metadata đầy đủ",
-    "triggerUpdateReviews": "Update reviews",
-    "triggerUpdateReviewsDesc": "Refresh chỉ reviews",
-    "triggerTopOnline": "Top online",
-    "triggerTopOnlineDesc": "Bảng xếp hạng người chơi",
-    "triggerTopOffline": "Top offline",
-    "triggerTopOfflineDesc": "Người chơi single-player (2 tuần/lần)",
-    "triggerCheckLinks": "Check link chết",
-    "triggerCheckLinksDesc": "Scan HEAD mọi trang app",
-    "triggerPurge": "Purge unhealthy",
-    "triggerPurgeDesc": "Xoá bản delisted/blocked",
-    "triggerGenerate": "Generate bảng",
-    "triggerGenerateDesc": "Tái tạo markdown",
-    "signInFirst": "Đăng nhập trước",
-    "triggeredToast": "Đã trigger {{name}}",
-    "viewRuns": "Xem runs",
-    "failedToast": "{{name}} thất bại",
     "allClear": "Không có cảnh báo nào. Mọi bản ghi đều đủ trường thủ công và được cập nhật gần đây.",
     "seoDescription": "Kiểm tra chất lượng dữ liệu trên toàn danh mục: game đã gỡ, dữ liệu cũ và bản ghi chưa được xem xét.",
     "groupUnreviewed": "Chưa xem xét mức an toàn",
@@ -512,11 +365,11 @@
     "openOnSteam": "appid {{appid}} · mở trên Steam",
     "openOnSteamDesktop": "Steam Desktop",
     "openOnSteamDesktopHint": "Mở trong Steam client nếu đã cài (steam://). Nếu chưa cài, browser sẽ hiện protocol prompt — dùng nút Web thay thế.",
-    "openOnSteamWeb": "Web",
+    "openOnSteamWeb": "Trang web",
     "labelGenre": "Thể loại",
     "labelType": "Loại",
-    "labelDeveloper": "Developer",
-    "labelPublisher": "Publisher",
+    "labelDeveloper": "Nhà phát triển",
+    "labelPublisher": "Nhà phát hành",
     "labelReleased": "Phát hành",
     "labelPlatforms": "Nền tảng",
     "labelReviews": "Đánh giá",
@@ -530,10 +383,7 @@
     "labelTags": "Tag",
     "labelLanguages": "Ngôn ngữ ({{count}})",
     "labelNotes": "Ghi chú",
-    "kernelLevel": "kernel-level",
     "playersPeak": "(đỉnh {{peak}})",
-    "viewSteamPage": "trang Steam",
-    "viewHealth": "Health",
     "descriptionSource": "Mô tả do nhà phát hành viết, lấy từ Steam — đã rút gọn.",
     "removedOn": "Đã bị gỡ khỏi danh mục ngày {{date}}: {{reason}}"
   },
@@ -569,7 +419,7 @@
       "description": "Server phản hồi quá lâu. Kiểm tra kết nối mạng rồi thử lại."
     },
     "offline": {
-      "badge": "OFFLINE",
+      "badge": "MẤT KẾT NỐI",
       "title": "Bạn đang offline",
       "description": "Không có kết nối mạng. Dữ liệu đã tải trước đó vẫn xem được."
     },
@@ -612,7 +462,6 @@
   "legal": {
     "title": "Tài liệu pháp lý",
     "subtitle": "Các tài liệu ràng buộc, hiển thị ngay tại đây thay vì chuyển sang GitHub.",
-    "notFound": "Không có tài liệu nào tên như vậy.",
     "viewSource": "Xem mã nguồn trên GitHub",
     "lastCommitted": "Được kết xuất từ kho lúc build.",
     "docs": {
