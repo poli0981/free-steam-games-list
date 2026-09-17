@@ -19,6 +19,8 @@
 
   const total = $derived(games.data?.records.length ?? 0);
   const lastUpdated = $derived(games.data?.index.last_updated ?? "");
+  const offline = $derived(games.data?.offline ?? false);
+  const updating = $derived(Boolean(games.data?.updating));
 
   const THEMES: { value: Theme; icon: typeof Sun; label: string }[] = [
     { value: "light", icon: Sun, label: "settings.themeLight" },
@@ -83,11 +85,16 @@
   </div>
 
   {#if total}
-    <p class="ml-auto hidden truncate text-xs text-muted-foreground xl:block">
+    <p class="ml-auto hidden truncate text-xs text-muted-foreground xl:block" aria-live="polite">
       <span class="font-medium text-foreground tnum">{formatNumber(total)}</span>
       {t("topbar.gamesTracked")}
-      {#if lastUpdated}
+      {#if offline && lastUpdated}
+        · <span class="text-warning">{t("topbar.offlineCached", { date: lastUpdated.slice(0, 10) })}</span>
+      {:else if lastUpdated}
         · <span class="tnum">{lastUpdated.slice(0, 10)}</span>
+      {/if}
+      {#if updating}
+        · <span class="text-info">{t("topbar.updating")}</span>
       {/if}
     </p>
   {/if}

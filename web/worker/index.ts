@@ -88,7 +88,7 @@ async function route(
   const { pathname } = url;
 
   if (pathname.startsWith("/api/data/")) {
-    return handleData(request, url);
+    return handleData(request, url, ctx);
   }
 
   if (pathname.startsWith("/img/")) {

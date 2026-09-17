@@ -122,7 +122,9 @@
     "signed": "signed",
     "locked": "locked",
     "menuOpen": "Open menu",
-    "gamesTracked": "games tracked"
+    "gamesTracked": "games tracked",
+    "offlineCached": "Offline · data from {{date}}",
+    "updating": "Newer data is on its way"
   },
   "pwa": {
     "offline": "offline",

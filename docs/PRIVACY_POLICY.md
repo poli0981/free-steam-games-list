@@ -80,7 +80,11 @@ All of it stays on your device. None of it is transmitted anywhere.
 | localStorage | `f2p:lang` | interface language |
 | sessionStorage | `f2p:chunk-reload` | one-shot flag so a failed script load retries once |
 | IndexedDB | `f2p:records`, `f2p:index` | the catalogue, cached so the site works offline and does not re-download ~6 MB each visit |
-| Cache Storage | `workbox-precache-*`, `f2p-data-v3`, `f2p-img-v1` | the offline app shell, data and images |
+| Cache Storage | `workbox-precache-*`, `f2p-img-v1` | the offline app shell and images (website only) |
+
+The website's service worker used to keep a second copy of the catalogue in
+Cache Storage as `f2p-data-v3`. It no longer does, and the site deletes that
+cache from your browser the next time it loads.
 
 Clearing site data in your browser removes all of it. Doing so re-shows the
 consent gate and the introduction, and the catalogue downloads again.

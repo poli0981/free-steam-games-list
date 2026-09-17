@@ -14,7 +14,9 @@ import {
   DATA_DIR,
   type DataIndex,
   type GameRecord,
+  type ShardManifestEntry,
 } from "./schema";
+import { ShardNotReadyError } from "./games-loader";
 import { migrateRecord } from "./data-store";
 import { API_ORIGIN } from "./site";
 
@@ -41,18 +43,29 @@ export async function fetchIndex(signal?: AbortSignal): Promise<DataIndex> {
   return (await res.json()) as DataIndex;
 }
 
-export async function fetchShardText(
-  shardName: string,
+/**
+ * One shard's bytes.
+ *
+ * `versioned` asks for it by the hash its index entry records. That response is
+ * immutable, so it may come from any cache - no `no-store` - and the Worker
+ * answers 503 rather than serve bytes that do not match, which surfaces here as
+ * ShardNotReadyError. The unversioned form is the old path, kept for an index
+ * without hashes and for a first visit during that 503 window.
+ */
+export async function fetchShard(
+  entry: ShardManifestEntry,
+  versioned: boolean,
   signal?: AbortSignal,
-): Promise<string> {
-  const res = await fetch(rawUrl(`${DATA_DIR}/${shardName}`), {
-    signal,
-    cache: "no-store",
-  });
+): Promise<ArrayBuffer> {
+  const url = rawUrl(`${DATA_DIR}/${entry.name}`);
+  const res = versioned && entry.sha256
+    ? await fetch(`${url}?v=${entry.sha256}`, { signal })
+    : await fetch(url, { signal, cache: "no-store" });
+  if (versioned && res.status === 503) throw new ShardNotReadyError(entry.name);
   if (!res.ok) {
-    throw new Error(`Failed to fetch ${shardName}: ${res.status}`);
+    throw new Error(`Failed to fetch ${entry.name}: ${res.status}`);
   }
-  return await res.text();
+  return await res.arrayBuffer();
 }
 
 /** Parse JSONL text → records array (synchronous; called from worker). */
@@ -70,10 +83,4 @@ export function parseJsonl(text: string): GameRecord[] {
     }
   }
   return out;
-}
-
-export interface AllShardsResult {
-  index: DataIndex;
-  records: GameRecord[];
-  shardOf: Map<string, string>; // appid → shard filename
 }

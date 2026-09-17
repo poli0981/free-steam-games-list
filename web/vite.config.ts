@@ -92,20 +92,13 @@ export default defineConfig(({ mode }) => ({
           // shell where the Access gate is expected.
           navigateFallbackDenylist: [/^\/api\//, /^\/img\//, /^\/admin/],
           runtimeCaching: [
-            // The dataset. NetworkFirst so an edit is visible on the next reload:
-            // index.json carries last_updated, the client's only
-            // cache-invalidation signal, and serving THAT from cache would strand
-            // every reader on stale records.
-            {
-              urlPattern: ({ url }: { url: URL }) => url.pathname.startsWith("/api/data/"),
-              handler: "NetworkFirst",
-              options: {
-                cacheName: "f2p-data-v3",
-                networkTimeoutSeconds: 5,
-                expiration: { maxEntries: 30, maxAgeSeconds: 60 * 60 * 24 * 7 },
-                cacheableResponse: { statuses: [200] },
-              },
-            },
+            // NO rule for /api/data/*. It used to be NetworkFirst with a 5 s
+            // timeout, so a slow index.json came back from this cache and the
+            // client took an old generation for the current one. The dataset's
+            // offline copy is IndexedDB, which games-loader.ts writes only once
+            // every shard has matched index.json's sha256 - and shards requested
+            // by hash are immutable HTTP responses the browser cache already
+            // handles. lib/pwa.ts deletes the old "f2p-data-v3" cache.
             // Artwork AND the GitHub avatars at /img/gh/*, which share the prefix.
             // Steam's ?t= is an asset mtime, so a changed image arrives as a
             // different URL and CacheFirst is safe. Status 200 only: caching an

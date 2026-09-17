@@ -125,6 +125,12 @@ export interface GameRecord {
 export interface ShardManifestEntry {
   name: string;
   count: number;
+  /**
+   * sha256 of the shard's exact committed bytes, written by _save_index() in
+   * scripts/core/data_store.py. Optional because an index written before it
+   * existed has none - see games-loader.ts for what each case means.
+   */
+  sha256?: string;
 }
 
 export interface DataIndex {

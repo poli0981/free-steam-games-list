@@ -1,5 +1,8 @@
 /**
- * IndexedDB cache via idb-keyval. Keyed on data_index.last_updated.
+ * IndexedDB cache via idb-keyval: ONE verified generation of the catalogue.
+ *
+ * What counts as the same generation, and when one may be written at all, is
+ * games-loader.ts's decision - this file only stores it.
  */
 import { get, set, del } from "idb-keyval";
 import type { DataIndex, GameRecord } from "./schema";
@@ -40,6 +43,3 @@ export async function clearCache(): Promise<void> {
   await Promise.all([del(KEY_RECORDS), del(KEY_INDEX)]);
 }
 
-export function isCacheFresh(cached: DataIndex, fresh: DataIndex): boolean {
-  return cached.last_updated === fresh.last_updated;
-}

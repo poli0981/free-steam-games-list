@@ -1,20 +1,18 @@
 /**
- * The catalogue, loaded once and shared by every page.
+ * The catalogue, shared by every page.
  *
- * Replaces the `useGames` / `useRemovedGames` hooks. The loading strategy is
- * carried over unchanged, because each step of it is load-bearing:
+ * Replaces the `useGames` / `useRemovedGames` hooks. HOW a generation is
+ * fetched, verified and cached lives in games-loader.ts, as a pure function
+ * with its own tests; this file wires in the real network, IndexedDB and
+ * worker, and decides WHEN to look for newer data.
  *
- *   1. Read the IndexedDB cache and fetch `data/index.json`.
- *   2. If the cached `last_updated` matches, use the cached records and fetch
- *      nothing else. That field is the ONLY cache-invalidation signal this
- *      dataset has — anything that writes a shard must also bump it.
- *   3. Otherwise fetch every shard and parse the JSONL off the main thread in
- *      a worker, because parsing ~3,700 records blocks it for long enough to
- *      drop frames.
+ * The JSONL is parsed off the main thread in a worker, because parsing ~3,650
+ * records blocks it for long enough to drop frames.
  */
-import { fetchIndex, fetchShardText, rawUrl } from "./fetcher";
+import { fetchIndex, fetchShard, rawUrl } from "./fetcher";
 import { parseShard } from "./worker-pool";
-import { readCache, writeCache, isCacheFresh, type CachedBundle } from "./cache";
+import { readCache, writeCache } from "./cache";
+import { createLoader, type Generation } from "./games-loader";
 import { buildIndex, extractAppid } from "./data-store";
 import { Resource } from "./resource.svelte";
 import type { GameRecord, DataIndex } from "./schema";
@@ -25,35 +23,115 @@ export interface GamesData {
   /** appid → position in `records`. Built once; every lookup by appid uses it
    *  rather than scanning 3,700 rows. */
   appidIndex: Map<string, number>;
+  /** The index could not be fetched; this is the last generation held. */
+  offline: boolean;
+  /** Not verified against index.json's hashes, and therefore not cached. */
+  unverified: boolean;
+  /** Newer data exists upstream but is not available yet. */
+  updating: boolean;
 }
 
-async function loadAll(signal: AbortSignal): Promise<GamesData> {
-  const cached = await readCache();
-  const index = await fetchIndex(signal);
+async function sha256Hex(bytes: ArrayBuffer): Promise<string | null> {
+  // Absent outside a secure context. tauri.localhost and localhost both count
+  // as secure, so in practice this is a guard, not a code path.
+  if (!globalThis.crypto?.subtle) return null;
+  const digest = new Uint8Array(await crypto.subtle.digest("SHA-256", bytes));
+  let out = "";
+  for (const b of digest) out += b.toString(16).padStart(2, "0");
+  return out;
+}
 
-  if (cached && isCacheFresh(cached.index, index)) {
-    return {
-      index: cached.index,
-      records: cached.records,
-      appidIndex: buildIndex(cached.records),
-    };
+const decoder = new TextDecoder();
+
+const load = createLoader({
+  fetchIndex: (signal) => fetchIndex(signal),
+  fetchShard: (entry, versioned, signal) => fetchShard(entry, versioned, signal),
+  hash: sha256Hex,
+  parse: (bytes) => parseShard(decoder.decode(bytes)),
+  readCache,
+  writeCache,
+});
+
+/** Failed attempts at the generation currently being waited for. */
+let attempt = 0;
+let retryTimer: ReturnType<typeof setTimeout> | undefined;
+
+async function loadAll(signal: AbortSignal): Promise<GamesData> {
+  const held = games.data;
+  const current: Generation | undefined = held && !held.unverified
+    ? { index: held.index, records: held.records }
+    : undefined;
+
+  const result = await load(signal, current, attempt);
+
+  clearTimeout(retryTimer);
+  if (result.retryInMs !== null) {
+    attempt += 1;
+    retryTimer = setTimeout(() => void games.revalidate(), result.retryInMs);
+  } else {
+    attempt = 0;
   }
 
-  const shardTexts = await Promise.all(
-    index.files.map((f) => fetchShardText(f.name, signal)),
-  );
-  const parsed = await Promise.all(shardTexts.map((t) => parseShard(t)));
-  const records = parsed.flat();
+  const same =
+    held &&
+    held.records === result.records &&
+    held.offline === result.offline &&
+    held.unverified === result.unverified &&
+    held.updating === (result.retryInMs !== null);
+  // The same object back when nothing changed. `data` is $state.raw, so this
+  // makes a routine revalidation a no-op for every page that reads it.
+  if (same) return held;
 
-  const bundle: CachedBundle = { index, records };
-  // Not awaited: a failed cache write must not fail the load. The next visit
-  // simply refetches.
-  void writeCache(bundle);
-
-  return { index, records, appidIndex: buildIndex(records) };
+  return {
+    index: result.index,
+    records: result.records,
+    appidIndex: held && held.records === result.records ? held.appidIndex : buildIndex(result.records),
+    offline: result.offline,
+    unverified: result.unverified,
+    updating: result.retryInMs !== null,
+  };
 }
 
 export const games = new Resource<GamesData>(loadAll, { staleTime: 5 * 60 * 1000 });
+
+/**
+ * Look for newer data while the app is open.
+ *
+ * The catalogue used to load exactly once per page load. A tab left open
+ * showed that load's data indefinitely - the 3,666-games / 2026-09-12 header
+ * in a screenshot taken on 09-17, while the site itself served 3,649 / 09-17.
+ *
+ * Each check is one ~600-byte index request; shards are fetched only when the
+ * generation changed. Checks happen when the tab becomes visible or regains
+ * focus or network, at most once a minute, and every ten minutes while it
+ * stays visible. Installed from the root layout once consent is given.
+ */
+export function installGamesRevalidation(): () => void {
+  const MIN_GAP = 60_000;
+  const INTERVAL = 10 * 60_000;
+  let last = Date.now();
+
+  const check = () => {
+    if (document.visibilityState !== "visible") return;
+    if (Date.now() - last < MIN_GAP) return;
+    last = Date.now();
+    void games.revalidate();
+  };
+
+  const onVisibility = () => check();
+  document.addEventListener("visibilitychange", onVisibility);
+  window.addEventListener("focus", check);
+  window.addEventListener("online", check);
+  const interval = setInterval(check, INTERVAL);
+
+  return () => {
+    document.removeEventListener("visibilitychange", onVisibility);
+    window.removeEventListener("focus", check);
+    window.removeEventListener("online", check);
+    clearInterval(interval);
+    clearTimeout(retryTimer);
+  };
+}
 
 /* ─────────────────────────── removed games ─────────────────────────── */
 

@@ -8,12 +8,12 @@
   import { i18n } from "$lib/i18n.svelte";
   import { consent, theme, welcome } from "$lib/prefs.svelte";
   import { installPaletteShortcut } from "$lib/palette.svelte";
-  import { games } from "$lib/games.svelte";
+  import { games, installGamesRevalidation } from "$lib/games.svelte";
   import { upgradeLegacyHashUrl } from "$lib/legacy-url";
   import { recoverFallbackRoute } from "$lib/fallback-route";
   import { installExternalLinkInterceptor } from "$lib/external-link-interceptor";
   import { checkAndroidUpdate } from "$lib/android-update";
-  import { purgeTauriServiceWorker } from "$lib/pwa";
+  import { purgeTauriServiceWorker, purgeLegacyDataCache } from "$lib/pwa";
   import { isTauri, isAndroid, openExternal } from "$lib/external-open";
   import { toast } from "svelte-sonner";
   import ConsentGate from "$lib/common/ConsentGate.svelte";
@@ -83,6 +83,7 @@
     // tauri.localhost can never update, so it would serve that build's
     // precache for the life of the install.
     void purgeTauriServiceWorker();
+    void purgeLegacyDataCache();
 
     // Android has no native Tauri updater (the plugin is desktop-only), so the
     // APK checks GitHub Releases itself, once per session. Best-effort: a
@@ -111,9 +112,11 @@
   });
 
   // The ~6 MB catalogue fetch waits for consent: someone who declines should
-  // never have caused the download.
+  // never have caused the download. So do the checks for newer data.
   $effect(() => {
-    if (consent.accepted) void games.load();
+    if (!consent.accepted) return;
+    void games.load();
+    return installGamesRevalidation();
   });
 
   // Close the mobile drawer on navigation, or it stays open over the new page.

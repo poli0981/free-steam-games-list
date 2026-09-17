@@ -122,7 +122,9 @@
     "signed": "đã ký",
     "locked": "đã khoá",
     "menuOpen": "Mở menu",
-    "gamesTracked": "trò chơi đang theo dõi"
+    "gamesTracked": "trò chơi đang theo dõi",
+    "offlineCached": "Ngoại tuyến · dữ liệu ngày {{date}}",
+    "updating": "Đang chờ dữ liệu mới hơn"
   },
   "pwa": {
     "offline": "offline",

@@ -58,3 +58,23 @@ export async function purgeTauriServiceWorker(): Promise<void> {
     // the status quo, so there is nothing useful to report to the user.
   }
 }
+
+/**
+ * Delete the service worker's old copy of the dataset.
+ *
+ * Every build up to this one routed /api/data/* through the service worker
+ * (NetworkFirst, 5 s timeout, 7-day expiry). A slow index request was then
+ * answered from that cache, and the client treated the old index as current -
+ * one way a browser kept showing the 2026-09-12 catalogue five days later. The
+ * route is gone: IndexedDB, holding only verified generations, is the one
+ * offline copy. Removing the route does not remove the cache it filled, and
+ * that cache would otherwise sit in every existing install forever.
+ */
+export async function purgeLegacyDataCache(): Promise<void> {
+  if (isTauri() || !("caches" in globalThis)) return;
+  try {
+    await caches.delete("f2p-data-v3");
+  } catch {
+    // Storage blocked or unavailable: there is nothing to delete, either.
+  }
+}

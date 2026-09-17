@@ -22,7 +22,13 @@ export interface ResourceOptions {
 }
 
 export class Resource<T> {
-  data = $state<T | undefined>(undefined);
+  /**
+   * $state.raw: loaded data is replaced whole, never mutated in place, and a
+   * deep proxy over ~3,650 records is pure overhead. It also means assigning
+   * the SAME object again is a no-op, which is what lets a revalidation that
+   * found nothing new leave every page untouched.
+   */
+  data = $state.raw<T | undefined>(undefined);
   error = $state<Error | undefined>(undefined);
   loading = $state(false);
 
@@ -99,5 +105,34 @@ export class Resource<T> {
   /** Explicit user-driven retry: ignores the stale window. */
   refetch(): Promise<void> {
     return this.load(true);
+  }
+
+  /**
+   * Check for newer data behind whatever is on screen.
+   *
+   * Unlike load(): `loading` stays false and a failure is NOT surfaced as
+   * `error`, because the page is already showing correct data and replacing it
+   * with an error banner over a transient blip would be worse than doing
+   * nothing. The fetcher decides what "newer" means - for the catalogue that is
+   * a ~600-byte index request that usually changes nothing.
+   */
+  revalidate(): Promise<void> {
+    if (this.#inFlight || this.data === undefined) return this.#inFlight ?? Promise.resolve();
+
+    const controller = new AbortController();
+    this.#controller = controller;
+    this.#inFlight = this.#fetcher(controller.signal)
+      .then((value) => {
+        if (controller.signal.aborted) return;
+        this.data = value;
+        this.#loadedAt = Date.now();
+      })
+      .catch((err: unknown) => {
+        if (!controller.signal.aborted) console.warn("[resource] revalidate failed:", err);
+      })
+      .finally(() => {
+        this.#inFlight = null;
+      });
+    return this.#inFlight;
   }
 }
