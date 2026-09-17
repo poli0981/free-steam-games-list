@@ -117,6 +117,31 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
   listener cannot `preventDefault()`, so `dataZoom: {type: "inside"}` and
   `roam: true` would silently stop working; `charts.test.ts` fails if either
   appears.
+- **Every chart colour must be one zrender can parse, which is stricter than
+  what a canvas paints.** zrender splits `hsl()` on commas: space-separated
+  `hsl(38 94% 60%)` paints, but every hover state derived from it comes back
+  `undefined` and the hovered tile/bar/slice loses its fill; `hsl(var(--x))`
+  never paints at all. Take colours from `chartTheme()` (it converts the bare
+  channel tokens), never write `var(--…)` in an option, and use `gridBox()`
+  rather than `containLabel`, which in echarts 6 leaves axis NAMES out of the
+  layout. An option key whose component is not registered in `echarts.ts`
+  (`markLine` was) is silently ignored. `chart-colors.test.ts` and
+  `charts.test.ts` hold all three.
+- **A duplicate key in a keyed `{#each}` THROWS in a production build** — Svelte
+  5 does not only warn. The command palette crashed on open because one path
+  was in two nav lists, and five records repeat a developer name. Deduplicate
+  anything data-derived before keying on it.
+- **Use `resource.pending`, never `loading && !data`, to choose between a
+  loading state and the page.** `loading` is false before a load starts —
+  during prerender and until consent — so the old check prerendered empty
+  states ("No game matches these filters.") as page content. Likewise no count
+  may be interpolated into a `<Seo>` description: at build time it is 0.
+  `web/scripts/verify-dist.mjs` fails CI on either, and on any `{{placeholder}}`
+  left in the HTML.
+- **i18n keys are literal.** `t(\`detail.${key}\`)` is how a suffix key rendered
+  as a field label; `i18n.test.ts` rejects template-literal keys, a literal
+  call that omits a `{{variable}}` its text needs, and any key-shaped string
+  that does not resolve. Put key tables in code as literal strings.
 - `echarts-wordcloud` declares a stale `echarts@^5` peer. It runs fine on
   echarts 6 (all the legacy APIs it uses are still exported), so `package.json`
   carries an `overrides` entry. Do not "fix" it by pinning echarts back to 5.
@@ -165,7 +190,10 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
   components are the dashboard's. `web/src/lib/fallback-route.ts` re-navigates
   on first mount for the three routes that are never prerendered, and
   `fallback-route.test.ts` holds its list against the routes that actually
-  declare `prerender = false`.
+  declare `prerender = false`. A path that matches NO route hydrates the same
+  way with `page.route.id === null`; the root layout renders the 404 view in
+  place. Never `goto()` an unmatched URL — SvelteKit falls back to a native
+  load, the host answers with `index.html` again, and it loops forever.
 - **Nothing may gate the markup behind `onMount`.** onMount does not run during
   prerender, so anything behind it ships an empty body and the SEO reason for
   prerendering is gone. The consent gate is an OVERLAY for this reason, not a
@@ -201,5 +229,9 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
   `src-tauri/src/lib.rs::purge_stale_webview_data` clears the webview's storage
   once per version for anyone upgrading from a build that had one.
 - The app is behind a first-run legal consent gate
-  (`web/src/lib/common/ConsentGate.svelte`). Only `/error/*` bypasses it —
-  any new route that must be reachable pre-consent has to join that list.
+  (`web/src/lib/common/ConsentGate.svelte`). Only `/error/*` and `/legal/*`
+  bypass it — the gate links to the legal documents it asks people to accept —
+  and any new route that must be reachable pre-consent has to join that list.
+  The gate renders only after `consent.hydrated`: rendered before storage was
+  read, it was baked into every prerendered page and flashed for returning
+  visitors.
