@@ -55,17 +55,38 @@ if (!existsSync(join(DIST, "200.html"))) fail("200.html (the SPA fallback) is mi
 if (html.length < 10) fail(`only ${html.length} HTML files - prerendering did not run`);
 
 /**
- * Text a reader or a crawler actually sees: scripts and styles removed.
- * End tags may carry whitespace (`</script >`), and removal repeats until
- * nothing changes, so no nested remnant survives a single pass.
+ * Text a reader or a crawler actually sees: the page minus every <script> and
+ * <style> element. Found by scanning, not by regex replacement, so a tag split
+ * or nested to dodge one pattern cannot leave a remnant, and an end tag with
+ * whitespace or attributes (`</script >`) still ends its element. An element
+ * with no end tag hides the rest of the page, as it would in a browser.
  */
 function visible(text) {
-  let out = text;
-  for (let previous = ""; previous !== out; ) {
-    previous = out;
-    out = out.replace(/<script\b[\s\S]*?<\/script[^>]*>/gi, "").replace(/<style\b[\s\S]*?<\/style[^>]*>/gi, "");
+  // ASCII only. A full toLowerCase() can change the length ("İ" becomes two
+  // code units), and an index found in `lower` would then cut `text` in the
+  // wrong place.
+  const lower = text.replace(/[A-Z]+/g, (run) => run.toLowerCase());
+  const isTagEnd = (at) => at >= lower.length || /[\s/>]/.test(lower[at]);
+  const opening = (from) => {
+    for (let at = lower.indexOf("<", from); at !== -1; at = lower.indexOf("<", at + 1)) {
+      for (const name of ["script", "style"]) {
+        if (lower.startsWith(name, at + 1) && isTagEnd(at + 1 + name.length)) return { at, name };
+      }
+    }
+    return null;
+  };
+  let out = "";
+  let cursor = 0;
+  for (let open = opening(0); open; open = opening(cursor)) {
+    out += text.slice(cursor, open.at);
+    let close = lower.indexOf(`</${open.name}`, open.at);
+    while (close !== -1 && !isTagEnd(close + 2 + open.name.length)) close = lower.indexOf(`</${open.name}`, close + 1);
+    if (close === -1) return out;
+    const tagEnd = lower.indexOf(">", close);
+    if (tagEnd === -1) return out;
+    cursor = tagEnd + 1;
   }
-  return out;
+  return out + text.slice(cursor);
 }
 
 /** One directive of a page's CSP meta tag, as a list of its sources. */
@@ -153,7 +174,7 @@ if (flavour === "tauri") {
   // An exact source in connect-src, not a substring of the page: the origin
   // appearing anywhere else (a link, a longer host) must not pass.
   const index = readFileSync(join(DIST, "index.html"), "utf-8");
-  if (!cspSources(index, "connect-src").includes("https://free-steam-games.win")) {
+  if (!cspSources(index, "connect-src").some((source) => source === "https://free-steam-games.win")) {
     fail("index.html CSP does not allow https://free-steam-games.win (the Tauri connect-src)");
   }
 }
