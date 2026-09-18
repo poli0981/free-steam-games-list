@@ -1,27 +1,32 @@
 {
   "max_per_file": 800,
   "total": 3649,
-  "last_updated": "2026-09-17T13:01:58Z",
+  "last_updated": "2026-09-18T02:50:05Z",
   "files": [
     {
       "name": "data_001.jsonl",
-      "count": 800
+      "count": 800,
+      "sha256": "cde8b5abe097e9173ef81684f2a5979912de4e336c9a639533a069159b1b6866"
     },
     {
       "name": "data_002.jsonl",
-      "count": 800
+      "count": 800,
+      "sha256": "5a61b763759e95d2a1a9e62030ccdc7a2d1f713796967ac5d747dc9ef47cff0f"
     },
     {
       "name": "data_003.jsonl",
-      "count": 800
+      "count": 800,
+      "sha256": "3d97ef24bbce61eb0b282aeea5bafdda6f6b661d33a949d0a16947543b80181c"
     },
     {
       "name": "data_004.jsonl",
-      "count": 800
+      "count": 800,
+      "sha256": "2d9924394ff8a1817c132b0fecd37a53d81c9b2bb261053d6c0104450d7e5ef0"
     },
     {
       "name": "data_005.jsonl",
-      "count": 449
+      "count": 449,
+      "sha256": "a8f35e0d4cc1124402e42f0cedf8d63b1e4a62bc2d20419e23da7a69521905b1"
     }
   ]
 }
