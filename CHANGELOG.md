@@ -2,6 +2,31 @@
 
 All notable changes to this awesome noob repo will be documented here.
 
+## [Unreleased]
+
+### 🐛 Fixed
+
+- **`/admin` said "Your Cloudflare Access session has expired" straight after
+  signing in, in a private window too.** Its API was at `/api/admin/*`, behind
+  a second Cloudflare Access application. Access issues its session cookie per
+  application and `fetch()` cannot follow the sign-in redirect, so the session
+  for `/admin` never reached the API and every call bounced to the login page.
+  The API now lives at `/admin/api/*`, under the page's own application, and
+  `worker/index.test.ts` drives it through the real router and token check.
+  The `/api/admin` Access application is no longer used and can be deleted.
+- `scripts/discover_new.py` took any host ending in `cloudflareaccess.com` for
+  an Access login page, lookalikes included; the suffix check now needs the dot.
+- The i18n, SEO and chart tests share one comment stripper instead of three
+  regexes, one of which removed text that was never inside a comment.
+
+### 🛠 CI
+
+- The Android release builds the tag it releases (a manual run used to build
+  `main`), installs `platform-tools` only (the SDK no longer carries `tools`,
+  which stopped `android-v2.0.0`), and names the commit it built.
+- CodeQL also runs when only `.mjs`/`.cjs` files change, and
+  `verify-dist.mjs` finds `<script>`/`<style>` by scanning.
+
 ## [v4.0.0] – 2026-09-17 (The "Rewrite" Edition)
 
 The end-user web app was rewritten from React 19 to **SvelteKit 2 / Svelte 5**,
