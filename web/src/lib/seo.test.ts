@@ -3,6 +3,7 @@ import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { LEGAL_DOCS, legalDocSlug } from "./legal";
 import { SITE_ORIGIN } from "./site";
+import { withoutBlockComments } from "./testing/source";
 
 /**
  * The head of every page, checked from the outside.
@@ -38,9 +39,7 @@ const ROUTES = join(process.cwd(), "src", "routes");
  * cause a different false result.
  */
 function code(file: string): string {
-  return readFileSync(file, "utf-8")
-    .replace(/<!--[\s\S]*?-->/g, "")
-    .replace(/\/\*[\s\S]*?\*\//g, "");
+  return withoutBlockComments(readFileSync(file, "utf-8"));
 }
 
 /** Every +page.svelte, as a route path: "src/routes/about/+page.svelte" -> "/about". */

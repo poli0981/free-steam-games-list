@@ -162,7 +162,9 @@ _OPENER = urllib.request.build_opener(_NoRedirect)
 def _describe_access_redirect(location):
     """Explain an Access login redirect, using its own meta JWT."""
     host = urllib.parse.urlparse(location).hostname or ""
-    if not host.endswith("cloudflareaccess.com"):
+    # With the dot: "evilcloudflareaccess.com" also ends in "cloudflareaccess.com",
+    # and would have been explained as Access refusing the service token.
+    if not host.endswith(".cloudflareaccess.com"):
         return f"unexpected redirect to {location[:120]}"
 
     # The login URL carries a `meta` JWT whose claims say what Access decided.

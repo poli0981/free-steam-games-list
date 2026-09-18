@@ -22,6 +22,7 @@ import { readFileSync, readdirSync, statSync } from "node:fs";
 import { join, extname } from "node:path";
 import en from "../i18n/locales/en.json";
 import vi from "../i18n/locales/vi.json";
+import { withoutBlockComments } from "./testing/source";
 
 type Tree = Record<string, unknown>;
 
@@ -147,15 +148,7 @@ describe("keys that carry placeholders", () => {
  * mentions a key is not mistaken for a call.
  */
 function stripComments(text: string): string {
-  // Until nothing changes: a single pass over "<!-<!-- -->-" leaves a "<!--"
-  // behind (CodeQL js/incomplete-multi-character-sanitization).
-  let html = text;
-  for (let previous = ""; previous !== html; ) {
-    previous = html;
-    html = html.replace(/<!--[\s\S]*?-->/g, "");
-  }
-  return html
-    .replace(/\/\*[\s\S]*?\*\//g, "")
+  return withoutBlockComments(text)
     // A line comment, but not the "//" inside "https://".
     .replace(/(^|[^:"'`\\])\/\/.*$/gm, "$1");
 }

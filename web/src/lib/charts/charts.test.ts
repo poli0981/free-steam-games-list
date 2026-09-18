@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
+import { withoutBlockComments } from "../testing/source";
 
 /**
  * Guards for the two ECharts `[Violation]` warnings this app was reported with,
@@ -22,10 +23,7 @@ function walk(dir: string): string[] {
 /** Source with comments stripped, so prose about a pattern is not mistaken for
  *  a use of it. */
 function code(file: string): string {
-  return readFileSync(file, "utf-8")
-    .replace(/<!--[\s\S]*?-->/g, "")
-    .replace(/\/\*[\s\S]*?\*\//g, "")
-    .replace(/^\s*\/\/.*$/gm, "");
+  return withoutBlockComments(readFileSync(file, "utf-8")).replace(/^\s*\/\/.*$/gm, "");
 }
 
 describe("no chart depends on the mouse wheel", () => {
