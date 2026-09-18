@@ -21,9 +21,11 @@ on:
   workflow_dispatch:
     inputs:
       tag:
-        description: 'Tag name (e.g. android-v1.4.1). Created if missing.'
+        # No default: a run rebuilds the tag it names and replaces that
+        # release's APK, so a stale default is one click from overwriting an
+        # old release.
+        description: 'Existing tag to build and release (e.g. android-v2.0.0)'
         required: true
-        default: 'android-v1.4.1'
 
 permissions:
   contents: write
@@ -32,7 +34,18 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+      # A manual run builds the tag it is releasing, not whatever main is at by
+      # then: a re-run after a CI-only fix must not ship newer app code under an
+      # older version's tag.
       - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.inputs.tag || github.ref }}
+
+      # The commit actually built. On a manual run `github.sha` is main's HEAD,
+      # not the tag checked out above.
+      - name: Record the source commit
+        id: source
+        run: echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
@@ -55,8 +68,16 @@ jobs:
         with:
           workspaces: 'web/src-tauri -> target'
 
+      # platform-tools only. The action's default also installs the legacy
+      # `tools` package, which Google has removed from the SDK repository:
+      # `sdkmanager tools` fails with "Failed to find package 'tools'" and the
+      # whole release stops before building (android-v2.0.0, 2026-09-17).
+      # Gradle installs the build-tools and platform it needs on its own.
       - name: Set up Android SDK
         uses: android-actions/setup-android@v3
+        with:
+          packages: platform-tools
+          log-accepted-android-sdk-licenses: false
 
       - name: Set up Android NDK
         id: setup-ndk
@@ -131,12 +152,11 @@ jobs:
                uninstall needed.
 
             **Requires Android 11 (API 30) or newer** — older devices are blocked
-            at install (`INSTALL_FAILED_OLDER_SDK`). Why this floor + worldwide
-            version stats: `docs/android-support.md`. Tested on emulator 11–16 and
-            a real vivo 1907 (Android 12).
+            at install (`INSTALL_FAILED_OLDER_SDK`). Why this floor, the devices
+            it was chosen on and worldwide version stats: `docs/android-support.md`.
 
             Reads its data from free-steam-games.win (`/api/data`) and keeps the
             last verified copy for offline use; no telemetry. See
             `docs/DISCLAIMER.md` for accuracy caveats.
 
-            Built from commit `${{ github.sha }}`.
+            Built from commit `${{ steps.source.outputs.sha }}`.
