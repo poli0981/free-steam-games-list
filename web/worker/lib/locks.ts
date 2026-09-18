@@ -57,7 +57,7 @@ export async function releaseLease(db: D1Database, name: string, owner: string):
   }
 }
 
-/** The current lease, for /api/admin/health. null when free or unavailable. */
+/** The current lease, for /admin/api/health. null when free or unavailable. */
 export async function readLease(
   db: D1Database,
   name: string,

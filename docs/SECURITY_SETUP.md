@@ -211,8 +211,8 @@ and cached requests count too. So the decision is not how many rules but what
 the single rule covers.
 
 The two public surfaces that cost money are `/img/*` (proxies Steam's CDN) and
-`/api/data/*` (proxies GitHub raw). `/api/admin/*` and `/api/ingest/*` are
-behind Cloudflare Access already. One rule covers both proxies:
+`/api/data/*` (proxies GitHub raw). `/admin` (with its API at `/admin/api/*`)
+and `/api/ingest/*` are behind Cloudflare Access already. One rule covers both proxies:
 
 **Security → WAF → Rate limiting rules → Create rule → Edit expression**
 
@@ -326,8 +326,8 @@ Discord webhooks. Anything else is a leftover.
 
 Not everything needs switching on. For the record:
 
-- `/admin`, `/api/admin/*` and `/api/ingest/*` are Access-gated, with **AUDs
-  scoped per route** so the unattended discovery token cannot reach the admin
+- `/admin` (the SPA and its API at `/admin/api/*`, one application) and
+  `/api/ingest/*` are Access-gated, with **AUDs scoped per route** so the unattended discovery token cannot reach the admin
   surface that holds the repository-write credential.
 - `workers_dev` is `false`. A zone Access policy does not cover
   `*.workers.dev`, so leaving that hostname live would be a way around Access

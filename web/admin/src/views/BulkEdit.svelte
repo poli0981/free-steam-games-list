@@ -65,7 +65,7 @@
     if (!g) return;
     const controller = new AbortController();
     untrack(() => (loading = true));
-    api<ByGenreResponse>(`/api/admin/by-genre?${new URLSearchParams({ genre: g, limit: String(PAGE), offset: String(o) })}`, {
+    api<ByGenreResponse>(`by-genre?${new URLSearchParams({ genre: g, limit: String(PAGE), offset: String(o) })}`, {
       signal: controller.signal,
     })
       .then((res) => {
@@ -110,7 +110,7 @@
     const appids = [...selected.keys()];
     reviewGames = await Promise.all(
       appids.map((a) =>
-        api<GameResponse>(`/api/admin/game?appid=${a}`).catch((err: unknown) => {
+        api<GameResponse>(`game?appid=${a}`).catch((err: unknown) => {
           if (err instanceof SessionExpiredError) reportError(err);
           return { appid: a, error: errorMessage(err) };
         }),
@@ -136,7 +136,7 @@
     const appids = [...selected.keys()];
     busy = true;
     try {
-      const out = await api<EditResponse>("/api/admin/edit", {
+      const out = await api<EditResponse>("edit", {
         method: "POST",
         body: {
           appids,

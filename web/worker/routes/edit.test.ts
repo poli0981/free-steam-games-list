@@ -31,11 +31,11 @@ describe("deletable", () => {
   });
 });
 
-describe("POST /api/admin/edit", () => {
+describe("POST /admin/api/edit", () => {
   it("writes an override and records a commit job", async () => {
     const env = makeEnv();
     const deps = fakeDeps({ records: { "730": RECORD } });
-    const { status, body } = await call(env, deps, "POST", "/api/admin/edit", {
+    const { status, body } = await call(env, deps, "POST", "/admin/api/edit", {
       appid: "730",
       set: { genre: "Tactical Shooter" },
       reason: "Steam's own tag",
@@ -56,10 +56,10 @@ describe("POST /api/admin/edit", () => {
       JSON.stringify({ schema: 1, appid: "730", fields: {}, retired: { genre: { value: "Shooter", was: "FPS" } } }),
     );
 
-    const game = await call(env, deps, "GET", "/api/admin/game?appid=730");
+    const game = await call(env, deps, "GET", "/admin/api/game?appid=730");
     expect(game.body.deletable).toEqual({ ok: true, reason: "" });
 
-    const { status, body } = await call(env, deps, "POST", "/api/admin/edit", { appid: "730", delete: true });
+    const { status, body } = await call(env, deps, "POST", "/admin/api/edit", { appid: "730", delete: true });
     expect(status).toBe(200);
     expect(body.deleted).toBe(true);
     expect(deps.repo.files.has("data/overrides/730.json")).toBe(false);
@@ -75,7 +75,7 @@ describe("POST /api/admin/edit", () => {
       "data/overrides/730.json",
       JSON.stringify({ schema: 1, appid: "730", fields: { genre: { value: "FPS", was: "Action" } }, retired: {} }),
     );
-    const { status, body } = await call(env, deps, "POST", "/api/admin/edit", { appid: "730", delete: true });
+    const { status, body } = await call(env, deps, "POST", "/admin/api/edit", { appid: "730", delete: true });
     expect(status).toBe(409);
     expect(body.error).toMatch(/retire them first/);
     expect(deps.repo.files.has("data/overrides/730.json")).toBe(true);
@@ -84,14 +84,14 @@ describe("POST /api/admin/edit", () => {
   it("refuses to mix delete with other changes, or with several games", async () => {
     const env = makeEnv();
     const deps = fakeDeps({ records: { "730": RECORD } });
-    expect((await call(env, deps, "POST", "/api/admin/edit", { appid: "730", delete: true, retire: ["genre"] })).status).toBe(400);
-    expect((await call(env, deps, "POST", "/api/admin/edit", { appids: ["730", "570"], delete: true })).status).toBe(400);
+    expect((await call(env, deps, "POST", "/admin/api/edit", { appid: "730", delete: true, retire: ["genre"] })).status).toBe(400);
+    expect((await call(env, deps, "POST", "/admin/api/edit", { appids: ["730", "570"], delete: true })).status).toBe(400);
   });
 
   it("marks the job failed when the commit fails", async () => {
     const env = makeEnv();
     const deps = fakeDeps({ records: { "730": RECORD }, failCommit: "branch protected" });
-    const { status } = await call(env, deps, "POST", "/api/admin/edit", { appid: "730", set: { safe: "y" } });
+    const { status } = await call(env, deps, "POST", "/admin/api/edit", { appid: "730", set: { safe: "y" } });
     expect(status).toBe(502);
     expect((env.sqlite.db.prepare("SELECT status FROM commit_jobs").get() as any).status).toBe("failed");
   });

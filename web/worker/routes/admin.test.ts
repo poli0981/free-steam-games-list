@@ -25,7 +25,7 @@ async function call(env: Env, deps: ReturnType<typeof fakeDeps>, method: string,
   return { status: res.status, body: (await res.json()) as Record<string, any> };
 }
 
-describe("GET /api/admin/queue", () => {
+describe("GET /admin/api/queue", () => {
   it("marks rows whose game is already published, per game", async () => {
     const env = makeEnv();
     insertRow(env, { id: "a", appid: "10", status: "pending" });
@@ -34,11 +34,11 @@ describe("GET /api/admin/queue", () => {
     insertDecision(env, "20", "approved");
     insertRow(env, { id: "d", appid: "30", status: "pending" });
 
-    const { body } = await call(env, fakeDeps(), "GET", "/api/admin/queue?status=pending");
+    const { body } = await call(env, fakeDeps(), "GET", "/admin/api/queue?status=pending");
     const byId = Object.fromEntries(body.items.map((r: any) => [r.id, r.published]));
     expect(byId).toEqual({ a: true, d: false });
 
-    const failed = await call(env, fakeDeps(), "GET", "/api/admin/queue?status=failed");
+    const failed = await call(env, fakeDeps(), "GET", "/admin/api/queue?status=failed");
     expect(failed.body.items[0].published).toBe(true);
   });
 
@@ -48,16 +48,16 @@ describe("GET /api/admin/queue", () => {
     insertRow(env, { id: "r", appid: "4242", status: "rejected" });
     insertRow(env, { id: "x", appid: "999", status: "pending" });
 
-    const { body } = await call(env, fakeDeps(), "GET", "/api/admin/queue?status=all&q=4242");
+    const { body } = await call(env, fakeDeps(), "GET", "/admin/api/queue?status=all&q=4242");
     expect(body.items.map((r: any) => r.id).sort()).toEqual(["p", "r"]);
     expect(body.total).toBe(2);
 
-    expect((await call(env, fakeDeps(), "GET", "/api/admin/queue?status=all")).status).toBe(400);
-    expect((await call(env, fakeDeps(), "GET", "/api/admin/queue?status=bogus")).status).toBe(400);
+    expect((await call(env, fakeDeps(), "GET", "/admin/api/queue?status=all")).status).toBe(400);
+    expect((await call(env, fakeDeps(), "GET", "/admin/api/queue?status=bogus")).status).toBe(400);
   });
 });
 
-describe("POST /api/admin/decide", () => {
+describe("POST /admin/api/decide", () => {
   it("reports every skip reason and decides only what may be decided", async () => {
     const env = makeEnv();
     insertRow(env, { id: "ok", appid: "1", status: "pending" });
@@ -68,7 +68,7 @@ describe("POST /api/admin/decide", () => {
     insertRow(env, { id: "dup-new", appid: "4", status: "pending", first_seen_at: "2026-09-05T00:00:00Z" });
 
     const deps = fakeDeps();
-    const { status, body } = await call(env, deps, "POST", "/api/admin/decide", {
+    const { status, body } = await call(env, deps, "POST", "/admin/api/decide", {
       action: "reject",
       ids: ["ok", "done", "live", "dup-old", "dup-new", "ghost"],
       reason: "not free",
@@ -96,7 +96,7 @@ describe("POST /api/admin/decide", () => {
       insertRow(env, { id: "old", appid: "7", status: "committed" });
       insertRow(env, { id: "again", appid: "7", status: "failed" });
       const deps = fakeDeps();
-      const { status, body } = await call(env, deps, "POST", "/api/admin/decide", { action, ids: ["again"] });
+      const { status, body } = await call(env, deps, "POST", "/admin/api/decide", { action, ids: ["again"] });
       expect(status, action).toBe(409);
       expect(body.skipped).toEqual([{ id: "again", appid: "7", reason: "published" }]);
       expect(rowStatus(env, "again")).toBe("failed");
@@ -108,7 +108,7 @@ describe("POST /api/admin/decide", () => {
     const env = makeEnv();
     insertRow(env, { id: "open", appid: "8", status: "pending" });
     insertRow(env, { id: "failed", appid: "8", status: "failed" });
-    const { status, body } = await call(env, fakeDeps(), "POST", "/api/admin/decide", { action: "requeue", ids: ["failed"] });
+    const { status, body } = await call(env, fakeDeps(), "POST", "/admin/api/decide", { action: "requeue", ids: ["failed"] });
     expect(status).toBe(409);
     expect(body.skipped[0].reason).toBe("open-row-exists");
     expect(rowStatus(env, "failed")).toBe("failed");
@@ -117,7 +117,7 @@ describe("POST /api/admin/decide", () => {
   it("reports a no-op move", async () => {
     const env = makeEnv();
     insertRow(env, { id: "p", appid: "9", status: "pending" });
-    const { status, body } = await call(env, fakeDeps(), "POST", "/api/admin/decide", { action: "requeue", ids: ["p"] });
+    const { status, body } = await call(env, fakeDeps(), "POST", "/admin/api/decide", { action: "requeue", ids: ["p"] });
     expect(status).toBe(409);
     expect(body.skipped[0].reason).toBe("no-op");
   });
@@ -127,7 +127,7 @@ describe("POST /api/admin/decide", () => {
     insertRow(env, { id: "rival", appid: "11", status: "pending" });
     insertRow(env, { id: "retry", appid: "11", status: "failed", first_seen_at: "2026-09-16T00:00:00Z" });
     const deps = fakeDeps();
-    const { status, body } = await call(env, deps, "POST", "/api/admin/decide", {
+    const { status, body } = await call(env, deps, "POST", "/admin/api/decide", {
       action: "approve",
       ids: ["retry"],
       reason: "checked by hand",
@@ -150,7 +150,7 @@ describe("POST /api/admin/decide", () => {
     insertRow(env, { id: "r", appid: "12", status: "pending" });
     // Make the queue batch fail after the commit, the way a D1 outage would.
     env.sqlite.db.exec(`CREATE TRIGGER boom BEFORE UPDATE ON ingest_queue BEGIN SELECT RAISE(ABORT, 'd1 down'); END;`);
-    const { status, body } = await call(env, fakeDeps(), "POST", "/api/admin/decide", { action: "approve", ids: ["r"] });
+    const { status, body } = await call(env, fakeDeps(), "POST", "/admin/api/decide", { action: "approve", ids: ["r"] });
 
     expect(status).toBe(500);
     expect(body.error).toMatch(/landed but the queue could not be updated/);
@@ -164,7 +164,7 @@ describe("POST /api/admin/decide", () => {
   it("a failed commit leaves the rows untouched and the job failed", async () => {
     const env = makeEnv();
     insertRow(env, { id: "r", appid: "13", status: "pending" });
-    const { status } = await call(env, fakeDeps({ failCommit: "github down" }), "POST", "/api/admin/decide", {
+    const { status } = await call(env, fakeDeps({ failCommit: "github down" }), "POST", "/admin/api/decide", {
       action: "approve",
       ids: ["r"],
     });
@@ -174,12 +174,12 @@ describe("POST /api/admin/decide", () => {
   });
 });
 
-describe("POST /api/admin/reopen", () => {
+describe("POST /admin/api/reopen", () => {
   it("returns a rejected row to pending and forgets only the rejection", async () => {
     const env = makeEnv();
     insertRow(env, { id: "r", appid: "21", status: "rejected", decided_by: ADMIN.email, reject_reason: "dup" });
     insertDecision(env, "21", "rejected");
-    const { status, body } = await call(env, fakeDeps(), "POST", "/api/admin/reopen", { id: "r" });
+    const { status, body } = await call(env, fakeDeps(), "POST", "/admin/api/reopen", { id: "r" });
     expect(status).toBe(200);
     expect(body.appid).toBe("21");
     expect(rowStatus(env, "r")).toBe("pending");
@@ -190,7 +190,7 @@ describe("POST /api/admin/reopen", () => {
     const env = makeEnv();
     insertRow(env, { id: "r", appid: "22", status: "rejected" });
     insertDecision(env, "22", "approved");
-    const { status, body } = await call(env, fakeDeps(), "POST", "/api/admin/reopen", { id: "r" });
+    const { status, body } = await call(env, fakeDeps(), "POST", "/admin/api/reopen", { id: "r" });
     expect(status).toBe(409);
     expect(body.reason).toBe("published");
     expect(decisionOf(env, "22")).toBe("approved");
@@ -202,7 +202,7 @@ describe("POST /api/admin/reopen", () => {
     insertRow(env, { id: "r", appid: "23", status: "rejected" });
     insertRow(env, { id: "open", appid: "23", status: "deferred" });
     insertDecision(env, "23", "rejected");
-    const { status, body } = await call(env, fakeDeps(), "POST", "/api/admin/reopen", { id: "r" });
+    const { status, body } = await call(env, fakeDeps(), "POST", "/admin/api/reopen", { id: "r" });
     expect(status).toBe(409);
     expect(body.reason).toBe("open-row-exists");
     expect(decisionOf(env, "23")).toBe("rejected");
@@ -211,8 +211,8 @@ describe("POST /api/admin/reopen", () => {
   it("refuses a row that is not rejected, and 404s an unknown one", async () => {
     const env = makeEnv();
     insertRow(env, { id: "p", appid: "24", status: "pending" });
-    expect((await call(env, fakeDeps(), "POST", "/api/admin/reopen", { id: "p" })).body.reason).toBe("not-rejected");
-    expect((await call(env, fakeDeps(), "POST", "/api/admin/reopen", { id: "nope" })).status).toBe(404);
+    expect((await call(env, fakeDeps(), "POST", "/admin/api/reopen", { id: "p" })).body.reason).toBe("not-rejected");
+    expect((await call(env, fakeDeps(), "POST", "/admin/api/reopen", { id: "nope" })).status).toBe(404);
   });
 });
 
@@ -224,18 +224,18 @@ describe("jobs, audit and health", () => {
         .prepare("INSERT INTO commit_jobs (id, kind, status, target_path, created_at) VALUES (?, ?, ?, 'x', ?)")
         .run(`j${i}`, i % 2 ? "override" : "approve", "committed", `2026-09-1${i}T00:00:00Z`);
     }
-    const page = await call(env, fakeDeps(), "GET", "/api/admin/jobs?limit=2&offset=2");
+    const page = await call(env, fakeDeps(), "GET", "/admin/api/jobs?limit=2&offset=2");
     expect(page.body.total).toBe(5);
     expect(page.body.items.map((j: any) => j.id)).toEqual(["j2", "j1"]);
-    const overrides = await call(env, fakeDeps(), "GET", "/api/admin/jobs?kind=override");
+    const overrides = await call(env, fakeDeps(), "GET", "/admin/api/jobs?kind=override");
     expect(overrides.body.total).toBe(2);
-    expect((await call(env, fakeDeps(), "GET", "/api/admin/jobs?status=weird")).status).toBe(400);
+    expect((await call(env, fakeDeps(), "GET", "/admin/api/jobs?status=weird")).status).toBe(400);
   });
 
   it("health answers 503 WITH its body when GitHub is down", async () => {
     const env = makeEnv();
     const deps = fakeDeps({ gh: async () => new Response("no", { status: 401 }) });
-    const { status, body } = await call(env, deps, "GET", "/api/admin/health");
+    const { status, body } = await call(env, deps, "GET", "/admin/api/health");
     expect(status).toBe(503);
     expect(body).toMatchObject({ ok: false, d1: "ok", github: "401", retentionDays: 180 });
     expect(body.migrations).toEqual(["0001_init.sql", "0002_admin_state.sql"]);

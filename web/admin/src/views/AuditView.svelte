@@ -55,7 +55,7 @@
       loading = true;
       loadError = null;
     });
-    api<Paged<AuditEntry>>(`/api/admin/audit?${params}`, { signal: controller.signal })
+    api<Paged<AuditEntry>>(`audit?${params}`, { signal: controller.signal })
       .then((res) => {
         data = res;
         loading = false;

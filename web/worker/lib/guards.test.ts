@@ -13,7 +13,7 @@ describe("clampLimit", () => {
   // The bug: every call site was `Math.min(Number(raw) || fallback, max)`.
   // Number("-1") is -1, which is truthy, so `|| fallback` never fired and
   // Math.min(-1, 200) is -1 — and SQLite treats a negative LIMIT as NO LIMIT.
-  // `/api/admin/audit?limit=-1` therefore returned the entire, never-pruned
+  // The audit endpoint with `?limit=-1` therefore returned the entire, never-pruned
   // audit log, and `?status=pending&limit=-1` the whole queue.
   it("refuses negative limits, which SQLite reads as unlimited", () => {
     expect(clampLimit("-1", 50, 200)).toBe(50);

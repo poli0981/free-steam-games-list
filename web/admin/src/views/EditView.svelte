@@ -19,7 +19,7 @@
     void genresToken;
     const controller = new AbortController();
     untrack(() => (genresError = null));
-    api<GenresResponse>("/api/admin/genres", { signal: controller.signal })
+    api<GenresResponse>("genres", { signal: controller.signal })
       .then((out) => (genres = out.genres))
       .catch((err) => {
         if (err instanceof DOMException && err.name === "AbortError") return;

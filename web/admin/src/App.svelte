@@ -43,7 +43,7 @@
   onMount(() => {
     theme.hydrate();
     const uninstall = router.install();
-    api<MeResponse>("/api/admin/me")
+    api<MeResponse>("me")
       .then((m) => (me = m))
       .catch((err) => {
         if (err instanceof SessionExpiredError) reportError(err);

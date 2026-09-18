@@ -111,8 +111,15 @@ application → Self-hosted.**
 | Session duration | 24 hours or less |
 | Domain | `free-steam-games.win`, path `admin` |
 
-Add a second application for `free-steam-games.win/api/admin` so the API is
-covered too, not just the page.
+That one application covers the admin's API as well: it lives at
+`/admin/api/*`, under the page's path. **Do not give the API an application
+of its own.** Access issues its session cookie per application, and the page
+calls its API with `fetch()`, which cannot follow Access's sign-in redirect -
+so every call fails and the page reports "Your Cloudflare Access session has
+expired", even straight after a fresh sign-in, in a private window too. The
+API used to be `/api/admin/*` behind a second application and failed exactly
+that way. If that application (`free-steam-games.win/api/admin`) still
+exists, delete it: nothing is served there any more.
 
 **Policy:** Action *Allow*, rule *Emails* → your address. Access applications
 are deny-by-default, so everyone else gets the login screen and never reaches
@@ -151,7 +158,7 @@ D1, remains the source of truth.
 | `admin_state` | the dataset generation the last sweep saw | `0002_admin_state.sql` |
 
 (An older version of this page mentioned "edit drafts"; there is no such table.
-`/api/admin/edit` commits straight to Git with no draft stage.) Migrations live
+`/admin/api/edit` commits straight to Git with no draft stage.) Migrations live
 in `web/worker/migrations/` and are applied out of band:
 
 ```bash
@@ -195,7 +202,7 @@ stronger; see the AUD section below.
 
 The client secret is shown **once**. Copy both halves now.
 
-Then add a third Access application covering `free-steam-games.win/api/ingest`,
+Then add a second Access application covering `free-steam-games.win/api/ingest`,
 with a policy of Action *Service Auth*, rule *Service Token* → `f2p-discovery`.
 
 > **The policy Action must be *Service Auth*.** Cloudflare's own docs are blunt
@@ -236,13 +243,13 @@ carries two **comma-separated allowlists** — one per route group:
 
 | var | routes it admits |
 |---|---|
-| `ACCESS_AUD_ADMIN` | `/admin`, `/api/admin/*` |
+| `ACCESS_AUD_ADMIN` | `/admin`, including its API at `/admin/api/*` |
 | `ACCESS_AUD_INGEST` | `/api/ingest/*` |
 
 Add the AUD to the one matching the route the application covers. They are
-split rather than pooled deliberately: with a single list any of the three
-credentials satisfied any route, so the unattended discovery token would have
-satisfied `/api/admin/*`, which holds a credential that can write to this
+split rather than pooled deliberately: with a single list a credential for
+any application satisfied any route, so the unattended discovery token would
+have satisfied `/admin/api/*`, which holds a credential that can write to this
 repository. A token minted for the wrong application now fails verification
 outright rather than being caught afterwards.
 
@@ -605,9 +612,9 @@ Two safeguards worth knowing:
 
 ## Working on the admin locally
 
-A real Worker cannot show the admin locally: every `/admin` and `/api/admin`
-request needs an Access JWT, which cannot be minted offline, so `wrangler dev`
-answers 404. The admin has its own dev server instead. It runs the **real**
+A real Worker cannot show the admin locally: every `/admin` request, the
+page's and its API's, needs an Access JWT, which cannot be minted offline, so
+`wrangler dev` answers 404. The admin has its own dev server instead. It runs the **real**
 handlers (`worker/routes/admin.ts`, `edit.ts`) against an in-memory D1 with the
 real migrations, fed by the real `data/` shards, with GitHub faked. Nothing
 leaves the machine and nothing is written to disk.

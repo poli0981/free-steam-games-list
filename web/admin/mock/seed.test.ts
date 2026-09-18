@@ -49,39 +49,39 @@ function setup() {
 describe("admin mock seed", () => {
   it("fills every queue status", async () => {
     const { call } = setup();
-    const { body } = await call("GET", "/api/admin/stats");
+    const { body } = await call("GET", "/admin/api/stats");
     for (const status of QUEUE_STATUSES) expect(body.queue[status], status).toBeGreaterThan(0);
     expect(Object.keys(body.commits).sort()).toEqual(["committed", "failed", "pending"]);
   });
 
   it("includes an undecided row locked because its game is published", async () => {
     const { call } = setup();
-    const { body } = await call("GET", "/api/admin/queue?status=pending&limit=200");
+    const { body } = await call("GET", "/admin/api/queue?status=pending&limit=200");
     const locked = body.items.filter((r: { published: boolean }) => r.published);
     expect(locked).toHaveLength(1);
-    const refused = await call("POST", "/api/admin/decide", { ids: [locked[0].id], action: "approve" });
+    const refused = await call("POST", "/admin/api/decide", { ids: [locked[0].id], action: "approve" });
     expect(refused.status).toBe(409);
     expect(refused.body.skipped[0].reason).toBe("published");
   });
 
   it("includes a rejected row that cannot be reopened", async () => {
     const { call } = setup();
-    const { body } = await call("GET", "/api/admin/queue?status=rejected&limit=200");
+    const { body } = await call("GET", "/admin/api/queue?status=rejected&limit=200");
     const blocked = body.items.find((r: { reject_reason: string }) => r.reject_reason === "wrong store page");
-    const res = await call("POST", "/api/admin/reopen", { id: blocked.id });
+    const res = await call("POST", "/admin/api/reopen", { id: blocked.id });
     expect(res.status).toBe(409);
     expect(res.body.reason).toBe("open-row-exists");
   });
 
   it("leaves the demo queue standing after a manual reconcile", async () => {
     const { call } = setup();
-    const before = (await call("GET", "/api/admin/stats")).body.queue;
-    const { body } = await call("POST", "/api/admin/reconcile");
+    const before = (await call("GET", "/admin/api/stats")).body.queue;
+    const { body } = await call("POST", "/admin/api/reconcile");
     // Two of the four approvals are in the dataset, and the one published
     // game's two undecided rows are swept (swept counts games). Nothing else
     // moves.
     expect(body).toMatchObject({ published: 2, swept: 1, removed: 0, stale: 0 });
-    const after = (await call("GET", "/api/admin/stats")).body.queue;
+    const after = (await call("GET", "/admin/api/stats")).body.queue;
     expect(after.pending).toBe(before.pending - 1);
     expect(after.failed).toBe(before.failed - 1);
     expect(after.approved).toBe(before.approved - 2);

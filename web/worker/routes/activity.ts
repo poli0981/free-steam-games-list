@@ -178,7 +178,7 @@ export async function handleActivity(
       // the Activity page is blank in both packaged apps. Safe here because the
       // body is the public commit list of a public repository — GitHub already
       // serves it to every origin — and no credentials ride on the request.
-      // This must NEVER be copied onto /api/admin/* or /api/ingest/*.
+      // This must NEVER be copied onto /admin/api/* or /api/ingest/*.
       "Access-Control-Allow-Origin": "*",
       ...SECURITY_HEADERS,
     },

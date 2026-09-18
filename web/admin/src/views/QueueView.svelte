@@ -108,7 +108,7 @@
       selected.clear();
     });
 
-    api<QueueResponse>(`/api/admin/queue?${params}`, { signal: controller.signal })
+    api<QueueResponse>(`queue?${params}`, { signal: controller.signal })
       .then((res) => {
         data = res;
         dataKey = k;
@@ -131,7 +131,7 @@
   $effect(() => {
     void refresh;
     const controller = new AbortController();
-    api<StatsResponse>("/api/admin/stats", { signal: controller.signal })
+    api<StatsResponse>("stats", { signal: controller.signal })
       .then((s) => (stats = s))
       .catch((err) => {
         // The tabs render without counts; only a lapsed session is worth saying.
@@ -225,7 +225,7 @@
 
     busy = true;
     try {
-      const res = await api<DecideResponse | { error: string; skipped: SkippedRow[] }>("/api/admin/decide", {
+      const res = await api<DecideResponse | { error: string; skipped: SkippedRow[] }>("decide", {
         method: "POST",
         body: { ids: sent.map((r) => r.id), action, reason: reason.trim() },
         accept: [409],
@@ -257,7 +257,7 @@
     if (reconciling) return;
     reconciling = true;
     try {
-      const out = await api<ReconcileResponse>("/api/admin/reconcile", { method: "POST" });
+      const out = await api<ReconcileResponse>("reconcile", { method: "POST" });
       if (out.skipped) toast.info("Reconcile skipped", { description: out.skipped });
       else
         toast.success("Reconcile finished", {

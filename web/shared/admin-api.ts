@@ -1,5 +1,5 @@
 /**
- * Response shapes of /api/admin/*, as the admin SPA consumes them.
+ * Response shapes of /admin/api/*, as the admin SPA consumes them.
  *
  * Types only. The handlers in worker/routes/admin.ts and edit.ts build these
  * objects; when a handler's response changes, change the matching type here

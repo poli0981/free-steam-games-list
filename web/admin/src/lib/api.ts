@@ -1,17 +1,19 @@
 /**
- * Every call the admin makes to /api/admin/*.
+ * Every call the admin makes to its API, under ADMIN_API_PREFIX (/admin/api/).
  *
  * Same-origin, and `redirect: "manual"` on purpose. When the Cloudflare Access
  * session lapses, Access answers with a redirect to its login page; followed
  * silently, that redirect lands on HTML from another origin, which the old
  * pages then mis-reported as a server error. Stopped here, it surfaces as an
  * opaque redirect, and the app reloads the page so Access can sign the reviewer
- * in again.
+ * in again. A reload re-authenticates the API as well only because the API sits
+ * under the page's path, in the same Access application: see ADMIN_API_PREFIX.
  *
  * Writes carry no token of their own: the edge attaches the Access assertion
  * to same-origin requests, and worker/index.ts additionally rejects any write
  * announcing a cross-site origin.
  */
+import { ADMIN_API_PREFIX } from "../../../shared/admin-routes";
 
 export class SessionExpiredError extends Error {
   constructor() {
@@ -39,10 +41,11 @@ export interface ApiOptions {
   accept?: number[];
 }
 
-export async function api<T>(path: string, options: ApiOptions = {}): Promise<T> {
+/** `route` is relative to the API prefix: `"queue?status=pending"`, `"decide"`. */
+export async function api<T>(route: string, options: ApiOptions = {}): Promise<T> {
   let res: Response;
   try {
-    res = await fetch(path, {
+    res = await fetch(ADMIN_API_PREFIX + route, {
       method: options.method ?? "GET",
       credentials: "same-origin",
       redirect: "manual",
@@ -62,7 +65,7 @@ export async function api<T>(path: string, options: ApiOptions = {}): Promise<T>
   const isJson = (res.headers.get("Content-Type") ?? "").includes("application/json");
   const body: unknown = isJson ? await res.json().catch(() => null) : null;
 
-  // Every route under /api/admin answers JSON, errors included (worker/index.ts
+  // Every route under the API prefix answers JSON, errors included (worker/index.ts
   // wraps dispatch in one try/catch). A non-JSON body is therefore reported as
   // what it is. The old pages called it an expired session, and that hid real
   // Worker crashes behind the most misleading message on the screen.

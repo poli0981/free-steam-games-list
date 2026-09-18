@@ -5,7 +5,7 @@
 import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join, relative } from "node:path";
 import { describe, expect, it } from "vitest";
-import { ADMIN_ROUTES } from "../shared/admin-routes";
+import { ADMIN_API_PREFIX, ADMIN_ROUTES } from "../shared/admin-routes";
 
 const WEB = join(__dirname, "..");
 
@@ -63,6 +63,17 @@ describe("admin SPA source rules", () => {
     expect(offenders.map(rel)).toEqual([]);
   });
 
+  it("calls its API under /admin, inside the page's own Access application", () => {
+    // /api/admin/* sat behind a second Access application. A session for /admin
+    // did not cover it, fetch() cannot follow Access's sign-in redirect, and
+    // every call failed as "session expired" straight after signing in.
+    expect(ADMIN_API_PREFIX.startsWith("/admin/")).toBe(true);
+    // One place builds API URLs (lib/api.ts, from the constant); a view that
+    // spells out a path could put it back outside /admin.
+    const offenders = adminSources.filter((f) => /["'`]\/(api\/admin|admin\/api)\//.test(read(f)));
+    expect(offenders.map(rel)).toEqual([]);
+  });
+
   it("renders a view for every admin route, and links every route from the nav", () => {
     const app = read(join(WEB, "admin", "src", "App.svelte"));
     const navPaths = [...app.matchAll(/\{\s*path:\s*"([^"]+)"/g)].map((m) => m[1]);
@@ -75,7 +86,7 @@ describe("admin SPA source rules", () => {
 
 describe("the public app", () => {
   it("never calls the admin API", () => {
-    const offenders = files(join(WEB, "src"), [".ts", ".svelte"]).filter((f) => read(f).includes("/api/admin"));
+    const offenders = files(join(WEB, "src"), [".ts", ".svelte"]).filter((f) => read(f).includes(ADMIN_API_PREFIX));
     expect(offenders.map(rel)).toEqual([]);
   });
 });

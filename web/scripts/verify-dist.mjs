@@ -127,10 +127,12 @@ for (const file of html) {
 // (admin/build/emit-worker-bundle.ts), so no trace of it may appear here.
 if (existsSync(join(DIST, "admin"))) fail("dist/admin exists - the admin SPA must only be served by the Worker");
 const TEXT_EXT = /\.(html|js|mjs|css|json|webmanifest|txt|xml|map)$/;
+// ADMIN_API_PREFIX in shared/admin-routes.ts, which a plain .mjs cannot import.
+const ADMIN_API_PREFIX = "/admin/api/";
 for (const file of files) {
   if (!TEXT_EXT.test(file)) continue;
-  if (readFileSync(file, "utf-8").includes("/api/admin/")) {
-    fail(`${relative(DIST, file).replace(/\\/g, "/")}: references /api/admin/ - admin code leaked into the public build`);
+  if (readFileSync(file, "utf-8").includes(ADMIN_API_PREFIX)) {
+    fail(`${relative(DIST, file).replace(/\\/g, "/")}: references ${ADMIN_API_PREFIX} - admin code leaked into the public build`);
   }
 }
 

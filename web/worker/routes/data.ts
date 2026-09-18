@@ -44,7 +44,7 @@ function isAllowed(path: string): boolean {
  * same public dataset raw.githubusercontent.com serves to every origin with
  * `*`, no credentials ride on it, and the Tauri apps (tauri://localhost and
  * http://tauri.localhost) fetch it cross-origin — without this the packaged
- * apps cannot load the catalogue at all. Never copy this onto /api/admin/* or
+ * apps cannot load the catalogue at all. Never copy this onto /admin/api/* or
  * /api/ingest/*.
  */
 const CORS = { "Access-Control-Allow-Origin": "*" };

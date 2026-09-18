@@ -25,9 +25,18 @@ afterEach(() => {
 });
 
 describe("api()", () => {
+  it("calls the API under /admin, inside the page's own Access application", async () => {
+    const fetch = stubFetch(json({ ok: true }));
+    await api("queue?status=pending");
+    // Not /api/admin/*: behind a second Access application, the reviewer's
+    // session for /admin never covered it and every call came back as a login
+    // redirect, reported as an expired session right after signing in.
+    expect(fetch.mock.calls[0][0]).toBe("/admin/api/queue?status=pending");
+  });
+
   it("asks fetch not to follow redirects, same-origin only", async () => {
     const fetch = stubFetch(json({ ok: true }));
-    await api("/api/admin/me");
+    await api("me");
     const init = fetch.mock.calls[0][1] as RequestInit;
     // Following Access's login redirect from fetch() is what produced the
     // cloudflareaccess.com connect-src violations on the old pages.
@@ -37,7 +46,7 @@ describe("api()", () => {
 
   it("sends JSON bodies with a JSON content type", async () => {
     const fetch = stubFetch(json({ ok: true }));
-    await api("/api/admin/decide", { method: "POST", body: { ids: ["a"], action: "approve" } });
+    await api("decide", { method: "POST", body: { ids: ["a"], action: "approve" } });
     const init = fetch.mock.calls[0][1] as RequestInit;
     expect(init.method).toBe("POST");
     expect(init.body).toBe('{"ids":["a"],"action":"approve"}');
@@ -50,12 +59,12 @@ describe("api()", () => {
     ["a 403", () => json({ error: "no" }, 403)],
   ])("treats %s as an expired session", async (_label, make) => {
     stubFetch(make());
-    await expect(api("/api/admin/queue")).rejects.toBeInstanceOf(SessionExpiredError);
+    await expect(api("queue")).rejects.toBeInstanceOf(SessionExpiredError);
   });
 
   it("reports a non-JSON body as a server problem, not an expired session", async () => {
     stubFetch(new Response("<html>1101</html>", { status: 500, headers: { "Content-Type": "text/html" } }));
-    const err = await api("/api/admin/queue").catch((e: unknown) => e);
+    const err = await api("queue").catch((e: unknown) => e);
     expect(err).toBeInstanceOf(ApiError);
     expect(err).not.toBeInstanceOf(SessionExpiredError);
     expect((err as ApiError).status).toBe(500);
@@ -63,19 +72,19 @@ describe("api()", () => {
 
   it("surfaces the server's error message", async () => {
     stubFetch(json({ error: "commit failed: graphql HTTP 502" }, 502));
-    await expect(api("/api/admin/decide", { method: "POST", body: {} })).rejects.toThrow("commit failed: graphql HTTP 502");
+    await expect(api("decide", { method: "POST", body: {} })).rejects.toThrow("commit failed: graphql HTTP 502");
   });
 
   it("returns the body of an accepted non-2xx status", async () => {
     stubFetch(json({ ok: false, github: "503" }, 503));
-    await expect(api("/api/admin/health", { accept: [503] })).resolves.toEqual({ ok: false, github: "503" });
+    await expect(api("health", { accept: [503] })).resolves.toEqual({ ok: false, github: "503" });
   });
 
   it("turns a network failure into a readable error", async () => {
     stubFetch(async () => {
       throw new TypeError("Failed to fetch");
     });
-    await expect(api("/api/admin/queue")).rejects.toThrow(/could not be reached/);
+    await expect(api("queue")).rejects.toThrow(/could not be reached/);
   });
 
   it("lets an abort propagate as an abort", async () => {
@@ -84,6 +93,6 @@ describe("api()", () => {
     stubFetch(async () => {
       throw new DOMException("aborted", "AbortError");
     });
-    await expect(api("/api/admin/queue", { signal: controller.signal })).rejects.toMatchObject({ name: "AbortError" });
+    await expect(api("queue", { signal: controller.signal })).rejects.toMatchObject({ name: "AbortError" });
   });
 });

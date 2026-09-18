@@ -28,6 +28,7 @@ import {
   type DecideAction,
   type SkippedRow,
 } from "../../shared/queue-rules";
+import { ADMIN_API_PREFIX } from "../../shared/admin-routes";
 
 function json(body: unknown, status = 200): Response {
   return new Response(JSON.stringify(body), {
@@ -81,7 +82,7 @@ export async function handleAdminApi(
   who: AccessIdentity,
   deps: AdminDeps = defaultAdminDeps,
 ): Promise<Response> {
-  const route = url.pathname.slice("/api/admin/".length);
+  const route = url.pathname.slice(ADMIN_API_PREFIX.length);
 
   // Corrections to already-published games live in their own module; they
   // write data/overrides/, never data/ and never the queue.

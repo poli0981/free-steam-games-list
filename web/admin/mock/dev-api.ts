@@ -1,8 +1,8 @@
 /**
  * The local admin backend, for `npm run dev:admin` and `npm run preview:admin`.
  *
- * A real Worker cannot run the admin locally: every /admin and /api/admin
- * request needs a Cloudflare Access JWT, which cannot be minted offline, so
+ * A real Worker cannot run the admin locally: every /admin request, the page's
+ * and its API's, needs a Cloudflare Access JWT, which cannot be minted offline, so
  * `wrangler dev` answers 404 - the old admin pages could never be seen at all
  * without deploying them. This plugin runs the REAL handlers
  * (worker/routes/admin.ts, edit.ts) inside Vite's dev server against an
@@ -26,7 +26,7 @@ import { existsSync, readFileSync } from "node:fs";
 import type { IncomingMessage, ServerResponse } from "node:http";
 import { join } from "node:path";
 import type { Plugin, ViteDevServer } from "vite";
-import { isAdminRoute } from "../../shared/admin-routes";
+import { ADMIN_API_PREFIX, isAdminRoute } from "../../shared/admin-routes";
 
 const WEB = join(__dirname, "..", "..");
 const REPO = join(WEB, "..");
@@ -153,8 +153,10 @@ export function adminDevApi(options: { preview: boolean }): Plugin {
     configureServer(server) {
       server.middlewares.use(async (req, res, next) => {
         const [path, search = ""] = (req.url ?? "").split("?");
-        const api = path.startsWith("/api/admin/");
-        const shell = options.preview && (path === "/admin" || path.startsWith("/admin/"));
+        // The API lives under /admin, so it is claimed first: "shell" below
+        // would otherwise take its requests too.
+        const api = path.startsWith(ADMIN_API_PREFIX);
+        const shell = !api && options.preview && (path === "/admin" || path.startsWith("/admin/"));
 
         // Dev: Vite serves the app only under its base, "/admin/", and answers
         // "/admin" itself with a did-you-mean page. The app's real URLs have no

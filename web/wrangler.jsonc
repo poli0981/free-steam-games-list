@@ -102,7 +102,7 @@
     "ACCESS_TEAM_DOMAIN": "polished-hall-48fd.cloudflareaccess.com",
     // AUDs are grouped BY ROUTE, not pooled into one list. verifyAccessJwt is
     // called with only the group a route accepts, so the unattended discovery
-    // token cannot reach /api/admin/* (which holds a repository-write
+    // token cannot reach /admin/api/* (which holds a repository-write
     // credential) and an admin session cannot reach /api/ingest/*.
     //
     // These are not secrets: any Access-covered path 302s to a login URL
@@ -111,9 +111,12 @@
     // is pointed at this Worker, or every request through it is refused with
     // `access: aud mismatch` in `wrangler tail`.
     //
-    //   ca93cf2c...  /admin        (email policy)
-    //   a15d6e93...  /api/admin/*  (email policy)
-    "ACCESS_AUD_ADMIN": "ca93cf2c7444c20f13b0667a3063d4ac37f702a802e712721da53abb510f9194,a15d6e938cf3109651473e37c0c0fdf84a851248d8f57fdfda26808b40d3c3cb",
+    //   ca93cf2c...  /admin, which covers the SPA AND its API at /admin/api/*
+    //                (email policy). ONE application on purpose: a separate one
+    //                for the API (a15d6e93..., /api/admin/*, retired) left the
+    //                page's fetches without a session - see ADMIN_API_PREFIX in
+    //                shared/admin-routes.ts.
+    "ACCESS_AUD_ADMIN": "ca93cf2c7444c20f13b0667a3063d4ac37f702a802e712721da53abb510f9194",
 
     //   bd54655a...  /api/ingest/* (Service Auth, token f2p-discovery)
     "ACCESS_AUD_INGEST": "bd54655abb62f1bb72f8541177ef2406a066007a4c5ac60eb654f90f6ea88754"

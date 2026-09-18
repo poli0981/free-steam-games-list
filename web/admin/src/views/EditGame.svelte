@@ -81,7 +81,7 @@
 
     const controller = new AbortController();
     untrack(() => (loading = true));
-    api<GameResponse>(`/api/admin/game?appid=${id}`, { signal: controller.signal })
+    api<GameResponse>(`game?appid=${id}`, { signal: controller.signal })
       .then((g) => {
         // The form starts from what the catalogue WILL hold: the override's
         // value where one is active (it may not have been applied yet),
@@ -163,7 +163,7 @@
     const set = Object.fromEntries(changes.map((k) => [k, toWire(k, form[k])]));
     busy = true;
     try {
-      const out = await api<EditResponse>("/api/admin/edit", {
+      const out = await api<EditResponse>("edit", {
         method: "POST",
         body: {
           appids: [game.appid],
@@ -192,7 +192,7 @@
     if (!game || busy) return;
     busy = true;
     try {
-      const out = await api<EditResponse>("/api/admin/edit", {
+      const out = await api<EditResponse>("edit", {
         method: "POST",
         body: { appids: [game.appid], delete: true, reason: reason.trim() },
       });

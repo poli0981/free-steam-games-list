@@ -12,3 +12,16 @@ export type AdminRoute = (typeof ADMIN_ROUTES)[number];
 export function isAdminRoute(path: string): path is AdminRoute {
   return (ADMIN_ROUTES as readonly string[]).includes(path);
 }
+
+/**
+ * Where the admin API lives: UNDER /admin, so the Cloudflare Access application
+ * that protects the page protects its API too.
+ *
+ * It used to be /api/admin/*, behind a second Access application. Access issues
+ * its session cookie per application, and a fetch() cannot follow Access's
+ * sign-in redirect, so a reviewer signed in to /admin held no session for the
+ * API at all: every call came back as a redirect to the login page, and the SPA
+ * reported "Your Cloudflare Access session has expired" even straight after a
+ * fresh sign-in. One application, one cookie, both paths.
+ */
+export const ADMIN_API_PREFIX = "/admin/api/";

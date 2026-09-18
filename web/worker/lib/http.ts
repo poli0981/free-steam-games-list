@@ -43,7 +43,7 @@ export function withSecurityHeaders(res: Response): Response {
  * no lower bound. `Number("-1")` is -1, which is truthy, so `|| fallback` never
  * fires and `Math.min(-1, max)` is -1 - and **SQLite treats a negative LIMIT as
  * no limit at all**. `?limit=-1` therefore dumped the entire table:
- * `/api/admin/audit?limit=-1` returned the whole, never-pruned audit log.
+ * the audit endpoint with `?limit=-1` returned the whole, never-pruned audit log.
  *
  * Math.trunc as well, because a fractional LIMIT is not a valid bind value.
  */

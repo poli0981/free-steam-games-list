@@ -1,5 +1,5 @@
 /**
- * /api/admin/game and /api/admin/edit — corrections to games already published.
+ * /admin/api/game and /admin/api/edit — corrections to games already published.
  *
  * The Worker writes exactly the same artifact scripts/edit_game.py writes:
  * data/overrides/<appid>.json. That is the point — this route is presentation
@@ -22,6 +22,7 @@ import { DELETE_FILE } from "../lib/git-commit";
 import { defaultAdminDeps, type AdminDeps } from "../lib/deps";
 import type { GameRecord } from "../lib/records";
 import { MAX_EDIT } from "../../shared/queue-rules";
+import { ADMIN_API_PREFIX } from "../../shared/admin-routes";
 
 /** Mirrors MANUAL_FIELDS in scripts/core/constants.py. */
 const MANUAL_FIELDS = [
@@ -147,7 +148,7 @@ export async function handleEditApi(
   who: AccessIdentity,
   deps: AdminDeps = defaultAdminDeps,
 ): Promise<Response> {
-  const route = url.pathname.slice("/api/admin/".length);
+  const route = url.pathname.slice(ADMIN_API_PREFIX.length);
 
   // Current values plus any existing override, for the form.
   if (route === "game" && request.method === "GET") {

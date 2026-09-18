@@ -105,7 +105,7 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
   (`approved` = the request is committed to Git, `committed` = the game was
   observed in `data/`, `rejected`) or when its GAME is already published (a
   committed row or an approved decision for the appid — per game, because one
-  appid can have several rows). `/api/admin/decide` refuses such rows in its
+  appid can have several rows). `/admin/api/decide` refuses such rows in its
   read AND in every UPDATE's WHERE, and returns each refused id in `skipped`
   with a reason; it never drops one silently. `queue-rules.test.ts` parses
   `0001_init.sql` so the constants cannot drift from the CHECK constraint or
@@ -252,7 +252,7 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
   purpose.** The Tauri apps fetch them cross-origin (`tauri://localhost`,
   `http://tauri.localhost`); without it they cannot load the catalogue or the
   activity feed at all.
-  Never add CORS to `/api/admin/*` or `/api/ingest/*`, and never set
+  Never add CORS to `/admin/api/*` or `/api/ingest/*`, and never set
   `Cross-Origin-Resource-Policy` on Worker responses — the same apps load
   `/img/*` cross-site.
 - **Every page's `<head>` comes from `web/src/lib/common/Seo.svelte`.** Do not
@@ -334,8 +334,16 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
   only after `worker/index.ts` has done the Access, credential-class and CSRF
   checks. `dist/` is readable by anyone, precached by the service worker and
   packaged into the apps, so admin code there would be public whatever Access
-  says. `scripts/verify-dist.mjs` fails on `dist/admin` or any `/api/admin/`
+  says. `scripts/verify-dist.mjs` fails on `dist/admin` or any `/admin/api/`
   string in `dist/`.
+- **Its API lives at `/admin/api/*`, under the page, never beside it.**
+  Cloudflare Access issues its cookie per application, and `fetch()` cannot
+  follow its sign-in redirect, so an API behind an application of its own
+  (it was `/api/admin/*`) answered every call with a login redirect: the SPA
+  said "session expired" straight after signing in, incognito included.
+  `ADMIN_API_PREFIX` in `shared/admin-routes.ts` is the one definition, and
+  `worker/index.test.ts` drives it through the real router and Access check,
+  which the handler tests never did.
 - **`npm run build` must keep running `build:admin`,** and `typecheck` builds it
   first: `worker/index.ts` imports the generated module, so a bare
   `wrangler deploy` or `tsc` without it fails. That failure is intended.

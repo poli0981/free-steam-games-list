@@ -33,7 +33,7 @@
       loading = true;
       loadError = null;
     });
-    api<HealthResponse>("/api/admin/health", { signal: controller.signal, accept: [503] })
+    api<HealthResponse>("health", { signal: controller.signal, accept: [503] })
       .then((h) => {
         health = h;
         loading = false;
@@ -54,7 +54,7 @@
   async function ping() {
     pinging = true;
     try {
-      await api("/api/admin/ping", { method: "POST" });
+      await api("ping", { method: "POST" });
       toast.success("Write path works", {
         description: "A ping row was written to the audit log.",
         action: { label: "Open audit log", onClick: () => router.navigate("/admin/audit?action=ping") },

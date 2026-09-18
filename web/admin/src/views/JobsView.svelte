@@ -39,7 +39,7 @@
       loading = true;
       loadError = null;
     });
-    api<Paged<CommitJob>>(`/api/admin/jobs?${params}`, { signal: controller.signal })
+    api<Paged<CommitJob>>(`jobs?${params}`, { signal: controller.signal })
       .then((res) => {
         data = res;
         loading = false;

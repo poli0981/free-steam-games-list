@@ -55,7 +55,7 @@
     if (!current) return;
 
     const controller = new AbortController();
-    api<Candidate>(`/api/admin/candidate?id=${encodeURIComponent(current)}`, { signal: controller.signal })
+    api<Candidate>(`candidate?id=${encodeURIComponent(current)}`, { signal: controller.signal })
       .then((c) => (data = c))
       .catch((err) => {
         if (isAbort(err)) return;
@@ -72,7 +72,7 @@
     reopening = true;
     reopenError = null;
     try {
-      const res = await api<ReopenResponse | { error: string; reason: string }>("/api/admin/reopen", {
+      const res = await api<ReopenResponse | { error: string; reason: string }>("reopen", {
         method: "POST",
         body: { id: data.id },
         accept: [409],

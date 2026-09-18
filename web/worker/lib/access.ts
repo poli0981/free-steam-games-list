@@ -116,10 +116,10 @@ export async function verifyAccessJwt(
   env: Env,
   /**
    * Comma-separated AUDs acceptable FOR THIS ROUTE. Passed in per call rather
-   * than read from one global list: this Worker sits behind three Access
-   * applications, and a single union list means any of the three credentials
+   * than read from one global list: this Worker sits behind more than one
+   * Access application, and a single union list means any of their credentials
    * satisfies any route — an admin session could drive /api/ingest/*, and the
-   * unattended discovery token could drive /api/admin/*, which holds a
+   * unattended discovery token could drive /admin/api/*, which holds a
    * repository-write credential. Scoping the AUD to the route makes that
    * crossing impossible rather than merely checked for afterwards.
    */
