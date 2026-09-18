@@ -21,6 +21,8 @@ on:
       - '**/*.tsx'
       - '**/*.js'
       - '**/*.jsx'
+      - '**/*.mjs'
+      - '**/*.cjs'
       - '**/*.rs'
       - 'requirements.txt'
       - 'package.json'
@@ -41,6 +43,8 @@ on:
       - '**/*.tsx'
       - '**/*.js'
       - '**/*.jsx'
+      - '**/*.mjs'
+      - '**/*.cjs'
       - '**/*.rs'
   schedule:
     - cron: '0 14 * * 1'
