@@ -101,3 +101,5 @@
 {"link": "https://store.steampowered.com/app/4714810/", "name": "再战大极品+255", "appid": "4714810", "reason": "No longer free-to-play", "status_code": "not_free", "removed_at": "2026-09-14T12:01:12Z"}
 {"link": "https://store.steampowered.com/app/4594070/", "name": "Simulation Simulator", "appid": "4594070", "reason": "No longer free-to-play", "status_code": "not_free", "removed_at": "2026-09-14T12:04:45Z"}
 {"link": "https://store.steampowered.com/app/4724610/", "name": "Zero Hour Night", "appid": "4724610", "reason": "No longer free-to-play", "status_code": "not_free", "removed_at": "2026-09-19T02:23:40Z"}
+{"link": "https://store.steampowered.com/app/4341400/", "name": "", "appid": "4341400", "reason": "Delisted / unavailable", "status_code": "unavailable", "removed_at": "2026-09-19T05:47:18Z"}
+{"link": "https://store.steampowered.com/app/2498780/", "name": "3D Printer Manager", "appid": "2498780", "reason": "No longer free-to-play", "status_code": "not_free", "removed_at": "2026-09-19T05:52:49Z"}
