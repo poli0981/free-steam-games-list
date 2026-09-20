@@ -34,7 +34,7 @@ Pull requests are welcome but optional to merge. By submitting a contribution yo
 ### 6. Trademarks & third-party content
 
 - Steam, the Steam logo, VAC, BattlEye, EAC, Vanguard, etc., are trademarks of their respective owners. Their use here is descriptive / nominative.
-- Game titles, screenshots (header images served from Akamai's `shared.akamai.steamstatic.com`), developer names, and publisher names belong to their respective owners. Their inclusion in a list does not imply endorsement of this project by them, or vice versa.
+- Game titles, screenshots (header images proxied from Valve's CDNs — `shared.akamai.steamstatic.com`, `shared.fastly.steamstatic.com`, `cdn.akamai.steamstatic.com`), developer names, and publisher names belong to their respective owners. Their inclusion in a list does not imply endorsement of this project by them, or vice versa.
 
 ### 7. Forking, mirroring, derivative works
 
@@ -44,17 +44,25 @@ Allowed. Carry the right licence with you — MIT for code, CC BY 4.0 for data, 
 
 You can fork and modify; the maintainer can't help if your downstream project blows up, gets DMCA'd, or has a launch-day disaster. The no-warranty clauses in both licences cover this.
 
-### 9. Updates
+### 9. Where the site is offered, and automated access
+
+The website is offered at the maintainer's discretion and is **not served in mainland China, Russia or Argentina**. That is enforced at Cloudflare's edge by IP geolocation; Hong Kong, Macau and Taiwan are unaffected. The list can change at any time, without notice, and nothing here promises availability anywhere. The dataset itself stays public in the Git repository either way — the restriction is on this website, not on the data.
+
+Requests that look automated may be interrupted by Cloudflare's own human-verification step. The catalogue API (`/api/data/*`), the image proxy (`/img/*`) and the packaged desktop and Android apps are excluded from it, so ordinary programmatic use of the data keeps working. Do not attempt to evade that check, and do not scrape the site at a rate that requires it — clone the repository instead, which is faster for you and free for everyone.
+
+### 10. Updates
 
 Zero promises. Updates happen on the maintainer's whim plus GitHub Actions cron. The `last_updated` field in `data/index.json` is the canonical timestamp.
 
-### 10. Governing law
+### 11. Governing law
 
 Whatever GitHub's Terms of Service require, plus Vietnamese law where applicable, plus common sense. The maintainer is not a lawyer; nothing here is legal advice.
 
-### 11. Changes to these terms
+### 12. Changes to these terms
 
 This document may change without notice. The repo commit history is the change log. Continued use means acceptance of the latest version.
+
+In the app, a change is not silent: each binding document is hashed at build time, and when one of them differs from the version you accepted, the consent gate reopens and shows you **just that document, with the changes marked**.
 
 ---
 

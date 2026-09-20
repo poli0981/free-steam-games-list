@@ -52,12 +52,17 @@ Note `web/public/` is `web/static/` since the SvelteKit migration.
 ### The CSP
 
 ```
-default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline';
+default-src 'self'; script-src 'self' https://static.cloudflareinsights.com;
+style-src 'self' 'unsafe-inline';
 img-src 'self' data: https://shared.akamai.steamstatic.com https://shared.fastly.steamstatic.com https://cdn.akamai.steamstatic.com;
-font-src 'self'; connect-src 'self'; worker-src 'self';
-manifest-src 'self'; media-src 'none'; object-src 'none'; base-uri 'none';
-form-action 'none'; frame-ancestors 'none'
+font-src 'self'; connect-src 'self' https://cloudflareinsights.com;
+worker-src 'self'; manifest-src 'self'; media-src 'none'; object-src 'none';
+base-uri 'none'; form-action 'none'
 ```
+
+No `frame-ancestors`: it is ignored in a meta CSP, and this policy is emitted
+as one. `X-Frame-Options: DENY` in `web/static/_headers` is what stops framing
+(see the subsection above).
 
 Verified by loading the built app under it and walking `/games`, four chart
 pages, `/about`, `/health` and `/activity`.
@@ -76,13 +81,15 @@ Two directives are the way they are for measured reasons, not by preference:
   This is the acceptable half of the trade: the app renders no user-supplied
   HTML, and `script-src` stays strict, which is the directive that actually
   stops code execution.
-- **`script-src 'self'` is safe** even though `index.html` contains an inline
-  `<script>`: it is `type="application/ld+json"`, a data block that is never
-  executed, so `script-src` does not govern it. The built output has no other
-  inline script.
+- **`script-src` carries one external host and one hash**, and no
+  `'unsafe-inline'`. The host is the Web Analytics beacon (section 9); the
+  hash is SvelteKit's own per-page bootstrap. `index.html` also contains an
+  inline `<script type="application/ld+json">`, but that is a data block which
+  is never executed, so `script-src` does not govern it.
 
-`connect-src` is `'self'` with no exceptions, as of 2026-09-12. It used to
-allow `https://api.github.com` for one page. Both reasons are gone:
+`connect-src` allows `'self'` and the analytics beacon's reporting host, and
+nothing else. It notably does **not** allow `https://api.github.com`, which it
+used to for one page. Both reasons are gone:
 
 - The Activity page now reads `/api/activity`, a Worker route that fetches the
   commit list server-side, narrows it to the fields the page renders (dropping
@@ -93,6 +100,10 @@ allow `https://api.github.com` for one page. Both reasons are gone:
 - The Android release check still calls `api.github.com`, but only under
   `isTauri() && isAndroid()`, and the packaged apps use the separate CSP in
   `src-tauri/tauri.conf.json` — not this file.
+
+The two `cloudflareinsights.com` hosts are **web only**, added by the same
+`IS_TAURI` ternary: the packaged apps must not phone a beacon, and
+`scripts/verify-dist.mjs` fails the Tauri build if either appears in it.
 
 `img-src` correspondingly does **not** list `avatars.githubusercontent.com`.
 Avatars are proxied. Widening `img-src` would have been the smaller diff and
@@ -254,7 +265,7 @@ week before changing the threshold.
 
 ---
 
-## 4. Bot Fight Mode — leave it OFF on this site
+## 4. Bots and countries — one switch to leave off, two rules to add
 
 It sounds like a free win and here it is not. Cloudflare's own documentation
 says two things that decide it:
@@ -274,6 +285,100 @@ This site's most important non-browser clients are exactly that traffic:
 Only an IP Access rule takes precedence over it, and GitHub's runner ranges are
 far too broad to allowlist sensibly. The rate-limit rule above already covers
 the abuse that actually costs money here.
+
+### The human check that IS safe here
+
+What Bot Fight Mode cannot be — scoped — a WAF **custom rule** can. Custom
+rules are a separate quota from the single rate-limiting rule above (the Free
+plan allows five), and a Managed Challenge from one of them can be aimed at
+page loads only:
+
+**Security → WAF → Custom rules → Create rule**
+
+| Field | Value |
+|---|---|
+| Rule name | `human-check-pages` |
+| Expression | `not starts_with(http.request.uri.path, "/api/") and not starts_with(http.request.uri.path, "/img/") and not starts_with(http.request.uri.path, "/_app/") and not starts_with(http.request.uri.path, "/.well-known/") and not cf.client.bot and cf.threat_score > 14` |
+| Action | Managed Challenge |
+
+Every exclusion is load-bearing, and each one is a thing that breaks without
+it:
+
+- `/api/` — the packaged apps' catalogue fetch and the GitHub Actions ingest
+  call. An HTML challenge page is not something either can solve; this is the
+  exact failure Bot Fight Mode would cause, reintroduced by hand.
+- `/img/` — artwork, requested by the apps cross-origin.
+- `/_app/` — hashed bundles. Challenging a module request breaks hydration on
+  a page that already passed the check.
+- `/.well-known/` — `security.txt` exists to be read by scanners.
+- `not cf.client.bot` — verified crawlers. Challenge Googlebot and the site
+  leaves the index.
+
+`cf.threat_score` narrows it further, so an ordinary visitor never sees the
+interstitial. Drop that condition to challenge every page load, and expect
+complaints. Watch **Security → Events** for a week either way.
+
+`docs/PRIVACY_POLICY.md` describes this check to visitors; it is a third party
+interrupting their page load, so it belongs there.
+
+### Blocking countries
+
+Second custom rule, and the actual boundary for the country restriction:
+
+| Field | Value |
+|---|---|
+| Rule name | `blocked-countries` |
+| Expression | `ip.geoip.country in {"CN" "RU" "AR"}` |
+| Action | Block |
+
+`"CN"` is mainland China only — Hong Kong, Macau and Taiwan are `HK`, `MO` and
+`TW` and are not matched.
+
+**This rule, not the Worker, is what blocks the site.** `BLOCKED_COUNTRIES` in
+`web/wrangler.jsonc` makes the Worker refuse the same countries
+(`worker/lib/geo.ts`), but the Worker only ever sees the four
+`assets.run_worker_first` prefixes — the prerendered HTML is served by the
+static-asset server without invoking it. Someone in a blocked country would
+read every page and only find the catalogue missing. Keep both: the var is
+reviewable in Git and holds if the rule is ever deleted or mis-scoped, and the
+rule is what actually covers the site.
+
+Know what this costs before turning it on:
+
+- **Yandex indexing ends.** Its crawler is in RU, and `ip.geoip.country` is
+  evaluated before `cf.client.bot` matters to a Block action.
+- **The desktop and Android apps stop working** in those countries, updater
+  feed included — they fetch the same `/api/*` paths.
+- **VPNs evade it trivially.** This is a posture, not a security control.
+- **Tor exits report as `T1`**, which is not a country code and is not
+  matched; `worker/lib/geo.ts` also refuses to treat `XX` (unknown) as one, so
+  adding it to the var cannot accidentally block everyone the edge failed to
+  place.
+
+**Check — and read this before trying, because the obvious check does not
+work.** Sending `-H 'CF-IPCountry: CN'` to production proves nothing:
+`worker/lib/geo.ts` reads `request.cf.country` first, which comes from the real
+client IP and cannot be spoofed, and Cloudflare overwrites that header on
+ingress anyway. The header fallback exists only for environments that have no
+`request.cf` at all.
+
+So there are two honest checks:
+
+- **The WAF rule**: from a real address in one of those countries, or from
+  **Security → Events**, which is where a Block shows up.
+- **The Worker's own refusal**, locally: `wrangler dev` supplies its own
+  `request.cf` (measured: `country: "SG"`), so temporarily add that country to
+  `BLOCKED_COUNTRIES`, restart, and watch every Worker route refuse:
+
+  ```bash
+  for p in /api/activity /api/data/data/index.json /img/t/730/header.jpg /admin /; do
+    printf '%-28s %s\n' "$p" "$(curl -s -o /dev/null -w '%{http_code}' http://localhost:8790$p)"
+  done
+  ```
+
+  Expected: `403` four times — **and `/` still `200`**, because a static asset
+  never invokes the Worker. That last line is the whole reason the WAF rule
+  cannot be skipped. Put the real list back afterwards.
 
 **Managed rules** (Security → WAF → Managed rules): leave on whatever your plan
 provides. This site has no form posts and no SQL, so false positives are
@@ -339,7 +444,13 @@ Not everything needs switching on. For the record:
   that fails if a discovery script references a dataset-writing helper.
 - `audit_log` records the acting Access identity and the target, and
   deliberately no IP, User-Agent or country — matching what
-  `PRIVACY_POLICY.md` promises.
+  `PRIVACY_POLICY.md` promises. The country block in section 4 reads
+  `request.cf.country` per request and stores nothing: no row, no log, no
+  counter.
+- Commits made from `/admin` say "by admin", not the reviewer's Access address,
+  and `data/overrides/*.json` records `"set_by": "admin"` for the same reason —
+  those files are public forever. Who did what stays in D1
+  (`shared/admin-api.ts`, `ADMIN_ATTRIBUTION`).
 
 ## 8. security.txt — and the one date that will rot
 
@@ -367,10 +478,10 @@ Must return the field list as `text/plain`, not the SPA shell.
 
 ---
 
-## 9. Cloudflare Web Analytics is injecting a script the CSP blocks
+## 9. Web Analytics — the JS snippet, never the automatic setup
 
-Found 2026-09-12 by reading the browser console on the live site, not from any
-report. Every page load logs two CSP violations:
+Automatic injection was on from before 2026-09-12 and **never collected a
+single page view**. Every load logged two CSP violations instead:
 
 ```
 Loading the script 'https://static.cloudflareinsights.com/beacon.min.js/...'
@@ -378,28 +489,43 @@ violates the following Content Security Policy directive: "script-src 'self'"
 Executing inline script violates ... 'script-src 'self''
 ```
 
-It is not in the repository — `curl` of the deployed HTML shows no such tag.
-Cloudflare **Web Analytics** is enabled on the zone with automatic setup, and
-injects the beacon plus an inline loader into HTML responses at the edge, after
-the origin response and therefore after our CSP.
+The tag was not in the repository — `curl` of the deployed HTML showed none.
+Cloudflare injects the beacon **plus an inline loader** into HTML responses at
+the edge, after the origin response and therefore after our CSP.
 
-So the beacon has never actually run: the analytics are empty and the only
-effect is two console errors per page load.
+**That mode can never work here, and this is the part worth remembering.** The
+site's CSP runs in `mode: "hash"` (SvelteKit hashes its own bootstrap script),
+and CSP3 says a `script-src` carrying a hash or nonce **ignores
+`'unsafe-inline'`**. There is no policy that admits an inline script we cannot
+hash, and we cannot hash one the edge writes after we have built the page. The
+only fix available is not to use that mode.
 
-**Recommended: turn Web Analytics OFF** (dashboard → Analytics & Logs → Web
-Analytics). It is a third-party tracking beacon, and
-`docs/PRIVACY_POLICY.md` tells visitors the site loads no third-party
-resources and collects nothing. Allowlisting `static.cloudflareinsights.com`
-in `script-src`/`connect-src` is the other option, but it would make that
-promise false and require rewriting the privacy policy.
+**What is configured now:**
 
-Dashboard action, so it is the maintainer's to do.
+1. **Analytics & Logs → Web Analytics → Manage site → "Enable with JS Snippet
+   installation".** This stops the edge injection. "Enable, excluding visitor
+   data in the EU" is fine to keep alongside it.
+2. Copy the site token into `CF_BEACON_TOKEN` in `web/src/lib/analytics.ts`.
+   It is not a secret — Cloudflare's own snippet publishes it in the page — and
+   an empty value simply disables analytics, which is what a fork gets.
+3. The app appends the beacon itself, from the `$effect` in
+   `routes/+layout.svelte` that already waits on `consent.accepted`, so nothing
+   loads before the reader accepts the terms, and never under Tauri.
+4. `svelte.config.js` allows `https://static.cloudflareinsights.com` in
+   `script-src` and `https://cloudflareinsights.com` in `connect-src`, **web
+   flavour only**. `scripts/verify-dist.mjs` fails the build if either is
+   missing from the web build or present in the Tauri build.
 
-**Check** (in a browser console, not curl — the injection is
-browser-conditional):
+`docs/PRIVACY_POLICY.md` was rewritten for this: it used to say the site had no
+analytics and contacted no third party, which is what made the "just allowlist
+it" option unacceptable before.
 
-open <https://free-steam-games.win/> and confirm no `cloudflareinsights`
-error appears.
+**Check** (in a browser console, not curl — the injection was
+browser-conditional and the app's own load is consent-conditional):
+
+open <https://free-steam-games.win/>, accept the terms, and confirm a single
+request to `static.cloudflareinsights.com` with **no** CSP error. Before
+accepting there must be none at all.
 
 ---
 

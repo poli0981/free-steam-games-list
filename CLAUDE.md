@@ -118,6 +118,22 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
   applied by hand, so `lib/locks.ts` treats a missing table as "unavailable" and
   every caller falls back — deploy order must never matter. Keep it that way for
   any future migration a Worker change depends on.
+- **Nothing `/admin` writes to Git may name a person.** Commit bodies and
+  `data/overrides/*.json` say `ADMIN_ATTRIBUTION` ("admin",
+  `web/shared/admin-api.ts`); a public repository keeps them forever.
+  `appendLinks()` takes no actor parameter at all, so the old
+  `Approved in /admin by <email>` cannot come back by a call site forgetting.
+  D1 still stores the real Access identity in `audit_log.actor`,
+  `ingest_queue.decided_by`, `ingest_decisions.decided_by` and
+  `commit_jobs.requested_by`, which is what `/admin/audit` filters on —
+  do not "tidy" those to the constant too.
+- **`BLOCKED_COUNTRIES` is defence in depth, not the block.** The Worker
+  refuses those countries (`worker/lib/geo.ts`), but it only ever sees the four
+  `assets.run_worker_first` prefixes — every prerendered page is served without
+  invoking it. A WAF custom rule on the zone is the boundary
+  (`docs/SECURITY_SETUP.md` §4). `geo.ts` FAILS OPEN on an unknown country:
+  `request.cf` is undefined under Vitest and under `wrangler dev` without
+  `--remote`, and failing closed there 403s every test.
 - `audit_log` and `commit_jobs` are pruned daily after `ADMIN_RETENTION_DAYS`
   (wrangler.jsonc, 180). `docs/PRIVACY_POLICY.md` states the number: change
   both together. `ingest_queue` and `ingest_decisions` are never pruned — the
@@ -204,9 +220,31 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
   proxies it). Tauri sends its OWN policy as a header from
   `tauri.conf.json`, which is why that one carries `script-src 'unsafe-inline'`:
   the two intersect, and the meta policy's sha256 is what actually enforces.
+  The web policy has two hosts the Tauri one must never gain:
+  `https://static.cloudflareinsights.com` in `script-src` and
+  `https://cloudflareinsights.com` in `connect-src`, for the analytics beacon.
+  `verify-dist.mjs` fails the web build without them and the Tauri build with
+  them.
+- **Cloudflare Web Analytics must stay on "JS Snippet installation", never
+  automatic.** Automatic injection adds an INLINE loader at the edge, after our
+  response; `kit.csp` is `mode: "hash"`, and CSP3 makes a `script-src` carrying
+  a hash ignore `'unsafe-inline'` — so no policy can ever admit it. It was
+  enabled that way for months, logging two CSP violations per page load and
+  collecting nothing. `lib/analytics.ts` appends the beacon itself, from the
+  consent-gated `$effect` in the root layout, never under Tauri, and does
+  nothing when `CF_BEACON_TOKEN` is empty.
 - **`adapter-static`'s `fallback` must not be named `index.html`.** It is
   written last and overwrites whatever shares its name, which silently replaced
   the prerendered home page with an empty shell. It is `200.html`.
+- **…and the service worker's `navigateFallback` must NOT be `/200.html`.**
+  `generateFallback()` writes that file straight into `dist/`, after workbox
+  has globbed `.svelte-kit/output`, so it can never be in the precache —
+  `createHandlerBoundToURL()` threw `non-precached-url` on every load and
+  abandoned the rest of the worker's setup. It is `/`, which is both precached
+  and exactly what Cloudflare and Tauri already serve for an unmatched path, so
+  `lib/fallback-route.ts` recovers the route offline the same way it does
+  online. `verify-dist.mjs` now parses `dist/sw.js` and fails if the bound URL
+  is not a precache entry.
 - **`kit.paths.relative` must stay `false`.** SvelteKit defaults it to `true`,
   which gives every PRERENDERED page `./_app/...` asset URLs. Served as the
   fallback for `/games/730` those resolve to `/games/_app/...`, which misses,
@@ -301,6 +339,17 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
   "no update" — for anything unusable. Like `/api/activity` it is public and
   must never use the GitHub App token. A desktop release is offered only once
   its draft is published.
+- **Legal consent is per-document content hashes, not one integer.**
+  `build/legal-versions.ts` serves `virtual:legal-versions` (a hash per
+  document, inlined) and `virtual:legal-sources` (the raw markdown, imported
+  DYNAMICALLY by `ConsentGate.svelte` alone, so a normal page load never
+  fetches those 25 KB). Editing `docs/EULA.md` now reopens the gate by itself,
+  showing only that document as a `lib/diff.ts` diff against the copy in
+  `f2p:legal_snapshot`. `TERMS_VERSION` survives only as the "make everyone
+  read all six again" override — bumping it for a routine edit defeats the
+  feature. The state lives in `lib/consent.svelte.ts`, NOT `prefs.svelte.ts`:
+  the admin SPA imports the latter and its build cannot resolve a virtual
+  module. Render the diff as text in a `<pre>`, never `{@html}`.
 - The app is behind a first-run legal consent gate
   (`web/src/lib/common/ConsentGate.svelte`). Only `/error/*` and `/legal/*`
   bypass it — the gate links to the legal documents it asks people to accept —

@@ -4,15 +4,22 @@
 <https://github.com/poli0981/free-steam-games-list>, and the desktop / Android
 app built from it.
 
-**Last substantive change:** September 2026, when the site moved from GitHub
-Pages to Cloudflare and sign-in was removed. See git history for the exact diff.
+**Last substantive change:** September 2026 — Cloudflare Web Analytics was
+switched on, a human-verification challenge was added for suspicious traffic,
+and the site became unavailable in three countries. Each is described below.
+See git history for the exact diff; the app now shows you that diff at the
+consent gate rather than asking you to re-read everything.
 
 ---
 
 ## Short version
 
 The site does not ask who you are. There are no accounts, no sign-in, no
-analytics, no advertising, and no tracking cookies.
+advertising, no tracking cookies and no profile of you anywhere.
+
+There is now one analytics measurement — Cloudflare Web Analytics — which is
+cookieless, records no identifier for you, and does not load at all until you
+have accepted these terms. It is the only third party the website contacts.
 
 It is not, however, "serverless" any more, and the previous version of this
 document said things that are no longer true. The site is now served by a
@@ -28,15 +35,58 @@ deliver the page, and retains operational and security logs under its own
 policy. Cloudflare acts as a processor for the site; see the
 [Cloudflare Privacy Policy](https://www.cloudflare.com/privacypolicy/).
 
-The maintainer does not run any additional logging, does not have
-Cloudflare Web Analytics enabled, and does not export logs anywhere.
+The maintainer runs no additional logging of their own and exports logs
+nowhere.
 
 **No cookies are set by this site.** Cloudflare may set its own operational
-cookies for security purposes; those are Cloudflare's, not the site's.
+cookies for security purposes — including when it shows you the verification
+step described below; those are Cloudflare's, not the site's.
+
+### Cloudflare Web Analytics
+
+The website loads Cloudflare's analytics beacon
+(`static.cloudflareinsights.com`) once you have accepted these terms, and it
+reports page views and page-load timings to `cloudflareinsights.com`.
+
+What that means in practice, from Cloudflare's own description of the product:
+it sets **no cookie**, stores **no identifier** in your browser, does **not**
+fingerprint you, and does not follow you to any other site. It counts visits;
+it does not build a profile. Visitors in the EU are excluded from it entirely
+by a setting on the account.
+
+Three things follow, and they are the reason it is acceptable here:
+
+- It does not run before you accept. Declining, or simply not accepting, means
+  the script is never loaded — the same rule that already holds back the
+  catalogue download and the service worker.
+- It does not run in the desktop or Android apps at all.
+- You can stop it at any time with any content blocker, and nothing on the site
+  breaks if you do.
+
+### Verifying that you are not a bot
+
+Cloudflare may interrupt a page load with its own verification step — a
+"checking your browser" interstitial — when a request looks automated. This is
+a Cloudflare feature configured on the account, not code in this site, and it
+is deliberately scoped to page loads: the catalogue API, the image proxy and
+the packaged apps are excluded from it so they keep working. Whether it appears
+is Cloudflare's judgement, based on the request itself. See the
+[Cloudflare Privacy Policy](https://www.cloudflare.com/privacypolicy/) for what
+that check processes.
+
+### Where the site is available
+
+The site is not served to visitors in **mainland China, Russia or Argentina**.
+That decision is enforced at Cloudflare's edge, which means your IP address is
+matched against Cloudflare's own geolocation before anything else happens; the
+site stores nothing about it and keeps no record of refused requests. Hong
+Kong, Macau and Taiwan are not affected. The maintainer may change this list at
+any time.
 
 ## What the page loads
 
-Everything the site loads is fetched **same-origin**, through the site itself:
+Apart from the analytics beacon above, everything the site loads is fetched
+**same-origin**, through the site itself:
 
 - `/api/data/*` — the catalogue. The Worker fetches these files from GitHub on
   the server side, so your browser never contacts GitHub for them and GitHub
@@ -54,8 +104,9 @@ and images from Valve's CDN and a third-party image proxy directly.
 Until September 2026 the Activity page was an exception to all of this: it
 called the GitHub API from your browser and loaded avatars from
 `avatars.githubusercontent.com`, so opening it showed GitHub your IP address
-and User-Agent. **That exception is gone.** No page on the website contacts a
-third party any more.
+and User-Agent. **That exception is gone**, and no page contacts GitHub from
+your browser. The analytics beacon is now the only third party any page
+contacts, and only after you accept.
 
 ### The one remaining exception, stated plainly
 
@@ -81,7 +132,8 @@ All of it stays on your device. None of it is transmitted anywhere.
 
 | Where | Key | Why |
 |---|---|---|
-| localStorage | `f2p:legal_consent` | that you accepted the terms, and which version |
+| localStorage | `f2p:legal_consent` | that you accepted the terms, and which version of each document |
+| localStorage | `f2p:legal_snapshot` | a copy of the documents you accepted, so a later change can be shown to you as a comparison instead of a second full read |
 | localStorage | `f2p:welcome_seen` | that you have seen the introduction |
 | localStorage | `f2p:theme` | light / dark / system |
 | localStorage | `f2p:lang` | interface language |
@@ -113,9 +165,13 @@ area, are deleted automatically after 180 days.
 
 ## What is not collected
 
-No accounts. No analytics or telemetry of any kind. No advertising or
-behavioural profiles. No fingerprinting. No session recording. No email list.
-No sale or sharing of anything, because there is nothing to sell or share.
+No accounts. No advertising or behavioural profiles. No fingerprinting. No
+session recording. No email list. No sale or sharing of anything, because there
+is nothing to sell or share.
+
+Analytics is limited to the cookieless page-view count described above, and to
+nothing else: no events, no scroll or click tracking, no error telemetry, and
+nothing that could identify you or a single session.
 
 Sign-in was removed entirely in September 2026. The site previously stored a
 GitHub access token and an encrypted signing key in your browser; it no longer
@@ -141,6 +197,11 @@ nothing from anyone, of any age.
 
 ## Changes
 
-This file is versioned in git. Material changes bump `TERMS_VERSION` in the
-app, which re-prompts everyone at the consent gate rather than quietly
-substituting new terms.
+This file is versioned in git, and the app hashes each binding document at
+build time. When one of them changes, the consent gate reopens by itself and
+shows you **only the documents that changed, with the changes marked**, rather
+than quietly substituting new terms or asking you to read all six again.
+
+The comparison is made against a copy kept in your own browser
+(`f2p:legal_snapshot`). Clearing your site data removes it, in which case the
+gate links you to the full document instead.

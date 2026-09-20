@@ -237,7 +237,7 @@ Unemployed, introvert max level, dropped out uni year 3, mooching off family. Ne
 - [DISCLAIMER](docs/DISCLAIMER.md) — accuracy caveats, no-warranty, the broke-maintainer note.
 - [Terms of Use](docs/ToS.md) — usage agreement, contributions, governing law.
 - [EULA](docs/EULA.md) — plain-language commentary on both licences.
-- [Privacy Policy](docs/PRIVACY_POLICY.md) — no accounts, no analytics, no tracking; what Cloudflare logs as the host, and the one page that still talks to GitHub.
+- [Privacy Policy](docs/PRIVACY_POLICY.md) — no accounts, no tracking cookies, no profile; what Cloudflare logs as the host, the one cookieless page-view count, and where the site is not served.
 - [Deployment](docs/DEPLOYMENT.md) — how a push becomes a deploy, and how to verify or roll one back.
 - [Admin setup](docs/ADMIN.md) — Cloudflare Access and the GitHub App behind `/admin`.
 - [Acknowledgements](docs/ACKNOWLEDGEMENTs.md) — credits, AI assistants, third-party libraries.

@@ -23,6 +23,17 @@ No user data is sent to any LLM at runtime. The AI calls happen on the maintaine
 
 ### Third-party dependencies
 
+**Hosted services the website loads at runtime** — the only code in this
+project that comes from someone else's server rather than from the bundle:
+
+- [Cloudflare Web Analytics](https://www.cloudflare.com/web-analytics/) — a
+  cookieless page-view count, loaded from `static.cloudflareinsights.com`
+  **only after the visitor accepts the terms**, and never in the desktop or
+  Android apps. `docs/PRIVACY_POLICY.md` describes exactly what it does;
+  `web/src/lib/analytics.ts` is the ten lines that load it.
+
+Everything below ships inside the bundle.
+
 The Python pipeline relies on two libraries:
 
 - [`requests`](https://github.com/psf/requests) — Apache-2.0

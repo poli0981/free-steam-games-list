@@ -4,7 +4,41 @@ All notable changes to this awesome noob repo will be documented here.
 
 ## [Unreleased]
 
+### ✨ Added
+
+- **A legal document that changes now shows you the change, not the whole
+  document again.** Each binding document is hashed at build time
+  (`virtual:legal-versions`); when one differs from the version you accepted,
+  the consent gate reopens on its own and lists only that document, with a
+  `+`/`-` diff against the copy kept in your browser. `TERMS_VERSION` is no
+  longer the only signal — it stays as the lever that forces a full re-read.
+  Clearing site data removes the stored copy, and the gate then links to the
+  full text instead.
+- **Cloudflare Web Analytics**, cookieless, loaded only after you accept the
+  terms and never in the desktop or Android apps. It replaces an "automatic"
+  edge injection that had been enabled for months and could never have worked:
+  it inserts an inline script, and a hash-based CSP ignores `'unsafe-inline'`
+  by specification, so it only ever produced two console errors per page load.
+- **A human-verification step for suspicious page loads, and a country block**
+  (mainland China, Russia, Argentina) — both WAF rules, documented with their
+  exact expressions in `docs/SECURITY_SETUP.md`. `BLOCKED_COUNTRIES` in
+  `wrangler.jsonc` makes the Worker refuse the same countries as defence in
+  depth; the rule is the boundary, because prerendered pages never reach the
+  Worker at all.
+
 ### 🐛 Fixed
+
+- **The service worker threw `non-precached-url: /200.html` on every page
+  load.** `navigateFallback` named the adapter-static fallback, which is
+  written into `dist/` after workbox has already globbed the build output — so
+  it was never in the precache, and the throw abandoned the rest of the
+  worker's setup. It is now `/`, which is both precached and what Cloudflare
+  and Tauri already serve for an unmatched path. `verify-dist.mjs` fails the
+  build if the two ever disagree again.
+- **`/admin` no longer writes the maintainer's email address into public Git.**
+  Commit bodies and `data/overrides/*.json` say `admin`; the four override
+  files that already carried it were rewritten. The acting identity is still
+  recorded in D1, where `/admin/audit` reads it.
 
 - **`/admin` said "Your Cloudflare Access session has expired" straight after
   signing in, in a private window too.** Its API was at `/api/admin/*`, behind
