@@ -265,7 +265,7 @@ week before changing the threshold.
 
 ---
 
-## 4. Bots and countries — one switch to leave off, two rules to add
+## 4. Bots and countries — one switch left off, two rules live
 
 It sounds like a free win and here it is not. Cloudflare's own documentation
 says two things that decide it:
@@ -286,14 +286,17 @@ Only an IP Access rule takes precedence over it, and GitHub's runner ranges are
 far too broad to allowlist sensibly. The rate-limit rule above already covers
 the abuse that actually costs money here.
 
-### The human check that IS safe here
+### The human check that IS safe here — `human-check-pages`, active
 
 What Bot Fight Mode cannot be — scoped — a WAF **custom rule** can. Custom
 rules are a separate quota from the single rate-limiting rule above (the Free
-plan allows five), and a Managed Challenge from one of them can be aimed at
-page loads only:
+plan allows five; two are used), and a Managed Challenge from one of them can
+be aimed at page loads only.
 
-**Security → WAF → Custom rules → Create rule**
+**Live since 2026-09-20**, order 1, and its challenge-solve rate has stayed at
+**0%** — ordinary visitors are not seeing it, which is the intent. Security →
+WAF → Custom rules is the source of truth for the exact expression; this is
+what it was created from:
 
 | Field | Value |
 |---|---|
@@ -318,12 +321,19 @@ it:
 interstitial. Drop that condition to challenge every page load, and expect
 complaints. Watch **Security → Events** for a week either way.
 
+**Measured after it went live** — a plain `curl` with no browser User-Agent
+still gets `200` on `/`, `/games`, `/legal/tos`, `/.well-known/security.txt`,
+`/sitemap.xml` and `/robots.txt`, and a real browser loads a game page, the
+service worker and the analytics beacon with no interruption. A script client
+is *not* automatically challenged, because the threat score is what decides.
+
 `docs/PRIVACY_POLICY.md` describes this check to visitors; it is a third party
 interrupting their page load, so it belongs there.
 
-### Blocking countries
+### Blocking countries — `blocked-countries`, active
 
-Second custom rule, and the actual boundary for the country restriction:
+Second custom rule, **live since 2026-09-20**, order 2, and the actual boundary
+for the country restriction:
 
 | Field | Value |
 |---|---|
@@ -503,8 +513,10 @@ only fix available is not to use that mode.
 **What is configured now:**
 
 1. **Analytics & Logs → Web Analytics → Manage site → "Enable with JS Snippet
-   installation".** This stops the edge injection. "Enable, excluding visitor
-   data in the EU" is fine to keep alongside it.
+   installation"** — selected 2026-09-20. This is what stops the edge
+   injection, and it is the ONLY mode this site can use. Do not switch it back
+   to either "Enable" option: both inject the inline loader, and the CSP will
+   refuse it exactly as before.
 2. Copy the site token into `CF_BEACON_TOKEN` in `web/src/lib/analytics.ts`.
    It is not a secret — Cloudflare's own snippet publishes it in the page — and
    an empty value simply disables analytics, which is what a fork gets.
@@ -526,6 +538,12 @@ browser-conditional and the app's own load is consent-conditional):
 open <https://free-steam-games.win/>, accept the terms, and confirm a single
 request to `static.cloudflareinsights.com` with **no** CSP error. Before
 accepting there must be none at all.
+
+**Measured on the live site, 2026-09-20:** before consent, no beacon request
+and an empty console; after consent, `beacon.min.js` → **200** and the RUM
+POSTs to `cloudflareinsights.com/cdn-cgi/rum` → **204**, with one
+`script[data-cf-beacon]` tag in the document and no violation of any kind.
+That is the first page view this site has ever recorded.
 
 ---
 
@@ -575,8 +593,7 @@ hostnames, and `tauri://localhost` is a custom scheme it cannot express.
 once this is off):
 
 ```bash
-curl -s -o /dev/null -w '%{http_code}
-' -H "Referer: http://localhost:5173/" "https://free-steam-games.win/img/t/730/header.jpg?t=1749053861"
+curl -s -o /dev/null -w '%{http_code}\n' -H "Referer: http://localhost:5173/" "https://free-steam-games.win/img/t/730/header.jpg?t=1749053861"
 ```
 
 Until it is switched off, `npm run dev` shows broken thumbnails. The data,
@@ -622,5 +639,11 @@ Every line must print `0`.
 
 ## Still open
 
-Nothing from this list. `audit_log` and `commit_jobs` are pruned daily after
-`ADMIN_RETENTION_DAYS` (180), which `docs/PRIVACY_POLICY.md` states.
+Nothing from this list, as of 2026-09-20. `audit_log` and `commit_jobs` are
+pruned daily after `ADMIN_RETENTION_DAYS` (180), which
+`docs/PRIVACY_POLICY.md` states.
+
+**The Free-plan rule budget is now the constraint to watch:** the one rate
+limiting rule is used (section 3), and two of the five custom rules are
+(section 4). A third custom rule is affordable; a second rate-limiting rule is
+not, without upgrading.

@@ -131,7 +131,9 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
   refuses those countries (`worker/lib/geo.ts`), but it only ever sees the four
   `assets.run_worker_first` prefixes — every prerendered page is served without
   invoking it. A WAF custom rule on the zone is the boundary
-  (`docs/SECURITY_SETUP.md` §4). `geo.ts` FAILS OPEN on an unknown country:
+  (`blocked-countries`, live since 2026-09-20; `docs/SECURITY_SETUP.md` §4,
+  which also carries the `human-check-pages` Managed Challenge and every path
+  it must keep excluding). `geo.ts` FAILS OPEN on an unknown country:
   `request.cf` is undefined under Vitest and under `wrangler dev` without
   `--remote`, and failing closed there 403s every test.
 - `audit_log` and `commit_jobs` are pruned daily after `ADMIN_RETENTION_DAYS`

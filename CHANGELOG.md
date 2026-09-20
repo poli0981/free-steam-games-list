@@ -19,12 +19,16 @@ All notable changes to this awesome noob repo will be documented here.
   edge injection that had been enabled for months and could never have worked:
   it inserts an inline script, and a hash-based CSP ignores `'unsafe-inline'`
   by specification, so it only ever produced two console errors per page load.
+  Measured on the live site: the beacon returns 200 and its reports 204, with
+  nothing loaded at all before consent.
 - **A human-verification step for suspicious page loads, and a country block**
-  (mainland China, Russia, Argentina) — both WAF rules, documented with their
-  exact expressions in `docs/SECURITY_SETUP.md`. `BLOCKED_COUNTRIES` in
-  `wrangler.jsonc` makes the Worker refuse the same countries as defence in
-  depth; the rule is the boundary, because prerendered pages never reach the
-  Worker at all.
+  (mainland China, Russia, Argentina). Both are WAF custom rules, live since
+  2026-09-20 and documented with their expressions and every exclusion in
+  `docs/SECURITY_SETUP.md`. Verified after they went live: a plain `curl` with
+  no browser User-Agent is still served every public path, and the challenge
+  rate has stayed at 0%. `BLOCKED_COUNTRIES` in `wrangler.jsonc` makes the
+  Worker refuse the same countries as defence in depth; the rule is the
+  boundary, because prerendered pages never reach the Worker at all.
 
 ### 🐛 Fixed
 
@@ -52,6 +56,19 @@ All notable changes to this awesome noob repo will be documented here.
   an Access login page, lookalikes included; the suffix check now needs the dot.
 - The i18n, SEO and chart tests share one comment stripper instead of three
   regexes, one of which removed text that was never inside a comment.
+
+### 📚 Docs
+
+- `docs/ACKNOWLEDGEMENTs.md` listed the dependencies of the **React** app —
+  React 18, react-router, i18next, Zustand, TanStack Query, Radix, shadcn/ui,
+  OpenPGP.js, Tailwind 3, TypeScript 5, PostCSS. None of that has shipped since
+  the v4 rewrite. Replaced with the real list, licences checked against
+  `node_modules` rather than remembered (`echarts-wordcloud` is ISC, not
+  BSD-3-Clause), and the claim that `/about` carries a "full SPDX list" dropped
+  — it is a curated subset.
+- `docs/DEPLOYMENT.md` records that a zero-duration "Workers Builds" failure on
+  a PR branch is a preview-build artefact, not a broken commit, so the next
+  person does not go looking for a bug that is not there.
 
 ### 🛠 CI
 

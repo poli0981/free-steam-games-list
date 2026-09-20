@@ -27,6 +27,10 @@ served only behind Cloudflare Access. See [docs/ADMIN.md](../docs/ADMIN.md).
 State is plain Svelte 5 runes in `.svelte.ts` modules. There is no store
 library and no data-fetching library.
 
+The only third party the browser contacts is the Cloudflare Web Analytics
+beacon, and only after the reader accepts the terms. Everything else is
+same-origin, through the Worker.
+
 ## Quick start
 
 ```bash
@@ -77,6 +81,9 @@ web/
 │   │   ├── games-loader.ts     # verified shard generations, offline fallback
 │   │   ├── cache.ts            # IndexedDB read/write
 │   │   ├── fallback-route.ts   # re-renders routes served the SPA shell
+│   │   ├── consent.svelte.ts   # legal consent, hashed per document
+│   │   ├── diff.ts             # the line diff the consent gate shows
+│   │   ├── analytics.ts        # the beacon, appended only after consent
 │   │   ├── charts/             # EChart wrapper, registration, ChartPage
 │   │   ├── common/             # Seo, ConsentGate, QueryState, ErrorView, …
 │   │   ├── games/              # virtualised table, columns, filtering
@@ -91,6 +98,7 @@ web/
 ├── worker/                     # the Cloudflare Worker (routes, lib, migrations)
 ├── shared/                     # queue rules and API types for the Worker and admin/
 ├── build/game-seeds.ts         # build-time seeds for the prerendered game pages
+├── build/legal-versions.ts     # content hashes + sources for the legal documents
 ├── src-tauri/                  # desktop + Android shell
 ├── static/                     # _headers, robots.txt, security.txt, generated art
 ├── scripts/verify-dist.mjs     # checks the built output (run in CI)
@@ -134,7 +142,16 @@ says, and the app renders but never hydrates.
 
 The policy has two flavours, selected by `TAURI_ENV_PLATFORM`. Under Tauri the
 origin is `tauri://localhost`, so `'self'` is the bundle rather than the site
-and the packaged apps need the site's origin named explicitly.
+and the packaged apps need the site's origin named explicitly. The web flavour
+alone names `static.cloudflareinsights.com` in `script-src` and
+`cloudflareinsights.com` in `connect-src`, for the analytics beacon
+(`lib/analytics.ts`); `verify-dist.mjs` fails the web build without them and
+the Tauri build with them.
+
+Cloudflare's **automatic** Web Analytics injection can never be used here: it
+adds an inline loader at the edge, after this response, and CSP3 makes a
+`script-src` carrying a hash ignore `'unsafe-inline'`. The dashboard must stay
+on "Enable with JS Snippet installation".
 
 `frame-ancestors` is ignored in a meta CSP, so `X-Frame-Options: DENY` in
 `static/_headers` is what stops framing.
@@ -153,6 +170,12 @@ the legal consent step and never in the Tauri build (a worker at
   asset mtime, so a changed image arrives as a different URL.
 - The prerendered game pages are left out of the precache (they would add
   about 120 MB).
+- `navigateFallback` is `/`, not `/200.html`. `adapter-static` writes the
+  fallback after Workbox has globbed the build output, so `/200.html` could
+  never be a precache entry and `createHandlerBoundToURL()` threw on every
+  load. `/` is both precached and what Cloudflare and Tauri already serve for
+  an unmatched path, so `lib/fallback-route.ts` recovers the route offline
+  exactly as it does online. `verify-dist.mjs` checks the two agree.
 - `/api/*`, `/img/*` and `/admin` are on the navigation-fallback denylist. An
   installed worker answering `/admin` from the app shell would serve the public
   shell where the Access gate belongs.
@@ -171,6 +194,41 @@ byte-identical across languages avoids weakening it in translation.
 exist, a placeholder a call site does not fill, a template-literal key, an
 English key nothing uses any more, and a Vietnamese value that is just the
 English copied across (names and formats are allowlisted there).
+
+## Legal consent, and showing what changed
+
+`lib/common/ConsentGate.svelte` is an overlay, not a replacement for the page —
+`onMount` does not run during prerender, so gating the markup behind it would
+ship an empty body. Only `/error/*` and `/legal/*` are exempt: the gate links
+to the documents it asks people to accept.
+
+Each binding document is hashed at build time. `build/legal-versions.ts` serves
+two virtual modules:
+
+- `virtual:legal-versions` — a hash per document slug. Tiny, imported
+  statically, so the gate can decide whether anything changed without a fetch.
+- `virtual:legal-sources` — the raw markdown, ~25 KB. Imported **dynamically**,
+  by the gate alone, so a page load that never opens it never downloads it.
+
+When a hash differs from the one stored at acceptance, the gate reopens by
+itself and lists **only those documents**, each as a line diff (`lib/diff.ts`)
+against the copy in `f2p:legal_snapshot` — rendered as text in a `<pre>`, never
+`{@html}`. With no snapshot (storage cleared, or an acceptance predating the
+feature) it links to the full document instead.
+
+`TERMS_VERSION` in `lib/consent.svelte.ts` survives only as the "make everyone
+re-read all six" override; an ordinary edit no longer needs anyone to remember
+it. Consent lives in its own module rather than `lib/prefs.svelte.ts` because
+the admin SPA compiles that file with its own Vite config, which cannot resolve
+a virtual module.
+
+## Analytics
+
+`lib/analytics.ts` appends the Cloudflare Web Analytics beacon from the same
+`$effect` that gates the catalogue fetch and the service worker on
+`consent.accepted`, so nothing reaches a third party before the reader accepts.
+It returns early under `isTauri()` and when `CF_BEACON_TOKEN` is empty, which
+is what a fork gets.
 
 ## Desktop and Android
 

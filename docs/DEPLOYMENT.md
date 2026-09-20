@@ -128,6 +128,20 @@ pytest suite on changes under `scripts/`.
 It uses a plain `npm ci`, never `npm ci || npm install`. That fallback is what
 hid a lockfile conflict which broke installs for a month.
 
+### A red "Workers Builds" check on a PR branch is usually not yours
+
+Cloudflare posts its own check alongside those. On a pull-request branch it has
+been seen **failing with zero duration** — `started_at` equal to `completed_at`,
+so nothing was compiled and there is no log reachable from GitHub — while the
+identical commits built and deployed from `main` minutes later. Measured on
+PR #130 (2026-09-20), twice.
+
+Before spending time on it, look at the GitHub Actions `check` job: it already
+runs the same `npm run build`, `verify-dist.mjs` and `wrangler deploy
+--dry-run`. If that is green, the build is sound and the Cloudflare check is
+about the preview build, not your diff. The only place the real answer lives is
+the build log in the Cloudflare dashboard, which the check links to.
+
 ## Rolling back
 
 Roll back the Worker deployment in the Cloudflare dashboard
