@@ -101,3 +101,35 @@ describe("the admin API under /admin", () => {
     expect(res.headers.get("Content-Type")).toContain("text/html");
   });
 });
+
+describe("the country block", () => {
+  /** makeEnv() sets no BLOCKED_COUNTRIES, which is why every test above is
+   *  unaffected by this. Here it is set, as wrangler.jsonc sets it. */
+  const blocking = { ...makeEnv(), BLOCKED_COUNTRIES: "CN,RU,AR" } as unknown as Env;
+
+  const from = (country: string | null, path = "/api/activity") =>
+    worker.fetch(
+      new Request(`https://free-steam-games.win${path}`, {
+        headers: country ? { "CF-IPCountry": country } : {},
+      }),
+      blocking,
+      ctx,
+    );
+
+  it("refuses a listed country before any route runs", async () => {
+    const res = await from("CN");
+    expect(res.status).toBe(403);
+    expect(res.headers.get("Content-Type")).toContain("text/plain");
+    // Applied ahead of the admin block too, not only the public routes.
+    expect((await from("RU", "/admin/api/me")).status).toBe(403);
+  });
+
+  it("carries the security headers - this was the other 404 path's bug", async () => {
+    expect((await from("AR")).headers.get("X-Content-Type-Options")).toBe("nosniff");
+  });
+
+  it("lets everyone else through, including an unknown country", async () => {
+    expect((await from("VN")).status).not.toBe(403);
+    expect((await from(null)).status).not.toBe(403);
+  });
+});

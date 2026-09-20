@@ -95,6 +95,16 @@
     // change both together. Values under 7 are ignored as a safety floor.
     "ADMIN_RETENTION_DAYS": "180",
 
+    // Countries refused by the Worker, ISO 3166-1 alpha-2, comma separated.
+    // "CN" is mainland China only - Hong Kong, Macau and Taiwan are HK, MO and
+    // TW and stay reachable.
+    //
+    // This is DEFENCE IN DEPTH, not the boundary. The Worker only ever sees
+    // the four `assets.run_worker_first` prefixes, so the prerendered HTML is
+    // not covered by it; a WAF custom rule on the zone is what actually blocks
+    // a country. See docs/SECURITY_SETUP.md. Empty or unset blocks nothing.
+    "BLOCKED_COUNTRIES": "CN,RU,AR",
+
     // Cloudflare Access. Neither value is a secret: the team domain appears in
     // the login redirect and the AUD tag identifies the application. They are
     // vars so the Worker can verify tokens itself rather than trusting that a
