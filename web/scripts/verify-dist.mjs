@@ -89,6 +89,19 @@ function visible(text) {
   return out + text.slice(cursor);
 }
 
+/**
+ * Whether a CSP directive lists this source EXACTLY.
+ *
+ * `.includes(host)` on the array would mean the same thing, but CodeQL reads
+ * it as a substring test on a URL and files a high-severity alert - and the
+ * distinction it is worried about is a real one here, so the check is written
+ * so that neither a reader nor an analyser has to work out which `includes`
+ * this is. `https://evil.com/?x=https://cloudflareinsights.com` must not pass.
+ */
+function cspAllows(html, directive, source) {
+  return cspSources(html, directive).some((s) => s === source);
+}
+
 /** One directive of a page's CSP meta tag, as a list of its sources. */
 function cspSources(html, directive) {
   const policy = /<meta http-equiv="content-security-policy" content="([^"]*)"/i.exec(html)?.[1] ?? "";
@@ -193,10 +206,10 @@ if (flavour === "web") {
   // only thing a built page can prove is that the policy would let it load.
   // It went unnoticed for months that the edge-injected version could not:
   // nothing in the build looked at script-src.
-  if (!cspSources(home, "script-src").includes(BEACON_SCRIPT_HOST)) {
+  if (!cspAllows(home, "script-src", BEACON_SCRIPT_HOST)) {
     fail(`index.html CSP script-src does not allow ${BEACON_SCRIPT_HOST} (the analytics beacon)`);
   }
-  if (!cspSources(home, "connect-src").includes(BEACON_CONNECT_HOST)) {
+  if (!cspAllows(home, "connect-src", BEACON_CONNECT_HOST)) {
     fail(`index.html CSP connect-src does not allow ${BEACON_CONNECT_HOST} (the analytics beacon)`);
   }
 
@@ -218,7 +231,7 @@ if (flavour === "tauri") {
   // An exact source in connect-src, not a substring of the page: the origin
   // appearing anywhere else (a link, a longer host) must not pass.
   const index = readFileSync(join(DIST, "index.html"), "utf-8");
-  if (!cspSources(index, "connect-src").some((source) => source === "https://free-steam-games.win")) {
+  if (!cspAllows(index, "connect-src", "https://free-steam-games.win")) {
     fail("index.html CSP does not allow https://free-steam-games.win (the Tauri connect-src)");
   }
   // The packaged apps must not phone an analytics beacon. lib/analytics.ts
@@ -227,7 +240,7 @@ if (flavour === "tauri") {
     ["script-src", BEACON_SCRIPT_HOST],
     ["connect-src", BEACON_CONNECT_HOST],
   ]) {
-    if (cspSources(index, directive).includes(host)) {
+    if (cspAllows(index, directive, host)) {
       fail(`index.html CSP ${directive} allows ${host} in a Tauri build`);
     }
   }
