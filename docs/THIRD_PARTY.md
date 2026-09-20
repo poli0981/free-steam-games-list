@@ -14,9 +14,11 @@ Added in v3.2.7 to make the pre-publish checks below runnable.
 
 | Tool | Scope | Purpose | License |
 | --- | --- | --- | --- |
-| [knip](https://knip.dev) | Web app (`web/`) | Finds unused files, exports, types, enum members, and dependencies in the TypeScript SPA. | ISC |
+| [knip](https://knip.dev) | Web app (`web/`) | Finds unused files, exports, types, enum members and dependencies across the SvelteKit app, the Worker and the admin build. | ISC |
 | [vulture](https://github.com/jendrikseipp/vulture) | Python pipeline (`scripts/`) | Finds unused functions, classes, variables, imports, and unreachable code. | MIT |
 | [pip-audit](https://github.com/pypa/pip-audit) | Python pipeline | Audits the pinned Python dependencies against the OSV / PyPI Advisory vulnerability databases. | Apache-2.0 |
+| [svelte-check](https://github.com/sveltejs/language-tools) | Web app (`web/`) | Type-checks `.svelte` files, which `tsc` cannot read. Runs twice in `npm run typecheck` — once for the app, once for the admin build. | MIT |
+| [vitest](https://vitest.dev) | Web app (`web/`) | The test runner behind `npm test`. | MIT |
 
 ### Where they're declared
 
@@ -35,10 +37,15 @@ and fix every error before continuing.
 
 ```sh
 npm run knip        # dead code: unused files / exports / deps
-npm run typecheck   # tsc strict — also flags unused locals & params
+npm run typecheck   # svelte-check + tsc strict, app / admin / Worker / tests
+npm test            # vitest
 npm run build       # full production build must pass
 npm audit           # dependency CVEs
 ```
+
+`npm run typecheck` and `npm run build` both run `build:admin` first, because
+`worker/index.ts` imports the generated admin bundle. That is deliberate — a
+bare `tsc` or `wrangler deploy` without it is supposed to fail.
 
 **Python** — from the repo root:
 

@@ -39,57 +39,52 @@ The Python pipeline relies on two libraries:
 - [`requests`](https://github.com/psf/requests) — Apache-2.0
 - [`urllib3`](https://github.com/urllib3/urllib3) — MIT
 
-The web app + desktop wrapper depend on a longer list, all linked with their licences in the in-app **About → Stack & third-party** section. Grouped by what they do:
+The web app and the desktop/Android wrapper depend on a longer list. The
+in-app **About → Stack & third-party** section shows the headline ones with
+links and licences; this is the whole list, grouped by what it does.
 
-**Runtime & build**
-- [React 18](https://react.dev/) + [react-dom](https://react.dev/) — UI runtime (MIT).
-- [TypeScript 5](https://www.typescriptlang.org/) — type system (Apache-2.0).
-- [Vite 8](https://vitejs.dev/) + [`@vitejs/plugin-react`](https://github.com/vitejs/vite-plugin-react) — build + dev server, powered by the [Rolldown](https://rolldown.rs/) bundler (MIT).
-- [PostCSS](https://postcss.org/) + [autoprefixer](https://github.com/postcss/autoprefixer) — CSS post-processing (MIT).
+**Framework & build**
+- [Svelte 5](https://svelte.dev/) + [SvelteKit 2](https://svelte.dev/docs/kit) — UI runtime and app framework, with `adapter-static` (all MIT).
+- [TypeScript 6](https://www.typescriptlang.org/) — type system (Apache-2.0).
+- [Vite 8](https://vitejs.dev/), powered by the [Rolldown](https://rolldown.rs/) bundler, and `@sveltejs/vite-plugin-svelte` (MIT).
+- [Tailwind CSS 4](https://tailwindcss.com/) via `@tailwindcss/vite` (MIT). Tailwind 4 is a Vite plugin, so there is no PostCSS step and no `tailwind.config.ts`.
 
-**Styling**
-- [Tailwind CSS 3](https://tailwindcss.com/) (MIT).
-- [tailwindcss-animate](https://github.com/jamiebuilds/tailwindcss-animate) — animation utilities (MIT).
+**Styling helpers**
 - [tailwind-merge](https://github.com/dcastil/tailwind-merge) — class merging (MIT).
-- [clsx](https://github.com/lukeed/clsx) — conditional className join (MIT).
+- [clsx](https://github.com/lukeed/clsx) — conditional class join (MIT).
 - [class-variance-authority](https://cva.style/) — variant API (Apache-2.0).
 
-**UI primitives & components**
-- [Radix UI](https://www.radix-ui.com/) — headless dialog/label/popover/separator/slot primitives (MIT).
-- [shadcn/ui](https://ui.shadcn.com/) — copy-and-paste component patterns layered on top of Radix (MIT).
-- [lucide-react](https://lucide.dev/) — icons (ISC).
-- [sonner](https://sonner.emilkowal.ski/) — toasts (MIT).
-- [cmdk](https://cmdk.paco.me/) — command palette (MIT).
+**UI**
+- [Bits UI](https://bits-ui.com/) — headless dialog/popover/select primitives for Svelte (MIT).
+- [`@lucide/svelte`](https://lucide.dev/) — icons (ISC).
+- [svelte-sonner](https://svelte-sonner.vercel.app/) — toasts (MIT).
+- [`@tanstack/svelte-virtual`](https://tanstack.com/virtual) — the virtualised game table (MIT).
 
-**Routing & i18n**
-- [react-router-dom](https://reactrouter.com/) — client-side routing (MIT).
-- [i18next](https://www.i18next.com/) + [react-i18next](https://react.i18next.com/) + [i18next-browser-languagedetector](https://github.com/i18next/i18next-browser-languageDetector) — translation engine (all MIT).
-
-**Data & state**
-- [TanStack Query](https://tanstack.com/query) — fetching + caching (MIT).
-- [TanStack Virtual](https://tanstack.com/virtual) — 1.2k-row virtualised table (MIT).
-- [Zustand](https://zustand-demo.pmnd.rs/) — UI state store (MIT).
-- [idb-keyval](https://github.com/jakearchibald/idb-keyval) — IndexedDB wrapper (Apache-2.0).
+**Data**
+- [idb-keyval](https://github.com/jakearchibald/idb-keyval) — IndexedDB wrapper for the offline catalogue (Apache-2.0).
 - [Fuse.js](https://www.fusejs.io/) — fuzzy search (Apache-2.0).
 
 **Charts**
-- [Apache ECharts](https://echarts.apache.org/) (Apache-2.0).
-- [echarts-for-react](https://github.com/hustcc/echarts-for-react) — React binding (MIT).
-- [echarts-wordcloud](https://github.com/ecomfe/echarts-wordcloud) — wordcloud plugin (BSD-3-Clause).
+- [Apache ECharts 6](https://echarts.apache.org/) (Apache-2.0).
+- [echarts-wordcloud](https://github.com/ecomfe/echarts-wordcloud) — wordcloud series (ISC). Its peer range still names echarts 5; `package.json` carries an `overrides` entry rather than pinning echarts back.
 
-**Crypto & PWA**
-- [OpenPGP.js](https://openpgpjs.org/) — client-side commit signing (LGPL-3.0).
-- [Workbox](https://developer.chrome.com/docs/workbox) + [vite-plugin-pwa](https://vite-pwa-org.netlify.app/) — service worker + offline cache (MIT).
+**Legal documents**
+- [unified](https://unifiedjs.com/) with remark-parse, remark-gfm, remark-rehype, rehype-sanitize, rehype-slug and rehype-stringify — markdown to HTML (all MIT). These run at BUILD time only, so no parser or sanitizer reaches the browser.
 
-**Desktop (Tauri 2)**
-- [Tauri 2](https://v2.tauri.app/) — Rust shell that wraps the same web build into a native desktop app; dual-licensed MIT/Apache-2.0.
-- [`tauri-plugin-shell`](https://github.com/tauri-apps/plugins-workspace/tree/v2/plugins/shell) — open external links.
-- [`tauri-plugin-updater`](https://github.com/tauri-apps/plugins-workspace/tree/v2/plugins/updater) — auto-update.
-- Rust crates pulled in by the desktop binary: `serde`, `serde_json`, `tauri-build` (all MIT/Apache-2.0).
+**Offline**
+- [Workbox](https://developer.chrome.com/docs/workbox) via [`@vite-pwa/sveltekit`](https://vite-pwa-org.netlify.app/) — service worker and precache (MIT). Web only: the packaged apps never register one.
 
-Full SPDX list with deep links to each project's `LICENSE` file lives at `/about` inside the web app, kept up-to-date alongside the dep list itself.
+**Typefaces**
+- [Bricolage Grotesque](https://github.com/ateliertriay/bricolage), [IBM Plex Sans](https://github.com/IBM/plex) and [JetBrains Mono](https://github.com/JetBrains/JetBrainsMono), self-hosted through `@fontsource-variable` (all OFL-1.1).
 
-Dev-only tooling (dead-code detectors, dependency auditors) isn't listed above — it ships with nothing. See [`THIRD_PARTY.md`](./THIRD_PARTY.md).
+**Desktop and Android (Tauri 2)**
+- [Tauri 2](https://v2.tauri.app/) — the Rust shell around the same web build; dual-licensed MIT/Apache-2.0.
+- Plugins: [`shell`](https://github.com/tauri-apps/plugins-workspace/tree/v2/plugins/shell) (external links), and desktop-only [`updater`](https://github.com/tauri-apps/plugins-workspace/tree/v2/plugins/updater), `single-instance` and `process`.
+- Rust crates: `serde`, `serde_json`, `tauri-build` (all MIT/Apache-2.0).
+
+Dev-only tooling — dead-code detectors, type checkers, dependency auditors —
+ships with nothing and is listed separately in
+[`THIRD_PARTY.md`](./THIRD_PARTY.md).
 
 ### Maintainer
 
