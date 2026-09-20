@@ -23,6 +23,7 @@ import { ADMIN_BUNDLE } from "./generated/admin-bundle";
 import { reconcileApproved } from "./lib/reconcile";
 import { defaultAdminDeps } from "./lib/deps";
 import { isPruneTick, pruneAdminHistory } from "./lib/prune";
+import { isBlockedCountry } from "./lib/geo";
 
 export default {
   async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
@@ -104,6 +105,26 @@ async function route(
 ): Promise<Response> {
   const url = new URL(request.url);
   const { pathname } = url;
+
+  // Before every route, including the admin block: a refused country is
+  // refused everywhere this Worker can see, which is only the four
+  // `run_worker_first` prefixes. The zone's WAF rule is what covers the rest
+  // (worker/lib/geo.ts says why, docs/SECURITY_SETUP.md has the rule).
+  //
+  // 403 with a plain body, not a JSON error: this is a maintainer's choice
+  // about where the site is offered, so it should read the same to a person
+  // typing an /img/ URL as to the app's fetch().
+  if (isBlockedCountry(request, env)) {
+    return withSecurityHeaders(
+      new Response("This site is not available in your country.\n", {
+        status: 403,
+        headers: {
+          "Content-Type": "text/plain; charset=utf-8",
+          "Cache-Control": "no-store",
+        },
+      }),
+    );
+  }
 
   if (pathname.startsWith("/api/data/")) {
     return handleData(request, url, ctx);
