@@ -21,6 +21,8 @@ credential that lives only on the server, and a GitHub App is the right shape:
 | Credential at rest | the token itself | the token itself | a private key that mints 1-hour tokens |
 | Attribution in history | your account | your account | its own bot identity |
 
+Neither the App's identity nor yours appears as a name in what `/admin` writes: commit bodies and `data/overrides/*.json` say **`admin`** (`ADMIN_ATTRIBUTION` in `web/shared/admin-api.ts`), because both are public forever. The acting Access identity is recorded in D1 — `audit_log.actor`, `ingest_queue.decided_by`, `ingest_decisions.decided_by`, `commit_jobs.requested_by` — which is where `/admin/audit` reads it from and filters on it.
+
 The App's private key never expires; the tokens it mints die in an hour. That
 removes the failure mode that already bit this project once.
 

@@ -13,6 +13,7 @@
  * and reachable, and Git remains the source of truth either way.
  */
 import { gh } from "./github-app";
+import { ADMIN_ATTRIBUTION } from "../../shared/admin-api";
 
 const REPO_OWNER = "poli0981";
 const REPO_NAME = "free-steam-games-list";
@@ -155,11 +156,15 @@ export interface CommitResult {
  * overwriting it silently discards whatever the other queued. That exact bug
  * was found and fixed once already, in the since-removed issue-ingest
  * workflow; do not reintroduce it here.
+ *
+ * It takes no actor. The commit body says ADMIN_ATTRIBUTION, and the parameter
+ * that used to carry the reviewer's Access address is gone rather than merely
+ * unused at the one call site - a public commit body is not the place for it,
+ * and a parameter no one can pass cannot be passed by mistake.
  */
 export async function appendLinks(
   env: Env,
   links: string[],
-  actor: string,
   reason = "",
   transport: GitHubTransport = gh,
 ): Promise<CommitResult> {
@@ -226,11 +231,12 @@ export async function appendLinks(
             },
             message: {
               headline,
-              // The reviewer's identity belongs in the commit, not only in the
-              // audit table: the audit table is not part of the backup that
-              // matters, and Git is.
+              // That the approval came from /admin belongs in the commit, not
+              // only in the audit table: the audit table is not part of the
+              // backup that matters, and Git is. WHO approved it stays in D1 -
+              // this body is public forever.
               body:
-                `Approved in /admin by ${actor}.` +
+                `Approved in /admin by ${ADMIN_ATTRIBUTION}.` +
                 (reason ? `\n\nReason: ${reason}` : "") +
                 `\n\nQueued for scripts/ingest_new.py, which decides whether each game is actually free, reachable and not already present. This commit is a request, not a publication.`,
             },

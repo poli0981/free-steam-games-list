@@ -6,6 +6,7 @@
 import type { AdminDeps } from "../lib/deps";
 import type { CommitResult, FileEdit } from "../lib/git-commit";
 import { DELETE_FILE } from "../lib/git-commit";
+import { ADMIN_ATTRIBUTION } from "../../shared/admin-api";
 import type { GameRecord } from "../lib/records";
 import { SqliteD1 } from "./sqlite-d1";
 
@@ -108,14 +109,14 @@ export function fakeDeps(options: {
   let sha = 0;
   const now = options.now ?? new Date("2026-09-17T12:00:00Z");
 
-  const appendLinks = async (_env: Env, links: string[], actor: string, reason = ""): Promise<CommitResult> => {
+  const appendLinks = async (_env: Env, links: string[], reason = ""): Promise<CommitResult> => {
     if (options.failCommit) throw new Error(options.failCommit);
     const queued = new Set(repo.appended.flat());
     const fresh = [...new Set(links)].filter((l) => !queued.has(l));
     const skipped = [...new Set(links)].filter((l) => queued.has(l));
     if (!fresh.length) return { sha: null, appended: 0, skipped };
     repo.appended.push(fresh);
-    repo.commits.push({ headline: `queue: ${fresh.length}`, body: `by ${actor} ${reason}`, additions: ["scripts/temp_info.jsonl"], deletions: [] });
+    repo.commits.push({ headline: `queue: ${fresh.length}`, body: `by ${ADMIN_ATTRIBUTION} ${reason}`, additions: ["scripts/temp_info.jsonl"], deletions: [] });
     return { sha: `sha${++sha}`.padEnd(40, "0"), appended: fresh.length, skipped };
   };
 
