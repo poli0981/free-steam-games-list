@@ -6,7 +6,8 @@
   import { page } from "$app/state";
   import { afterNavigate, goto } from "$app/navigation";
   import { i18n } from "$lib/i18n.svelte";
-  import { consent, theme, welcome } from "$lib/prefs.svelte";
+  import { theme, welcome } from "$lib/prefs.svelte";
+  import { consent } from "$lib/consent.svelte";
   import { installPaletteShortcut } from "$lib/palette.svelte";
   import { games, installGamesRevalidation } from "$lib/games.svelte";
   import { upgradeLegacyHashUrl } from "$lib/legacy-url";
@@ -15,6 +16,7 @@
   import { checkAndroidUpdate } from "$lib/android-update";
   import { purgeTauriServiceWorker, purgeLegacyDataCache } from "$lib/pwa";
   import { pwa } from "$lib/pwa-state.svelte";
+  import { loadAnalytics } from "$lib/analytics";
   import { pwaInfo } from "virtual:pwa-info";
   import PwaIndicator from "$lib/common/PwaIndicator.svelte";
   import DesktopUpdateDialog from "$lib/common/DesktopUpdateDialog.svelte";
@@ -131,11 +133,15 @@
   });
 
   // The ~6 MB catalogue fetch waits for consent: someone who declines should
-  // never have caused the download. So do the checks for newer data.
+  // never have caused the download. So do the checks for newer data, and the
+  // analytics beacon - the only third party this app loads, and the privacy
+  // policy's promise that nothing leaves before you accept depends on it
+  // staying in here.
   $effect(() => {
     if (!consent.accepted) return;
     void games.load();
     void pwa.register();
+    loadAnalytics();
     return installGamesRevalidation();
   });
 

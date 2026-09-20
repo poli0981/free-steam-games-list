@@ -123,7 +123,19 @@ const config = {
       mode: "hash",
       directives: {
         "default-src": ["self"],
-        "script-src": ["self"],
+        /**
+         * WEB ONLY: the Cloudflare Web Analytics beacon (lib/analytics.ts).
+         *
+         * It is a plain external script, which is the whole reason the app
+         * loads it itself rather than letting Cloudflare inject it: the
+         * "automatic" setup also inserts an INLINE loader, and CSP3 makes a
+         * script-src carrying hashes ignore 'unsafe-inline', so no policy
+         * could ever admit it. See docs/SECURITY_SETUP.md section 9.
+         *
+         * Not under Tauri: the packaged apps must not phone a beacon, and
+         * tauri.conf.json's header policy would block it anyway.
+         */
+        "script-src": ["self", ...(IS_TAURI ? [] : ["https://static.cloudflareinsights.com"])],
         // 'unsafe-inline' is load-bearing for style-src: Bits UI positions
         // popovers and dialogs with inline style attributes, and ECharts sizes
         // its canvas the same way. Low risk while script-src stays strict,
@@ -161,7 +173,9 @@ const config = {
               "ipc:",
               "http://ipc.localhost",
             ]
-          : ["self"],
+          // The beacon posts to cloudflareinsights.com (a different host from
+          // the script's static. subdomain). Nothing else is allowed here.
+          : ["self", "https://cloudflareinsights.com"],
         "worker-src": ["self"],
         "manifest-src": ["self"],
         "media-src": ["none"],

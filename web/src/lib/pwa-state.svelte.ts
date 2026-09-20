@@ -55,6 +55,14 @@ class PwaState {
     window.addEventListener("beforeinstallprompt", (e) => {
       // Keep the browser's own mini-infobar from appearing; the app offers
       // installation from the topbar and Settings instead.
+      //
+      // Chrome logs "Banner not shown: beforeinstallpromptevent
+      // .preventDefault() called. The page must call
+      // beforeinstallpromptevent.prompt() to show the banner." every time it
+      // fires. That is Chrome confirming the suppression worked, not a fault:
+      // prompt() IS called, from install() below, when the reader presses one
+      // of those buttons. Removing preventDefault() would put Chrome's banner
+      // next to the app's own install affordances.
       e.preventDefault();
       this.#installEvent = e as BeforeInstallPromptEvent;
       this.canInstall = true;

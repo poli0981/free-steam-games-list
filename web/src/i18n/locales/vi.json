@@ -4,6 +4,15 @@
     "intro": "Khi sử dụng trang này, bạn chấp nhận và đồng ý tuân thủ các văn bản dưới đây. Bấm vào từng mục để đọc toàn văn.",
     "docsLabel": "Văn bản pháp lý",
     "checkboxLabel": "Tôi đã đọc và chấp nhận giấy phép mã nguồn, giấy phép dữ liệu, EULA, Chính sách quyền riêng tư, Tuyên bố miễn trừ và Điều khoản sử dụng.",
+    "changedTitle": "Điều khoản đã thay đổi",
+    "changedIntro": "Chỉ hiển thị những văn bản đã thay đổi kể từ lần bạn chấp nhận gần nhất, kèm phần thay đổi được đánh dấu. Các văn bản còn lại giữ nguyên như bạn đã chấp nhận.",
+    "changedDocsLabel": "Văn bản đã cập nhật",
+    "showChanges": "Xem phần thay đổi",
+    "diffLegend": "+ thêm vào   - gỡ bỏ   (phần còn lại là nội dung không đổi, để đối chiếu)",
+    "noComparison": "Thiết bị này không còn lưu bản bạn đã chấp nhận, nên không thể so sánh trực tiếp. Hãy mở văn bản để đọc toàn văn.",
+    "formattingOnly": "Chỉ thay đổi về trình bày; câu chữ vẫn giữ nguyên.",
+    "changedCheckboxLabel": "Tôi đã đọc và chấp nhận những thay đổi này.",
+    "acceptChanges": "Chấp nhận thay đổi",
     "continue": "Tiếp tục",
     "decline": "Từ chối",
     "declinedTitle": "Bạn cần chấp nhận điều khoản",
@@ -487,7 +496,7 @@
       },
       "privacy": {
         "label": "Chính sách quyền riêng tư",
-        "hint": "không tài khoản, không phân tích hay theo dõi; những gì nhà cung cấp hạ tầng ghi nhật ký"
+        "hint": "không tài khoản; máy chủ ghi những gì, và số lượt xem trang duy nhất"
       },
       "acknowledgements": {
         "label": "Lời cảm ơn",

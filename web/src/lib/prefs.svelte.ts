@@ -1,17 +1,24 @@
 /**
- * The three pieces of state that outlive a page load: legal consent, whether
- * the introduction has been seen, and the theme.
+ * State that outlives a page load: whether the introduction has been seen, and
+ * the theme. Legal consent lives in consent.svelte.ts.
  *
- * All three are localStorage-backed with no backend and no cookie — the same
+ * All of it is localStorage-backed with no backend and no cookie — the same
  * pattern as `f2p:lang`. An incognito tab gets a fresh storage partition, so
  * the consent gate re-shows there with no extra code.
  *
  * Every read and write is wrapped: private mode, lockdown settings and the
  * Tauri webview can all refuse storage, and a throw here would take out the
- * whole app shell.
+ * whole app shell. readJson/writeJson are exported for consent.svelte.ts,
+ * which is the only other module that persists anything this way.
+ *
+ * THIS FILE IS SHARED WITH THE ADMIN SPA (admin/src/App.svelte imports
+ * `theme`), which builds with its own Vite config. It must therefore stay free
+ * of `$app/*`, `$lib/*` and any virtual module - the reason consent moved out:
+ * it needs `virtual:legal-versions`, and pulling that in here failed the admin
+ * build outright.
  */
 
-function readJson<T>(key: string): T | null {
+export function readJson<T>(key: string): T | null {
   try {
     const raw = localStorage.getItem(key);
     return raw ? (JSON.parse(raw) as T) : null;
@@ -21,63 +28,13 @@ function readJson<T>(key: string): T | null {
   }
 }
 
-function writeJson(key: string, value: unknown): void {
+export function writeJson(key: string, value: unknown): void {
   try {
     localStorage.setItem(key, JSON.stringify(value));
   } catch {
     /* storage blocked - the choice just will not persist */
   }
 }
-
-/* ───────────────────────────── consent ───────────────────────────── */
-
-const CONSENT_KEY = "f2p:legal_consent";
-
-/**
- * Bump whenever the binding legal documents change materially: a stored
- * acceptance for an older version stops counting and everyone is re-prompted.
- *
- * 3 (Sept 2026): the licence split, plus a Privacy Policy that now discloses
- * edge logging where the previous one claimed there was no server at all.
- */
-export const TERMS_VERSION = 3;
-
-interface StoredConsent {
-  version: number;
-  /** ISO timestamp of acceptance - informational only. */
-  acceptedAt: string;
-}
-
-class Consent {
-  accepted = $state(false);
-  /**
-   * False until storage has been read.
-   *
-   * The gate opens only once this is true. Before it existed the gate rendered
-   * whenever `accepted` was false - which it always is during prerender - so
-   * EVERY prerendered page shipped the full consent dialog in its HTML, and a
-   * returning visitor who had long since accepted saw it flash on each full
-   * page load until hydration hid it again.
-   */
-  hydrated = $state(false);
-
-  /** Read from storage. Called once the app is mounted, never during
-   *  prerender, where there is no localStorage. */
-  hydrate(): void {
-    this.accepted = readJson<StoredConsent>(CONSENT_KEY)?.version === TERMS_VERSION;
-    this.hydrated = true;
-  }
-
-  accept(): void {
-    writeJson(CONSENT_KEY, {
-      version: TERMS_VERSION,
-      acceptedAt: new Date().toISOString(),
-    } satisfies StoredConsent);
-    this.accepted = true;
-  }
-}
-
-export const consent = new Consent();
 
 /* ───────────────────────────── welcome ───────────────────────────── */
 

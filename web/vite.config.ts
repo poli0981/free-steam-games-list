@@ -8,6 +8,7 @@ import { visualizer } from "rollup-plugin-visualizer";
 import path from "node:path";
 import { readFileSync } from "node:fs";
 import { gameSeeds } from "./build/game-seeds";
+import { legalVersions } from "./build/legal-versions";
 
 // Version sourced from package.json (single source of truth, matches the Android
 // versionName) and exposed to the bundle as `__APP_VERSION__` for the update check.
@@ -62,6 +63,10 @@ export default defineConfig(({ mode }) => ({
     // already registered when it processes <style> blocks.
     tailwindcss(),
     gameSeeds({ enabled: PRERENDER_GAMES, dataDir: path.resolve(__dirname, "../data") }),
+    // Content hashes for the binding legal documents, so the consent gate can
+    // show what changed instead of asking for a second full read. Every
+    // flavour: the packaged apps run the same gate.
+    legalVersions(),
     sveltekit(),
     /**
      * WEB ONLY. A service worker registered at tauri.localhost can never be
@@ -126,7 +131,22 @@ export default defineConfig(({ mode }) => ({
           // runs over .svelte-kit/output, not dist, and without this every
           // install would precache all of them.
           globIgnores: ["**/og.png", "prerendered/pages/games/**", "**/games/*.html"],
-          navigateFallback: "/200.html",
+          // "/" — the prerendered dashboard — and NOT "/200.html", which the
+          // precache does not contain and cannot contain. adapter-static
+          // writes 200.html with generateFallback() straight into dist/,
+          // AFTER workbox has globbed .svelte-kit/output; there is no
+          // 200.html under .svelte-kit at all. So createHandlerBoundToURL()
+          // threw `non-precached-url` on every load, taking the rest of the
+          // worker's top-level setup with it.
+          //
+          // "/" is the right target anyway: it is exactly what BOTH hosts
+          // already serve for an unmatched path (Cloudflare's
+          // not_found_handling: "single-page-application", and Tauri's
+          // get_asset() chain), so the offline fallback now behaves like the
+          // online one and lib/fallback-route.ts re-renders the real route.
+          // verify-dist.mjs fails the build if this ever names a URL the
+          // precache manifest does not list.
+          navigateFallback: "/",
           // These are Worker routes, not app navigations. Without the denylist an
           // installed service worker answers them from the app shell and they
           // never reach Cloudflare - which for /admin means serving the public

@@ -99,6 +99,36 @@ function cspSources(html, directive) {
   return found ? found.slice(1) : [];
 }
 
+/**
+ * The service worker's navigation fallback must be a URL it actually precached.
+ *
+ * It was not. `navigateFallback: "/200.html"` named the adapter-static
+ * fallback, which generateFallback() writes into dist/ AFTER workbox has
+ * globbed .svelte-kit/output - so the precache manifest never contained it and
+ * createHandlerBoundToURL() threw `non-precached-url` on every page load,
+ * abandoning the rest of the worker's top-level setup. Nothing in the build
+ * noticed: sw.js existed, was valid JavaScript, and only failed at runtime.
+ *
+ * Precache entries are spelled as the route URL with no leading slash
+ * (`about`, `legal/tos`), except the home page, which is `/`.
+ */
+function assertNavigateFallbackIsPrecached(sw) {
+  const bound = /createHandlerBoundToURL\("([^"]*)"\)/.exec(sw);
+  if (!bound) {
+    fail("sw.js registers no navigation fallback (createHandlerBoundToURL is gone)");
+    return;
+  }
+  const url = bound[1];
+  const entry = url === "/" ? "/" : url.replace(/^\//, "");
+  if (!sw.includes(`url:"${entry}"`)) {
+    fail(`sw.js: navigateFallback "${url}" is not in the precache manifest`);
+  }
+}
+
+// Cloudflare Web Analytics: the script's host and the host its beacon posts to.
+const BEACON_SCRIPT_HOST = "https://static.cloudflareinsights.com";
+const BEACON_CONNECT_HOST = "https://cloudflareinsights.com";
+
 // Strings that must never be baked into a page before data exists.
 const BAKED_EMPTY_STATES = [en.games.noResults, en.health.allClear, en.studios.notFound];
 const CONSENT_TITLE = en.consent.title;
@@ -157,6 +187,18 @@ if (flavour === "web") {
   const home = readFileSync(join(DIST, "index.html"), "utf-8");
   if (!/<link rel="manifest"/.test(home)) fail('index.html has no <link rel="manifest">');
   if (!existsSync(join(DIST, "sw.js"))) fail("sw.js was not generated");
+  else assertNavigateFallbackIsPrecached(readFileSync(join(DIST, "sw.js"), "utf-8"));
+
+  // The analytics beacon (lib/analytics.ts) is appended at runtime, so the
+  // only thing a built page can prove is that the policy would let it load.
+  // It went unnoticed for months that the edge-injected version could not:
+  // nothing in the build looked at script-src.
+  if (!cspSources(home, "script-src").includes(BEACON_SCRIPT_HOST)) {
+    fail(`index.html CSP script-src does not allow ${BEACON_SCRIPT_HOST} (the analytics beacon)`);
+  }
+  if (!cspSources(home, "connect-src").includes(BEACON_CONNECT_HOST)) {
+    fail(`index.html CSP connect-src does not allow ${BEACON_CONNECT_HOST} (the analytics beacon)`);
+  }
 
   // A universal load, not a server load: a __data.json here would mean client
   // navigation fetches one per game, and 404s (as index.html) for new games.
@@ -178,6 +220,16 @@ if (flavour === "tauri") {
   const index = readFileSync(join(DIST, "index.html"), "utf-8");
   if (!cspSources(index, "connect-src").some((source) => source === "https://free-steam-games.win")) {
     fail("index.html CSP does not allow https://free-steam-games.win (the Tauri connect-src)");
+  }
+  // The packaged apps must not phone an analytics beacon. lib/analytics.ts
+  // returns early under isTauri(), and the policy backs that up.
+  for (const [directive, host] of [
+    ["script-src", BEACON_SCRIPT_HOST],
+    ["connect-src", BEACON_CONNECT_HOST],
+  ]) {
+    if (cspSources(index, directive).includes(host)) {
+      fail(`index.html CSP ${directive} allows ${host} in a Tauri build`);
+    }
   }
 }
 

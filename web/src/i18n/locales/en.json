@@ -4,6 +4,15 @@
     "intro": "By using this site you accept and agree to be bound by the documents below. Open any of them to read the full text.",
     "docsLabel": "Legal documents",
     "checkboxLabel": "I have read and accept the code licence, the data licence, the EULA, the Privacy Policy, the Disclaimer, and the Terms of Use.",
+    "changedTitle": "The terms have changed",
+    "changedIntro": "Only the documents that changed since you last accepted are shown, with the changes marked. The rest stand as you accepted them.",
+    "changedDocsLabel": "Updated documents",
+    "showChanges": "Show what changed",
+    "diffLegend": "+ added   - removed   (the rest is unchanged text, for context)",
+    "noComparison": "This device has no copy of the version you accepted, so the change cannot be shown side by side. Open the document to read it in full.",
+    "formattingOnly": "Only formatting changed; the wording is the same.",
+    "changedCheckboxLabel": "I have read and accept these changes.",
+    "acceptChanges": "Accept the changes",
     "continue": "Continue",
     "decline": "Decline",
     "declinedTitle": "You need to accept the terms",
@@ -487,7 +496,7 @@
       },
       "privacy": {
         "label": "Privacy Policy",
-        "hint": "no accounts, analytics or tracking; what the host logs"
+        "hint": "no accounts; what the host logs, and the one page-view count"
       },
       "acknowledgements": {
         "label": "Acknowledgements",

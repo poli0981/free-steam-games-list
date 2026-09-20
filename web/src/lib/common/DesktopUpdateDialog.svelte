@@ -6,7 +6,7 @@
   import { Dialog } from "bits-ui";
   import Download from "@lucide/svelte/icons/download";
   import { i18n } from "../i18n.svelte";
-  import { consent } from "../prefs.svelte";
+  import { consent } from "../consent.svelte";
   import { checkDesktopUpdate, type DesktopUpdate } from "../desktop-update";
   import Button from "../ui/Button.svelte";
 
