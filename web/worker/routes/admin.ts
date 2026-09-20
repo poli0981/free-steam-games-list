@@ -458,7 +458,7 @@ export async function handleAdminApi(
 
       let result;
       try {
-        result = await deps.appendLinks(env, rows.map((r) => r.link), who.email, reason);
+        result = await deps.appendLinks(env, rows.map((r) => r.link), reason);
       } catch (err) {
         const message = err instanceof Error ? err.message : String(err);
         await env.DB.prepare(

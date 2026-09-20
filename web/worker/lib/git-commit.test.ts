@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { commitFiles, DELETE_FILE, type GitHubTransport } from "./git-commit";
+import { appendLinks, commitFiles, DELETE_FILE, type GitHubTransport } from "./git-commit";
+import { ADMIN_ATTRIBUTION } from "../../shared/admin-api";
 
 /**
  * The createCommitOnBranch payload, as GitHub would receive it. The mutation
@@ -28,6 +29,29 @@ function transport(files: Record<string, string | null>) {
       repository[`f${k.slice(1)}`] = text === null || text === undefined ? null : { text, isBinary: false };
     });
     return new Response(JSON.stringify({ data: { repository } }));
+  };
+  return { fn, calls };
+}
+
+/** The head + queue-file read that appendLinks issues, then the commit. */
+function queueTransport(queueFile: string) {
+  const calls: Call[] = [];
+  const fn: GitHubTransport = async (_env, _path, init) => {
+    const body = JSON.parse(String(init?.body)) as Call;
+    calls.push(body);
+    if (body.query.includes("createCommitOnBranch")) {
+      return new Response(JSON.stringify({ data: { createCommitOnBranch: { commit: { oid: "newsha" } } } }));
+    }
+    return new Response(
+      JSON.stringify({
+        data: {
+          repository: {
+            defaultBranchRef: { target: { oid: "head" } },
+            object: { text: queueFile, isBinary: false },
+          },
+        },
+      }),
+    );
   };
   return { fn, calls };
 }
@@ -84,5 +108,23 @@ describe("commitFiles", () => {
       commitFiles(env, [{ path: "data/data_001.jsonl", build: () => DELETE_FILE }], "h", "b", fn),
     ).rejects.toThrow(/not an allowed path/);
     expect(calls).toEqual([]);
+  });
+});
+
+describe("commit bodies", () => {
+  /**
+   * These bodies are published forever in a public repository. The reviewer's
+   * Cloudflare Access address used to be interpolated into every one of them
+   * ("Approved in /admin by someone@example.com"), while the Git AUTHOR was
+   * already the app's bot identity. Who approved what stays in D1.
+   */
+  it("names /admin, never a person", async () => {
+    const { fn, calls } = queueTransport("");
+    await appendLinks(env, ["https://store.steampowered.com/app/730/"], "looks free", fn);
+
+    const body = String(calls.at(-1)!.variables.input.message.body);
+    expect(body).toContain(`Approved in /admin by ${ADMIN_ATTRIBUTION}.`);
+    expect(body).toContain("Reason: looks free");
+    expect(body).not.toContain("@");
   });
 });

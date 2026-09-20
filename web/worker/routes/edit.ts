@@ -22,6 +22,7 @@ import { DELETE_FILE } from "../lib/git-commit";
 import { defaultAdminDeps, type AdminDeps } from "../lib/deps";
 import type { GameRecord } from "../lib/records";
 import { MAX_EDIT } from "../../shared/queue-rules";
+import { ADMIN_ATTRIBUTION } from "../../shared/admin-api";
 import { ADMIN_API_PREFIX } from "../../shared/admin-routes";
 
 /** Mirrors MANUAL_FIELDS in scripts/core/constants.py. */
@@ -242,7 +243,7 @@ export async function handleEditApi(
         targetPath: `data/overrides/${appid}.json`,
         headline: `override: remove settled file for ${record.name || appid}`,
         body:
-          `Removed in /admin by ${who.email}.${reason ? `\n\nReason: ${reason}` : ""}\n\n` +
+          `Removed in /admin by ${ADMIN_ATTRIBUTION}.${reason ? `\n\nReason: ${reason}` : ""}\n\n` +
           "Every entry in it was retired and already restored, so it no longer changes anything.",
         edits: [
           {
@@ -312,7 +313,7 @@ export async function handleEditApi(
       targetPath: appids.length === 1 ? `data/overrides/${appids[0]}.json` : `data/overrides/{${appids.join(",")}}.json`,
       headline,
       body:
-        `Edited in /admin by ${who.email}.${reason ? `\n\nReason: ${reason}` : ""}\n\n` +
+        `Edited in /admin by ${ADMIN_ATTRIBUTION}.${reason ? `\n\nReason: ${reason}` : ""}\n\n` +
         `Standing instruction re-applied by save_main() on every write to data/. ` +
         `See scripts/core/overrides.py.`,
       edits: appids.map((appid, i) => {
@@ -339,7 +340,7 @@ export async function handleEditApi(
               // restores it.
               const prior = doc.fields[field];
               const was = prior && "was" in prior ? prior.was : (record[field] ?? null);
-              doc.fields[field] = { value, was, set_by: who.email, set_at: now, reason };
+              doc.fields[field] = { value, was, set_by: ADMIN_ATTRIBUTION, set_at: now, reason };
               delete doc.retired[field];
             }
 
@@ -350,7 +351,7 @@ export async function handleEditApi(
               doc.retired[field] = {
                 value: entry.value,
                 was: entry.was,
-                retired_by: who.email,
+                retired_by: ADMIN_ATTRIBUTION,
                 retired_at: now,
               };
             }

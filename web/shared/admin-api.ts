@@ -166,9 +166,24 @@ export const MANUAL_FIELDS = [
 ] as const;
 export type ManualField = (typeof MANUAL_FIELDS)[number];
 
+/**
+ * What /admin writes into Git where a person would otherwise be named.
+ *
+ * Commit bodies and `data/overrides/<appid>.json` are public forever; the
+ * reviewer's Cloudflare Access address is not something to publish with every
+ * approval. D1 still records the real identity (`audit_log.actor`,
+ * `ingest_queue.decided_by`, `ingest_decisions.decided_by`,
+ * `commit_jobs.requested_by`) - 0001_init.sql calls that deliberate and the
+ * audit view filters on it - so nothing forensic is lost, and the Git AUTHOR
+ * was already the app's own bot identity.
+ */
+export const ADMIN_ATTRIBUTION = "admin";
+
 export interface OverrideEntry {
   value: unknown;
   was: unknown;
+  /** Always ADMIN_ATTRIBUTION for anything /admin writes. Informational:
+   *  scripts/core/overrides.py reads only `value` and `was`. */
   set_by?: string;
   set_at?: string;
   reason?: string;
