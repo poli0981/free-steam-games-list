@@ -1,0 +1,16 @@
+{
+  "schema": 1,
+  "appid": "4760660",
+  "link": "https://store.steampowered.com/app/4760660/",
+  "name": "Selena's Charm 2: Enchanted Garden",
+  "fields": {
+    "genre": {
+      "value": "Puzzle",
+      "was": "Free To Play",
+      "set_by": "admin",
+      "set_at": "2026-09-21T03:11:46.661Z",
+      "reason": ""
+    }
+  },
+  "retired": {}
+}
