@@ -1,0 +1,16 @@
+{
+  "schema": 1,
+  "appid": "4764810",
+  "link": "https://store.steampowered.com/app/4764810/",
+  "name": "Step Lightly",
+  "fields": {
+    "genre": {
+      "value": "Horror",
+      "was": "Free To Play",
+      "set_by": "admin",
+      "set_at": "2026-09-21T03:10:58.852Z",
+      "reason": ""
+    }
+  },
+  "retired": {}
+}
