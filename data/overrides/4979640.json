@@ -1,0 +1,16 @@
+{
+  "schema": 1,
+  "appid": "4979640",
+  "link": "https://store.steampowered.com/app/4979640/",
+  "name": "Hidden Objects Painted Forest",
+  "fields": {
+    "genre": {
+      "value": "Puzzle",
+      "was": "Free To Play",
+      "set_by": "admin",
+      "set_at": "2026-09-21T03:46:56.243Z",
+      "reason": ""
+    }
+  },
+  "retired": {}
+}
