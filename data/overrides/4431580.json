@@ -1,0 +1,16 @@
+{
+  "schema": 1,
+  "appid": "4431580",
+  "link": "https://store.steampowered.com/app/4431580/",
+  "name": "Slick As The Devil",
+  "fields": {
+    "genre": {
+      "value": "Horror",
+      "was": "Free To Play",
+      "set_by": "admin",
+      "set_at": "2026-09-21T03:30:24.930Z",
+      "reason": ""
+    }
+  },
+  "retired": {}
+}
