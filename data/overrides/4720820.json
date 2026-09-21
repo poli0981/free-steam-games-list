@@ -1,0 +1,16 @@
+{
+  "schema": 1,
+  "appid": "4720820",
+  "link": "https://store.steampowered.com/app/4720820/",
+  "name": "tiny desktop pals",
+  "fields": {
+    "genre": {
+      "value": "Desktop Companion",
+      "was": "Free To Play",
+      "set_by": "admin",
+      "set_at": "2026-09-21T02:08:02.864Z",
+      "reason": ""
+    }
+  },
+  "retired": {}
+}
