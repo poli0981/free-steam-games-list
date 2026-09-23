@@ -132,4 +132,34 @@ describe("the country block", () => {
     expect((await from("VN")).status).not.toBe(403);
     expect((await from(null)).status).not.toBe(403);
   });
+
+  it("covers the human-check route like every other", async () => {
+    expect((await from("CN", "/api/human-check")).status).toBe(403);
+  });
+});
+
+describe("the human-check route", () => {
+  // Through the real router: a handler test cannot notice the route being
+  // shadowed by the /api/* 404 or pulled behind the Access block.
+  it("is reached, not the /api/* catch-all", async () => {
+    const res = await worker.fetch(new Request("https://free-steam-games.win/api/human-check"), env, ctx);
+    expect(res.status).toBe(405);
+    expect(res.headers.get("Content-Type")).toContain("application/json");
+  });
+
+  it("is public: an unconfigured Worker answers 503, not an Access refusal", async () => {
+    // makeEnv() carries no TURNSTILE_SECRET, so no siteverify call is made -
+    // the fetch stub above would throw on one.
+    const res = await worker.fetch(
+      new Request("https://free-steam-games.win/api/human-check", {
+        method: "POST",
+        headers: { Origin: "https://free-steam-games.win", "Content-Type": "application/json" },
+        body: JSON.stringify({ token: "x" }),
+      }),
+      env,
+      ctx,
+    );
+    expect(res.status).toBe(503);
+    expect(res.headers.get("Access-Control-Allow-Origin")).toBeNull();
+  });
 });

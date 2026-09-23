@@ -11,6 +11,8 @@ import { handleData } from "./routes/data";
 import { handleImg } from "./routes/img";
 import { handleActivity } from "./routes/activity";
 import { handleDesktopUpdates } from "./routes/updates";
+import { handleHumanCheck } from "./routes/human-check";
+import { HUMAN_CHECK_PATH } from "../shared/human-check";
 import { jsonError, withSecurityHeaders } from "./lib/http";
 import { verifyAccessJwt, AccessUnavailableError } from "./lib/access";
 import { handleAdminApi } from "./routes/admin";
@@ -144,6 +146,12 @@ async function route(
   // Access gate, never with the GitHub App token.
   if (pathname === "/api/updates/desktop") {
     return handleDesktopUpdates(request, url, ctx);
+  }
+
+  // Public as well: the web app's Turnstile check. Never behind Access, and
+  // never with CORS - it is same-origin by design (routes/human-check.ts).
+  if (pathname === HUMAN_CHECK_PATH) {
+    return handleHumanCheck(request, url, env);
   }
 
   // Everything below is admin surface. Authenticate ONCE, here, before any
