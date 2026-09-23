@@ -2,7 +2,20 @@
 
 All notable changes to this awesome noob repo will be documented here.
 
-## [Unreleased]
+## [v4.0.1] – 2026-09-23 (The "Human Check" Edition)
+
+The web app now asks each browser to pass a Cloudflare Turnstile check once a
+day after the terms are accepted, shows a changed legal document as a diff
+instead of asking for a full re-read, and counts page views with Cloudflare
+Web Analytics. The desktop app's game artwork - blank because its webview
+sends a Referer the zone's Hotlink Protection refuses - is back, and nothing in
+the app loads data before the reader is past the consent step and the check. Web app + desktop/Android
+bumped `2.0.0` → `2.0.1`; repo public-facing version `4.0.0` → `4.0.1`.
+
+The web changes are already live - pushing `main` deploys. The desktop app
+offers 2.0.1 through its updater once the release is published; on Android,
+install the new APK over the old one. Returning visitors see the consent gate
+once, listing only the Privacy Policy and Terms of Use changes.
 
 ### ✨ Added
 
@@ -55,6 +68,14 @@ All notable changes to this awesome noob repo will be documented here.
   thumbnails `npm run dev` could never show. Installed 2.0.0 apps are covered
   by a Configuration Rule on the zone until they update; Hotlink Protection
   itself stays on for other sites.
+- **`/activity` and `/charts/delisted` fetched their data before consent.** The
+  root layout held the catalogue back, but those two pages called `load()`
+  from effects of their own, and the activity feed also refetched on window
+  focus. The gate now lives in `Resource` itself: an `enabled` option read
+  inside every `load()`, which every resource sets to `appReady()` - consent
+  accepted and the human check cleared - so a held-back load starts by itself
+  once both are passed. `src/lib/resource.test.ts` fails on a `new Resource`
+  without it.
 - **The service worker threw `non-precached-url: /200.html` on every page
   load.** `navigateFallback` named the adapter-static fallback, which is
   written into `dist/` after workbox has already globbed the build output — so

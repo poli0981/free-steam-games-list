@@ -9,6 +9,7 @@
   import { theme, welcome } from "$lib/prefs.svelte";
   import { consent } from "$lib/consent.svelte";
   import { humanCheck } from "$lib/human-check-state.svelte";
+  import { appReady } from "$lib/app-ready";
   import { installPaletteShortcut } from "$lib/palette.svelte";
   import { games, installGamesRevalidation } from "$lib/games.svelte";
   import { upgradeLegacyHashUrl } from "$lib/legacy-url";
@@ -141,9 +142,10 @@
   // privacy policy's promise that nothing leaves before you accept depends on
   // it staying in here. The other, Turnstile, is loaded by HumanCheck, which
   // opens only after consent too; everything here also waits for that check
-  // (it is off in the packaged apps, where `cleared` is simply true).
+  // (it is off in the packaged apps, where it clears as soon as it hydrates).
+  // appReady() is both conditions, and every Resource checks it too.
   $effect(() => {
-    if (!consent.accepted || !humanCheck.cleared) return;
+    if (!appReady()) return;
     void games.load();
     void pwa.register();
     loadAnalytics();
@@ -161,7 +163,7 @@
    * returning to a redirect.
    */
   $effect(() => {
-    if (!landedOnHome || !consent.hydrated || !consent.accepted || !humanCheck.cleared || welcome.seen) return;
+    if (!landedOnHome || !consent.hydrated || !appReady() || welcome.seen) return;
     landedOnHome = false;
     if (page.url.pathname === "/") void goto("/welcome", { replaceState: true });
   });

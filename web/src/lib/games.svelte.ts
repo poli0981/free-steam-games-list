@@ -15,6 +15,7 @@ import { readCache, writeCache } from "./cache";
 import { createLoader, type Generation } from "./games-loader";
 import { buildIndex, extractAppid } from "./data-store";
 import { Resource } from "./resource.svelte";
+import { appReady } from "./app-ready";
 import type { GameRecord, DataIndex } from "./schema";
 
 export interface GamesData {
@@ -92,7 +93,7 @@ async function loadAll(signal: AbortSignal): Promise<GamesData> {
   };
 }
 
-export const games = new Resource<GamesData>(loadAll, { staleTime: 5 * 60 * 1000 });
+export const games = new Resource<GamesData>(loadAll, { staleTime: 5 * 60 * 1000, enabled: appReady });
 
 /**
  * Look for newer data while the app is open.
@@ -185,6 +186,9 @@ async function loadRemoved(signal: AbortSignal): Promise<RemovedGame[]> {
   return dedup(out);
 }
 
+// /charts/delisted loads this on its own, so the gate has to live here, not
+// only in the root layout: that page used to fetch it before consent.
 export const removedGames = new Resource<RemovedGame[]>(loadRemoved, {
   staleTime: 5 * 60 * 1000,
+  enabled: appReady,
 });
