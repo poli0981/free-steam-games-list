@@ -7,6 +7,7 @@
   import User from "@lucide/svelte/icons/user";
   import Filter from "@lucide/svelte/icons/funnel";
   import { Resource } from "$lib/resource.svelte";
+  import { appReady } from "$lib/app-ready";
   import { i18n } from "$lib/i18n.svelte";
   import { API_ORIGIN } from "$lib/site";
   import { DEFAULT_BRANCH } from "$lib/schema";
@@ -41,16 +42,19 @@
   const BOT_LOGIN = "github-actions[bot]";
 
   // refetchOnFocus: the feed is the one page where coming back to the tab and
-  // seeing yesterday's state would be actively misleading.
+  // seeing yesterday's state would be actively misleading. enabled: like every
+  // Resource, it waits for consent and the human check - the effect below used
+  // to fetch the feed before either, and the focus refetch with it.
   const activity = new Resource<Commit[]>(
     async (signal) => {
       const res = await fetch(`${API_ORIGIN}/api/activity`, { signal });
       if (!res.ok) throw new Error(`Activity: ${res.status} ${res.statusText}`);
       return ((await res.json()) as { commits?: Commit[] }).commits ?? [];
     },
-    { staleTime: 60_000, refetchOnFocus: true },
+    { staleTime: 60_000, refetchOnFocus: true, enabled: appReady },
   );
 
+  // Re-runs when the gates open: load() reads appReady().
   $effect(() => {
     void activity.load();
   });

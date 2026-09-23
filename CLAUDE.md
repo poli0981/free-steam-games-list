@@ -243,8 +243,11 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
   (opens only after `humanCheck.hydrated`, so it is never prerendered;
   `verify-dist.mjs` fails a page containing its title), once per 24 h per
   browser (`f2p:human_check`). The catalogue fetch, service-worker
-  registration, analytics and the `/welcome` redirect wait for
-  `consent.accepted && humanCheck.cleared`. The token is verified by
+  registration, analytics and the `/welcome` redirect wait for `appReady()`
+  (`lib/app-ready.ts`: consent accepted AND the check cleared), and every
+  `Resource` passes it as `enabled`, so a page that calls `load()` itself (or
+  refetches on focus) cannot jump the gates — `resource.test.ts` fails on a
+  `new Resource` without it. The token is verified by
   `POST /api/human-check` (`worker/routes/human-check.ts`, secret
   `TURNSTILE_SECRET`, action and hostname checked; constants in
   `shared/human-check.ts`). Nothing on the server requires a pass, and nothing

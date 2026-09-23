@@ -12,7 +12,8 @@
 
   // This page reads removed_games.jsonl, NOT the catalogue - a delisted game
   // has left data/*.jsonl, so it is the one view that cannot be built from
-  // `games`.
+  // `games`. removedGames waits for consent and the human check itself
+  // (lib/app-ready.ts), and this effect re-runs when they are passed.
   $effect(() => {
     void removedGames.load();
   });

@@ -19,6 +19,14 @@ export interface ResourceOptions {
   /** Re-run when the tab regains focus and the data is stale. Off by default;
    *  the activity feed is the only caller that wants it. */
   refetchOnFocus?: boolean;
+  /**
+   * Whether a load may start yet. Checked by every load() - the focus refetch
+   * and a Retry included - and read INSIDE it, so an $effect that calls load()
+   * subscribes to whatever this reads and runs again when it turns true.
+   * Every Resource in the app passes lib/app-ready.ts's appReady, which holds
+   * it behind the consent gate and the human check.
+   */
+  enabled?: () => boolean;
 }
 
 export class Resource<T> {
@@ -34,6 +42,7 @@ export class Resource<T> {
 
   #fetcher: (signal: AbortSignal) => Promise<T>;
   #staleTime: number;
+  #enabled: () => boolean;
   #loadedAt = 0;
   #inFlight: Promise<void> | null = null;
   #controller: AbortController | null = null;
@@ -41,6 +50,7 @@ export class Resource<T> {
   constructor(fetcher: (signal: AbortSignal) => Promise<T>, opts: ResourceOptions = {}) {
     this.#fetcher = fetcher;
     this.#staleTime = opts.staleTime ?? 5 * 60 * 1000;
+    this.#enabled = opts.enabled ?? (() => true);
 
     if (opts.refetchOnFocus && typeof window !== "undefined") {
       window.addEventListener("focus", () => void this.load());
@@ -72,6 +82,9 @@ export class Resource<T> {
    * catalogue is ~6 MB across shards, so a duplicate load is not free.
    */
   load(force = false): Promise<void> {
+    // First, before any early return: the $effect calling this has to read the
+    // gate to be re-run when it opens.
+    if (!this.#enabled()) return this.#inFlight ?? Promise.resolve();
     if (this.#inFlight) return this.#inFlight;
     if (!force && this.data !== undefined && !this.stale) return Promise.resolve();
 
