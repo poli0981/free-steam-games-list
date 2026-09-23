@@ -90,7 +90,20 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
 ## Pipeline
 
 - `update_data.py` only **enriches existing records**. It does not discover new
-  games.
+  games, and it skips every record `is_info_complete()` accepts - so, with
+  `apply_details()`/`apply_scraped()` filling only EMPTY fields, a complete
+  record's store data was never looked at again.
+- **`refresh_store_data.py` is what refreshes it** (daily, "Refresh Store
+  Data"). A game is due when `crc32(appid) % cycle == day % cycle` - store page
+  (tags, languages, `language_details`, `has_paid_dlc`) every 7 days,
+  appdetails (name, header image, description, developer/publisher, release
+  date, platforms, Metacritic, DRM notes) every 30. Never `appid % cycle`:
+  appids are mostly multiples of 10, which leaves most slices empty. It
+  replaces values only with NON-EMPTY ones, never writes `MANUAL_FIELDS` or
+  `notes`, trusts `has_paid_dlc` only from a real store page (an age gate has
+  no language table or tags), compares `description` as stored (truncated),
+  and bumps `last_updated` only on a real change. A new field added to it must
+  obey the same rules; `scripts/tests/test_refresh_store_data.py` holds them.
 - `ingest_new.py` only reads `scripts/temp_info.jsonl`. It has exactly two
   producers now: the browser extension (`poli0981/steam-f2p-extension`, which
   pushes to the file directly) and the `/admin` approve flow (the Worker
@@ -142,6 +155,17 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
   decisions are what keep a rejected game out of the discovery sweep.
 - Every workflow that writes to `data/` shares `concurrency: {group: data-write}`.
   A new data-writing workflow without it will race jobs that run ~2 hours.
+  The group holds ONE pending run - a second queueing run cancels the first -
+  and scheduled runs here start 2-5 hours after their cron, so a new schedule
+  goes where nothing long is running (the long jobs - reviews, dead links,
+  purge - start mid-morning UTC and run 2-4 hours; Refresh Store Data is at
+  16:00 for that reason).
+- **Every data job commits through `bash/commit_push.sh`.** The group
+  serialises workflows, not `main`: a merged PR, an /admin commit or the
+  extension's push can land during a four-hour job, and a bare `git push` is
+  then rejected and the run thrown away (purge-unhealthy, 2026-09-21). The
+  helper rebases onto `origin/main` and retries; none of those writers touch
+  the shards, so the rebase is clean. A new wrapper must use it.
 - Workflows push with the built-in `GITHUB_TOKEN`; each declares
   `permissions: {contents: write}`. Do not reintroduce a PAT — a PAT expiring
   silently is what stalled the pipeline for a month in 2026.

@@ -1,0 +1,45 @@
+name: Refresh Store Data
+
+# The store fields update_data.py fills once and never revisits (it only
+# enriches INCOMPLETE records): tags, languages and the paid-DLC flag from the
+# store page, every game once a week; name, header image, description,
+# developer/publisher, release date, platforms, Metacritic and DRM notes from
+# appdetails, every game once a month. Each daily run takes one slice of each
+# rotation - roughly 630 store pages and 150 appdetails calls, ~40 minutes.
+# scripts/refresh_store_data.py explains the rotation and the rules (never
+# blanks a value, never touches MANUAL_FIELDS).
+#
+# 16:00 UTC is the quiet part of this repository's day. Scheduled runs here
+# start two to five hours late, the morning data jobs (reviews, dead links,
+# purge) run for two to four hours, and the data-write group keeps only ONE
+# pending run: a second one queueing behind a running job cancels the first.
+# Nothing else long is due this late; the Daily Snapshot (23:00) comes after.
+
+on:
+  schedule: [{cron: '0 16 * * *'}]
+  workflow_dispatch:
+    inputs:
+      only:
+        description: 'Refresh one group only; leave empty for both'
+        required: false
+        default: ''
+        type: choice
+        options: ['', 'page', 'details']
+
+permissions: {contents: write}
+
+concurrency:
+  group: data-write
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with: {python-version: '3.12'}
+      - run: chmod +x ./bash/refresh_store.sh && ./bash/refresh_store.sh
+        env:
+          REFRESH_ONLY: ${{ inputs.only }}

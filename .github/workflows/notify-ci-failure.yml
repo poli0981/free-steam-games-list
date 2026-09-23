@@ -26,6 +26,7 @@ on:
       - "Python Tests"
       - "Daily Snapshot"
       - "Top Offline Leaderboard"
+      - "Refresh Store Data"
     types: [completed]
 
 # REQUIRED: declare permissions matching the reusable workflow's needs.
