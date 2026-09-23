@@ -66,6 +66,11 @@ functionality without an Access session.
 - Missing security headers with no demonstrated impact, and scanner output
   pasted without a working exploit.
 - Denial of service by volume.
+- Getting past the website's Turnstile human check from your own browser. It is
+  a client-side gate on purpose: the pages are static and the catalogue API is
+  public by design (`docs/ToS.md` §9), so it guards nothing a script cannot
+  already read. A way to make `/api/human-check` accept a token Cloudflare
+  rejected is in scope.
 - Social engineering of the maintainer.
 
 ## What to expect

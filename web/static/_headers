@@ -24,11 +24,19 @@
   #
   # X-Frame-Options below is now load-bearing rather than belt-and-braces:
   # `frame-ancestors` is ignored in a meta CSP, so this is what stops framing.
+  # It governs other sites framing THIS one; the Turnstile frame this site
+  # embeds for the human check is allowed by the CSP's frame-src instead.
   X-Content-Type-Options: nosniff
+  # Every <img> overrides this with referrerpolicy="no-referrer": the zone's
+  # Hotlink Protection 403s /img/* for any Referer that is not this site, and
+  # the packaged apps (which never see this file - Tauri serves their bundle)
+  # would send tauri.localhost. docs/SECURITY_SETUP.md section 10.
   Referrer-Policy: strict-origin-when-cross-origin
   X-Frame-Options: DENY
   # No camera, mic, geolocation or payment anywhere in this app; deny them so a
-  # future dependency cannot quietly start asking.
+  # future dependency cannot quietly start asking. The Turnstile frame inherits
+  # this too and may log a harmless violation from inside
+  # challenges.cloudflare.com; do not loosen it for that.
   Permissions-Policy: accelerometer=(), autoplay=(), camera=(), display-capture=(), encrypted-media=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), midi=(), payment=(), usb=(), xr-spatial-tracking=()
   Cross-Origin-Opener-Policy: same-origin
   Cross-Origin-Resource-Policy: same-site

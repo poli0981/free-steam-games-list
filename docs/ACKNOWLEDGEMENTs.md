@@ -31,6 +31,12 @@ project that comes from someone else's server rather than from the bundle:
   **only after the visitor accepts the terms**, and never in the desktop or
   Android apps. `docs/PRIVACY_POLICY.md` describes exactly what it does;
   `web/src/lib/analytics.ts` is the ten lines that load it.
+- [Cloudflare Turnstile](https://www.cloudflare.com/application-services/products/turnstile/) —
+  the human check, loaded from `challenges.cloudflare.com` **only after the
+  visitor accepts the terms**, at most once a day, and never in the desktop or
+  Android apps. `docs/PRIVACY_POLICY.md` describes what it processes;
+  `web/src/lib/turnstile.ts` loads it and `web/worker/routes/human-check.ts`
+  verifies its token.
 
 Everything below ships inside the bundle.
 

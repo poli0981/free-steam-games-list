@@ -144,6 +144,7 @@ keytool -genkeypair -v -keystore f2p-tracker-release.jks \
 - **macOS universal binary** — ensure both `aarch64-apple-darwin` and `x86_64-apple-darwin` targets are added (`rustup target add ...`). CI does this in the `dtolnay/rust-toolchain` step.
 - **Updater silent on sideloaded copies** — sideloaded installs have a different bundle identifier; only the official MSI/DMG/AppImage receive update prompts.
 - **No update offered after a release** — the release is still a draft (drafts are never offered), or the tag is not a strict `desktop-vX.Y.Z`. `curl -i https://free-steam-games.win/api/updates/desktop` shows what clients see.
+- **Game artwork blank, catalogue fine** — Cloudflare Hotlink Protection refusing `/img/*` because the webview sent its own origin (`http://tauri.localhost/`) as the Referer. Every `<img>` carries `referrerpolicy="no-referrer"` in the releases after 2.0.0 (`src/lib/images.test.ts` enforces it); 2.0.0 itself relies on a Configuration Rule on the zone. Security → Events names the block. See `docs/SECURITY_SETUP.md` section 10.
 
 ## Known advisories
 

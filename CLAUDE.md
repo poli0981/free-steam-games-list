@@ -222,19 +222,51 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
   proxies it). Tauri sends its OWN policy as a header from
   `tauri.conf.json`, which is why that one carries `script-src 'unsafe-inline'`:
   the two intersect, and the meta policy's sha256 is what actually enforces.
-  The web policy has two hosts the Tauri one must never gain:
+  The web policy has three hosts the Tauri one must never gain:
   `https://static.cloudflareinsights.com` in `script-src` and
-  `https://cloudflareinsights.com` in `connect-src`, for the analytics beacon.
-  `verify-dist.mjs` fails the web build without them and the Tauri build with
-  them.
+  `https://cloudflareinsights.com` in `connect-src`, for the analytics beacon,
+  and `https://challenges.cloudflare.com` in `script-src` AND `frame-src`, for
+  the Turnstile human check (the widget is an iframe; without `frame-src` it
+  falls back to `default-src 'self'` and is refused). The Tauri policy has no
+  `frame-src` at all. `verify-dist.mjs` fails the web build without them and
+  the Tauri build with any of them.
 - **Cloudflare Web Analytics must stay on "JS Snippet installation", never
   automatic.** Automatic injection adds an INLINE loader at the edge, after our
   response; `kit.csp` is `mode: "hash"`, and CSP3 makes a `script-src` carrying
   a hash ignore `'unsafe-inline'` — so no policy can ever admit it. It was
   enabled that way for months, logging two CSP violations per page load and
   collecting nothing. `lib/analytics.ts` appends the beacon itself, from the
-  consent-gated `$effect` in the root layout, never under Tauri, and does
-  nothing when `CF_BEACON_TOKEN` is empty.
+  `$effect` in the root layout that waits for consent and the human check,
+  never under Tauri, and does nothing when `CF_BEACON_TOKEN` is empty.
+- **The Turnstile human check is web only, runs AFTER consent, and is soft by
+  design.** `lib/common/HumanCheck.svelte` is an overlay like the consent gate
+  (opens only after `humanCheck.hydrated`, so it is never prerendered;
+  `verify-dist.mjs` fails a page containing its title), once per 24 h per
+  browser (`f2p:human_check`). The catalogue fetch, service-worker
+  registration, analytics and the `/welcome` redirect wait for
+  `consent.accepted && humanCheck.cleared`. The token is verified by
+  `POST /api/human-check` (`worker/routes/human-check.ts`, secret
+  `TURNSTILE_SECRET`, action and hostname checked; constants in
+  `shared/human-check.ts`). Nothing on the server requires a pass, and nothing
+  may: the pages never reach the Worker, and `docs/ToS.md` §9 promises
+  `/api/data/*`, `/img/*` and the apps are never human-checked — making them
+  require one breaks that promise and the packaged apps. It refuses only on a
+  verdict (the route's 403, a 300xxx/600xxx widget error); a missing secret or
+  a test widget's token meeting the real secret (503), siteverify trouble
+  (502), a widget configuration error and being offline all let the reader
+  through for that page load, unrecorded. Off under
+  Tauri, under `npm run dev` (its `/api` proxy is production), and when
+  `TURNSTILE_SITEKEY` is empty. The pure rules are in `lib/human-check.ts`,
+  tested without Svelte. Never write the overlay's title into a legal document:
+  the privacy policy is prerendered and would trip that verify-dist check.
+- **Every `<img>` carries a literal `referrerpolicy="no-referrer"`.** The zone
+  has Cloudflare Hotlink Protection on; it 403s `/img/*` for any Referer that
+  is not this site, at the edge before the Worker, and allows a request with
+  none. The Tauri webviews send `http://tauri.localhost/` (Windows, Android),
+  which blanked every image in the 2.0.0 apps; 2.0.0 installs survive on a
+  Configuration Rule (`docs/SECURITY_SETUP.md` §10). `src/lib/images.test.ts`
+  fails on an `<img>` without the attribute. Do not "fix" it with a
+  `<meta name="referrer">` or by relying on the webview's default.
 - **`adapter-static`'s `fallback` must not be named `index.html`.** It is
   written last and overwrites whatever shares its name, which silently replaced
   the prerendered home page with an empty shell. It is `200.html`.
@@ -292,7 +324,8 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
   purpose.** The Tauri apps fetch them cross-origin (`tauri://localhost`,
   `http://tauri.localhost`); without it they cannot load the catalogue or the
   activity feed at all.
-  Never add CORS to `/admin/api/*` or `/api/ingest/*`, and never set
+  Never add CORS to `/admin/api/*`, `/api/ingest/*` or `/api/human-check`
+  (same-origin by design; the apps never run the check), and never set
   `Cross-Origin-Resource-Policy` on Worker responses — the same apps load
   `/img/*` cross-site.
 - **Every page's `<head>` comes from `web/src/lib/common/Seo.svelte`.** Do not
@@ -308,7 +341,8 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
   `scripts/gen-icons.py` derives the PNG icons and `og.png` from it. Social
   platforms do not render SVG previews, and `apple-touch-icon` never accepted
   SVG.
-- **The web app registers its service worker itself, after consent.**
+- **The web app registers its service worker itself, after consent and the
+  human check.**
   `@vite-pwa/sveltekit` cannot inject a registration script — SvelteKit has no
   `index.html` for it to write into — so for the whole of 2.0.0 the worker was
   built and never registered, and the manifest was linked from no page.
@@ -355,12 +389,14 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
 - The app is behind a first-run legal consent gate
   (`web/src/lib/common/ConsentGate.svelte`). Only `/error/*` and `/legal/*`
   bypass it — the gate links to the legal documents it asks people to accept —
-  and any new route that must be reachable pre-consent has to join that list.
+  and any new route that must be reachable pre-consent has to join that list,
+  which is `isUngatedPath()` in `lib/gates.ts`, shared with the human check.
   The gate renders only after `consent.hydrated`: rendered before storage was
   read, it was baked into every prerendered page and flashed for returning
   visitors.
 - **`/welcome` is shown once, by the layout, and only to a visit that STARTED
-  on `/`** (not a deep link, not `/#/…`, not mid-session), after consent. It
+  on `/`** (not a deep link, not `/#/…`, not mid-session), after consent and
+  the human check. It
   uses `replaceState`, and the page marks itself seen on mount, so Back cannot
   loop into it. Crawlers never consent, so `/` stays the indexable page.
 - **`/legal/[doc=legaldoc]` has a param matcher** (`src/params/legaldoc.ts`).

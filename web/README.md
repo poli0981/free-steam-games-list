@@ -27,9 +27,11 @@ served only behind Cloudflare Access. See [docs/ADMIN.md](../docs/ADMIN.md).
 State is plain Svelte 5 runes in `.svelte.ts` modules. There is no store
 library and no data-fetching library.
 
-The only third party the browser contacts is the Cloudflare Web Analytics
-beacon, and only after the reader accepts the terms. Everything else is
-same-origin, through the Worker.
+The browser contacts two third parties, both only after the reader accepts the
+terms and neither in the packaged apps: the Cloudflare Web Analytics beacon,
+and Cloudflare Turnstile for the once-a-day human check (`src/lib/human-check.ts`,
+[docs/SECURITY_SETUP.md](../docs/SECURITY_SETUP.md) section 12). Everything else
+is same-origin, through the Worker.
 
 ## Quick start
 
@@ -42,9 +44,12 @@ npm run build    # -> web/dist
 
 `npm run dev` serves only the app. It does **not** run `worker/`; `/api/*` and
 `/img/*` are proxied to the deployed site so you get real data and real images.
+The human check is switched off there, because production would refuse a
+localhost token (`npm run preview` proxies the same way and cannot pass it).
 To exercise Worker code, run the Worker and the built assets together:
 
 ```bash
+cp .dev.vars.example .dev.vars   # once: Cloudflare's always-pass Turnstile test secret
 node node_modules/wrangler/bin/wrangler.js dev --config wrangler.jsonc
 ```
 
@@ -60,6 +65,9 @@ Worker:
 - `/img/gh/{u|in}/{id}` — GitHub avatars for `/activity`
 - `/api/activity` — recent commits, so `api.github.com` is absent from the
   site's `connect-src`
+- `/api/human-check` — `POST` only, same-origin only: verifies the Turnstile
+  token with the `TURNSTILE_SECRET` secret. It answers yes or no and grants
+  nothing else; no route above requires a pass (`docs/ToS.md` §9)
 
 `index.json` lists a SHA-256 for every shard. The app requests shards as
 `?v=<sha256>`, which the Worker serves content-addressed and immutable (or 503s
@@ -84,8 +92,10 @@ web/
 │   │   ├── consent.svelte.ts   # legal consent, hashed per document
 │   │   ├── diff.ts             # the line diff the consent gate shows
 │   │   ├── analytics.ts        # the beacon, appended only after consent
+│   │   ├── human-check.ts      # the Turnstile check's rules (+ -state.svelte.ts, turnstile.ts)
+│   │   ├── gates.ts            # the routes no first-run gate covers
 │   │   ├── charts/             # EChart wrapper, registration, ChartPage
-│   │   ├── common/             # Seo, ConsentGate, QueryState, ErrorView, …
+│   │   ├── common/             # Seo, ConsentGate, HumanCheck, QueryState, ErrorView, …
 │   │   ├── games/              # virtualised table, columns, filtering
 │   │   ├── server/markdown.ts  # /legal/* rendering, BUILD TIME ONLY
 │   │   └── ui/                 # Button, Badge, Input (also used by admin/)
@@ -96,7 +106,7 @@ web/
 │   └── index.css
 ├── admin/                      # the /admin app: own Vite build, embedded in the Worker
 ├── worker/                     # the Cloudflare Worker (routes, lib, migrations)
-├── shared/                     # queue rules and API types for the Worker and admin/
+├── shared/                     # queue rules, API types, the human check's constants
 ├── build/game-seeds.ts         # build-time seeds for the prerendered game pages
 ├── build/legal-versions.ts     # content hashes + sources for the legal documents
 ├── src-tauri/                  # desktop + Android shell
@@ -141,12 +151,14 @@ policies, so a `script-src 'self'` header blocks that script whatever the meta
 says, and the app renders but never hydrates.
 
 The policy has two flavours, selected by `TAURI_ENV_PLATFORM`. Under Tauri the
-origin is `tauri://localhost`, so `'self'` is the bundle rather than the site
-and the packaged apps need the site's origin named explicitly. The web flavour
-alone names `static.cloudflareinsights.com` in `script-src` and
-`cloudflareinsights.com` in `connect-src`, for the analytics beacon
-(`lib/analytics.ts`); `verify-dist.mjs` fails the web build without them and
-the Tauri build with them.
+origin is `tauri://localhost` (or `http://tauri.localhost` on Windows and
+Android), so `'self'` is the bundle rather than the site and the packaged apps
+need the site's origin named explicitly. The web flavour alone names
+`static.cloudflareinsights.com` in `script-src` and `cloudflareinsights.com` in
+`connect-src`, for the analytics beacon (`lib/analytics.ts`), and
+`challenges.cloudflare.com` in `script-src` and `frame-src`, for the Turnstile
+human check (`lib/turnstile.ts`); `verify-dist.mjs` fails the web build without
+them and the Tauri build with any of them.
 
 Cloudflare's **automatic** Web Analytics injection can never be used here: it
 adds an inline loader at the edge, after this response, and CSP3 makes a
@@ -159,8 +171,8 @@ on "Enable with JS Snippet installation".
 ## PWA
 
 `@vite-pwa/sveltekit` builds a Workbox service worker, registered only after
-the legal consent step and never in the Tauri build (a worker at
-`tauri.localhost` can never update).
+the legal consent step and the human check, and never in the Tauri build (a
+worker at `tauri.localhost` can never update).
 
 - Updates prompt ("Update available" → Reload) rather than swapping the app
   under an open page, and the worker checks for a new version hourly.
@@ -199,8 +211,9 @@ English copied across (names and formats are allowlisted there).
 
 `lib/common/ConsentGate.svelte` is an overlay, not a replacement for the page —
 `onMount` does not run during prerender, so gating the markup behind it would
-ship an empty body. Only `/error/*` and `/legal/*` are exempt: the gate links
-to the documents it asks people to accept.
+ship an empty body. Only `/error/*` and `/legal/*` are exempt (`lib/gates.ts`,
+shared with the human check): the gate links to the documents it asks people
+to accept.
 
 Each binding document is hashed at build time. `build/legal-versions.ts` serves
 two virtual modules:
@@ -222,13 +235,27 @@ it. Consent lives in its own module rather than `lib/prefs.svelte.ts` because
 the admin SPA compiles that file with its own Vite config, which cannot resolve
 a virtual module.
 
+## The human check
+
+After consent, `lib/common/HumanCheck.svelte` — the same kind of overlay —
+asks each browser to pass Cloudflare Turnstile at most once every 24 hours,
+and the Worker verifies the token at `/api/human-check`. It is web only, off
+under `npm run dev`, and soft by design: it keeps automated browsers from
+using the app, but nothing on the server requires a pass, because the pages
+are static and `docs/ToS.md` §9 keeps `/api/data/*` and `/img/*` open. It
+refuses only on a verdict from Cloudflare and lets the reader through, for that
+page load, whenever the fault is the site's or the reader is offline.
+`lib/human-check.ts` has the rules and their reasons;
+[docs/SECURITY_SETUP.md](../docs/SECURITY_SETUP.md) section 12 has the widget
+settings, the secret and the local test keys.
+
 ## Analytics
 
 `lib/analytics.ts` appends the Cloudflare Web Analytics beacon from the same
 `$effect` that gates the catalogue fetch and the service worker on
-`consent.accepted`, so nothing reaches a third party before the reader accepts.
-It returns early under `isTauri()` and when `CF_BEACON_TOKEN` is empty, which
-is what a fork gets.
+`consent.accepted` and the human check, so nothing reaches a third party before
+the reader accepts. It returns early under `isTauri()` and when
+`CF_BEACON_TOKEN` is empty, which is what a fork gets.
 
 ## Desktop and Android
 
