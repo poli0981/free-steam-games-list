@@ -151,7 +151,8 @@ scripts/
 │   └── health_checker.py   # Game status detection with cached API data
 ├── discover_new.py         # Propose new games into the /admin review queue
 ├── ingest_new.py           # Add queued games (health check + extension merge)
-├── update_data.py          # Daily full refresh
+├── update_data.py          # Daily: fill in incomplete records
+├── refresh_store_data.py   # Daily rotation: tags/languages weekly, store details monthly
 ├── update_reviews.py       # Reviews-only (every 2 days)
 ├── mark_dead_games.py      # Flag online games with no players
 ├── check_dead_links.py     # HEAD-request 404/410 scanner
@@ -168,12 +169,13 @@ scripts/
 
 | Workflow              | Trigger                          | What it does                                              |
 | --------------------- | -------------------------------- | --------------------------------------------------------- |
-| Auto Update JSON      | Daily 00:00 UTC                  | Full data refresh (API + HTML scrape)                     |
+| Auto Update JSON      | Daily 00:00 UTC                  | Fills in incomplete records (API + HTML scrape)           |
 | Discover New Games    | Daily 05:00 UTC                  | Propose new free games into the `/admin` review queue     |
 | Ingest New            | On `scripts/temp_info.jsonl` push | Add approved and extension-submitted games               |
 | Top Online            | Sun/Wed/Fri 03:00 UTC            | Live player leaderboard                                   |
 | Top Offline           | 1st + 15th of month 05:00 UTC    | Leaderboard for single-player F2P concurrents             |
 | Update Reviews        | Every 2 days 06:00 UTC           | Reviews-only refresh                                      |
+| Refresh Store Data    | Daily 16:00 UTC                  | Rotating re-fetch: tags, languages, DLC flag weekly; name, image, description, developer/publisher, release date, platforms, Metacritic, DRM monthly |
 | Check Dead Links      | Every 5 days 04:00 UTC           | HEAD-request 404/410 scanner                              |
 | Purge Unhealthy       | Weekly Mon 05:00 UTC             | Full health scan + removal                                |
 | Mark Dead Games       | Mon + Thu 04:30 UTC              | Online + >1y + 0 players ≥14d → `is_dead=true` + 💀 note |

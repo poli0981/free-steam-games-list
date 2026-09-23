@@ -2,6 +2,33 @@
 
 All notable changes to this awesome noob repo will be documented here.
 
+## [Unreleased]
+
+### ✨ Added
+
+- **Tags, languages and the rest of a game's store data now stay current.**
+  `update_data.py` only fills in incomplete records, and only empty fields, so
+  once a game had its tags, languages, platforms or header image nothing looked
+  at them again short of a manual full re-fetch. `Refresh Store Data` (daily,
+  16:00 UTC) re-reads them on a rotation: the store page - tags, languages and
+  their details, the paid-DLC flag - for every game once a week, and
+  appdetails - name, header image, description, developer and publisher,
+  release date, platforms, Metacritic, DRM notes - once a month. About 630
+  store pages and 150 appdetails calls a day instead of 8,800 requests in one
+  sitting. It never blanks a value on a failed or age-gated page, never
+  touches the hand-set fields (genre, type, anti-cheat, safety, notes), and
+  marks a game updated only when something changed. A dry run on three games
+  found all three with tags that had drifted since they were first fetched.
+
+### 🐛 Fixed
+
+- **A long data job lost its work if anything landed on `main` meanwhile.**
+  `purge-unhealthy` ran for four hours on 2026-09-21 and then failed on
+  `push rejected (fetch first)`: the data-write group serialises workflows,
+  but a merged pull request or an `/admin` commit still moves `main`. Every
+  data job now commits through `bash/commit_push.sh`, which rebases onto
+  `origin/main` and retries the push.
+
 ## [v4.0.1] – 2026-09-23 (The "Human Check" Edition)
 
 The web app now asks each browser to pass a Cloudflare Turnstile check once a
