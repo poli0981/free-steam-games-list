@@ -52,10 +52,12 @@ Note `web/public/` is `web/static/` since the SvelteKit migration.
 ### The CSP
 
 ```
-default-src 'self'; script-src 'self' https://static.cloudflareinsights.com;
+default-src 'self';
+script-src 'self' https://static.cloudflareinsights.com https://challenges.cloudflare.com;
 style-src 'self' 'unsafe-inline';
 img-src 'self' data: https://shared.akamai.steamstatic.com https://shared.fastly.steamstatic.com https://cdn.akamai.steamstatic.com;
 font-src 'self'; connect-src 'self' https://cloudflareinsights.com;
+frame-src 'self' https://challenges.cloudflare.com;
 worker-src 'self'; manifest-src 'self'; media-src 'none'; object-src 'none';
 base-uri 'none'; form-action 'none'
 ```
@@ -81,11 +83,15 @@ Two directives are the way they are for measured reasons, not by preference:
   This is the acceptable half of the trade: the app renders no user-supplied
   HTML, and `script-src` stays strict, which is the directive that actually
   stops code execution.
-- **`script-src` carries one external host and one hash**, and no
-  `'unsafe-inline'`. The host is the Web Analytics beacon (section 9); the
-  hash is SvelteKit's own per-page bootstrap. `index.html` also contains an
-  inline `<script type="application/ld+json">`, but that is a data block which
-  is never executed, so `script-src` does not govern it.
+- **`script-src` carries two external hosts and one hash**, and no
+  `'unsafe-inline'`. The hosts are the Web Analytics beacon (section 9) and
+  Turnstile's `api.js` for the human check (section 12); the hash is
+  SvelteKit's own per-page bootstrap. `index.html` also contains an inline
+  `<script type="application/ld+json">`, but that is a data block which is
+  never executed, so `script-src` does not govern it.
+- **`frame-src` exists only for the Turnstile widget**, which is an iframe
+  from `challenges.cloudflare.com`. Without the directive, frames fall back to
+  `default-src 'self'` and the widget is refused.
 
 `connect-src` allows `'self'` and the analytics beacon's reporting host, and
 nothing else. It notably does **not** allow `https://api.github.com`, which it
@@ -101,9 +107,10 @@ used to for one page. Both reasons are gone:
   `isTauri() && isAndroid()`, and the packaged apps use the separate CSP in
   `src-tauri/tauri.conf.json` — not this file.
 
-The two `cloudflareinsights.com` hosts are **web only**, added by the same
-`IS_TAURI` ternary: the packaged apps must not phone a beacon, and
-`scripts/verify-dist.mjs` fails the Tauri build if either appears in it.
+The two `cloudflareinsights.com` hosts and `challenges.cloudflare.com` are
+**web only**, added by the same `IS_TAURI` ternary: the packaged apps must not
+phone a beacon or run the human check, and `scripts/verify-dist.mjs` fails the
+web build without them and the Tauri build with any of them.
 
 `img-src` correspondingly does **not** list `avatars.githubusercontent.com`.
 Avatars are proxied. Widening `img-src` would have been the smaller diff and
@@ -122,9 +129,9 @@ nonce is fresh per response and that `script-src` never gains
 
 ### Why `Cross-Origin-Resource-Policy` is static-only
 
-The Tauri desktop and Android builds run on `tauri://localhost` and fetch
-`/api/data/*` and `/img/*` from this origin **cross-site**
-(`SITE_ORIGIN` in `src/lib/fetcher.ts` and `src/lib/image.ts`). `same-site` on
+The Tauri desktop and Android builds run on `tauri://localhost` or
+`http://tauri.localhost` and fetch `/api/data/*` and `/img/*` from this origin
+**cross-site** (`API_ORIGIN` in `src/lib/site.ts`). `same-site` on
 those responses would blank every image and stop the catalogue loading in the
 packaged apps. Static assets are only ever loaded by this site, so they can
 carry it.
@@ -391,9 +398,15 @@ So there are two honest checks:
   cannot be skipped. Put the real list back afterwards.
 
 **Managed rules** (Security → WAF → Managed rules): leave on whatever your plan
-provides. This site has no form posts and no SQL, so false positives are
-unlikely — but if the apps or discovery start failing after a ruleset change,
-check **Security → Events** first.
+provides. This site has no form posts, one small JSON POST (`/api/human-check`,
+section 12) and no SQL, so false positives are unlikely — but if the apps,
+discovery or the human check start failing after a ruleset change, check
+**Security → Events** first.
+
+This rule and the Turnstile check in section 12 are different things. This one
+is Cloudflare's own interstitial, at the edge, for page loads whose threat score
+is high. Section 12 is a widget in the web app that every browser passes once a
+day after accepting the terms.
 
 ---
 
@@ -464,7 +477,7 @@ Not everything needs switching on. For the record:
 
 ## 8. security.txt — and the one date that will rot
 
-`web/public/.well-known/security.txt` (RFC 9116) points researchers at GitHub's
+`web/static/.well-known/security.txt` (RFC 9116) points researchers at GitHub's
 private vulnerability reporting first and `contact@poli0981.dev` second.
 
 It is a plain static file. `/.well-known/*` is **not** in `wrangler.jsonc`'s
@@ -521,8 +534,9 @@ only fix available is not to use that mode.
    It is not a secret — Cloudflare's own snippet publishes it in the page — and
    an empty value simply disables analytics, which is what a fork gets.
 3. The app appends the beacon itself, from the `$effect` in
-   `routes/+layout.svelte` that already waits on `consent.accepted`, so nothing
-   loads before the reader accepts the terms, and never under Tauri.
+   `routes/+layout.svelte` that waits on `consent.accepted` and on the human
+   check (section 12), so nothing loads before the reader accepts the terms,
+   and never under Tauri.
 4. `svelte.config.js` allows `https://static.cloudflareinsights.com` in
    `script-src` and `https://cloudflareinsights.com` in `connect-src`, **web
    flavour only**. `scripts/verify-dist.mjs` fails the build if either is
@@ -547,13 +561,17 @@ That is the first page view this site has ever recorded.
 
 ---
 
-## 10. Hotlink Protection is ON, and the packaged apps survive it by luck
+## 10. Hotlink Protection is ON, and images opt out of the Referer
 
 Found 2026-09-12 while running the SvelteKit dev server, which proxies `/img/*`
 to production: every image came back **403**, body `error code: 1011` —
-Cloudflare's Hotlink Protection.
+Cloudflare's Hotlink Protection (Scrape Shield). It covers `.gif`, `.ico`,
+`.jpg`, `.jpeg` and `.png` only, so the extension-less `/img/gh/*` avatars were
+never affected, and it runs at the edge **before** the Worker, so nothing in
+`worker/` can answer it.
 
-It keys on `Referer`. Measured against the live zone:
+It keys on `Referer`, and lets a request with no Referer through. Measured
+against the live zone, before the rule below existed:
 
 | Referer sent | `/img/*` |
 |---|---|
@@ -565,39 +583,54 @@ It keys on `Referer`. Measured against the live zone:
 
 `/api/data/*` is unaffected — the rule only covers images.
 
-**Why this matters beyond dev.** The desktop and Android builds load `/img/*`
-from `tauri://localhost` and `http://tauri.localhost`. Both of those Referers
-are blocked. Images render in the shipped apps **only because the Tauri webview
-currently sends no Referer at all for `<img>` requests.** That is not a
-guarantee anybody made: sending a Referer is the ordinary, spec-compliant
-behaviour, so a WebView2 or Android System WebView update could start doing it
-and blank every image in both apps, with no change on our side and nothing in
-the repo to explain why.
+**It broke the packaged apps, 2026-09-23.** This section used to say the apps
+survived only because their webview sent no Referer, and warned that a webview
+update could change that. It had: Security → Events showed desktop 2.0.0 on
+WebView2 sending `Referer: http://tauri.localhost/` and being blocked, and game
+pages showed a broken image. Android's System WebView sends the same origin.
 
-**Recommended: turn Hotlink Protection OFF** (dashboard → Scrape Shield →
-Hotlink Protection). It buys nothing here and costs the above:
+**The fix is in the page, not the zone.** Every `<img>` in the app carries
+`referrerpolicy="no-referrer"`, so no build sends a Referer for artwork at all:
+the apps, `tauri dev` and `npm run dev` arrive as "none", and the web — whose
+image requests are same-origin anyway — loses nothing. `src/lib/images.test.ts`
+fails on an `<img>` without the attribute.
 
-- It is not what restricts `/img/*`. That is the anchored `PATH_RE` and the
-  two-host `SOURCE_HOSTS` allowlist in `worker/routes/img.ts`, which no client
-  header can influence.
-- `Referer` is set by the client and trivially forged, so as an access control
-  it is theatre; as an availability dependency for the packaged apps it is
-  real.
-- The images are Steam's own store art, already served publicly by Valve's CDN
-  to anyone. There is nothing here that hotlinking would steal.
+Hotlink Protection stays **on**: it still refuses other sites that embed
+`/img/*` and send their own Referer. That is a courtesy, not access control — a
+Referer is set by the client, and any page that asks for none passes, as ours
+now does. What actually restricts `/img/*` is the anchored `PATH_RE` and the
+two-host `SOURCE_HOSTS` allowlist in `worker/routes/img.ts`.
 
-There is no allowlist workaround: Cloudflare's allowed-domain list takes
-hostnames, and `tauri://localhost` is a custom scheme it cannot express.
+**Builds released before the fix (desktop and Android 2.0.0) need a
+Configuration Rule**, live since 2026-09-23 (measured with the check below).
+**Rules → Configuration Rules** is the source of truth; this is what it must
+express:
 
-**Check** (the bare request must be 200 and the localhost one must also be 200
-once this is off):
+| Field | Value |
+|---|---|
+| Rule name | `tauri-images-hotlink-off` |
+| Expression | `starts_with(http.request.uri.path, "/img/") and (starts_with(http.referer, "http://tauri.localhost/") or starts_with(http.referer, "https://tauri.localhost/") or starts_with(http.referer, "tauri://localhost/"))` |
+| Setting | Hotlink Protection → Off |
+
+No web page can make a browser send a Referer beginning with
+`http://tauri.localhost/`, so the rule opens nothing to other sites.
+`localhost:5173` is deliberately left out: the code fix covers dev.
+Configuration Rules are their own Free-plan quota (ten), apart from the WAF
+budget in "Still open". Keep the rule while 2.0.0 installs exist — a sideloaded
+APK may never update — and it is harmless after that.
+
+**Check:**
 
 ```bash
-curl -s -o /dev/null -w '%{http_code}\n' -H "Referer: http://localhost:5173/" "https://free-steam-games.win/img/t/730/header.jpg?t=1749053861"
+url='https://free-steam-games.win/img/t/730/header.jpg?t=1749053861'
+curl -s -o /dev/null -w 'none %{http_code}\n' "$url"
+for r in http://tauri.localhost/ https://tauri.localhost/ tauri://localhost/ http://localhost:5173/ https://example.com/; do
+  printf '%-26s %s\n' "$r" "$(curl -s -o /dev/null -w '%{http_code}' -H "Referer: $r" "$url")"
+done
 ```
 
-Until it is switched off, `npm run dev` shows broken thumbnails. The data,
-charts and everything else work; only images are affected.
+Expected, and measured on 2026-09-23: `200`, then `200` three times (the rule),
+then `403` twice (protection still on).
 
 ---
 
@@ -637,13 +670,104 @@ Every line must print `0`.
 
 ---
 
+## 12. The human check — Cloudflare Turnstile in the web app
+
+**What it is.** After accepting the terms, each browser on the website passes a
+Turnstile widget, at most once every 24 hours, before the app loads its data
+(`src/lib/common/HumanCheck.svelte`; the rules are in `src/lib/human-check.ts`).
+The widget's token goes to the Worker at `POST /api/human-check`
+(`worker/routes/human-check.ts`), which confirms it with siteverify using the
+secret and checks the action (`enter`) and the hostname. The packaged apps
+never run it, and `/legal/*` and `/error/*` are never covered by it
+(`src/lib/gates.ts`).
+
+**What it is not — say so to anyone who asks.** It is a door for people using
+the web app, not a wall around the site. The pages are prerendered and served
+without the Worker, and `docs/ToS.md` §9 promises that `/api/data/*`, `/img/*`
+and the apps are never human-checked, so nothing on the server requires a pass:
+a script that reads the HTML or the API never meets it, and a browser that
+edits `f2p:human_check` skips it. The rate limit in section 3 and the WAF rules
+in section 4 remain the boundary. Do not "fix" that by making the data or image
+routes require a pass — it breaks the ToS and the packaged apps.
+
+It refuses only on a verdict: siteverify said no (the route's 403), or the
+widget reported a failed challenge. Anything that is the site's own fault lets
+the reader through for that page load and stores nothing — the route answering
+503 (no secret) or 502 (siteverify unreachable), or a widget configuration
+error such as a hostname the widget does not allow. So does being offline,
+which keeps the installed web app usable without a network.
+
+**Widget settings** (Cloudflare dashboard → Turnstile → the widget):
+
+| Setting | Value | Why |
+|---|---|---|
+| Hostnames | `free-steam-games.win` | Every other hostname gets Cloudflare's test key from the page, so `localhost` never needs to be listed. |
+| Widget mode | Managed | Usually passes without a click. |
+| Pre-clearance | **No** | It would set a `cf_clearance` cookie the privacy policy does not describe, and nothing here reads it. |
+
+The site key is public and lives in `TURNSTILE_SITEKEY`
+(`src/lib/human-check.ts`). Emptying it disables the check, which is what a fork
+gets.
+
+**Serving the site on another hostname** (today `www.` only redirects to the
+apex): the page falls back to the test key there, and the Worker answers that
+key's fixed token with 503 and `test widget against a production secret` in
+Workers Logs, so visitors are let through rather than refused. To check them
+there too, add the hostname to the widget and to `siteKeyFor()`.
+
+**The secret** is the Worker secret `TURNSTILE_SECRET`:
+
+```bash
+npx wrangler secret put TURNSTILE_SECRET
+```
+
+Deploy order never matters: without it the route answers 503, every visitor is
+let through, and Workers Logs show `human-check: TURNSTILE_SECRET is not set`.
+To rotate it, roll the secret in the Turnstile dashboard and `secret put` the
+new value; a check in flight during those seconds fails once and passes on
+Retry.
+
+**CSP.** Web flavour only: `challenges.cloudflare.com` in `script-src` and
+`frame-src` (section 1). The widget's frame inherits the `Permissions-Policy`
+from `_headers` and may log a harmless message from inside
+`challenges.cloudflare.com`; that is not a violation of this site's policy.
+
+**Rate limit (optional, no extra rule).** Each POST costs one siteverify
+subrequest. The `public-proxies` expression in section 3 can take
+`or http.request.uri.path eq "/api/human-check"`; a person sends a few a day,
+far below 150 per 10 seconds.
+
+**Local testing.** `npm run dev` skips the check: its `/api` proxy points at
+production, which refuses a localhost token. `npm run preview` proxies the same
+way and cannot pass either. Use `wrangler dev` with `web/.dev.vars` (copy
+`web/.dev.vars.example`, which holds Cloudflare's always-pass TEST secret); the
+page renders the matching test widget on every hostname but production. The
+`2x…` and `3x…` test secrets listed in that file show the refusal path.
+
+**Check** (after a deploy):
+
+```bash
+curl -s -X POST https://free-steam-games.win/api/human-check \
+  -H 'Origin: https://free-steam-games.win' -H 'Content-Type: application/json' \
+  -d '{"token":"not-a-real-token"}'
+```
+
+Expected: HTTP 403 with `"codes":["invalid-input-response"]` — the secret is
+set and siteverify answered. A 503 means the secret is missing. Then, in a fresh
+browser profile: no request to `challenges.cloudflare.com` before accepting the
+terms; after accepting, the widget, one `POST /api/human-check` answered 200,
+and `f2p:human_check` in localStorage about 24 hours ahead.
+
+---
+
 ## Still open
 
-Nothing from this list, as of 2026-09-20. `audit_log` and `commit_jobs` are
+Nothing from this list, as of 2026-09-23. `audit_log` and `commit_jobs` are
 pruned daily after `ADMIN_RETENTION_DAYS` (180), which
 `docs/PRIVACY_POLICY.md` states.
 
 **The Free-plan rule budget is now the constraint to watch:** the one rate
 limiting rule is used (section 3), and two of the five custom rules are
 (section 4). A third custom rule is affordable; a second rate-limiting rule is
-not, without upgrading.
+not, without upgrading. Configuration Rules are a separate quota: one of ten
+is used (section 10).

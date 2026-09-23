@@ -29,9 +29,32 @@ All notable changes to this awesome noob repo will be documented here.
   rate has stayed at 0%. `BLOCKED_COUNTRIES` in `wrangler.jsonc` makes the
   Worker refuse the same countries as defence in depth; the rule is the
   boundary, because prerendered pages never reach the Worker at all.
+- **A Cloudflare Turnstile check on the website**, separate from the WAF
+  challenge above: after accepting the terms, each browser passes a Turnstile
+  widget at most once every 24 hours before the app loads its data. The Worker
+  verifies the token at `POST /api/human-check` with the `TURNSTILE_SECRET`
+  secret, checking the action and the hostname; nothing is stored server-side.
+  It is an overlay like the consent gate, so prerendered pages and crawlers are
+  unaffected, and it is soft on purpose: `/api/data/*`, `/img/*` and the
+  desktop and Android apps never require it (the Terms of Use promise as much).
+  It refuses only when Cloudflare says no; a missing secret, a siteverify
+  outage, a widget misconfiguration or being offline let the reader through for
+  that page load. The web CSP gains `challenges.cloudflare.com` in `script-src`
+  and a new `frame-src`; `verify-dist.mjs` fails the Tauri build if either
+  appears there. The privacy policy and the terms describe it, so returning
+  visitors see those two documents' changes at the consent gate once.
 
 ### 🐛 Fixed
 
+- **Game artwork was blank in the desktop app** (and would be on Android): the
+  WebView2 webview sends `Referer: http://tauri.localhost/`, and the zone's
+  Hotlink Protection refused every `/img/*` request carrying it — before the
+  Worker ran, so nothing in the app's logs showed it. Every `<img>` now sets
+  `referrerpolicy="no-referrer"`, which the protection allows, and
+  `src/lib/images.test.ts` fails on one that does not. That also fixes the
+  thumbnails `npm run dev` could never show. Installed 2.0.0 apps are covered
+  by a Configuration Rule on the zone until they update; Hotlink Protection
+  itself stays on for other sites.
 - **The service worker threw `non-precached-url: /200.html` on every page
   load.** `navigateFallback` named the adapter-static fallback, which is
   written into `dist/` after workbox has already globbed the build output — so
@@ -69,6 +92,18 @@ All notable changes to this awesome noob repo will be documented here.
 - `docs/DEPLOYMENT.md` records that a zero-duration "Workers Builds" failure on
   a PR branch is a preview-build artefact, not a broken commit, so the next
   person does not go looking for a bug that is not there.
+- `docs/SECURITY_SETUP.md` section 10 claimed the packaged apps survived Hotlink
+  Protection because their webview sent no Referer, recommended switching the
+  protection off, and said no allowlist could express the apps' origin. The
+  first was no longer true and the last never was; it now documents the
+  per-image fix and the Configuration Rule, with the measured check. A new
+  section 12 covers the Turnstile widget settings, the secret and local testing
+  with Cloudflare's test keys (`web/.dev.vars.example`).
+- Stale `public/_headers` paths (the file has been `static/_headers` since the
+  SvelteKit move) and a `SITE_ORIGIN` that is really `API_ORIGIN` in
+  `src/lib/site.ts` are corrected in `worker/lib/http.ts`, `svelte.config.js`
+  and the security doc; `_headers` itself gains comments on why images opt out
+  of its Referrer-Policy.
 
 ### 🛠 CI
 

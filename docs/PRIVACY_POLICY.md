@@ -4,7 +4,9 @@
 <https://github.com/poli0981/free-steam-games-list>, and the desktop / Android
 app built from it.
 
-**Last substantive change:** September 2026 — Cloudflare Web Analytics was
+**Last substantive change:** September 2026 — the website now asks each browser
+to pass a Cloudflare Turnstile check, at most once a day, after you accept these
+terms. Earlier the same month Cloudflare Web Analytics was
 switched on, a human-verification challenge was added for suspicious traffic,
 and the site became unavailable in three countries. Each is described below.
 See git history for the exact diff; the app now shows you that diff at the
@@ -19,7 +21,9 @@ advertising, no tracking cookies and no profile of you anywhere.
 
 There is now one analytics measurement — Cloudflare Web Analytics — which is
 cookieless, records no identifier for you, and does not load at all until you
-have accepted these terms. It is the only third party the website contacts.
+have accepted these terms. The website contacts two third parties, both only
+after you accept: that measurement, and Cloudflare Turnstile, which checks that
+you are a person rather than a bot (described below).
 
 It is not, however, "serverless" any more, and the previous version of this
 document said things that are no longer true. The site is now served by a
@@ -40,7 +44,7 @@ nowhere.
 
 **No cookies are set by this site.** Cloudflare may set its own operational
 cookies for security purposes — including when it shows you the verification
-step described below; those are Cloudflare's, not the site's.
+steps described below; those are Cloudflare's, not the site's.
 
 ### Cloudflare Web Analytics
 
@@ -74,6 +78,28 @@ is Cloudflare's judgement, based on the request itself. See the
 [Cloudflare Privacy Policy](https://www.cloudflare.com/privacypolicy/) for what
 that check processes.
 
+### The Turnstile check on the website
+
+After you accept these terms, the website asks your browser to pass Cloudflare
+Turnstile before it loads the catalogue, and again at most once every 24 hours.
+Unlike the interstitial above, this one is code in this site, and it runs for
+every visitor, not only for requests that look automated.
+
+- The widget is loaded from `challenges.cloudflare.com`. To tell a person from
+  a bot it examines your IP address, your browser's User-Agent and TLS
+  fingerprint, and signals about how the page is being run. Cloudflare
+  processes these on the site's behalf, and is itself the controller of them
+  where it uses them to improve its bot detection; see the
+  [Turnstile Privacy Addendum](https://www.cloudflare.com/turnstile-privacy-policy/).
+- The widget hands your browser a one-time token. The site's Worker sends that
+  token and your IP address to Cloudflare to confirm it, and keeps neither.
+- Your browser then remembers when the check expires (`f2p:human_check`,
+  below), so it is not repeated for 24 hours.
+- It does not run before you accept, and not at all in the desktop or Android
+  apps. The catalogue API and the image proxy never require it.
+- If something blocks `challenges.cloudflare.com`, the website cannot complete
+  the check for you; the apps and the repository work without it.
+
 ### Where the site is available
 
 The site is not served to visitors in **mainland China, Russia or Argentina**.
@@ -85,7 +111,7 @@ any time.
 
 ## What the page loads
 
-Apart from the analytics beacon above, everything the site loads is fetched
+Apart from the analytics beacon and the Turnstile check above, everything the site loads is fetched
 **same-origin**, through the site itself:
 
 - `/api/data/*` — the catalogue. The Worker fetches these files from GitHub on
@@ -105,8 +131,8 @@ Until September 2026 the Activity page was an exception to all of this: it
 called the GitHub API from your browser and loaded avatars from
 `avatars.githubusercontent.com`, so opening it showed GitHub your IP address
 and User-Agent. **That exception is gone**, and no page contacts GitHub from
-your browser. The analytics beacon is now the only third party any page
-contacts, and only after you accept.
+your browser. The analytics beacon and the Turnstile check are now the only
+third parties any page contacts, and only after you accept.
 
 ### The one remaining exception, stated plainly
 
@@ -135,6 +161,7 @@ All of it stays on your device. None of it is transmitted anywhere.
 | localStorage | `f2p:legal_consent` | that you accepted the terms, and which version of each document |
 | localStorage | `f2p:legal_snapshot` | a copy of the documents you accepted, so a later change can be shown to you as a comparison instead of a second full read |
 | localStorage | `f2p:welcome_seen` | that you have seen the introduction |
+| localStorage | `f2p:human_check` | when your last Turnstile check expires, so it is not repeated for 24 hours (website only) |
 | localStorage | `f2p:theme` | light / dark / system |
 | localStorage | `f2p:lang` | interface language |
 | sessionStorage | `f2p:chunk-reload` | one-shot flag so a failed script load retries once |
@@ -165,9 +192,10 @@ area, are deleted automatically after 180 days.
 
 ## What is not collected
 
-No accounts. No advertising or behavioural profiles. No fingerprinting. No
-session recording. No email list. No sale or sharing of anything, because there
-is nothing to sell or share.
+No accounts. No advertising or behavioural profiles. No fingerprinting by the
+site itself (the Turnstile check above is Cloudflare's, and says what it reads).
+No session recording. No email list. No sale or sharing of anything, because
+there is nothing to sell or share.
 
 Analytics is limited to the cookieless page-view count described above, and to
 nothing else: no events, no scroll or click tracking, no error telemetry, and

@@ -15,6 +15,7 @@ push to main
                      │                          ├─ static assets from web/dist
                      │                          ├─ /api/data/*  → proxies GitHub raw
                      │                          ├─ /img/*       → proxies Valve's CDN
+                     │                          ├─ /api/human-check → Turnstile siteverify (web only)
                      │                          ├─ /admin       → Access-gated admin SPA (embedded)
                      │                          └─ /api/ingest/* → Access service token
                      ├─ vite build                   → web/dist (the public site)
@@ -155,7 +156,13 @@ domain; the app cannot run there because it is built with `base: "/"`.
 
 `wrangler.jsonc` holds no secrets — only the D1 `database_id`, which is an
 account-scoped identifier and safe to commit. Anything sensitive goes through
-`npx wrangler secret put`. See [ADMIN.md](./ADMIN.md).
+`npx wrangler secret put`: the GitHub App's three (see [ADMIN.md](./ADMIN.md))
+and `TURNSTILE_SECRET` for the human check (see
+[SECURITY_SETUP.md](./SECURITY_SETUP.md) section 12). The Worker declares them
+in `web/worker/env.d.ts`.
+
+For `wrangler dev`, put local values in `web/.dev.vars` (gitignored);
+`web/.dev.vars.example` holds Cloudflare's always-pass Turnstile test secret.
 
 ## Cost notes
 

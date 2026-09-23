@@ -48,7 +48,7 @@ You can fork and modify; the maintainer can't help if your downstream project bl
 
 The website is offered at the maintainer's discretion and is **not served in mainland China, Russia or Argentina**. That is enforced at Cloudflare's edge by IP geolocation; Hong Kong, Macau and Taiwan are unaffected. The list can change at any time, without notice, and nothing here promises availability anywhere. The dataset itself stays public in the Git repository either way — the restriction is on this website, not on the data.
 
-Requests that look automated may be interrupted by Cloudflare's own human-verification step. The catalogue API (`/api/data/*`), the image proxy (`/img/*`) and the packaged desktop and Android apps are excluded from it, so ordinary programmatic use of the data keeps working. Do not attempt to evade that check, and do not scrape the site at a rate that requires it — clone the repository instead, which is faster for you and free for everyone.
+Requests that look automated may be interrupted by Cloudflare's own human-verification step, and once these terms are accepted the website asks each browser to pass a Cloudflare Turnstile check, at most once a day. The catalogue API (`/api/data/*`), the image proxy (`/img/*`) and the packaged desktop and Android apps are excluded from both, so ordinary programmatic use of the data keeps working. Do not attempt to evade either check, and do not scrape the site at a rate that requires it — clone the repository instead, which is faster for you and free for everyone.
 
 ### 10. Updates
 

@@ -41,7 +41,7 @@ A **curated list** of free-to-play games on Steam — now ~3,600 of them — no 
 <details>
 <summary><b>Web app at <code>free-steam-games.win/</code></b></summary>
 
-A SvelteKit 2 / Svelte 5 app, prerendered and served by a Cloudflare Worker that also proxies the dataset (`/api/data/*`) and Steam artwork (`/img/*`), so your browser talks to this site only. Features:
+A SvelteKit 2 / Svelte 5 app, prerendered and served by a Cloudflare Worker that also proxies the dataset (`/api/data/*`) and Steam artwork (`/img/*`), so your browser talks to this site only — apart from Cloudflare's analytics beacon and its Turnstile human check, both loaded only after you accept the terms. Features:
 
 - **Browse** — virtualised table (TanStack Virtual), filters for genre, type, platform, status, anti-cheat and safety, Fuse.js fuzzy search, sortable columns, 50/100/200/500/all pages. Filters live in the URL, so a filtered view can be shared.
 - **Charts** — Apache ECharts: dashboard KPIs, genres, platforms, languages, tags, anti-cheat (chart and a searchable index), reviews, player tiers, release years and catalogue growth, DRM/DLC, delisted games, plus a stats page (Metacritic, retention, games that went quiet).
