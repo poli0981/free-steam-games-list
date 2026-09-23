@@ -1,0 +1,11 @@
+# Local secrets for `wrangler dev` - copy to .dev.vars (gitignored) and edit.
+# Production secrets are set with `npx wrangler secret put <NAME>` and never
+# appear in this repository.
+
+# Cloudflare Turnstile's published ALWAYS-PASS test secret, not a real one.
+# The web app renders the matching always-pass test widget on any hostname
+# other than free-steam-games.win, so the human check can be exercised end to
+# end on localhost. Swap in 2x0000000000000000000000000000000AA (always fails)
+# or 3x0000000000000000000000000000000AA (token already spent) to see the
+# refusal path; delete the line to see the "not configured" path.
+TURNSTILE_SECRET=1x0000000000000000000000000000000AA
