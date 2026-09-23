@@ -106,6 +106,7 @@
               alt=""
               loading="lazy"
               decoding="async"
+              referrerpolicy="no-referrer"
               class={cn("size-7 rounded-full border", isBot && "ring-1 ring-warning/40")}
             />
           {:else}

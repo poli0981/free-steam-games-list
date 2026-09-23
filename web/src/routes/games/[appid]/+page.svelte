@@ -199,6 +199,7 @@
       <img
         src={preferWebp(view.header_image, 920)}
         alt=""
+        referrerpolicy="no-referrer"
         class="mb-5 w-full rounded-lg border object-cover"
         width="920"
         height="430"

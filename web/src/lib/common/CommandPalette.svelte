@@ -196,6 +196,7 @@
                   alt=""
                   loading="lazy"
                   decoding="async"
+                  referrerpolicy="no-referrer"
                   class="h-6 w-[52px] shrink-0 rounded object-cover"
                 />
               {/if}
