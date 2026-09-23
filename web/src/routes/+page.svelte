@@ -135,6 +135,7 @@
                   alt=""
                   loading="lazy"
                   decoding="async"
+                  referrerpolicy="no-referrer"
                   class="h-7 w-[60px] shrink-0 rounded object-cover"
                 />
               {/if}

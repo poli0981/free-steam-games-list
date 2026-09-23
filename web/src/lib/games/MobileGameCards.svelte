@@ -57,6 +57,7 @@
             alt=""
             loading="lazy"
             decoding="async"
+            referrerpolicy="no-referrer"
             class="h-[42px] w-[90px] shrink-0 rounded object-cover"
           />
         {:else}

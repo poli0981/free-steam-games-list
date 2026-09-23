@@ -138,6 +138,7 @@
                       alt=""
                       loading="lazy"
                       decoding="async"
+                      referrerpolicy="no-referrer"
                       width="92"
                       height="43"
                       class="h-8 w-14 rounded object-cover"

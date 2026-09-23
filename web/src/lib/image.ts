@@ -9,6 +9,17 @@
  * The Worker keeps transformations OFF for now (see IMG_TRANSFORM in
  * wrangler.jsonc) — these variants currently select the source asset and the
  * cache key, not a paid resize.
+ *
+ * EVERY <img> SHOWING THESE URLS SETS referrerpolicy="no-referrer". The zone
+ * has Cloudflare Hotlink Protection on, which 403s `/img/*` at the edge -
+ * before the Worker ever runs - whenever the Referer names another site, and
+ * allows a request with no Referer at all. The packaged apps load from
+ * http://tauri.localhost (Windows, Android) or tauri://localhost, and the
+ * webview sends that origin as the Referer: every image in the 2.0.0 apps went
+ * blank that way. `npm run dev` hit the same 403 through its proxy. On the web
+ * these requests are same-origin and would pass either way, so the attribute
+ * costs nothing there. src/lib/images.test.ts fails on an <img> without it;
+ * docs/SECURITY_SETUP.md section 10 has the measurements.
  */
 import { API_ORIGIN as IMG_ORIGIN } from "./site";
 
