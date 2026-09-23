@@ -19,6 +19,16 @@
     "declinedBody": "Bạn phải chấp nhận các giấy phép, EULA, Chính sách quyền riêng tư, Tuyên bố miễn trừ và Điều khoản sử dụng để dùng F2P Tracker.",
     "back": "Quay lại"
   },
+  "humanCheck": {
+    "title": "Đang xác minh bạn là người thật",
+    "intro": "Cloudflare Turnstile kiểm tra nhanh trước khi bạn dùng trang. Thường tự hoàn tất, và khoảng một ngày mới hỏi lại một lần.",
+    "confirming": "Đang xác nhận…",
+    "failed": "Chưa xác minh được. Hãy thử lại, hoặc tải lại trang.",
+    "blocked": "Không tải được bước kiểm tra. Có thể trình chặn nội dung hoặc bộ lọc mạng đang chặn challenges.cloudflare.com; hãy cho phép nó trên trang này rồi thử lại.",
+    "unsupported": "Trình duyệt này không chạy được bước kiểm tra. Hãy cập nhật trình duyệt, hoặc dùng ứng dụng desktop hay Android.",
+    "errorCode": "Mã lỗi: {{code}}",
+    "privacyNote": "Dữ liệu mà bước kiểm tra xử lý được mô tả trong"
+  },
   "welcome": {
     "title": "Chào mừng",
     "heading": "Danh sách game miễn phí trên Steam",

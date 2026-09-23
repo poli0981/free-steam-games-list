@@ -8,6 +8,7 @@
   import { i18n } from "$lib/i18n.svelte";
   import { theme, welcome } from "$lib/prefs.svelte";
   import { consent } from "$lib/consent.svelte";
+  import { humanCheck } from "$lib/human-check-state.svelte";
   import { installPaletteShortcut } from "$lib/palette.svelte";
   import { games, installGamesRevalidation } from "$lib/games.svelte";
   import { upgradeLegacyHashUrl } from "$lib/legacy-url";
@@ -23,6 +24,7 @@
   import { isTauri, isAndroid, openExternal } from "$lib/external-open";
   import { toast } from "svelte-sonner";
   import ConsentGate from "$lib/common/ConsentGate.svelte";
+  import HumanCheck from "$lib/common/HumanCheck.svelte";
   import Sidebar from "$lib/layout/Sidebar.svelte";
   import Topbar from "$lib/layout/Topbar.svelte";
   import CommandPalette from "$lib/common/CommandPalette.svelte";
@@ -80,6 +82,7 @@
     recoverFallbackRoute(page.route.id);
     theme.hydrate();
     consent.hydrate();
+    humanCheck.hydrate();
     welcome.hydrate();
     void i18n.init();
     // After the legacy upgrade: "/#/games/730" is a deep link, not the home page.
@@ -134,11 +137,13 @@
 
   // The ~6 MB catalogue fetch waits for consent: someone who declines should
   // never have caused the download. So do the checks for newer data, and the
-  // analytics beacon - the only third party this app loads, and the privacy
-  // policy's promise that nothing leaves before you accept depends on it
-  // staying in here.
+  // analytics beacon - one of the two third parties this app loads, and the
+  // privacy policy's promise that nothing leaves before you accept depends on
+  // it staying in here. The other, Turnstile, is loaded by HumanCheck, which
+  // opens only after consent too; everything here also waits for that check
+  // (it is off in the packaged apps, where `cleared` is simply true).
   $effect(() => {
-    if (!consent.accepted) return;
+    if (!consent.accepted || !humanCheck.cleared) return;
     void games.load();
     void pwa.register();
     loadAnalytics();
@@ -149,13 +154,14 @@
    * The introduction, once.
    *
    * Only for a visit that started on the dashboard, from someone who has
-   * accepted the terms and never seen it - so a first visitor lands there right
-   * after the consent step. Never for a deep link, never mid-session, and never
-   * for a crawler: crawlers do not consent, so "/" stays the indexable page.
-   * replaceState, so Back leaves the site instead of returning to a redirect.
+   * accepted the terms, passed the human check and never seen it - so a first
+   * visitor lands there right after those two steps. Never for a deep link,
+   * never mid-session, and never for a crawler: crawlers do not consent, so "/"
+   * stays the indexable page. replaceState, so Back leaves the site instead of
+   * returning to a redirect.
    */
   $effect(() => {
-    if (!landedOnHome || !consent.hydrated || !consent.accepted || welcome.seen) return;
+    if (!landedOnHome || !consent.hydrated || !consent.accepted || !humanCheck.cleared || welcome.seen) return;
     landedOnHome = false;
     if (page.url.pathname === "/") void goto("/welcome", { replaceState: true });
   });
@@ -251,6 +257,9 @@
      markup a crawler sees is the real page, and a visitor still cannot use the
      site until they accept. -->
 <ConsentGate />
+<!-- Web only, and only after consent: the Turnstile check (lib/human-check.ts).
+     The same kind of overlay, never open at the same time as the one above. -->
+<HumanCheck />
 
 <!-- theme, not a hardcoded "dark": main.tsx pinned the Toaster to dark while
      the rest of the app had a working light mode, so every toast was a dark

@@ -9,6 +9,7 @@
   import { diffHunks, formatHunk } from "../diff";
   import { i18n } from "../i18n.svelte";
   import { isTauri } from "../external-open";
+  import { isUngatedPath } from "../gates";
   import Button from "../ui/Button.svelte";
 
   const t = i18n.t;
@@ -16,19 +17,9 @@
   let checked = $state(false);
   let declined = $state(false);
 
-  /**
-   * Routes that must be readable BEFORE consent:
-   *
-   *   - /error/*: a chunk-load 503 after a mid-session deploy, or an
-   *     /error/:code deep link, would otherwise be swallowed behind the gate.
-   *   - /legal/*: the gate links to these documents and asks the reader to
-   *     accept them. Covering them with the same overlay made the terms
-   *     impossible to read before agreeing to them.
-   *
-   * ANY new route that must be reachable pre-consent has to join this check.
-   */
-  const PRE_CONSENT = /^\/(error|legal)(\/|$)/;
-  const exempt = $derived(PRE_CONSENT.test(page.url.pathname));
+  // /error/* and /legal/* stay readable before consent; lib/gates.ts says why,
+  // and HumanCheck.svelte exempts exactly the same routes.
+  const exempt = $derived(isUngatedPath(page.url.pathname));
 
   // `hydrated` first: during prerender and until storage has been read,
   // `accepted` is false for everyone, and rendering the gate then put the whole

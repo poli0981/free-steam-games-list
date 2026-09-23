@@ -8,8 +8,9 @@
  *
  * Every read and write is wrapped: private mode, lockdown settings and the
  * Tauri webview can all refuse storage, and a throw here would take out the
- * whole app shell. readJson/writeJson are exported for consent.svelte.ts,
- * which is the only other module that persists anything this way.
+ * whole app shell. readJson/writeJson are exported for consent.svelte.ts and
+ * human-check-state.svelte.ts, the only other modules that persist anything
+ * this way.
  *
  * THIS FILE IS SHARED WITH THE ADMIN SPA (admin/src/App.svelte imports
  * `theme`), which builds with its own Vite config. It must therefore stay free

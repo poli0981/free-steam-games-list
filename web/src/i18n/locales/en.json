@@ -19,6 +19,16 @@
     "declinedBody": "You must accept the licences, EULA, Privacy Policy, Disclaimer, and Terms of Use to use F2P Tracker.",
     "back": "Back"
   },
+  "humanCheck": {
+    "title": "Checking you are human",
+    "intro": "A quick Cloudflare Turnstile check before you use the site. It usually finishes on its own, and asks again about once a day.",
+    "confirming": "Confirming…",
+    "failed": "The check did not pass. Try again, or reload the page.",
+    "blocked": "The check could not load. A content blocker or network filter may be blocking challenges.cloudflare.com; allow it for this site and try again.",
+    "unsupported": "This browser cannot run the check. Update it, or use the desktop or Android app.",
+    "errorCode": "Error code: {{code}}",
+    "privacyNote": "What the check processes is described in the"
+  },
   "welcome": {
     "title": "Welcome",
     "heading": "A list of free-to-play games on Steam",

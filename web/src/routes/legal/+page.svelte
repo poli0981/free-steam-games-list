@@ -9,8 +9,8 @@
 
   const t = i18n.t;
 
-  // Every document page links back here. It is readable before consent, like
-  // the documents themselves (ConsentGate's PRE_CONSENT covers /legal).
+  // Every document page links back here. It is readable before consent and
+  // before the human check, like the documents themselves (lib/gates.ts).
   const GROUPS = [
     { key: "binding", icon: ShieldCheck, title: "legal.binding", docs: LEGAL_DOCS.filter((d) => d.consent) },
     { key: "other", icon: FileText, title: "legal.otherDocs", docs: LEGAL_DOCS.filter((d) => !d.consent) },
