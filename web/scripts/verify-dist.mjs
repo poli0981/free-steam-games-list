@@ -12,9 +12,12 @@
  *   - "No game matches these filters." as the prerendered body of /games
  *     (an empty state shown because `loading` is false before a load starts),
  *   - the full consent dialog in every page (the gate rendered before storage
- *     was read).
+ *     was read). The Turnstile human check is the same kind of overlay and is
+ *     held to the same rule.
  *
- * It also fails if any part of the admin SPA reached dist/.
+ * It also fails if any part of the admin SPA reached dist/, and if either
+ * build's CSP gets its third-party hosts wrong: the web policy must admit the
+ * analytics beacon and Turnstile, the Tauri policy must admit neither.
  *
  * Usage (from web/, after a build):
  *   node scripts/verify-dist.mjs            common checks
@@ -141,10 +144,13 @@ function assertNavigateFallbackIsPrecached(sw) {
 // Cloudflare Web Analytics: the script's host and the host its beacon posts to.
 const BEACON_SCRIPT_HOST = "https://static.cloudflareinsights.com";
 const BEACON_CONNECT_HOST = "https://cloudflareinsights.com";
+// Cloudflare Turnstile: its api.js and the widget's frame share one host.
+const TURNSTILE_HOST = "https://challenges.cloudflare.com";
 
 // Strings that must never be baked into a page before data exists.
 const BAKED_EMPTY_STATES = [en.games.noResults, en.health.allClear, en.studios.notFound];
 const CONSENT_TITLE = en.consent.title;
+const HUMAN_CHECK_TITLE = en.humanCheck.title;
 
 for (const file of html) {
   const rel = relative(DIST, file).replace(/\\/g, "/");
@@ -161,6 +167,7 @@ for (const file of html) {
     if (seen.includes(phrase)) fail(`${rel}: prerendered empty state "${phrase}"`);
   }
   if (seen.includes(CONSENT_TITLE)) fail(`${rel}: prerendered consent dialog ("${CONSENT_TITLE}")`);
+  if (seen.includes(HUMAN_CHECK_TITLE)) fail(`${rel}: prerendered human check ("${HUMAN_CHECK_TITLE}")`);
 }
 
 /* ── the admin never ships in dist/ ───────────────────────────────────── */
@@ -212,6 +219,14 @@ if (flavour === "web") {
   if (!cspAllows(home, "connect-src", BEACON_CONNECT_HOST)) {
     fail(`index.html CSP connect-src does not allow ${BEACON_CONNECT_HOST} (the analytics beacon)`);
   }
+  // The human check (lib/turnstile.ts) appends api.js at runtime and the widget
+  // is a frame from the same host. Without frame-src the frame falls back to
+  // default-src 'self' and is refused, which no unit test would notice.
+  for (const directive of ["script-src", "frame-src"]) {
+    if (!cspAllows(home, directive, TURNSTILE_HOST)) {
+      fail(`index.html CSP ${directive} does not allow ${TURNSTILE_HOST} (the Turnstile human check)`);
+    }
+  }
 
   // A universal load, not a server load: a __data.json here would mean client
   // navigation fetches one per game, and 404s (as index.html) for new games.
@@ -234,11 +249,14 @@ if (flavour === "tauri") {
   if (!cspAllows(index, "connect-src", "https://free-steam-games.win")) {
     fail("index.html CSP does not allow https://free-steam-games.win (the Tauri connect-src)");
   }
-  // The packaged apps must not phone an analytics beacon. lib/analytics.ts
-  // returns early under isTauri(), and the policy backs that up.
+  // The packaged apps must not phone an analytics beacon or run the human
+  // check. lib/analytics.ts and the human-check state both stand down under
+  // isTauri(), and the policy backs that up.
   for (const [directive, host] of [
     ["script-src", BEACON_SCRIPT_HOST],
     ["connect-src", BEACON_CONNECT_HOST],
+    ["script-src", TURNSTILE_HOST],
+    ["frame-src", TURNSTILE_HOST],
   ]) {
     if (cspAllows(index, directive, host)) {
       fail(`index.html CSP ${directive} allows ${host} in a Tauri build`);

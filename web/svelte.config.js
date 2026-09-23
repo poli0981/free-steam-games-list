@@ -100,7 +100,7 @@ const config = {
       "@": "src",
     },
     /**
-     * The Content-Security-Policy, owned HERE rather than in public/_headers.
+     * The Content-Security-Policy, owned HERE rather than in static/_headers.
      *
      * SvelteKit emits exactly one inline <script> per page - the hydration
      * bootstrap - and there is no option to avoid it. Under the header CSP's
@@ -114,7 +114,7 @@ const config = {
      * header CSP could not do this: browsers enforce the INTERSECTION of a
      * header policy and a meta policy, so leaving `script-src 'self'` in
      * _headers would keep blocking the script no matter what the meta said.
-     * public/_headers therefore no longer sets a CSP at all.
+     * static/_headers therefore no longer sets a CSP at all.
      *
      * One directive is lost in the move: `frame-ancestors` is ignored in a
      * meta CSP. `X-Frame-Options: DENY` stays in _headers and covers it.
@@ -124,18 +124,28 @@ const config = {
       directives: {
         "default-src": ["self"],
         /**
-         * WEB ONLY: the Cloudflare Web Analytics beacon (lib/analytics.ts).
+         * WEB ONLY, two external hosts, both loaded by the app itself and only
+         * after consent:
          *
-         * It is a plain external script, which is the whole reason the app
-         * loads it itself rather than letting Cloudflare inject it: the
-         * "automatic" setup also inserts an INLINE loader, and CSP3 makes a
-         * script-src carrying hashes ignore 'unsafe-inline', so no policy
-         * could ever admit it. See docs/SECURITY_SETUP.md section 9.
+         *   - static.cloudflareinsights.com: the Web Analytics beacon
+         *     (lib/analytics.ts). It is a plain external script, which is the
+         *     whole reason the app loads it rather than letting Cloudflare
+         *     inject it: the "automatic" setup also inserts an INLINE loader,
+         *     and CSP3 makes a script-src carrying hashes ignore
+         *     'unsafe-inline', so no policy could ever admit it. See
+         *     docs/SECURITY_SETUP.md section 9.
+         *   - challenges.cloudflare.com: Turnstile's api.js, for the human
+         *     check (lib/turnstile.ts). Its widget is a frame from the same
+         *     host - see frame-src below.
          *
-         * Not under Tauri: the packaged apps must not phone a beacon, and
-         * tauri.conf.json's header policy would block it anyway.
+         * Not under Tauri: the packaged apps must not phone a beacon, never run
+         * the human check, and tauri.conf.json's header policy would block
+         * both anyway. verify-dist.mjs fails either build that gets this wrong.
          */
-        "script-src": ["self", ...(IS_TAURI ? [] : ["https://static.cloudflareinsights.com"])],
+        "script-src": [
+          "self",
+          ...(IS_TAURI ? [] : ["https://static.cloudflareinsights.com", "https://challenges.cloudflare.com"]),
+        ],
         // 'unsafe-inline' is load-bearing for style-src: Bits UI positions
         // popovers and dialogs with inline style attributes, and ECharts sizes
         // its canvas the same way. Low risk while script-src stays strict,
@@ -176,6 +186,13 @@ const config = {
           // The beacon posts to cloudflareinsights.com (a different host from
           // the script's static. subdomain). Nothing else is allowed here.
           : ["self", "https://cloudflareinsights.com"],
+        /**
+         * WEB ONLY: the Turnstile widget is an iframe from
+         * challenges.cloudflare.com. Without this directive frames fall back to
+         * default-src 'self' and the widget is refused. The Tauri policy keeps
+         * no frame-src at all, so it stays exactly as it was.
+         */
+        ...(IS_TAURI ? {} : { "frame-src": ["self", "https://challenges.cloudflare.com"] }),
         "worker-src": ["self"],
         "manifest-src": ["self"],
         "media-src": ["none"],
