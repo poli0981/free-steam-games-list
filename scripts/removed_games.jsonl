@@ -117,3 +117,4 @@
 {"link": "https://store.steampowered.com/app/1400520/", "name": "", "appid": "1400520", "reason": "Delisted / unavailable", "status_code": "unavailable", "removed_at": "2026-09-27T15:53:41Z"}
 {"link": "https://store.steampowered.com/app/1465040/", "name": "", "appid": "1465040", "reason": "Delisted / unavailable", "status_code": "unavailable", "removed_at": "2026-09-27T15:54:43Z"}
 {"link": "https://store.steampowered.com/app/1479960/", "name": "", "appid": "1479960", "reason": "Delisted / unavailable", "status_code": "unavailable", "removed_at": "2026-09-27T15:54:50Z"}
+{"link": "https://store.steampowered.com/app/979300/", "name": "Allied Nations", "appid": "979300", "reason": "No longer free-to-play", "status_code": "not_free", "removed_at": "2026-09-28T06:16:48Z"}
