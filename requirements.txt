@@ -1,4 +1,4 @@
 # Exact pins, not ranges: the data pipeline should install the same versions
 # every run, and Dependabot only raises PRs for pinned dependencies.
 requests==2.34.2
-urllib3==2.7.0
+urllib3==2.8.0
