@@ -4,6 +4,20 @@ All notable changes to this awesome noob repo will be documented here.
 
 ## [Unreleased]
 
+## [v4.0.2] – 2026-09-29 (The "Right Address" Edition)
+
+A game's tags, languages and store details are now re-read on a rotation
+instead of being fetched once and never again, a long data job no longer loses
+its work when something else lands on `main`, and each kind of message now has
+an address of its own. Web app + desktop/Android bumped `2.0.1` → `2.0.2`; repo
+public-facing version `4.0.1` → `4.0.2`.
+
+The web changes are live as soon as this merges. The desktop app offers 2.0.2
+through its updater once the release is published; on Android, install the new
+APK over the old one. Returning visitors see the consent gate once, listing
+the Privacy Policy, the Terms of Use and the Data Licence — each changed only
+by a contact address, and the gate shows exactly that line.
+
 ### ✨ Added
 
 - **Tags, languages and the rest of a game's store data now stay current.**
@@ -28,6 +42,22 @@ All notable changes to this awesome noob repo will be documented here.
   but a merged pull request or an `/admin` commit still moves `main`. Every
   data job now commits through `bash/commit_push.sh`, which rebases onto
   `origin/main` and retries the push.
+
+### 📇 Contact
+
+`contact@poli0981.dev` stays the default. Three role addresses join it, each
+published where a reader of that document would look:
+
+| Address | For | Where |
+|---|---|---|
+| `security@poli0981.dev` | vulnerabilities, after GitHub's private reporting | `SECURITY.md`, `/.well-known/security.txt` |
+| `privacy@poli0981.dev` | privacy questions | Privacy Policy |
+| `copyright@poli0981.dev` | copyright, DMCA and takedown notices | Data Licence, Terms of Use §6 |
+
+The maintainer's website, <https://poli0981.dev/>, is on the About page next
+to the email and the links page. `security.txt` now lists GitHub's private
+vulnerability reporting first and `security@` second, in RFC 9116 preference
+order. The full map is in `AUTHORS.md` and `docs/Contact.md`.
 
 ## [v4.0.1] – 2026-09-23 (The "Human Check" Edition)
 

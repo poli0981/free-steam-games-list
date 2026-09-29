@@ -11,8 +11,10 @@ The canonical contact list is in [`AUTHORS.md`](AUTHORS.md) at the repo root
 [`docs/Contact.md`](docs/Contact.md)). Web-app version:
 <https://free-steam-games.win/about>.
 
-Short version: **contact@poli0981.dev** for anything private, and
-<https://poli0981.dev/links/> for every other channel.
+Short version: **contact@poli0981.dev** for anything private,
+**security@poli0981.dev** for a vulnerability (after GitHub's private
+reporting, see [`SECURITY.md`](SECURITY.md)), and <https://poli0981.dev/> or
+<https://poli0981.dev/links/> for everything else.
 
 > [!WARNING]
 > **Privacy first.** Issues, PR comments and commit messages are public and

@@ -478,7 +478,8 @@ Not everything needs switching on. For the record:
 ## 8. security.txt — and the one date that will rot
 
 `web/static/.well-known/security.txt` (RFC 9116) points researchers at GitHub's
-private vulnerability reporting first and `contact@poli0981.dev` second.
+private vulnerability reporting first and `security@poli0981.dev` second, as
+two `Contact:` fields in that order.
 
 It is a plain static file. `/.well-known/*` is **not** in `wrangler.jsonc`'s
 `run_worker_first`, so it never invokes the Worker, and Cloudflare's asset

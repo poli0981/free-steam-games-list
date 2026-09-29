@@ -325,6 +325,7 @@
     "stackTitle": "Stack & third-party",
     "trackedGamesLabel": "Tracked games",
     "dataLastUpdatedLabel": "Data last updated",
+    "website": "Website",
     "everyOtherChannel": "Every other channel",
     "repositoryBlurb": "A curated, automatically refreshed list of free-to-play Steam games. A daily Python pipeline commits what changed; this app reads the same data shards. Code is MIT, the dataset is CC BY 4.0.",
     "rawData": "Raw data (JSONL)",

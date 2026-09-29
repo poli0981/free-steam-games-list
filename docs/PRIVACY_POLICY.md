@@ -213,7 +213,7 @@ delete on this end — clearing your browser storage is the complete picture.
 
 For the operational logs Cloudflare keeps as processor, requests go to
 Cloudflare under their policy. If you want to raise something directly, the
-contact address is **contact@poli0981.dev** (also in
+contact address is **privacy@poli0981.dev** (also in
 [docs/Contact.md](./Contact.md)). The maintainer is one
 person running this as a hobby, so expect a slow, human reply rather than a
 formal privacy desk.

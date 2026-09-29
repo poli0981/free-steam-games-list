@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Globe from "@lucide/svelte/icons/globe";
   import Mail from "@lucide/svelte/icons/mail";
   import LinkIcon from "@lucide/svelte/icons/link";
   import ExternalLink from "@lucide/svelte/icons/external-link";
@@ -22,13 +23,16 @@
   const total = $derived(games.data?.records.length ?? 0);
   const lastUpdated = $derived(games.data?.index.last_updated ?? "");
 
-  // Two entries, not nine. Every other channel now lives at
+  // Three entries, not nine. Every other channel now lives at
   // poli0981.dev/links/, so a retired account cannot leave a dead link in a
-  // shipped build - which had already happened three times.
+  // shipped build - which had already happened three times. The role
+  // addresses (security@, privacy@, copyright@) live in the documents they
+  // serve and in docs/Contact.md, not here.
   //
   // $derived: a plain const called t() once, at mount, so these labels stayed
   // in whatever language the page first rendered in.
   const CONTACTS = $derived([
+    { icon: Globe, label: t("about.website"), handle: "poli0981.dev", href: "https://poli0981.dev/" },
     { icon: Mail, label: t("about.email"), handle: "contact@poli0981.dev", href: "mailto:contact@poli0981.dev" },
     { icon: LinkIcon, label: t("about.everyOtherChannel"), handle: "poli0981.dev/links", href: "https://poli0981.dev/links/" },
   ]);
@@ -129,7 +133,7 @@
   <section class="rounded-lg border bg-card p-5">
     <h2 class="text-base font-semibold">{t("about.maintainerTitle")}</h2>
     <p class="mt-1 text-sm text-muted-foreground">{t("about.maintainerBlurb")}</p>
-    <div class="mt-3 grid gap-2 sm:grid-cols-2">
+    <div class="mt-3 grid gap-2 sm:grid-cols-2 md:grid-cols-3">
       {#each CONTACTS as c (c.label)}
         <a
           href={c.href}
