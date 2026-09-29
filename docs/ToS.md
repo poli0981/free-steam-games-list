@@ -35,6 +35,7 @@ Pull requests are welcome but optional to merge. By submitting a contribution yo
 
 - Steam, the Steam logo, VAC, BattlEye, EAC, Vanguard, etc., are trademarks of their respective owners. Their use here is descriptive / nominative.
 - Game titles, screenshots (header images proxied from Valve's CDNs — `shared.akamai.steamstatic.com`, `shared.fastly.steamstatic.com`, `cdn.akamai.steamstatic.com`), developer names, and publisher names belong to their respective owners. Their inclusion in a list does not imply endorsement of this project by them, or vice versa.
+- Rights holders: copyright, DMCA and takedown notices go to **copyright@poli0981.dev** — see [LICENSE-DATA](../LICENSE-DATA) for what the project does and does not claim.
 
 ### 7. Forking, mirroring, derivative works
 

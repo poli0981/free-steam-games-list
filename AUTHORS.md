@@ -9,15 +9,20 @@ This file lives at the repo root so the author can be found without digging into
 | Channel | Handle / URL |
 |---|---|
 | GitHub | [@poli0981](https://github.com/poli0981) |
+| Website | <https://poli0981.dev/> |
 | Email | `contact@poli0981.dev` |
+| Security | `security@poli0981.dev` |
+| Privacy | `privacy@poli0981.dev` |
+| Copyright / DMCA / takedown | `copyright@poli0981.dev` |
 | Everything else | <https://poli0981.dev/links/> |
 
 `poli0981.dev/links/` is the single source of truth for every other channel
 — chat, socials, video, donations. It is maintained there rather than in
 this repository so a moved or retired account cannot leave a dead link here.
 
-Anything that should not be public belongs in email, or in GitHub's private
-vulnerability reporting — see [`SECURITY.md`](SECURITY.md).
+Anything that should not be public belongs in email — `contact@` unless one of
+the role addresses fits better. Security reports go to GitHub's private
+vulnerability reporting first — see [`SECURITY.md`](SECURITY.md).
 
 ## Dev info
 

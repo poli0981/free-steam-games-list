@@ -25,7 +25,7 @@ There is genuinely something to attack here. Hence a real policy.
 repository: *Security → Report a vulnerability*. It is private between you and
 the maintainer.
 
-If that does not work for you, email **contact@poli0981.dev**. The same
+If that does not work for you, email **security@poli0981.dev**. The same
 address is published in [`AUTHORS.md`](AUTHORS.md),
 [`docs/Contact.md`](docs/Contact.md), [`username.txt`](username.txt) and
 <https://free-steam-games.win/.well-known/security.txt>.

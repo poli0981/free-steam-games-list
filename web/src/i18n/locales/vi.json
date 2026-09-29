@@ -325,6 +325,7 @@
     "stackTitle": "Stack & thư viện bên thứ ba",
     "trackedGamesLabel": "Game đang track",
     "dataLastUpdatedLabel": "Lần cập nhật dữ liệu cuối",
+    "website": "Trang web",
     "everyOtherChannel": "Mọi kênh khác",
     "repositoryBlurb": "Danh mục game miễn phí trên Steam, được tuyển chọn và tự động làm mới. Một pipeline Python chạy hàng ngày commit những gì thay đổi; ứng dụng này đọc cùng bộ dữ liệu đó. Mã nguồn MIT, dữ liệu CC BY 4.0.",
     "rawData": "Dữ liệu thô (JSONL)",

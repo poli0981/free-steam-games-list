@@ -1,6 +1,10 @@
 username:
 github: @poli0981
+website: https://poli0981.dev/
 email: contact@poli0981.dev
+security: security@poli0981.dev
+privacy: privacy@poli0981.dev
+copyright: copyright@poli0981.dev
 links: https://poli0981.dev/links/
 
 `links` is the single source of truth for every other channel (chat, socials,
