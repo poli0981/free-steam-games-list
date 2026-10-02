@@ -179,6 +179,56 @@
   font-feature-settings: "tnum" 1;
 }
 
+/* Safe areas: the Android app draws edge-to-edge.
+
+   targetSdk 36 enforces it and MainActivity asks for it (enableEdgeToEdge()),
+   so the webview runs under the status bar and the navigation bar. These keep
+   content out of both. env() needs viewport-fit=cover (app.html) and reads 0
+   on the web, in the desktop apps and in an Android System WebView older than
+   136, so every one of them is a no-op there. Named after the
+   tailwindcss-safe-area plugin's classes. The React shell padded all four
+   insets; the SvelteKit rewrite kept only the bottom one, which is how the top
+   bar of the 2.x apps ended up under the clock. src/lib/mobile-layout.test.ts
+   holds the shell to them. */
+@utility pt-safe {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+@utility pb-safe {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+@utility pl-safe {
+  padding-left: env(safe-area-inset-left, 0px);
+}
+@utility pr-safe {
+  padding-right: env(safe-area-inset-right, 0px);
+}
+/* p-4 that also clears the system bars: for full-screen overlays. */
+@utility p-safe-or-4 {
+  padding: max(1rem, env(safe-area-inset-top, 0px)) max(1rem, env(safe-area-inset-right, 0px))
+    max(1rem, env(safe-area-inset-bottom, 0px)) max(1rem, env(safe-area-inset-left, 0px));
+}
+
+/* What sits behind the Android status bar.
+
+   Its icons follow the SYSTEM theme, not the one chosen in Settings:
+   enableEdgeToEdge() uses SystemBarStyle.auto. The app defaults to dark, so on
+   a phone in light mode the icons were dark on a dark page. This strip follows
+   the system theme too - the two colours are --background from :root and from
+   .dark above (mobile-layout.test.ts compares them) - so the clock always
+   reads. The layout renders it only in the Android app; its height is the
+   inset, so it is nothing wherever env() reads 0. */
+@utility status-bar-strip {
+  position: fixed;
+  inset: 0 0 auto;
+  z-index: 70;
+  height: env(safe-area-inset-top, 0px);
+  pointer-events: none;
+  background-color: hsl(40 30% 98%);
+  @media (prefers-color-scheme: dark) {
+    background-color: hsl(30 14% 7%);
+  }
+}
+
 @layer base {
   /* v4 defaults borders to currentColor instead of gray-200; this keeps every
      border on the token. */

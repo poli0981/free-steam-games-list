@@ -158,13 +158,15 @@
 </script>
 
 {#if open}
-  <div class="fixed inset-0 z-[60] flex items-center justify-center overflow-auto bg-background/95 p-4 backdrop-blur-sm">
+  <!-- m-auto rather than items-center, as in ConsentGate.svelte: a card
+       taller than the screen scrolls from its top instead of losing it. -->
+  <div class="fixed inset-0 z-[60] flex overflow-auto bg-background/95 p-safe-or-4 backdrop-blur-sm">
     <div
       role="dialog"
       aria-modal="true"
       aria-labelledby="human-check-title"
       aria-describedby="human-check-intro"
-      class="w-full max-w-md rounded-xl border bg-card p-6 shadow-xl sm:p-8"
+      class="m-auto w-full max-w-md rounded-xl border bg-card p-6 shadow-xl sm:p-8"
     >
       <div class="mb-5 flex items-start gap-3">
         <span class="grid size-10 shrink-0 place-items-center rounded-lg bg-primary/15 text-primary">

@@ -42,7 +42,8 @@
 
 <Seo title={t("welcome.title")} description={t("welcome.heading")} />
 
-<div class="min-h-dvh bg-background">
+<!-- Chrome-less, so it clears the Android system bars itself (styles/theme.css). -->
+<div class="min-h-dvh bg-background pt-safe pb-safe">
   <div class="mx-auto flex max-w-3xl flex-col gap-10 px-4 py-12 sm:py-16">
     <header class="space-y-4">
       <span class="grid size-12 place-items-center rounded-xl bg-primary text-primary-foreground shadow-sm">
