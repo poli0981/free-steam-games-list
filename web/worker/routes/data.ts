@@ -8,6 +8,7 @@
  * with no error anywhere. Proxying keeps the data cadence decoupled from
  * deploys, and the client still sees one origin.
  */
+import { packBytes, sha256 } from "../../shared/data-pack";
 import { jsonError, SECURITY_HEADERS } from "../lib/http";
 
 const RAW_BASE =
@@ -66,6 +67,7 @@ export async function handleData(
   }
 
   const path = url.pathname.slice("/api/data/".length);
+  if (path.startsWith("p1/")) return handlePack(request, url, path.slice("p1/".length), ctx);
   if (!isAllowed(path)) return jsonError(404, "not found");
 
   const version = url.searchParams.get("v");
@@ -137,7 +139,37 @@ async function versionedShard(
   const hit = await cache.match(key);
   if (hit) return hit;
 
-  const missKey = new Request(`${url.origin}${url.pathname}?v=${version}&mismatch=1`);
+  const body = await fetchVersioned(url.origin, path, version, ctx);
+  if (body instanceof Response) return body;
+
+  const res = new Response(body, {
+    status: 200,
+    headers: {
+      "Content-Type": "application/x-ndjson; charset=utf-8",
+      "Cache-Control": "public, max-age=31536000, immutable",
+      ...CORS,
+      ...SECURITY_HEADERS,
+    },
+  });
+  ctx.waitUntil(cache.put(key, res.clone()));
+  return res;
+}
+
+/**
+ * The bytes of `path` at `version`, or the error response to send instead.
+ * Shared by the plain path above and the packed one below, and so is the
+ * mismatch marker: whichever asks first spares GitHub the other's retry.
+ */
+async function fetchVersioned(
+  origin: string,
+  path: string,
+  version: string,
+  ctx: ExecutionContext,
+): Promise<ArrayBuffer | Response> {
+  if (!SHA256_HEX.test(version)) return withCors(jsonError(400, "bad version"));
+
+  const cache = caches.default;
+  const missKey = new Request(`${origin}/api/data/${path}?v=${version}&mismatch=1`);
   if (await cache.match(missKey)) return notYetUpdated();
 
   const upstream = await fetch(`${RAW_BASE}/${path}?v=${version}`, {
@@ -158,18 +190,88 @@ async function versionedShard(
     );
     return notYetUpdated();
   }
+  return body;
+}
 
-  const res = new Response(body, {
+/**
+ * /api/data/p1/<name>.bin — the same files, packed (shared/data-pack.ts):
+ * deflate-raw then AES-GCM under a key that is PUBLIC in this repository.
+ * Obfuscation and compression, not secrecy: the readable dataset is the
+ * repository, and the app unpacks to the exact committed bytes before the
+ * same SHA-256 check as ever.
+ *
+ * `data_NNN.bin?v=<sha256>` is content-addressed exactly like the plain
+ * versioned path (verified first, then immutable for a year). Without `v` -
+ * the app's first visit during a 503 window, and removed_games.bin, which
+ * the index does not hash - it is a five-minute copy the app cannot verify,
+ * as on the plain path. `.bin`, not `.jsonl`: the zone's Compression Rule
+ * matches `.jsonl`, and compressing a pack again only burns CPU.
+ *
+ * The plain paths above stay exactly as they are for the released apps
+ * (1.4.5 and 2.0.x), which cannot unpack.
+ */
+async function handlePack(
+  request: Request,
+  url: URL,
+  name: string,
+  ctx: ExecutionContext,
+): Promise<Response> {
+  const path = /^data_\d{3}\.bin$/.test(name)
+    ? `data/${name.slice(0, -".bin".length)}.jsonl`
+    : name === "removed_games.bin"
+      ? "scripts/removed_games.jsonl"
+      : null;
+  if (!path) return withCors(jsonError(404, "not found"));
+
+  const version = SHARD.test(path) ? url.searchParams.get("v") : null;
+  if (version !== null && !SHA256_HEX.test(version)) return withCors(jsonError(400, "bad version"));
+
+  const cache = caches.default;
+  const key = new Request(`${url.origin}/api/data/p1/${name}${version ? `?v=${version}` : ""}`);
+  const hit = await cache.match(key);
+  if (hit) return headOnly(request, hit);
+
+  let plain: Uint8Array;
+  let digest: Uint8Array;
+  if (version) {
+    const body = await fetchVersioned(url.origin, path, version, ctx);
+    if (body instanceof Response) return body;
+    plain = new Uint8Array(body);
+    digest = hexBytes(version);
+  } else {
+    const upstream = await fetch(`${RAW_BASE}/${path}`, {
+      cf: { cacheTtl: 300, cacheEverything: true },
+      headers: { Accept: "text/plain, */*" },
+    });
+    if (!upstream.ok) {
+      return withCors(jsonError(upstream.status === 404 ? 404 : 502, "upstream error"));
+    }
+    plain = new Uint8Array(await upstream.arrayBuffer());
+    digest = await sha256(plain);
+  }
+
+  const res = new Response(await packBytes(plain, digest), {
     status: 200,
     headers: {
-      "Content-Type": "application/x-ndjson; charset=utf-8",
-      "Cache-Control": "public, max-age=31536000, immutable",
+      "Content-Type": "application/octet-stream",
+      "Cache-Control": version ? "public, max-age=31536000, immutable" : "public, max-age=300",
       ...CORS,
       ...SECURITY_HEADERS,
     },
   });
   ctx.waitUntil(cache.put(key, res.clone()));
-  return res;
+  return headOnly(request, res);
+}
+
+function hexBytes(hex: string): Uint8Array {
+  const out = new Uint8Array(hex.length / 2);
+  for (let i = 0; i < out.length; i++) out[i] = Number.parseInt(hex.slice(i * 2, i * 2 + 2), 16);
+  return out;
+}
+
+/** HEAD answers the GET's status and headers with no body. */
+function headOnly(request: Request, res: Response): Response {
+  return request.method === "HEAD" ? new Response(null, res) : res;
 }
 
 function notYetUpdated(): Response {

@@ -9,7 +9,7 @@
  * The JSONL is parsed off the main thread in a worker, because parsing ~3,650
  * records blocks it for long enough to drop frames.
  */
-import { fetchIndex, fetchShard, rawUrl } from "./fetcher";
+import { fetchIndex, fetchRemovedText, fetchShard } from "./fetcher";
 import { parseShard } from "./worker-pool";
 import { readCache, writeCache } from "./cache";
 import { createLoader, type Generation } from "./games-loader";
@@ -166,15 +166,8 @@ function dedup(records: RemovedGame[]): RemovedGame[] {
 }
 
 async function loadRemoved(signal: AbortSignal): Promise<RemovedGame[]> {
-  const res = await fetch(rawUrl("scripts/removed_games.jsonl"), {
-    signal,
-    cache: "no-store",
-  });
-  if (!res.ok) {
-    throw new Error(`Failed to fetch removed_games.jsonl: ${res.status}`);
-  }
   const out: RemovedGame[] = [];
-  for (const line of (await res.text()).split("\n")) {
+  for (const line of (await fetchRemovedText(signal)).split("\n")) {
     const t = line.trim();
     if (!t) continue;
     try {
