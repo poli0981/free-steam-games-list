@@ -254,6 +254,26 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
   `goto(…, {replaceState})`. Do not remove it, and do not reduce it to a
   `history.replaceState`: that fixed the address bar and left the dashboard
   rendered.
+- **`web/static/_headers` sets the browser cache, by path.** Hashed output
+  (`/_app/immutable/*`, `/workbox-*`) is a year, immutable; the art and the
+  manifest, which keep their names, are a day fresh plus a week of
+  stale-while-revalidate; robots/sitemap an hour. HTML, `/sw.js` and
+  `/_app/version.json` deliberately keep `max-age=0, must-revalidate`: a
+  deploy, a changed legal document and a new service worker must show on the
+  next load. Rules match the PATH, so the SPA fallback for a missing asset
+  inherits them (accepted - only a tab open across a deploy sees it, and
+  `hooks.client.ts` reloads it); two rules giving one path a Cache-Control are
+  comma-joined. `src/lib/cache-headers.test.ts` holds all of it.
+- **Data-only and docs-only commits must not deploy** (Workers Builds watch
+  paths): a deploy re-uploads every file and gives every open tab a Reload
+  prompt. Docs stopped deploying on 2026-10-02; data commits still did, which
+  the next bot commit's check runs show (a `Workers Builds` check means it
+  deployed). But the legal documents are BUILD INPUTS
+  (`build/legal-versions.ts` hashes them for the consent gate,
+  `lib/server/markdown.ts` renders `/legal/*`). A commit touching only them
+  must still trigger a build, or the site keeps the old text and hash; see
+  `docs/DEPLOYMENT.md` "Which commits deploy" for a configuration that does
+  both. Excludes beat includes there.
 - **The CSP lives in `web/svelte.config.js` (`kit.csp`), not in `_headers`.**
   SvelteKit emits one inline bootstrap script per page and hashes it there. A
   header CSP cannot coexist: browsers enforce the INTERSECTION of header and
