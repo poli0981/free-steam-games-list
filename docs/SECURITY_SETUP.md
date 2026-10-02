@@ -412,14 +412,35 @@ day after accepting the terms.
 
 ## 5. Cloudflare Images spend
 
-`IMG_TRANSFORM` is `"false"` in `web/wrangler.jsonc`, so `/img/*` currently
-passes bytes through and caches them; it does **not** pay for transformations.
-Before you ever flip that to `"true"`, understand that Cloudflare Images has
-**no spend cap**: 5,000 unique transformations/month are included, and beyond
-that it is billed separately from Workers Paid.
+The account is on **Images Paid** (since 2026-10-02): the first 5,000 unique
+transformations a month are included, then $0.50 per 1,000. Cloudflare has
+**no spend cap**, so the cap is ours. The agreed budget is $15/month.
 
-**Notifications → Add → Cloudflare Images**, alert at **3,000** unique
-transformations. Set this *before* enabling transforms, not after.
+- **Only the cron transforms.** `web/worker/lib/img-mint.ts` mints AVIF copies
+  of the catalogue's header art into the R2 bucket `f2p-media`, most-played
+  games first; `/img/*` only reads them (`web/worker/routes/img.ts`). No request
+  - an unknown appid, a forged `?t=`, a HEAD - can create a transformation.
+- **`IMG_TRANSFORM_MONTHLY_CAP`** (`web/wrangler.jsonc`, 20,000 = at most
+  $7.50) is enforced by a counter in D1 `admin_state`, key
+  `img_transforms:YYYY-MM`. Every attempt is counted before it runs, and a
+  missing table or cap means nothing is minted.
+- **Kill switch: `IMG_TRANSFORM`**, changed in `wrangler.jsonc` by a PR. There
+  is no `keep_vars`, so a dashboard edit is undone by the next deploy - fine for
+  an emergency stop, not as the real setting.
+- **The whole catalogue is ~11k transformations once** (~5,600 sources x 2
+  widths, ≈ $3 above the free 5,000); after that only new games and changed art
+  (a new Steam `?t=`) cost anything. Bumping the `img/v1/` key prefix
+  (`web/worker/lib/img-store.ts`) to change the quality re-mints everything.
+- **Keep the zone's Images → Transformations → Sources at "This zone only"** (or
+  Transformations off). The Images binding takes bytes, so it does not need the
+  list; adding Steam's hosts would let anyone spend this account's quota with
+  arbitrary `/cdn-cgi/image/<options>/https://shared.akamai.steamstatic.com/...`
+  URLs, each new option set billed as a new transformation.
+
+**Notifications → Add → Cloudflare Images**: alert at **5,000** (billing
+starts) and **20,000** unique transformations. The D1 counter
+(`SELECT * FROM admin_state WHERE key LIKE 'img_transforms:%'`) and the
+`img-mint` lines in Workers Logs say what the cron has done.
 
 ---
 
