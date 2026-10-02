@@ -330,10 +330,14 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
     Cloudflare's quality scale runs well below libavif's - `d` at q60 measured
     visibly soft (SSIM 0.960), which is why it is q80.
   - Never let `/cdn-cgi/image/` work on this zone. With zone Transformations
-    on, even "This zone only" accepts `/img/*` as a source - and `/img/*`
-    proxies ANY Steam appid - so anyone could bill transformations with
-    arbitrary options, outside `IMG_TRANSFORM_MONTHLY_CAP`. Transformations
-    off, or a WAF rule blocking that path (`docs/SECURITY_SETUP.md` §5).
+    on, the zone itself is ALWAYS an allowed source (it cannot be excluded),
+    and `/img/*` proxies ANY Steam appid - so anyone could bill
+    transformations with arbitrary options, outside
+    `IMG_TRANSFORM_MONTHLY_CAP` (measured: `/cdn-cgi/image/width=77/img/d2/…`
+    answered 200). `img.ts` therefore 403s any request whose `Via` names
+    `image-resizing` (the resizer sends `1.1 image-resizing-proxy`); do not
+    remove that check. Static files stay transformable while zone
+    Transformations are on (`docs/SECURITY_SETUP.md` §5).
   - URLs keep `.jpg`: Hotlink Protection matches by extension.
   - Flip `IMG_TRANSFORM` in `wrangler.jsonc`, not the dashboard: there is no
     `keep_vars`, so the next deploy resets a dashboard value.

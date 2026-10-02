@@ -83,6 +83,18 @@ export async function handleImg(
     return jsonError(405, "method not allowed");
   }
 
+  // Never a source for Cloudflare's URL transformations. With zone
+  // Transformations on, /cdn-cgi/image/<options>/img/... is always allowed -
+  // same-zone sources cannot be excluded - and /img/* proxies ANY Steam
+  // appid, so anyone could bill transformations with arbitrary options,
+  // outside IMG_TRANSFORM_MONTHLY_CAP. The site never transforms by URL (only
+  // the cron does, through the Images binding, from Steam directly). The
+  // service fetches sources with `Via: 1.1 image-resizing-proxy` (measured
+  // with wrangler tail, 2026-10-02).
+  if (/image-resizing/i.test(request.headers.get("Via") ?? "")) {
+    return jsonError(403, "not a transformation source");
+  }
+
   const rest = url.pathname.slice("/img/".length);
   const slash = rest.indexOf("/");
   if (slash < 0) return jsonError(404, "not found");

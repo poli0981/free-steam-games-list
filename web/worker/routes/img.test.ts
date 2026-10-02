@@ -236,6 +236,27 @@ describe("cache keys and errors", () => {
   });
 });
 
+describe("URL transformations", () => {
+  it("refuses to be a source for /cdn-cgi/image/, whatever the variant", async () => {
+    bucket.seed(avifKey(AVIF_VARIANTS.d, PLAIN), "AVIF-BYTES");
+    for (const path of ["/img/d2/730/header.jpg?t=1749053861", "/img/d/730/header.jpg?t=1749053861", "/img/gh/in/15368"]) {
+      const c = ctx();
+      const url = new URL(`${ORIGIN}${path}`);
+      // What Cloudflare's resizer sends when it fetches a same-zone source
+      // (measured with wrangler tail): the caller's UA, its own Via.
+      const res = await handleImg(
+        new Request(url, { headers: { Via: "1.1 image-resizing-proxy", "User-Agent": "curl/8.22.0" } }),
+        url,
+        env,
+        c as unknown as ExecutionContext,
+      );
+      expect(res.status, path).toBe(403);
+    }
+    expect(upstream).not.toHaveBeenCalled();
+    expect(bucket.gets).toEqual([]);
+  });
+});
+
 describe("avatars", () => {
   it("are final, so the service worker may keep them", async () => {
     upstream.mockImplementation(async () => new Response("PNG", { headers: { "Content-Type": "image/png" } }));

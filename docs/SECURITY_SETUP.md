@@ -438,12 +438,19 @@ transformations a month are included, then $0.50 per 1,000. Cloudflare has
   ANY Steam appid - so anyone could request
   `/cdn-cgi/image/width=<1..2000>,quality=<…>/img/d2/<appid>/header.jpg` and
   have each new option set billed as a new transformation, outside
-  `IMG_TRANSFORM_MONTHLY_CAP` (measured 2026-10-02: the endpoint answered
-  `cf-resized: internal=ok` once Transformations were enabled). Either keep
-  Transformations off for the zone, or add a WAF custom rule:
-  `(starts_with(http.request.uri.path, "/cdn-cgi/image/"))` → **Block**, and
-  check that `curl -s -o /dev/null -w '%{http_code}' https://free-steam-games.win/cdn-cgi/image/width=10/og.png`
-  answers 403. Never add Steam's hosts to Sources.
+  `IMG_TRANSFORM_MONTHLY_CAP` (measured 2026-10-02:
+  `/cdn-cgi/image/width=77/img/d2/440/header.jpg` answered 200,
+  `cf-resized: internal=ok`). The zone itself is always an allowed source;
+  Sources cannot exclude it.
+  - **In code:** `web/worker/routes/img.ts` refuses (403) any request whose
+    `Via` header names `image-resizing` - the resizer fetches sources with
+    `Via: 1.1 image-resizing-proxy` - so `/img/*` can never be a source.
+  - **In the dashboard:** the static files (icons, `og.png`) remain
+    transformable while zone Transformations are on. Prefer Transformations
+    **off** for this zone - the binding does not use them. If they must stay
+    on, keep Sources at the zone only, never add another origin (least of all
+    Steam's hosts), and if the zone's row accepts a path restriction, point it
+    at a prefix that holds no image.
 
 **Notifications → Add → Cloudflare Images**: alert at **5,000** (billing
 starts) and **20,000** unique transformations. The D1 counter
