@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { collectSources, mintImages } from "./img-mint";
-import { avifKey } from "./img-store";
+import { AVIF_VARIANTS, avifKey } from "./img-store";
 import { acquireLease, readState, writeState } from "./locks";
 import { fakeDeps, makeEnv } from "../testing/fixtures";
 import { FakeImages, FakeR2 } from "../testing/media-fakes";
@@ -83,13 +83,13 @@ describe("mintImages", () => {
     expect(steam.mock.calls.map(([u]) => u)).toEqual([`${AKAMAI}/20/header.jpg?t=1700000020`, `${AKAMAI}/30/header.jpg?t=1700000030`]);
     expect(images.calls.map((c) => [c.width, c.quality, c.format, c.fit])).toEqual([
       [230, 55, "image/avif", "scale-down"],
-      [460, 60, "image/avif", "scale-down"],
+      [460, 80, "image/avif", "scale-down"],
       [230, 55, "image/avif", "scale-down"],
-      [460, 60, "image/avif", "scale-down"],
+      [460, 80, "image/avif", "scale-down"],
     ]);
     const src = { path: "20/header.jpg", stamp: "1700000020" };
-    expect(bucket.objects.get(avifKey(460, src))?.httpMetadata?.contentType).toBe("image/avif");
-    expect(bucket.objects.get(avifKey(230, src))?.customMetadata).toEqual({ src: "20/header.jpg?t=1700000020", quality: "55" });
+    expect(bucket.objects.get(avifKey(AVIF_VARIANTS.d, src))?.httpMetadata?.contentType).toBe("image/avif");
+    expect(bucket.objects.get(avifKey(AVIF_VARIANTS.s, src))?.customMetadata).toEqual({ src: "20/header.jpg?t=1700000020", quality: "55" });
     expect(await readState(env.DB, COUNTER)).toBe("4");
   });
 
@@ -132,7 +132,7 @@ describe("mintImages", () => {
 
   it("mints only the width that is missing", async () => {
     const env = envWith();
-    bucket.seed(avifKey(460, { path: "20/header.jpg", stamp: "1700000020" }));
+    bucket.seed(avifKey(AVIF_VARIANTS.d, { path: "20/header.jpg", stamp: "1700000020" }));
     const out = await mintImages(env, fakeDeps({ raw: await dataset([record(20, "9")]), now: NOW }));
     expect(out).toEqual({ minted: 1, failed: 0, remaining: 0, used: 1 });
     expect(images.calls.map((c) => c.width)).toEqual([230]);

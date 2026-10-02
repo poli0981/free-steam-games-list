@@ -117,9 +117,10 @@
     "IMG_TRANSFORM": "true",
     "IMG_TRANSFORM_MONTHLY_CAP": "20000",
     // Sources minted per 15-minute tick (each is 2 transformations and ~6
-    // subrequests). Start small so the first batch can be inspected; ~40
-    // finishes the backfill in about two days.
-    "IMG_MINT_PER_TICK": "10",
+    // subrequests). The first production batch of 10 was inspected on
+    // 2026-10-02 (it is why `d` went from q60 to q80); 40 finishes the
+    // backfill in about a day and a half.
+    "IMG_MINT_PER_TICK": "40",
 
     // Days audit_log and commit_jobs rows are kept (worker/lib/prune.ts, run
     // once a day from the cron). docs/PRIVACY_POLICY.md states this number -

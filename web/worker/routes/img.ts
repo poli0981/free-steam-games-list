@@ -40,7 +40,7 @@
 import type { SteamSource } from "../../shared/steam-image";
 import { sourceKey } from "../../shared/steam-image";
 import { jsonError, SECURITY_HEADERS } from "../lib/http";
-import { AVIF_VARIANTS, avifKey, mediaBucket, SOURCE_HOSTS, steamUrl } from "../lib/img-store";
+import { AVIF_VARIANTS, avifKey, mediaBucket, SOURCE_HOSTS, steamUrl, variantTag, type AvifVariant } from "../lib/img-store";
 
 /** The legacy variants: the original JPEG, never negotiated. */
 const PASSTHROUGH = new Set(["t", "d2"]);
@@ -113,7 +113,7 @@ export async function handleImg(
   };
 
   if (avif && acceptsAvif(request)) {
-    const minted = await fromR2(env, ctx, url, avif.width, src, asset);
+    const minted = await fromR2(env, ctx, url, avif, src, asset);
     if (minted) return headOnly(request, minted);
     return headOnly(request, await original(ctx, url, src, { thumb: false, final: false, negotiated: true }));
   }
@@ -137,20 +137,21 @@ async function fromR2(
   env: Env,
   ctx: ExecutionContext,
   url: URL,
-  width: number,
+  variant: AvifVariant,
   src: SteamSource,
   asset: string,
 ): Promise<Response | null> {
   const cache = caches.default;
-  // Normalised: the format and width are in the key because the Cache API
-  // ignores Vary, and stray query parameters must not fork it.
-  const key = new Request(`${url.origin}/img/~avif/${width}/${sourceKey(src)}`);
+  // Normalised: the format, width and quality are in the key - the Cache API
+  // ignores Vary, an old encoding must never be served for a new one, and
+  // stray query parameters must not fork it.
+  const key = new Request(`${url.origin}/img/~avif/${variantTag(variant)}/${sourceKey(src)}`);
   const hit = await cache.match(key);
   if (hit) return withHeaders(hit, { Vary: "Accept" });
 
   const bucket = mediaBucket(env);
   if (!bucket) return null;
-  const object = await bucket.get(avifKey(width, src));
+  const object = await bucket.get(avifKey(variant, src));
   if (!object) return null;
 
   const res = new Response(object.body, {

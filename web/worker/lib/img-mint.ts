@@ -160,7 +160,7 @@ async function mint(
   const failed = new Set(sameGeneration ? marker.failed : []);
   const existing = await listKeys(bucket);
   const missing = sources.filter(
-    (c) => !failed.has(c.key) && VARIANTS.some((v) => !existing.has(avifKey(v.width, c.src))),
+    (c) => !failed.has(c.key) && VARIANTS.some((v) => !existing.has(avifKey(v, c.src))),
   );
 
   const perTick = positiveInt(env.IMG_MINT_PER_TICK) || 10;
@@ -169,7 +169,7 @@ async function mint(
   let attempted = 0;
   for (const c of missing) {
     if (attempted >= perTick) break;
-    const todo = VARIANTS.filter((v) => !existing.has(avifKey(v.width, c.src)));
+    const todo = VARIANTS.filter((v) => !existing.has(avifKey(v, c.src)));
     if (used + todo.length > cap) break;
     attempted++;
 
@@ -191,7 +191,7 @@ async function mint(
           // scale-down: a legacy header narrower than the variant is never enlarged.
           .transform({ width: v.width, fit: "scale-down" })
           .output({ format: "image/avif", quality: v.quality });
-        await bucket.put(avifKey(v.width, c.src), await out.response().arrayBuffer(), {
+        await bucket.put(avifKey(v, c.src), await out.response().arrayBuffer(), {
           httpMetadata: { contentType: "image/avif", cacheControl: "public, max-age=31536000, immutable" },
           customMetadata: { src: c.key, quality: String(v.quality) },
         });
