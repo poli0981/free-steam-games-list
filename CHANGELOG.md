@@ -4,6 +4,51 @@ All notable changes to this awesome noob repo will be documented here.
 
 ## [Unreleased]
 
+## [v4.1.1] – 2026-10-03 (The "Pocket-Sized" Edition)
+
+The site and the apps fit a phone: nothing runs off the right edge, game
+names are back in the leaderboards, and the Android app no longer puts its
+top bar under the clock. Web app + desktop/Android bumped `2.1.0` →
+`2.1.1`; repo public-facing version `4.1.0` → `4.1.1`.
+
+On the website the phone fixes go live with this release; the caching
+changes below already were. The desktop app offers 2.1.1 through its updater
+once the release is published; on Android, install the new APK over the old
+one. The apps also pick up the Privacy Policy line about the image host
+below, so they show the consent gate once, with that paragraph; the website
+already did.
+
+### 📱 Fits a phone
+
+- **Nothing runs off the right edge any more.** On a phone, the Dashboard's
+  "Top genres", "Playing right now" and chart cards, and every card on
+  Developers and Publishers, were wider than the screen: the counts and the
+  "View all" links were cut off and the page slid sideways. One long name was
+  enough, because a grid with no column count for small screens grows to fit
+  its longest line. Every grid now starts at one column that fits the screen,
+  and a test fails on any grid that does not.
+- **Game names are back in the leaderboards.** Top Online, Top Offline and the
+  developer and publisher pages squeezed the name to nothing to make room for
+  the genre badge and the review score. On a phone those two now give way to
+  the name.
+- **The Android app keeps out from under the status bar.** Since 2.0.0 the top
+  bar sat under the clock and the battery icon: the safe-area padding the 1.x
+  app had was lost in the rewrite. The page, the menu, the dialogs, the
+  back-to-top button and the notifications clear the status and navigation
+  bars again, and a strip behind the status bar keeps the clock readable
+  whichever theme the app and the phone are in. This needs Android System
+  WebView 136 or newer, which any phone that updates it from the Play Store
+  has.
+- **Charts that fit.** On a phone the Anti-Cheat, Delisted and Catalogue
+  growth legends no longer cover the chart, axis numbers no longer print on
+  top of each other, and the tag cloud shows the most common tags instead of
+  dropping exactly those.
+- **Smaller fixes.** The header search shows its hint instead of "Search by
+  na"; on /games a game with a long anti-cheat name no longer paints over the
+  next card; the consent gate scrolls to its top on a short screen; long
+  names and links in titles and game descriptions wrap instead of widening
+  the page.
+
 ### ⚡ Faster repeat visits
 
 - **Static files are cached by what they are.** Only the hashed scripts,
@@ -30,6 +75,8 @@ All notable changes to this awesome noob repo will be documented here.
   stopped deploying, data commits still did, and it gives a configuration that
   stops both - with the one trap: the legal documents are read by the build,
   so a commit that changes only them must still trigger one.
+- `docs/android-support.md` (and its Vietnamese mirror) says which Android
+  System WebView the safe areas need, and what to do on an older one.
 
 ## [v4.1.0] – 2026-10-02 (The "Featherweight" Edition)
 
