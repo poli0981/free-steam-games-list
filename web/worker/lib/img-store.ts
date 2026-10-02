@@ -4,21 +4,26 @@
  * Written ONLY by the cron (lib/img-mint.ts); read by the /img route
  * (routes/img.ts). Nothing a visitor sends can create one.
  *
- * The key carries everything that determines the bytes - this prefix, the
- * width, the source path and Steam's `?t=` - so a changed image is a NEW key,
- * never an overwrite, and nothing ever needs invalidating. `v1` also pins the
- * format and the quality below: changing either means a new prefix, which
- * means re-minting every image (~11k unique transformations).
+ * The key carries everything that determines the bytes - this prefix (the
+ * format), the width AND quality, the source path and Steam's `?t=` - so a
+ * changed image or a changed setting is a NEW key, never an overwrite, and
+ * nothing ever needs invalidating. Changing one variant's quality re-mints
+ * only that variant (~5,600 transformations); a new format needs a new prefix.
+ *
+ * v1 (2026-10-02, first production batch) had the quality only in the prefix,
+ * and `d` at q60 measured too soft for a hero the browser enlarges up to 3x:
+ * SSIM 0.960 against Steam's JPEG, fine stripes and texture visibly smoothed.
  */
 import type { SteamSource } from "../../shared/steam-image";
 
-export const IMG_PREFIX = "img/v1/";
+export const IMG_PREFIX = "img/v2/";
 
 export interface AvifVariant {
   /** Output width. Every Steam header is 460x215, so `d` is full size. */
   width: number;
-  /** AVIF quality. Measured on 24 headers (Pillow/libavif): q55 at 230 px is
-   *  ~3.6 KB, q60 at 460 px ~9 KB, against a ~36 KB JPEG. */
+  /** AVIF quality, on Cloudflare's scale - which runs well below libavif's:
+   *  Cloudflare's q60 at 460 px measured SSIM 0.960 (10.9 KB median on the ten
+   *  most-played games, against 40 KB JPEGs) where Pillow's q55 gave 0.978. */
   quality: number;
 }
 
@@ -28,8 +33,10 @@ export interface AvifVariant {
  * each distinct option set is its own billed transformation.
  */
 export const AVIF_VARIANTS: Readonly<Record<string, AvifVariant>> = {
+  // Shown at 52-90 CSS px, i.e. downscaled: q55 measured SSIM 0.952, 3.4 KB.
   s: { width: 230, quality: 55 },
-  d: { width: 460, quality: 60 },
+  // The hero, which the browser ENLARGES to up to 768 CSS px.
+  d: { width: 460, quality: 80 },
 };
 
 /** The ONLY origins anything here fetches art from. Anything else is SSRF. */
@@ -43,9 +50,14 @@ export function steamUrl(host: string, path: string, stamp: string | null): stri
   return `https://${host}/store_item_assets/steam/apps/${path}${stamp ? `?t=${stamp}` : ""}`;
 }
 
-/** `img/v1/<width>/<appid>[/<40-hex>]/<asset>@<t>.avif` (`@0` when there is no `?t=`). */
-export function avifKey(width: number, src: SteamSource): string {
-  return `${IMG_PREFIX}${width}/${src.path.replace(/\.jpg$/, "")}@${src.stamp ?? "0"}.avif`;
+/** `img/v2/<width>q<quality>/<appid>[/<40-hex>]/<asset>@<t>.avif` (`@0` without `?t=`). */
+export function avifKey(variant: AvifVariant, src: SteamSource): string {
+  return `${IMG_PREFIX}${variantTag(variant)}/${src.path.replace(/\.jpg$/, "")}@${src.stamp ?? "0"}.avif`;
+}
+
+/** `460q80`: the part of every key - R2 and edge cache - that names the encoding. */
+export function variantTag(variant: AvifVariant): string {
+  return `${variant.width}q${variant.quality}`;
 }
 
 /**

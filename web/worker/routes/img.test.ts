@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { handleImg } from "./img";
-import { avifKey } from "../lib/img-store";
+import { AVIF_VARIANTS, avifKey } from "../lib/img-store";
 import { makeEnv } from "../testing/fixtures";
 import { FakeImages, FakeR2 } from "../testing/media-fakes";
 
@@ -77,7 +77,7 @@ afterEach(() => {
 
 describe("negotiated variants (s, d)", () => {
   it("serves the minted AVIF to a browser that accepts it", async () => {
-    bucket.seed(avifKey(460, PLAIN), "AVIF-BYTES");
+    bucket.seed(avifKey(AVIF_VARIANTS.d, PLAIN), "AVIF-BYTES");
     const res = await call("/img/d/730/header.jpg?t=1749053861", AVIF_ACCEPT);
 
     expect(res.status).toBe(200);
@@ -91,7 +91,7 @@ describe("negotiated variants (s, d)", () => {
   });
 
   it("answers a repeat from the edge cache, with Vary added on the way out", async () => {
-    bucket.seed(avifKey(230, PLAIN), "AVIF-THUMB");
+    bucket.seed(avifKey(AVIF_VARIANTS.s, PLAIN), "AVIF-THUMB");
     await call("/img/s/730/header.jpg?t=1749053861", AVIF_ACCEPT);
     const gets = bucket.gets.length;
 
@@ -100,7 +100,7 @@ describe("negotiated variants (s, d)", () => {
     expect(again.headers.get("Vary")).toBe("Accept");
     expect(bucket.gets.length).toBe(gets);
     // The cached copy itself carries no Vary: the Cache API ignores it.
-    const stored = [...cache.store.entries()].find(([k]) => k.includes("/img/~avif/230/"));
+    const stored = [...cache.store.entries()].find(([k]) => k.includes("/img/~avif/230q55/"));
     expect(stored?.[1].headers.get("Vary")).toBeNull();
   });
 
@@ -123,7 +123,7 @@ describe("negotiated variants (s, d)", () => {
   });
 
   it("gives a browser without AVIF the JPEG as its final answer", async () => {
-    bucket.seed(avifKey(460, PLAIN), "AVIF-BYTES");
+    bucket.seed(avifKey(AVIF_VARIANTS.d, PLAIN), "AVIF-BYTES");
     const res = await call("/img/d/730/header.jpg?t=1749053861", JPEG_ACCEPT);
 
     expect(res.headers.get("Content-Type")).toBe("image/jpeg");
@@ -142,25 +142,42 @@ describe("negotiated variants (s, d)", () => {
   });
 
   it("keys the R2 lookup on the source version, so a forged ?t= only misses", async () => {
-    bucket.seed(avifKey(460, PLAIN), "AVIF-BYTES");
+    bucket.seed(avifKey(AVIF_VARIANTS.d, PLAIN), "AVIF-BYTES");
     const res = await call("/img/d/730/header.jpg?t=1", AVIF_ACCEPT);
     expect(res.headers.get("Content-Type")).toBe("image/jpeg");
-    expect(bucket.gets).toEqual([avifKey(460, { path: PLAIN.path, stamp: "1" })]);
+    expect(bucket.gets).toEqual([avifKey(AVIF_VARIANTS.d, { path: PLAIN.path, stamp: "1" })]);
     expect(bucket.puts).toEqual([]);
   });
 
   it("uses the thumbnail key for s, never the capsule", async () => {
     await call(`/img/s/${HASHED_PATH}?t=5`, AVIF_ACCEPT);
-    expect(bucket.gets).toEqual([avifKey(230, { path: HASHED_PATH, stamp: "5" })]);
+    expect(bucket.gets).toEqual([avifKey(AVIF_VARIANTS.s, { path: HASHED_PATH, stamp: "5" })]);
     expect(upstream.mock.calls.map(([u]) => u)).toEqual([
       `https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/${HASHED_PATH}?t=5`,
     ]);
   });
 });
 
+describe("key scheme", () => {
+  it("names the encoding in every key, so a new quality is a new object", () => {
+    expect(avifKey(AVIF_VARIANTS.d, PLAIN)).toBe("img/v2/460q80/730/header@1749053861.avif");
+    expect(avifKey(AVIF_VARIANTS.s, { path: HASHED_PATH, stamp: null })).toBe(
+      "img/v2/230q55/8500/fed1ea9b01dd6564101518a5201740fb44929fb4/header@0.avif",
+    );
+  });
+
+  it("never serves an object minted under an older encoding", async () => {
+    // What the first production batch wrote (d at q60, quality only in the prefix).
+    bucket.seed("img/v1/460/730/header@1749053861.avif", "OLD-Q60");
+    const res = await call("/img/d/730/header.jpg?t=1749053861", AVIF_ACCEPT);
+    expect(res.headers.get("Content-Type")).toBe("image/jpeg");
+    expect(res.headers.get("X-Img-Final")).toBeNull();
+  });
+});
+
 describe("legacy and social variants (t, d2)", () => {
   it("d2 is always the JPEG, even for an AVIF browser and a minted copy", async () => {
-    bucket.seed(avifKey(460, PLAIN), "AVIF-BYTES");
+    bucket.seed(avifKey(AVIF_VARIANTS.d, PLAIN), "AVIF-BYTES");
     const res = await call("/img/d2/730/header.jpg?t=1749053861", AVIF_ACCEPT);
 
     expect(res.headers.get("Content-Type")).toBe("image/jpeg");
@@ -192,7 +209,7 @@ describe("cache keys and errors", () => {
   });
 
   it("answers HEAD with headers and no body", async () => {
-    bucket.seed(avifKey(460, PLAIN), "AVIF-BYTES");
+    bucket.seed(avifKey(AVIF_VARIANTS.d, PLAIN), "AVIF-BYTES");
     const res = await call("/img/d/730/header.jpg?t=1749053861", AVIF_ACCEPT, "HEAD");
     expect(res.status).toBe(200);
     expect(res.headers.get("Content-Type")).toBe("image/avif");

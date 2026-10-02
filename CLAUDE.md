@@ -308,7 +308,7 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
   fails on an `<img>` without the attribute. Do not "fix" it with a
   `<meta name="referrer">` or by relying on the webview's default.
 - **`/img/*` NEVER transforms; only the cron does.** `worker/lib/img-mint.ts`
-  mints AVIF (`s` 230 px q55, `d` 460 px q60) into R2 `f2p-media`, most-played
+  mints AVIF (`s` 230 px q55, `d` 460 px q80) into R2 `f2p-media`, most-played
   first, from shards that hash to `index.json` - a list built from a lagging
   raw.githubusercontent shard would be stamped with the new generation and
   frozen. `worker/routes/img.ts` reads Cache API → R2 → Steam's JPEG and
@@ -323,9 +323,17 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
     because CacheFirst ignores Cache-Control.
   - `t` and `d2` are ALWAYS the JPEG: released apps request them, and `d2` is
     og:image - a crawler may claim AVIF and not render it.
-  - The R2 key (`worker/lib/img-store.ts`) carries width, path and Steam's
-    `?t=`, so new art is a new key. `img/v1/` also pins format and quality;
-    changing either is a new prefix and re-mints ~11k images.
+  - The R2 key AND the edge-cache key (`worker/lib/img-store.ts`) carry width,
+    quality, path and Steam's `?t=`: new art or a new setting is a new key, so
+    an old encoding can never be served for a new one. Changing one variant's
+    quality re-mints only that variant (~5,600); `img/v2/` pins the format.
+    Cloudflare's quality scale runs well below libavif's - `d` at q60 measured
+    visibly soft (SSIM 0.960), which is why it is q80.
+  - Never let `/cdn-cgi/image/` work on this zone. With zone Transformations
+    on, even "This zone only" accepts `/img/*` as a source - and `/img/*`
+    proxies ANY Steam appid - so anyone could bill transformations with
+    arbitrary options, outside `IMG_TRANSFORM_MONTHLY_CAP`. Transformations
+    off, or a WAF rule blocking that path (`docs/SECURITY_SETUP.md` §5).
   - URLs keep `.jpg`: Hotlink Protection matches by extension.
   - Flip `IMG_TRANSFORM` in `wrangler.jsonc`, not the dashboard: there is no
     `keep_vars`, so the next deploy resets a dashboard value.

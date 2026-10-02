@@ -429,13 +429,21 @@ transformations a month are included, then $0.50 per 1,000. Cloudflare has
   an emergency stop, not as the real setting.
 - **The whole catalogue is ~11k transformations once** (~5,600 sources x 2
   widths, ≈ $3 above the free 5,000); after that only new games and changed art
-  (a new Steam `?t=`) cost anything. Bumping the `img/v1/` key prefix
-  (`web/worker/lib/img-store.ts`) to change the quality re-mints everything.
-- **Keep the zone's Images → Transformations → Sources at "This zone only"** (or
-  Transformations off). The Images binding takes bytes, so it does not need the
-  list; adding Steam's hosts would let anyone spend this account's quota with
-  arbitrary `/cdn-cgi/image/<options>/https://shared.akamai.steamstatic.com/...`
-  URLs, each new option set billed as a new transformation.
+  (a new Steam `?t=`) cost anything. The quality is part of the key
+  (`web/worker/lib/img-store.ts`), so changing one variant's quality re-mints
+  that variant only (~5,600 transformations, ≈ $3).
+- **`/cdn-cgi/image/` must not work on this zone.** The Images binding takes
+  bytes and never uses that URL. With zone Transformations ON, even Sources =
+  "This zone only" accepts same-zone images - including `/img/*`, which proxies
+  ANY Steam appid - so anyone could request
+  `/cdn-cgi/image/width=<1..2000>,quality=<…>/img/d2/<appid>/header.jpg` and
+  have each new option set billed as a new transformation, outside
+  `IMG_TRANSFORM_MONTHLY_CAP` (measured 2026-10-02: the endpoint answered
+  `cf-resized: internal=ok` once Transformations were enabled). Either keep
+  Transformations off for the zone, or add a WAF custom rule:
+  `(starts_with(http.request.uri.path, "/cdn-cgi/image/"))` → **Block**, and
+  check that `curl -s -o /dev/null -w '%{http_code}' https://free-steam-games.win/cdn-cgi/image/width=10/og.png`
+  answers 403. Never add Steam's hosts to Sources.
 
 **Notifications → Add → Cloudflare Images**: alert at **5,000** (billing
 starts) and **20,000** unique transformations. The D1 counter
