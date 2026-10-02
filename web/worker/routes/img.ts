@@ -25,6 +25,11 @@
  *          and a crawler that claims AVIF in Accept but cannot render it must
  *          never be handed one.
  *
+ * The web app asks the bucket's custom domain for the minted AVIF first
+ * (src/lib/image.ts) - served from Cloudflare's cache, which a Worker can
+ * never be - and comes here only when that fails: not minted yet, or no AVIF
+ * decoder. The packaged apps come here for everything.
+ *
  * THIS PATH NEVER TRANSFORMS. Minting runs only in the cron, from the
  * published dataset, so no request - an unknown appid, a forged ?t=, a HEAD -
  * can create a billed transformation or an R2 object.
@@ -64,6 +69,14 @@ const AVATAR_PX = 56;
 const YEAR = 31536000;
 const MONTH = 2592000;
 const DAY = 86400;
+
+/**
+ * How long this data centre remembers that R2 has no AVIF for a source: one
+ * cron tick, the soonest a mint could add it. Without it every request for a
+ * game the cron has not reached - the backfill, a new game, a changed `?t=` -
+ * paid an R2 read to learn the same thing again.
+ */
+const MISS_TTL = 900;
 
 /**
  * Marks an answer that will not change for this URL and this client, and is
@@ -109,7 +122,7 @@ export async function handleImg(
     return headOnly(request, await handleAvatar(rest.slice(slash + 1), url, ctx));
   }
 
-  const avif = Object.hasOwn(AVIF_VARIANTS, variant) ? AVIF_VARIANTS[variant] : undefined;
+  const avif = variant === "s" || variant === "d" ? AVIF_VARIANTS[variant] : undefined;
   if (!avif && !PASSTHROUGH.has(variant)) return jsonError(404, "unknown variant");
 
   const m = PATH_RE.exec(rest.slice(slash + 1));
@@ -157,14 +170,22 @@ async function fromR2(
   // Normalised: the format, width and quality are in the key - the Cache API
   // ignores Vary, an old encoding must never be served for a new one, and
   // stray query parameters must not fork it.
-  const key = new Request(`${url.origin}/img/~avif/${variantTag(variant)}/${sourceKey(src)}`);
+  const id = `${variantTag(variant)}/${sourceKey(src)}`;
+  const key = new Request(`${url.origin}/img/~avif/${id}`);
   const hit = await cache.match(key);
   if (hit) return withHeaders(hit, { Vary: "Accept" });
 
   const bucket = mediaBucket(env);
   if (!bucket) return null;
+  const missKey = new Request(`${url.origin}/img/~avif-miss/${id}`);
+  if (await cache.match(missKey)) return null;
   const object = await bucket.get(avifKey(variant, src));
-  if (!object) return null;
+  if (!object) {
+    ctx.waitUntil(
+      cache.put(missKey, new Response("", { headers: { "Cache-Control": `public, max-age=${MISS_TTL}` } })),
+    );
+    return null;
+  }
 
   const res = new Response(object.body, {
     status: 200,

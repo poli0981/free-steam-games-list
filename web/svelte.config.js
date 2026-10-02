@@ -157,6 +157,13 @@ const config = {
           // Same reason as connect-src: under Tauri 'self' is the bundle, so
           // artwork proxied through /img/* is cross-origin.
           ...(IS_TAURI ? ["https://free-steam-games.win", "blob:"] : []),
+          // The R2 bucket's custom domain (MEDIA_ORIGIN in lib/site.ts): the
+          // minted AVIF art, served from Cloudflare's cache without running
+          // the Worker. Web only - under Tauri every image comes through
+          // /img/*. Without it every thumbnail would silently fall back to
+          // /img (lib/img-fallback.ts), so verify-dist fails a web build that
+          // lacks it.
+          ...(IS_TAURI ? [] : ["https://media.free-steam-games.win"]),
           "https://shared.akamai.steamstatic.com",
           "https://shared.fastly.steamstatic.com",
           "https://cdn.akamai.steamstatic.com",

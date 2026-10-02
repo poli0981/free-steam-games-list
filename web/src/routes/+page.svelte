@@ -12,7 +12,8 @@
   import { i18n } from "$lib/i18n.svelte";
   import { formatNumber } from "$lib/utils";
   import { appidOf } from "$lib/data-store";
-  import { headerToCapsule } from "$lib/image";
+  import { headerToCapsule, thumbFallback } from "$lib/image";
+  import { imgFallback } from "$lib/img-fallback";
   import { CHART_PAGES } from "$lib/chart-nav";
   import QueryState from "$lib/common/QueryState.svelte";
   import PageHeader from "$lib/common/PageHeader.svelte";
@@ -132,6 +133,7 @@
               {#if record.header_image}
                 <img
                   src={headerToCapsule(record.header_image)}
+                  {@attach imgFallback(thumbFallback(record.header_image))}
                   alt=""
                   loading="lazy"
                   decoding="async"
