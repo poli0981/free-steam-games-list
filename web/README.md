@@ -60,7 +60,13 @@ Worker:
 
 - `/api/data/data/index.json` — shard manifest (`max_per_file`, `total`,
   `last_updated`, `files`)
-- `/api/data/data/data_001.jsonl`, … — record shards
+- `/api/data/p1/data_001.bin`, … — the shards the app actually reads: each
+  committed file deflated and wrapped by `shared/data-pack.ts` (AES-GCM under
+  a public key - obfuscation and ~85% less transfer, not secrecy). The app
+  unpacks them to the exact committed bytes before the usual hash check
+- `/api/data/data/data_001.jsonl`, … — the same shards plain, for released
+  apps and any runtime that cannot unpack. The readable dataset is the
+  repository itself
 - `/img/t/<appid>/...` — Steam artwork, proxied and edge-cached
 - `/img/gh/{u|in}/{id}` — GitHub avatars for `/activity`
 - `/api/activity` — recent commits, so `api.github.com` is absent from the
@@ -70,7 +76,7 @@ Worker:
   nothing else; no route above requires a pass (`docs/ToS.md` §9)
 
 `index.json` lists a SHA-256 for every shard. The app requests shards as
-`?v=<sha256>`, which the Worker serves content-addressed and immutable (or 503s
+`?v=<sha256>` (packed or plain), which the Worker serves content-addressed and immutable (or 503s
 while GitHub's CDN still has the previous bytes), and hashes what it receives
 before caching it. IndexedDB holds the last generation that verified; the app
 re-checks the index when the tab regains focus and every ten minutes while it is

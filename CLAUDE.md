@@ -74,6 +74,19 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
   Commit a shard without going through `save_main()` and every browser keeps
   serving pre-edit records. `scripts/tests/test_index_hash.py` pins both.
 
+- **The app reads shards PACKED; Git keeps them plain.** `/api/data/p1/data_NNN.bin`
+  (and `removed_games.bin`) is the committed file run through
+  `shared/data-pack.ts` at the edge: deflate-raw, then AES-GCM under a key
+  that is PUBLIC in this repository. It is obfuscation and compression (~15%
+  of the JSONL), never secrecy - do not call it protection, and never commit a
+  pack: Git stays the readable source. A pack unpacks to the exact committed
+  bytes, so the sha256 contract above is checked on the UNPACKED bytes and
+  `games-loader.ts` did not change. The plain `/api/data/data/*.jsonl` paths
+  must keep serving released apps (1.4.5 unversioned, 2.0.x `?v=`), which
+  cannot unpack. Packs end in `.bin` so the zone's `.jsonl` Compression Rule
+  never recompresses them. No WASM: installed apps' CSP has no
+  `'wasm-unsafe-eval'`.
+
 - **`index.json` is rebuilt from scratch on every save.** `_save_index()` in
   `scripts/core/data_store.py` writes it from a fixed set of keys, so any key
   added to that file by anything else is silently dropped the next time the
