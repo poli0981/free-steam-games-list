@@ -127,7 +127,7 @@
     {t("charts.kpi.removed")}
   </p>
 
-  <div class="grid gap-4 lg:grid-cols-2">
+  <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
     <section class="rounded-lg border bg-card p-4">
       <h2 class="mb-3 text-base font-semibold">{t("charts.delisted.reasonTitle")}</h2>
       <EChart option={reasonOption} height={360} label={t("charts.delisted.reasonTitle")} />

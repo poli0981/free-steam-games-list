@@ -12,7 +12,9 @@
 
 <div class="mb-6 flex flex-wrap items-end justify-between gap-3">
   <div class="min-w-0">
-    <h1 class="text-2xl font-semibold tracking-tight sm:text-3xl">{title}</h1>
+    <!-- wrap-break-word: a studio page's title is the studio's name, and some
+         are raw URLs - one unbroken run several hundred pixels wide. -->
+    <h1 class="text-2xl font-semibold tracking-tight wrap-break-word sm:text-3xl">{title}</h1>
     {#if subtitle}
       <p class="mt-1 max-w-2xl text-sm text-muted-foreground">{subtitle}</p>
     {/if}

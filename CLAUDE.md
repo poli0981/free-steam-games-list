@@ -215,6 +215,20 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
   `.scrollbar-panel` or `.scrollbar-page`; a new scroll container takes one of
   them. Dialogs and the legal documents stay unmarked on purpose.
   `src/lib/scrollbars.test.ts` holds all three rules.
+- **Every layout grid declares its base column count:** `grid grid-cols-1
+  gap-2 sm:grid-cols-2`, never `grid gap-2 sm:grid-cols-2`. Below the first
+  breakpoint the latter has one implicit `auto` track, as wide as its widest
+  item's min-content, and a `truncate` name counts at full length there (the
+  grid ITEM keeps `min-width:auto`, whatever `min-w-0` the span inside has).
+  One long studio name pushed every card on /publishers past a phone's edge,
+  and the dashboard lost its "View all" links and counts. A chart in such a
+  grid makes it stick: zrender gives its root a pixel width, which becomes
+  the track's minimum, so the chart can grow and never shrink back.
+  `grid-cols-N` is `repeat(N, minmax(0, 1fr))` and cannot do either. Rows of
+  fixed-width columns plus a `Badge` (which cannot shrink below its longest
+  word) squeezed game names to nothing at 360px the same way - hide the
+  extras below `sm`. `src/lib/mobile-layout.test.ts` fails on a grid without
+  a base `grid-cols-N`.
 - **Every chart colour must be one zrender can parse, which is stricter than
   what a canvas paints.** zrender splits `hsl()` on commas: space-separated
   `hsl(38 94% 60%)` paints, but every hover state derived from it comes back

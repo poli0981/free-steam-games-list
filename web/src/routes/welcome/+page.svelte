@@ -78,7 +78,7 @@
 
     <section class="space-y-3">
       <h2 class="text-xs font-semibold tracking-wider text-muted-foreground uppercase">{t("welcome.startHere")}</h2>
-      <ul class="grid gap-3 sm:grid-cols-3">
+      <ul class="grid grid-cols-1 gap-3 sm:grid-cols-3">
         {#each entries as entry (entry.to)}
           <li>
             <a
@@ -94,7 +94,7 @@
       </ul>
     </section>
 
-    <div class="grid gap-8 sm:grid-cols-2">
+    <div class="grid grid-cols-1 gap-8 sm:grid-cols-2">
       <section class="space-y-3">
         <h2 class="flex items-center gap-2 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
           <Languages class="size-3.5" />

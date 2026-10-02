@@ -62,7 +62,7 @@
       {t("settings.languageTitle")}
     </h2>
     <p class="mt-1 text-sm text-muted-foreground">{t("settings.languageHint")}</p>
-    <div class="mt-3 grid gap-2 sm:grid-cols-2">
+    <div class="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2">
       {#each SUPPORTED_LANGUAGES as lang (lang)}
         {@const meta = LANGUAGE_NAMES[lang]}
         <button
@@ -92,7 +92,7 @@
       {t("settings.theme")}
     </h2>
     <p class="mt-1 text-sm text-muted-foreground">{t("settings.themeHint")}</p>
-    <div class="mt-3 grid gap-2 sm:grid-cols-3">
+    <div class="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-3">
       {#each THEMES as option (option.value)}
         <button
           type="button"
@@ -121,7 +121,7 @@
       {t("settings.scrollbarsTitle")}
     </h2>
     <p class="mt-1 text-sm text-muted-foreground">{t("settings.scrollbarsHint")}</p>
-    <div class="mt-3 grid gap-2 sm:grid-cols-3">
+    <div class="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-3">
       {#each SCROLLBAR_OPTIONS as option (option.value)}
         <button
           type="button"

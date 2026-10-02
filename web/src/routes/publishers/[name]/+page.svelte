@@ -69,9 +69,13 @@
               />
             {/if}
             <span class="min-w-0 flex-1 truncate text-sm font-medium">{g.name}</span>
-            {#if g.genre}<Badge variant="outline">{g.genre}</Badge>{/if}
+            <!-- Below sm the thumbnail and the fixed-width columns already take most of
+                 a 328px row, and a Badge cannot shrink below its longest word: with
+                 the genre and the score the row ran past the screen and squeezed the
+                 name to nothing. Top Online hides them the same way. -->
+            {#if g.genre}<Badge variant="outline" class="hidden sm:inline-flex">{g.genre}</Badge>{/if}
             {#if pct !== null}
-              <span class="w-12 shrink-0 text-right font-mono text-xs tnum {reviewTone(pct)}">{pct}%</span>
+              <span class="hidden w-12 shrink-0 text-right font-mono text-xs tnum sm:inline {reviewTone(pct)}">{pct}%</span>
             {/if}
             <span class="w-20 shrink-0 text-right font-mono text-xs text-muted-foreground tnum">
               {formatNumber(g.current_players)}

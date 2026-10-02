@@ -77,7 +77,7 @@
 <div class="max-w-3xl space-y-4">
   <section class="rounded-lg border bg-card p-5">
     <h2 class="text-base font-semibold">{t("about.repositoryTitle")}</h2>
-    <div class="mt-3 grid gap-3 sm:grid-cols-2">
+    <div class="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
       <div class="rounded-md border bg-muted/30 p-3">
         <Badge variant="secondary">{t("about.trackedGamesLabel")}</Badge>
         <div class="mt-1 truncate font-display text-xl font-semibold tnum">{formatNumber(total)}</div>
@@ -133,7 +133,7 @@
   <section class="rounded-lg border bg-card p-5">
     <h2 class="text-base font-semibold">{t("about.maintainerTitle")}</h2>
     <p class="mt-1 text-sm text-muted-foreground">{t("about.maintainerBlurb")}</p>
-    <div class="mt-3 grid gap-2 sm:grid-cols-2 md:grid-cols-3">
+    <div class="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2 md:grid-cols-3">
       {#each CONTACTS as c (c.label)}
         <a
           href={c.href}
@@ -157,7 +157,7 @@
       <Bug class="size-4 text-muted-foreground" />
       {t("about.reportTitle")}
     </h2>
-    <div class="mt-3 grid gap-2 sm:grid-cols-3">
+    <div class="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-3">
       {#each ISSUE_TEMPLATES as tpl (tpl.id)}
         <a
           href={`${REPO_URL}/issues/new?template=${tpl.id}.yml`}

@@ -79,7 +79,9 @@
             />
           {/if}
           <span class="min-w-0 flex-1 truncate text-sm font-medium">{record.name}</span>
-          {#if record.genre}<Badge variant="outline">{record.genre}</Badge>{/if}
+          <!-- Hidden below sm with the score: a Badge cannot shrink below its
+               longest word, and on a phone it took the whole width the name had. -->
+          {#if record.genre}<Badge variant="outline" class="hidden sm:inline-flex">{record.genre}</Badge>{/if}
           {#if pct !== null}
             <span class="hidden w-12 shrink-0 text-right font-mono text-xs tnum sm:inline {reviewTone(pct)}">
               {pct}%
