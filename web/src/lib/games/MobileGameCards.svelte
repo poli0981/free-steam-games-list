@@ -38,7 +38,7 @@
   const items = $derived($virtualizer.getVirtualItems());
 </script>
 
-<div bind:this={viewport} class="h-[calc(100dvh-18rem)] overflow-auto scrollbar-thin">
+<div bind:this={viewport} class="h-[calc(100dvh-18rem)] overflow-auto scrollbar-slim scrollbar-panel">
   <div style:height="{$virtualizer.getTotalSize()}px" class="relative">
     {#each items as item (item.key)}
       {@const g = rows[item.index]}

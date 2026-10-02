@@ -10,7 +10,7 @@
   const t = i18n.t;
 </script>
 
-<div class="flex h-full flex-col gap-1 overflow-y-auto scrollbar-thin px-3 py-4">
+<div class="flex h-full flex-col gap-1 overflow-y-auto scrollbar-slim scrollbar-panel px-3 py-4">
   <a
     href="/"
     onclick={onNavigate}

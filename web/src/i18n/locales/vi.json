@@ -209,6 +209,11 @@
     "themeLight": "Sáng",
     "themeDark": "Tối",
     "themeSystem": "Hệ thống",
+    "scrollbarsTitle": "Thanh cuộn",
+    "scrollbarsHint": "Màu theo tông của trang. Khi ẩn, bạn vẫn cuộn được bằng con lăn chuột, touchpad, cảm ứng hoặc bàn phím.",
+    "scrollbarsVisible": "Hiện",
+    "scrollbarsPanels": "Ẩn ở bảng và panel",
+    "scrollbarsAll": "Ẩn toàn bộ",
     "cacheTitle": "Dữ liệu cục bộ",
     "cacheHint": "Danh mục được lưu đệm trong trình duyệt và làm mới khi last_updated của bộ dữ liệu thay đổi. Xóa đệm sẽ buộc tải lại toàn bộ ở lần mở kế tiếp.",
     "cacheAction": "Xóa danh mục đã lưu đệm"

@@ -55,6 +55,11 @@
   --input: 38 18% 87%;
   --ring: 28 88% 42%;
   --radius: 0.5rem;
+
+  /* Scrollbars: a warm neutral thumb that warms towards the brand amber on
+     hover (WebKit/Chromium only - Firefox has no hover state). */
+  --scrollbar-thumb: 36 14% 74%;
+  --scrollbar-thumb-hover: 30 40% 56%;
 }
 
 .dark {
@@ -85,6 +90,9 @@
   --border-strong: 30 9% 29%;
   --input: 30 10% 19%;
   --ring: 34 96% 58%;
+
+  --scrollbar-thumb: 30 9% 28%;
+  --scrollbar-thumb-hover: 34 52% 44%;
 }
 
 /* The v4 replacement for `theme.extend`. `inline` so the generated utilities
@@ -138,8 +146,24 @@
   @media (width >= 1400px) { max-width: 1400px; }
 }
 
-@utility scrollbar-thin {
-  scrollbar-width: thin;
+/* A thinner bar for panels (tables, lists, the sidebar).
+
+   NOT Tailwind's own `scrollbar-thin` (a core utility since 4.3, and the name
+   this one used to share - the two merged): that is a plain
+   `scrollbar-width: thin`, and in Chromium 121+ setting either standard
+   scrollbar property switches ::-webkit-scrollbar off for that element, which
+   is why these panels showed the OS's grey bar instead of the themed one. So
+   the standard property goes only to browsers without the WebKit
+   pseudo-element (Firefox); everyone else gets a narrower themed bar.
+   src/lib/scrollbars.test.ts fails on any `scrollbar-thin` in markup. */
+@utility scrollbar-slim {
+  @supports not selector(::-webkit-scrollbar) {
+    scrollbar-width: thin;
+  }
+  &::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
 }
 
 /* Numbers that sit in a column must not shift width between rows.
@@ -210,15 +234,54 @@
     }
   }
 
-  ::-webkit-scrollbar {
-    @apply h-2 w-2;
+  /* Themed scrollbars, both engines. Firefox gets the standard properties
+     (inherited from :root, so every scroll container follows); WebKit and
+     Chromium get the pseudo-elements, which also allow the hover colour. The
+     two must not meet on one element: Chromium ignores the pseudo-elements
+     wherever a standard scrollbar property applies. */
+  @supports not selector(::-webkit-scrollbar) {
+    :root {
+      scrollbar-color: hsl(var(--scrollbar-thumb)) transparent;
+    }
   }
-  ::-webkit-scrollbar-track {
-    @apply bg-transparent;
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track,
+  ::-webkit-scrollbar-corner {
+    background: transparent;
   }
   ::-webkit-scrollbar-thumb {
-    @apply rounded-full bg-muted hover:bg-muted-foreground/30;
+    /* The transparent border plus content-box clip keeps a gap around the
+       thumb, so it reads as floating on the page rather than as a gutter. */
+    border: 2px solid transparent;
+    border-radius: 9999px;
+    background-clip: content-box;
+    background-color: hsl(var(--scrollbar-thumb));
   }
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: hsl(var(--scrollbar-thumb-hover));
+  }
+  ::-webkit-scrollbar-thumb:active {
+    background-color: hsl(var(--primary));
+  }
+}
+
+/* The reader's choice in Settings (lib/prefs.svelte.ts `scrollbars`), set as
+   <html data-scrollbars>: "panels" hides the bars of anything marked
+   .scrollbar-panel (the games table, card lists, sidebar, command palette,
+   wide tables); "all" also hides .scrollbar-page, the main content area.
+   Hidden is not disabled - wheel, touch, keyboard and dragging still scroll.
+   Dialogs and the legal documents are deliberately not marked: a visible bar
+   is how a reader knows there is more to read. */
+:root[data-scrollbars="panels"] .scrollbar-panel,
+:root[data-scrollbars="all"] :is(.scrollbar-panel, .scrollbar-page) {
+  scrollbar-width: none;
+}
+:root[data-scrollbars="panels"] .scrollbar-panel::-webkit-scrollbar,
+:root[data-scrollbars="all"] :is(.scrollbar-panel, .scrollbar-page)::-webkit-scrollbar {
+  display: none;
 }
 
 /* Keyboard users get to the content without tabbing the whole nav first. */

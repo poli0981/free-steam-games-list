@@ -426,7 +426,7 @@
   </div>
 
   <!-- tabs -->
-  <div class="-mx-1 overflow-x-auto px-1 scrollbar-thin">
+  <div class="-mx-1 overflow-x-auto px-1 scrollbar-slim">
     <div role="tablist" aria-label="Queue status" class="flex min-w-max gap-1 border-b border-border">
       {#each TABS as tab (tab)}
         {@const n = stats?.queue[tab]}
