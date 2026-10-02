@@ -42,7 +42,47 @@
   Cross-Origin-Resource-Policy: same-site
 
 # Hashed build output is immutable by construction - the filename changes when
-# the content does - so it can be cached hard, fonts included. Everything else
-# stays revalidated so a deploy is visible immediately.
+# the content does - so it can be cached hard, fonts included.
+#
+# One wart, accepted: an asset path that does not exist is answered with the
+# SPA fallback (index.html, HTTP 200), and the rule below matches by PATH, so
+# that HTML is cached as "immutable" too. It only happens to a tab left open
+# across a deploy that then imports a chunk the deploy removed;
+# hooks.client.ts reloads once, and the new HTML never names that URL again.
+# Routing /_app/* through the Worker to answer 404 would cost an invocation
+# per asset to fix a response nobody requests twice.
 /_app/immutable/*
   Cache-Control: public, max-age=31536000, immutable
+
+# Workbox's runtime is emitted as workbox-<hash>.js beside sw.js: hashed too.
+/workbox-*
+  Cache-Control: public, max-age=31536000, immutable
+
+# Art and the manifest change rarely but keep their names, so they are NOT
+# immutable: fresh for a day, then served from cache while the browser
+# revalidates in the background for up to a week. Nothing waits on them, and
+# a regenerated icon (scripts/gen-icons.py) still shows up within a day.
+/icon*
+  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
+/favicon-*
+  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
+/apple-touch-icon.png
+  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
+/og.png
+  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
+/manifest.webmanifest
+  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
+
+# Read by crawlers, not people; an hour is plenty.
+/robots.txt
+  Cache-Control: public, max-age=3600
+/sitemap.xml
+  Cache-Control: public, max-age=3600
+
+# Deliberately NOT here, so they keep the platform default
+# (public, max-age=0, must-revalidate):
+#  - every HTML page: a deploy - and a changed legal document behind the
+#    consent gate - must be visible on the next load;
+#  - /sw.js: the browser's own update check must see a new worker;
+#  - /_app/version.json: SvelteKit's version signal.
+# src/lib/cache-headers.test.ts holds these rules.
