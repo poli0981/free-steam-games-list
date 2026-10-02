@@ -4,12 +4,18 @@ All notable changes to this awesome noob repo will be documented here.
 
 ## [Unreleased]
 
+## [v4.1.0] – 2026-10-02 (The "Featherweight" Edition)
+
 Game art and the catalogue both got much lighter, the deploy log lost its
-noise, and scrollbars finally look like the rest of the site. The web changes
-are live as each merges; the packed catalogue reaches the desktop and Android
-apps with their next release. Returning visitors see the consent gate once,
-showing one new line in the Privacy Policy: the storage key of the new
-scrollbar setting.
+noise, and scrollbars finally look like the rest of the site. Web app +
+desktop/Android bumped `2.0.2` → `2.1.0`; repo public-facing version `4.0.2` →
+`4.1.0`.
+
+The web changes are already live. The desktop app offers 2.1.0 through its
+updater once the release is published, and brings the packed catalogue with
+it; on Android, install the new APK over the old one. Returning visitors see
+the consent gate once, showing one new line in the Privacy Policy: the storage
+key of the new scrollbar setting.
 
 ### ✨ Added
 
