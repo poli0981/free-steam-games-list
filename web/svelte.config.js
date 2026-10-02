@@ -213,10 +213,15 @@ const config = {
       concurrency: 4,
       /**
        * The crawler follows every same-origin `src` and `href` it finds, and a
-       * prerendered game page carries <img src="/img/d2/..."> for its header.
+       * prerendered game page carries an <img src="/img/..."> for its header.
        * /img/* and /api/* are Worker routes (wrangler.jsonc run_worker_first):
        * they exist at runtime, never in the build, so a 404 for them here is
        * expected. Anything else still fails the build.
+       *
+       * This only decides pass/fail. src/hooks.server.ts answers those two
+       * prefixes before routing, which is what keeps each of the ~5,600
+       * requests from rendering the error page and printing a `[404] GET` line
+       * through SvelteKit's default handleError - this hook cannot silence it.
        */
       handleHttpError: ({ path, message }) => {
         if (path.startsWith("/img/") || path.startsWith("/api/")) return;

@@ -342,7 +342,13 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
   200, and the page errors. `__PRERENDER_GAMES__` is false for Tauri.
   `kit.prerender.handleHttpError` ignores 404s under `/img/` and `/api/` only,
   because the crawler follows the page's `<img>` into a Worker route that does
-  not exist at build time.
+  not exist at build time. That handler only decides pass/fail; the
+  `[404] GET /img/…` line per game came from SvelteKit's DEFAULT server
+  `handleError`, which no `handleHttpError` setting can silence.
+  `src/hooks.server.ts` answers both prefixes before routing (no layout render,
+  no log), and only ever runs at build time and under `vite dev`, whose proxy
+  takes `/api` and `/img` first. Keep its prefixes identical to
+  `handleHttpError`'s.
 - **Nothing may gate the markup behind `onMount`.** onMount does not run during
   prerender, so anything behind it ships an empty body and the SEO reason for
   prerendering is gone. The consent gate is an OVERLAY for this reason, not a
