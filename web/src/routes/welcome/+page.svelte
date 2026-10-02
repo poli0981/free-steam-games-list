@@ -42,7 +42,8 @@
 
 <Seo title={t("welcome.title")} description={t("welcome.heading")} />
 
-<div class="min-h-dvh bg-background">
+<!-- Chrome-less, so it clears the Android system bars itself (styles/theme.css). -->
+<div class="min-h-dvh bg-background pt-safe pb-safe">
   <div class="mx-auto flex max-w-3xl flex-col gap-10 px-4 py-12 sm:py-16">
     <header class="space-y-4">
       <span class="grid size-12 place-items-center rounded-xl bg-primary text-primary-foreground shadow-sm">
@@ -78,7 +79,7 @@
 
     <section class="space-y-3">
       <h2 class="text-xs font-semibold tracking-wider text-muted-foreground uppercase">{t("welcome.startHere")}</h2>
-      <ul class="grid gap-3 sm:grid-cols-3">
+      <ul class="grid grid-cols-1 gap-3 sm:grid-cols-3">
         {#each entries as entry (entry.to)}
           <li>
             <a
@@ -94,7 +95,7 @@
       </ul>
     </section>
 
-    <div class="grid gap-8 sm:grid-cols-2">
+    <div class="grid grid-cols-1 gap-8 sm:grid-cols-2">
       <section class="space-y-3">
         <h2 class="flex items-center gap-2 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
           <Languages class="size-3.5" />

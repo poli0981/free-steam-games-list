@@ -44,7 +44,7 @@
     <EChart {option} height={520} label={t("nav.genres")} />
   </div>
 
-  <div class="mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+  <div class="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
     {#each genres.slice(0, 24) as g (g.name)}
       <div class="flex items-center justify-between gap-2 rounded-md border bg-card px-3 py-2 text-sm">
         <span class="truncate">{g.name}</span>

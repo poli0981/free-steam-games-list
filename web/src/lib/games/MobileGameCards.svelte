@@ -46,9 +46,13 @@
       {@const appid = appidOf(g)}
       {@const pct = parseReviewPercent(g.reviews)}
       {@const issues = recordIssues(g)}
+      <!-- overflow-hidden: every row is a fixed 96px (estimateSize, no
+           measuring), so a badge row that wrapped to a third line used to paint
+           over the next card. The anti-cheat badge truncates instead of wrapping:
+           some values run to 72 characters. -->
       <a
         href={appid ? `/games/${appid}` : g.link}
-        class="absolute left-0 right-0 flex gap-3 border-b px-1 py-3"
+        class="absolute left-0 right-0 flex gap-3 overflow-hidden border-b px-1 py-3"
         style:height="{item.size}px"
         style:transform="translateY({item.start}px)"
       >
@@ -86,7 +90,9 @@
               </Badge>
             {/if}
             {#if g.anti_cheat && g.anti_cheat !== "-"}
-              <Badge variant={g.is_kernel_ac ? "destructive" : "warning"}>{g.anti_cheat}</Badge>
+              <Badge variant={g.is_kernel_ac ? "destructive" : "warning"} class="block max-w-full truncate">
+                {g.anti_cheat}
+              </Badge>
             {/if}
           </div>
         </div>

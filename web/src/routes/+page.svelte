@@ -38,7 +38,12 @@
     const theme = chartTheme();
     return {
       grid: gridBox({ top: 8 }),
-      xAxis: { type: "value", axisLabel: { color: theme.mutedText }, splitLine: { lineStyle: { color: theme.grid } } },
+      xAxis: {
+        type: "value",
+        // Narrow on a phone: drop the labels that would collide.
+        axisLabel: { color: theme.mutedText, hideOverlap: true },
+        splitLine: { lineStyle: { color: theme.grid } },
+      },
       yAxis: {
         type: "category",
         inverse: true,
@@ -71,7 +76,7 @@
 />
 
 <QueryState loading={games.pending} error={games.error} retry={() => games.refetch()}>
-  <div class="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+  <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
     {#each [
       { icon: Gamepad2, label: t("charts.kpi.totalGames"), value: formatNumber(kpis.total), hint: t("charts.kpi.totalGamesHint") },
       { icon: Users, label: t("charts.kpi.playersNow"), value: formatNumber(kpis.totalPlayers), hint: kpis.topPlayersGame },
@@ -89,7 +94,7 @@
     {/each}
   </div>
 
-  <div class="mt-3 grid gap-3 sm:grid-cols-3">
+  <div class="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-3">
     {#each [
       { icon: Wifi, label: t("charts.kpi.online"), value: kpis.online },
       { icon: WifiOff, label: t("charts.kpi.offline"), value: kpis.offline },
@@ -103,7 +108,7 @@
     {/each}
   </div>
 
-  <div class="mt-6 grid gap-4 lg:grid-cols-2">
+  <div class="mt-6 grid grid-cols-1 gap-4 lg:grid-cols-2">
     <section class="rounded-lg border bg-card p-5">
       <div class="mb-3 flex items-center justify-between gap-2">
         <h2 class="text-base font-semibold">{t("dashboard.topGenres")}</h2>
@@ -152,7 +157,7 @@
 
   <section class="mt-6">
     <h2 class="mb-3 text-base font-semibold">{t("nav.charts")}</h2>
-    <div class="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+    <div class="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
       {#each CHART_PAGES.slice(0, 6) as c (c.to)}
         <a
           href={c.to}

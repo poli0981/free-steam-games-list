@@ -213,7 +213,7 @@
     {/if}
 
     <div class="flex flex-wrap items-start gap-3">
-      <h1 class="min-w-0 flex-1 text-2xl font-semibold tracking-tight sm:text-3xl">
+      <h1 class="min-w-0 flex-1 text-2xl font-semibold tracking-tight wrap-break-word sm:text-3xl">
         {#if view.is_dead}<span title={t("games.deadTitle")}>💀</span>{/if}
         {view.name}
       </h1>
@@ -243,7 +243,7 @@
     </div>
 
     {#if view.description}
-      <p class="mt-4 text-sm leading-relaxed text-muted-foreground">{view.description}</p>
+      <p class="mt-4 text-sm leading-relaxed text-muted-foreground wrap-break-word">{view.description}</p>
       <p class="mt-1 text-xs text-muted-foreground">{t("detail.descriptionSource")}</p>
     {/if}
 
@@ -260,7 +260,7 @@
       {/if}
     </div>
 
-    <dl class="mt-6 grid gap-x-6 gap-y-3 rounded-lg border bg-card p-5 sm:grid-cols-2">
+    <dl class="mt-6 grid grid-cols-1 gap-x-6 gap-y-3 rounded-lg border bg-card p-5 sm:grid-cols-2">
       {#each rows as row (row.label)}
         <div class="min-w-0">
           <dt class="text-xs font-medium uppercase tracking-wide text-muted-foreground">
@@ -301,7 +301,7 @@
     {#if view.notes}
       <section class="mt-5 rounded-lg border border-warning/30 bg-warning/5 p-4">
         <h2 class="mb-1 text-sm font-semibold">{t("detail.labelNotes")}</h2>
-        <p class="whitespace-pre-wrap text-sm text-muted-foreground">{view.notes}</p>
+        <p class="whitespace-pre-wrap text-sm text-muted-foreground wrap-break-word">{view.notes}</p>
       </section>
     {/if}
   </article>

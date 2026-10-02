@@ -40,6 +40,9 @@ install gate. (Set in [`gen/android/app/build.gradle.kts`](../web/src-tauri/gen/
 3. **Edge-to-edge & safe areas.** We compile against `targetSdk 36` (Android 16),
    which forces edge-to-edge layout; the UI uses `env(safe-area-inset-*)` to dodge
    the status / gesture-nav bars. These behave most reliably on Android 11+.
+   The WebView only reports those insets from **Android System WebView 136**; on
+   an older one the top bar sits under the status bar, and updating "Android
+   System WebView" from the Play Store fixes it.
 4. **Tested surface.** We only test from Android 11 upward (see below); we don't
    want to ship a floor we can't smoke-test.
 

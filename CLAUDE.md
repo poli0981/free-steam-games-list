@@ -215,6 +215,35 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
   `.scrollbar-panel` or `.scrollbar-page`; a new scroll container takes one of
   them. Dialogs and the legal documents stay unmarked on purpose.
   `src/lib/scrollbars.test.ts` holds all three rules.
+- **Every layout grid declares its base column count:** `grid grid-cols-1
+  gap-2 sm:grid-cols-2`, never `grid gap-2 sm:grid-cols-2`. Below the first
+  breakpoint the latter has one implicit `auto` track, as wide as its widest
+  item's min-content, and a `truncate` name counts at full length there (the
+  grid ITEM keeps `min-width:auto`, whatever `min-w-0` the span inside has).
+  One long studio name pushed every card on /publishers past a phone's edge,
+  and the dashboard lost its "View all" links and counts. A chart in such a
+  grid makes it stick: zrender gives its root a pixel width, which becomes
+  the track's minimum, so the chart can grow and never shrink back.
+  `grid-cols-N` is `repeat(N, minmax(0, 1fr))` and cannot do either. Rows of
+  fixed-width columns plus a `Badge` (which cannot shrink below its longest
+  word) squeezed game names to nothing at 360px the same way - hide the
+  extras below `sm`. `src/lib/mobile-layout.test.ts` fails on a grid without
+  a base `grid-cols-N`.
+- **The Android app draws edge-to-edge, and the UI pads for it with
+  `env(safe-area-inset-*)`.** targetSdk 36 and `enableEdgeToEdge()` put the
+  webview under the status bar and the navigation bar. The shell root carries
+  `pt-safe pl-safe pr-safe`, `<main>` `pb-safe`, the drawer `pt-safe pb-safe`
+  and full-screen overlays `p-safe-or-4` (utilities in `styles/theme.css`).
+  The React shell padded all four sides; the SvelteKit rewrite dropped three,
+  which is how the top bar of every 2.x app sat under the clock. The
+  status-bar ICONS follow the SYSTEM theme (`SystemBarStyle.auto`), not the one
+  chosen in Settings, and the app defaults to dark - so the layout puts a
+  `status-bar-strip` behind them, in the Android app only, keyed on
+  `prefers-color-scheme` and never on `.dark`. The WebView reports the insets
+  only from Android System WebView 136; an older one reads 0 and the top bar
+  is under the clock again (the cure is a WebView update, or a native inset
+  listener in `MainActivity`). `mobile-layout.test.ts` holds the shell and the
+  strip's two colours.
 - **Every chart colour must be one zrender can parse, which is stricter than
   what a canvas paints.** zrender splits `hsl()` on commas: space-separated
   `hsl(38 94% 60%)` paints, but every hover state derived from it comes back

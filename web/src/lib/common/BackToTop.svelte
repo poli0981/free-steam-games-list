@@ -21,15 +21,18 @@
   });
 </script>
 
+<!-- bottom-4/right-4 plus the safe-area insets, so in the Android app the
+     button clears the navigation bar (see the utilities in styles/theme.css). -->
 <button
   type="button"
   aria-label={i18n.t("common.backToTop")}
   onclick={() => scroller?.scrollTo({ top: 0, behavior: "smooth" })}
   class={cn(
-    "fixed bottom-4 right-4 z-20 grid size-10 place-items-center rounded-full border",
+    "fixed z-20 grid size-10 place-items-center rounded-full border",
     "bg-card text-muted-foreground shadow-lg transition-all hover:text-foreground",
     visible ? "opacity-100" : "pointer-events-none translate-y-2 opacity-0",
   )}
+  style="bottom: calc(1rem + env(safe-area-inset-bottom, 0px)); right: calc(1rem + env(safe-area-inset-right, 0px))"
 >
   <ArrowUp class="size-4" />
 </button>

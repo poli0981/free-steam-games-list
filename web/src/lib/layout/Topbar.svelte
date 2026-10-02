@@ -72,9 +72,11 @@
       oninput={onSearchInput}
       placeholder={t("topbar.searchPlaceholder")}
       aria-label={t("topbar.searchPlaceholder")}
-      class="h-9 w-full rounded-md border border-input bg-transparent pl-8 pr-16 text-sm
-             placeholder:text-muted-foreground"
+      class="h-9 w-full rounded-md border border-input bg-transparent pl-8 pr-3 text-sm
+             placeholder:text-muted-foreground sm:pr-16"
     />
+    <!-- pr-16 is room for this chip, which only exists from sm up. Reserved on
+         a phone too, it cut the placeholder to "Search by na". -->
     <button
       type="button"
       onclick={openPalette}

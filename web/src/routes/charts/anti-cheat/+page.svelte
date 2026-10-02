@@ -53,10 +53,14 @@
     return {
       grid: gridBox({ top: 8, bottom: 30 }),
       tooltip: { trigger: "axis", axisPointer: { type: "shadow" } },
-      legend: { bottom: 0, textStyle: { color: theme.mutedText } },
+      // scroll: a plain legend wraps to a second line on a phone and lands on
+      // the axis labels; this one stays on one line and pages instead.
+      legend: { type: "scroll", bottom: 0, textStyle: { color: theme.mutedText } },
       xAxis: {
         type: "value",
-        axisLabel: { color: theme.mutedText },
+        // On a phone the plot is narrow and every label printed over its
+        // neighbours; hideOverlap drops the ones that collide.
+        axisLabel: { color: theme.mutedText, hideOverlap: true },
         splitLine: { lineStyle: { color: theme.grid } },
       },
       yAxis: {

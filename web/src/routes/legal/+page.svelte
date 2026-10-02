@@ -29,7 +29,7 @@
           <group.icon class="size-3.5" />
           {t(group.title)}
         </h2>
-        <ul class="grid gap-2 sm:grid-cols-2">
+        <ul class="grid grid-cols-1 gap-2 sm:grid-cols-2">
           {#each group.docs as doc (doc.path)}
             <li>
               <a
