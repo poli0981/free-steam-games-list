@@ -14,6 +14,15 @@ All notable changes to this awesome noob repo will be documented here.
   the background. Pages, the service worker and the version signal still
   revalidate every time, so a deploy - or a changed legal document - shows
   on the next load.
+- **Game art comes straight out of Cloudflare's cache.** Every thumbnail and
+  hero ran the site's Worker on every view, however often it had been seen -
+  a Worker always runs before the cache. The website now loads the AVIF
+  copies from the site's own image host, `media.free-steam-games.win`, which
+  Cloudflare caches like any static file, and falls back to the old address
+  by itself for art the cron has not converted yet or a browser without AVIF.
+  The desktop and Android apps are unchanged. The Privacy Policy now names the
+  image host, so returning visitors see the consent gate once, showing that
+  paragraph.
 
 ### 📚 Docs
 
