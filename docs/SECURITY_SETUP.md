@@ -445,12 +445,14 @@ transformations a month are included, then $0.50 per 1,000. Cloudflare has
   - **In code:** `web/worker/routes/img.ts` refuses (403) any request whose
     `Via` header names `image-resizing` - the resizer fetches sources with
     `Via: 1.1 image-resizing-proxy` - so `/img/*` can never be a source.
-  - **In the dashboard:** the static files (icons, `og.png`) remain
-    transformable while zone Transformations are on. Prefer Transformations
-    **off** for this zone - the binding does not use them. If they must stay
-    on, keep Sources at the zone only, never add another origin (least of all
-    Steam's hosts), and if the zone's row accepts a path restriction, point it
-    at a prefix that holds no image.
+  - **In the dashboard: zone Transformations are OFF** (Images →
+    Transformations → free-steam-games.win, since 2026-10-02). Measured: every
+    `/cdn-cgi/image/...` request now answers 404, and the cron kept minting
+    with them off (10:30Z tick: 40 sources) - the Images binding does not need
+    them. Keep it that way. If they are ever turned back on, the static files
+    (icons, `og.png`) become transformable with arbitrary options again; keep
+    Sources at the zone only and never add another origin (least of all
+    Steam's hosts).
 
 **Notifications → Add → Cloudflare Images**: alert at **5,000** (billing
 starts) and **20,000** unique transformations. The D1 counter
