@@ -77,7 +77,7 @@
         <span class="grid size-7 place-items-center rounded-md bg-primary text-xs font-bold text-primary-foreground">F2P</span>
         <span class="hidden sm:inline">Admin</span>
       </a>
-      <nav aria-label="Admin" class="-mx-1 flex min-w-0 flex-1 items-center gap-0.5 overflow-x-auto px-1 scrollbar-thin">
+      <nav aria-label="Admin" class="-mx-1 flex min-w-0 flex-1 items-center gap-0.5 overflow-x-auto px-1 scrollbar-slim">
         {#each NAV as item (item.path)}
           {@const active = router.route === item.path}
           <a

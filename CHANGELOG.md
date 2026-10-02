@@ -4,6 +4,66 @@ All notable changes to this awesome noob repo will be documented here.
 
 ## [Unreleased]
 
+Game art and the catalogue both got much lighter, the deploy log lost its
+noise, and scrollbars finally look like the rest of the site. The web changes
+are live as each merges; the packed catalogue reaches the desktop and Android
+apps with their next release. Returning visitors see the consent gate once,
+showing one new line in the Privacy Policy: the storage key of the new
+scrollbar setting.
+
+### ✨ Added
+
+- **Game art is AVIF now - heroes about 58% smaller, thumbnails about 92%.**
+  The Worker's 15-minute cron encodes each game's Steam header once with
+  Cloudflare Images - a 230 px thumbnail and a 460 px hero - and stores it in
+  R2; every request after that is served from the stored copy, never encoded
+  on the fly. The ten most-played heroes went from 40 KB to 16.8 KB (SSIM
+  0.979 against Steam's JPEG); thumbnails are ~3.4 KB. Most-played games go
+  first, the whole catalogue takes about a day and a half, and a hard monthly
+  cap keeps the Images bill bounded. Browsers that do not take AVIF keep
+  getting Steam's JPEG, and social cards always do.
+- **The catalogue downloads in about a seventh of the bytes.** The app now
+  reads each shard as a packed file (`/api/data/p1/*.bin`, 224 KB instead of
+  1.5 MB): compressed, and wrapped so the site's API is no longer a
+  ready-made JSON feed. It is obfuscation, not secrecy - the readable dataset
+  is the repository, as it always was. The app checks what it unpacks against
+  `index.json` exactly as before, and the released apps keep reading the
+  plain files.
+- **Scrollbars match the site, and can be hidden.** A warm thumb that turns
+  amber under the pointer, in both themes. Settings → Scrollbars: Visible,
+  Hidden in tables and panels, or Hidden everywhere; hidden bars still scroll
+  with the wheel, trackpad, touch or keyboard.
+
+### 🐛 Fixed
+
+- **Every deploy log was 91% noise.** The build printed one
+  `[404] GET /img/…` per prerendered game - 5,566 lines - and rendered an
+  error page for each. They were harmless (a Worker route the build cannot
+  see), but they buried anything worth reading. Now there are none.
+- **The plain catalogue went out uncompressed.** Cloudflare does not compress
+  `application/x-ndjson` by default, so every full load moved ~9 MiB. A
+  Compression Rule now brotli-compresses those files for every client,
+  released apps included (1.5 MB → 226 KB per shard).
+- **Tables showed the operating system's grey scrollbar.** Tailwind 4.3's own
+  `scrollbar-thin` merged with ours and, in Chromium, switched the themed bar
+  off. Ours is now `scrollbar-slim`, with a test that keeps it that way.
+- **Thumbnails cost two guaranteed 404s on half the catalogue**, probing for a
+  Steam capsule that hashed paths never have, and stray query strings forked
+  the image edge cache.
+- **A data-only commit redeployed the whole site** (5,681 files), against
+  what `docs/DEPLOYMENT.md` intends. The fix is the Workers Builds watch
+  paths, a dashboard setting.
+
+### 🔐 Security
+
+- **`/img/*` can no longer be used to run up the image bill.** With
+  Cloudflare's URL transformations enabled, `/cdn-cgi/image/<options>/img/…`
+  let anyone bill a new transformation per option set, through a proxy that
+  serves any Steam game's art - a scanner found such a URL within minutes. The
+  Worker now refuses the transformation service as a client, and URL
+  transformations are switched off for the zone; the cron's encoding does not
+  need them.
+
 ## [v4.0.2] – 2026-09-29 (The "Right Address" Edition)
 
 A game's tags, languages and store details are now re-read on a rotation

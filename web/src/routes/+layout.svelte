@@ -6,7 +6,7 @@
   import { page } from "$app/state";
   import { afterNavigate, goto } from "$app/navigation";
   import { i18n } from "$lib/i18n.svelte";
-  import { theme, welcome } from "$lib/prefs.svelte";
+  import { theme, welcome, scrollbars } from "$lib/prefs.svelte";
   import { consent } from "$lib/consent.svelte";
   import { humanCheck } from "$lib/human-check-state.svelte";
   import { appReady } from "$lib/app-ready";
@@ -82,6 +82,7 @@
     // dashboard, so /games/730 hydrates as "/" unless this corrects it.
     recoverFallbackRoute(page.route.id);
     theme.hydrate();
+    scrollbars.hydrate();
     consent.hydrate();
     humanCheck.hydrate();
     welcome.hydrate();
@@ -235,7 +236,7 @@
       <main
         bind:this={main}
         id="main"
-        class="flex-1 overflow-y-auto scrollbar-thin"
+        class="flex-1 overflow-y-auto scrollbar-slim scrollbar-page"
         style="padding-bottom: env(safe-area-inset-bottom)"
       >
         <div class="container py-6">

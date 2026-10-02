@@ -62,7 +62,7 @@
 </script>
 
 <div class="overflow-hidden rounded-lg border bg-card">
-  <div bind:this={viewport} class="h-[calc(100dvh-20rem)] overflow-auto scrollbar-thin">
+  <div bind:this={viewport} class="h-[calc(100dvh-20rem)] overflow-auto scrollbar-slim scrollbar-panel">
     <div style:width="{TOTAL_WIDTH}px" style:min-width="100%">
       <!-- Sticky header. A real <table> cannot be virtualised without either
            losing sticky headers or fighting the row heights, so this is a grid

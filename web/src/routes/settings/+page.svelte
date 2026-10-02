@@ -6,11 +6,15 @@
   import Info from "@lucide/svelte/icons/info";
   import Trash2 from "@lucide/svelte/icons/trash-2";
   import Download from "@lucide/svelte/icons/download";
+  import Eye from "@lucide/svelte/icons/eye";
+  import EyeOff from "@lucide/svelte/icons/eye-off";
+  import Table from "@lucide/svelte/icons/table";
+  import MoveVertical from "@lucide/svelte/icons/move-vertical";
   import { pwa } from "$lib/pwa-state.svelte";
   import { isTauri } from "$lib/external-open";
   import { goto } from "$app/navigation";
   import { i18n, LANGUAGE_NAMES, SUPPORTED_LANGUAGES } from "$lib/i18n.svelte";
-  import { theme, welcome, type Theme } from "$lib/prefs.svelte";
+  import { scrollbars, theme, welcome, type ScrollbarMode, type Theme } from "$lib/prefs.svelte";
   import { clearCache } from "$lib/cache";
   import { games } from "$lib/games.svelte";
   import { cn } from "$lib/utils";
@@ -24,6 +28,12 @@
     { value: "light", icon: Sun, label: "settings.themeLight" },
     { value: "dark", icon: Moon, label: "settings.themeDark" },
     { value: "system", icon: Monitor, label: "settings.themeSystem" },
+  ];
+
+  const SCROLLBAR_OPTIONS: { value: ScrollbarMode; icon: typeof Sun; label: string }[] = [
+    { value: "visible", icon: Eye, label: "settings.scrollbarsVisible" },
+    { value: "panels", icon: Table, label: "settings.scrollbarsPanels" },
+    { value: "all", icon: EyeOff, label: "settings.scrollbarsAll" },
   ];
 
   let clearing = $state(false);
@@ -100,6 +110,32 @@
           {#if option.value === "system"}
             <span class="ml-auto text-xs text-muted-foreground">{theme.resolved}</span>
           {/if}
+        </button>
+      {/each}
+    </div>
+  </section>
+
+  <section class="rounded-lg border bg-card p-5">
+    <h2 class="flex items-center gap-2 text-base font-semibold">
+      <MoveVertical class="size-4 text-muted-foreground" />
+      {t("settings.scrollbarsTitle")}
+    </h2>
+    <p class="mt-1 text-sm text-muted-foreground">{t("settings.scrollbarsHint")}</p>
+    <div class="mt-3 grid gap-2 sm:grid-cols-3">
+      {#each SCROLLBAR_OPTIONS as option (option.value)}
+        <button
+          type="button"
+          onclick={() => scrollbars.set(option.value)}
+          aria-pressed={scrollbars.value === option.value}
+          class={cn(
+            "flex items-center gap-2 rounded-md border px-3 py-2.5 text-left text-sm transition-colors",
+            scrollbars.value === option.value
+              ? "border-primary/50 bg-primary/10"
+              : "hover:border-border-strong hover:bg-accent",
+          )}
+        >
+          <option.icon class="size-4 shrink-0" />
+          {t(option.label)}
         </button>
       {/each}
     </div>

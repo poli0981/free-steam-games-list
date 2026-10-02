@@ -209,6 +209,11 @@
     "themeLight": "Light",
     "themeDark": "Dark",
     "themeSystem": "System",
+    "scrollbarsTitle": "Scrollbars",
+    "scrollbarsHint": "Coloured to match the site. Hidden bars still scroll with the mouse wheel, trackpad, touch or keyboard.",
+    "scrollbarsVisible": "Visible",
+    "scrollbarsPanels": "Hidden in tables and panels",
+    "scrollbarsAll": "Hidden everywhere",
     "cacheTitle": "Local data",
     "cacheHint": "The catalogue is cached in your browser and refreshed when the dataset's last_updated changes. Clearing it forces a full re-download on the next load.",
     "cacheAction": "Clear cached catalogue"

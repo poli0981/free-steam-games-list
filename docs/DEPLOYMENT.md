@@ -184,5 +184,14 @@ fails with code 10085 otherwise (the old Worker stays live). It was created
 with `npx wrangler r2 bucket create f2p-media`; keep its r2.dev URL disabled
 and attach no custom domain - the Worker is the only reader.
 
-**R2** stays inside the free tier: ~11k objects at ~3-9 KB, about 12 list
+**R2** stays inside the free tier: ~11k objects at ~3-18 KB, about 12 list
 calls per cron tick only while minting, and reads only on an edge-cache miss.
+
+**Shard compression is a dashboard setting.** Cloudflare does not compress
+`application/x-ndjson` on its own, so the plain shards went out uncompressed
+(~9 MiB per full load) until the Compression Rule `ndjson-shards` was added on
+2026-10-02: Rules → Compression Rules, `http.request.uri.path.extension eq
+"jsonl"` → Custom: Brotli, Gzip. It applies to Worker responses (data_001:
+1,497,828 → 225,826 bytes). The packed `/api/data/p1/*.bin` files are
+compressed before they are encrypted and are deliberately not `.jsonl`, so the
+rule never touches them.

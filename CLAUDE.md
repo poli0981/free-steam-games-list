@@ -203,6 +203,18 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
   listener cannot `preventDefault()`, so `dataZoom: {type: "inside"}` and
   `roam: true` would silently stop working; `charts.test.ts` fails if either
   appears.
+- **Scrollbars are themed by `scrollbar-slim`, never Tailwind's `scrollbar-thin`.**
+  Tailwind 4.3 ships a core `scrollbar-thin` (a plain `scrollbar-width: thin`),
+  and in Chromium 121+ any standard scrollbar property switches
+  `::-webkit-scrollbar` off for that element - which is why every panel showed
+  the OS's grey bar while the page bar was themed. `styles/theme.css` gives
+  Firefox `scrollbar-color` (only where `::-webkit-scrollbar` is unsupported)
+  and everyone else the pseudo-elements; the two must never meet on one
+  element. The reader's "hide scrollbars" choice (Settings, `f2p:scrollbars`,
+  `<html data-scrollbars="panels|all">`) only reaches containers marked
+  `.scrollbar-panel` or `.scrollbar-page`; a new scroll container takes one of
+  them. Dialogs and the legal documents stay unmarked on purpose.
+  `src/lib/scrollbars.test.ts` holds all three rules.
 - **Every chart colour must be one zrender can parse, which is stricter than
   what a canvas paints.** zrender splits `hsl()` on commas: space-separated
   `hsl(38 94% 60%)` paints, but every hover state derived from it comes back
@@ -336,8 +348,10 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
     `IMG_TRANSFORM_MONTHLY_CAP` (measured: `/cdn-cgi/image/width=77/img/d2/…`
     answered 200). `img.ts` therefore 403s any request whose `Via` names
     `image-resizing` (the resizer sends `1.1 image-resizing-proxy`); do not
-    remove that check. Static files stay transformable while zone
-    Transformations are on (`docs/SECURITY_SETUP.md` §5).
+    remove that check. Zone Transformations are OFF (since 2026-10-02:
+    `/cdn-cgi/image/…` answers 404) and must stay off - the Images binding
+    does not need them (the cron minted with them off), and while they are on
+    the static files stay transformable (`docs/SECURITY_SETUP.md` §5).
   - URLs keep `.jpg`: Hotlink Protection matches by extension.
   - Flip `IMG_TRANSFORM` in `wrangler.jsonc`, not the dashboard: there is no
     `keep_vars`, so the next deploy resets a dashboard value.

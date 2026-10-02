@@ -164,6 +164,7 @@ All of it stays on your device. None of it is transmitted anywhere.
 | localStorage | `f2p:human_check` | when your last Turnstile check expires, so it is not repeated for 24 hours (website only) |
 | localStorage | `f2p:theme` | light / dark / system |
 | localStorage | `f2p:lang` | interface language |
+| localStorage | `f2p:scrollbars` | whether scrollbars are hidden in tables and panels, or everywhere; only stored once you change it from the default |
 | sessionStorage | `f2p:chunk-reload` | one-shot flag so a failed script load retries once |
 | IndexedDB | `f2p:records`, `f2p:index` | the catalogue, cached so the site works offline and does not re-download ~6 MB each visit |
 | Cache Storage | `workbox-precache-*`, `f2p-img-v1` | the offline app shell and images (website only) |
