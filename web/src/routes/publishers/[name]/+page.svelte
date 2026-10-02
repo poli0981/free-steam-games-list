@@ -4,7 +4,8 @@
   import { games } from "$lib/games.svelte";
   import { i18n } from "$lib/i18n.svelte";
   import { appidOf } from "$lib/data-store";
-  import { headerToCapsule } from "$lib/image";
+  import { headerToCapsule, thumbFallback } from "$lib/image";
+  import { imgFallback } from "$lib/img-fallback";
   import { formatNumber, parseReviewPercent } from "$lib/utils";
   import { reviewTone } from "$lib/games/columns";
   import QueryState from "$lib/common/QueryState.svelte";
@@ -59,6 +60,7 @@
             {#if g.header_image}
               <img
                 src={headerToCapsule(g.header_image)}
+                {@attach imgFallback(thumbFallback(g.header_image))}
                 alt=""
                 loading="lazy"
                 decoding="async"

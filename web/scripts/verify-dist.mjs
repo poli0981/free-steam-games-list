@@ -146,6 +146,8 @@ const BEACON_SCRIPT_HOST = "https://static.cloudflareinsights.com";
 const BEACON_CONNECT_HOST = "https://cloudflareinsights.com";
 // Cloudflare Turnstile: its api.js and the widget's frame share one host.
 const TURNSTILE_HOST = "https://challenges.cloudflare.com";
+// The R2 bucket's custom domain, MEDIA_ORIGIN in src/lib/site.ts.
+const MEDIA_HOST = "https://media.free-steam-games.win";
 
 // Strings that must never be baked into a page before data exists.
 const BAKED_EMPTY_STATES = [en.games.noResults, en.health.allClear, en.studios.notFound];
@@ -168,6 +170,13 @@ for (const file of html) {
   }
   if (seen.includes(CONSENT_TITLE)) fail(`${rel}: prerendered consent dialog ("${CONSENT_TITLE}")`);
   if (seen.includes(HUMAN_CHECK_TITLE)) fail(`${rel}: prerendered human check ("${HUMAN_CHECK_TITLE}")`);
+
+  // Svelte writes onload/onerror="this.__e=event" into a prerendered <img>
+  // that has a `use:` action or a load/error handler, to replay an event that
+  // fired before hydration. kit.csp is a hash policy, which refuses inline
+  // event handlers: one CSP violation per page load, on every page that has
+  // it. Use an attachment ({@attach}) instead; see lib/img-fallback.ts.
+  if (text.includes("this.__e=event")) fail(`${rel}: inline event handler (this.__e=event) the CSP refuses`);
 }
 
 /* ── the admin never ships in dist/ ───────────────────────────────────── */
@@ -227,6 +236,13 @@ if (flavour === "web") {
       fail(`index.html CSP ${directive} does not allow ${TURNSTILE_HOST} (the Turnstile human check)`);
     }
   }
+  // Thumbnails and the hero load from the media host. A policy without it
+  // refuses every one of them, imgFallback quietly swaps in /img, and the
+  // site keeps working while every image costs a Worker request again -
+  // nothing visible would ever report it.
+  if (!cspAllows(home, "img-src", MEDIA_HOST)) {
+    fail(`index.html CSP img-src does not allow ${MEDIA_HOST} (the minted AVIF art)`);
+  }
 
   // A universal load, not a server load: a __data.json here would mean client
   // navigation fetches one per game, and 404s (as index.html) for new games.
@@ -249,14 +265,16 @@ if (flavour === "tauri") {
   if (!cspAllows(index, "connect-src", "https://free-steam-games.win")) {
     fail("index.html CSP does not allow https://free-steam-games.win (the Tauri connect-src)");
   }
-  // The packaged apps must not phone an analytics beacon or run the human
-  // check. lib/analytics.ts and the human-check state both stand down under
-  // isTauri(), and the policy backs that up.
+  // The packaged apps must not phone an analytics beacon, run the human check
+  // or load art from the media host. lib/analytics.ts, the human-check state
+  // and lib/image.ts all stand down under isTauri(), and the policy backs that
+  // up.
   for (const [directive, host] of [
     ["script-src", BEACON_SCRIPT_HOST],
     ["connect-src", BEACON_CONNECT_HOST],
     ["script-src", TURNSTILE_HOST],
     ["frame-src", TURNSTILE_HOST],
+    ["img-src", MEDIA_HOST],
   ]) {
     if (cspAllows(index, directive, host)) {
       fail(`index.html CSP ${directive} allows ${host} in a Tauri build`);

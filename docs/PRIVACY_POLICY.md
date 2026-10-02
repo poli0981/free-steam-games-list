@@ -112,13 +112,16 @@ any time.
 ## What the page loads
 
 Apart from the analytics beacon and the Turnstile check above, everything the site loads is fetched
-**same-origin**, through the site itself:
+from the site's own domain: **same-origin**, through the site itself, or — for game artwork — from
+`media.free-steam-games.win`, the site's own image host, which Cloudflare serves like the rest:
 
 - `/api/data/*` — the catalogue. The Worker fetches these files from GitHub on
   the server side, so your browser never contacts GitHub for them and GitHub
   does not see your IP.
-- `/img/*` — game artwork. The Worker fetches it from Valve's CDN on the server
-  side, so Valve does not see your IP either.
+- `/img/*` and `media.free-steam-games.win` — game artwork. The Worker fetches
+  it from Valve's CDN on the server side and stores smaller copies with
+  Cloudflare, which the website loads from the image host; Valve does not see
+  your IP either way.
 - `/api/activity` — the recent-commits list on the Activity page, and the
   contributor avatars shown beside each entry. Same arrangement: the Worker
   calls GitHub server-side and proxies the avatars, so your browser never

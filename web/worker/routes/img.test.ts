@@ -118,8 +118,27 @@ describe("negotiated variants (s, d)", () => {
       expect.anything(),
     );
     // Nothing is written anywhere under the AVIF key, and nothing to R2.
-    expect([...cache.store.keys()].some((k) => k.includes("~avif"))).toBe(false);
+    expect([...cache.store.keys()].some((k) => k.includes("/img/~avif/"))).toBe(false);
     expect(bucket.puts).toEqual([]);
+  });
+
+  it("remembers an R2 miss for one cron tick, so a repeat skips the bucket", async () => {
+    await call("/img/d/730/header.jpg?t=1749053861", AVIF_ACCEPT);
+    expect(bucket.gets).toHaveLength(1);
+    const marker = cache.store.get(`${ORIGIN}/img/~avif-miss/460q80/730/header.jpg?t=1749053861`);
+    expect(marker?.headers.get("Cache-Control")).toBe("public, max-age=900");
+
+    const again = await call("/img/d/730/header.jpg?t=1749053861&junk=1", AVIF_ACCEPT);
+    expect(again.headers.get("Content-Type")).toBe("image/jpeg");
+    expect(again.headers.get("X-Img-Final")).toBeNull();
+    expect(bucket.gets).toHaveLength(1);
+  });
+
+  it("remembers a miss per encoding: a thumbnail not minted yet does not hide the hero", async () => {
+    bucket.seed(avifKey(AVIF_VARIANTS.d, PLAIN), "AVIF-BYTES");
+    await call("/img/s/730/header.jpg?t=1749053861", AVIF_ACCEPT);
+    const res = await call("/img/d/730/header.jpg?t=1749053861", AVIF_ACCEPT);
+    expect(res.headers.get("Content-Type")).toBe("image/avif");
   });
 
   it("gives a browser without AVIF the JPEG as its final answer", async () => {
@@ -139,6 +158,8 @@ describe("negotiated variants (s, d)", () => {
     expect(res.status).toBe(200);
     expect(res.headers.get("Content-Type")).toBe("image/jpeg");
     expect(res.headers.get("X-Img-Final")).toBeNull();
+    // No bucket, no lookup - so nothing to remember as a miss either.
+    expect([...cache.store.keys()].some((k) => k.includes("/img/~avif-miss/"))).toBe(false);
   });
 
   it("keys the R2 lookup on the source version, so a forged ?t= only misses", async () => {

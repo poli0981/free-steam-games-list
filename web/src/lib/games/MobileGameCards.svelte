@@ -4,7 +4,8 @@
   import type { GameRecord } from "../schema";
   import { i18n } from "../i18n.svelte";
   import { appidOf } from "../data-store";
-  import { headerToCapsule } from "../image";
+  import { headerToCapsule, thumbFallback } from "../image";
+  import { imgFallback } from "../img-fallback";
   import { recordIssues } from "../validation";
   import { formatNumber, parseReviewPercent, cn } from "../utils";
   import { reviewTone } from "./columns";
@@ -54,6 +55,7 @@
         {#if g.header_image}
           <img
             src={headerToCapsule(g.header_image)}
+            {@attach imgFallback(thumbFallback(g.header_image))}
             alt=""
             loading="lazy"
             decoding="async"

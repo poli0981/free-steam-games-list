@@ -3,7 +3,8 @@
   import { i18n } from "$lib/i18n.svelte";
   import { topByPlayers } from "$lib/stats";
   import { appidOf } from "$lib/data-store";
-  import { headerToCapsule } from "$lib/image";
+  import { headerToCapsule, thumbFallback } from "$lib/image";
+  import { imgFallback } from "$lib/img-fallback";
   import { formatNumber, parseReviewPercent } from "$lib/utils";
   import { reviewTone } from "$lib/games/columns";
   import { chartTheme, gridBox } from "$lib/chart-theme";
@@ -69,6 +70,7 @@
           {#if record.header_image}
             <img
               src={headerToCapsule(record.header_image)}
+              {@attach imgFallback(thumbFallback(record.header_image))}
               alt=""
               loading="lazy"
               decoding="async"

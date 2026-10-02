@@ -139,6 +139,13 @@ For the AVIF path, copy a game page's hero URL (`/img/d/<appid>/…?t=…`, the
 `image/avif` with `X-Img-Final: 1`; before that it is the JPEG with
 `Cache-Control: public, max-age=86400` and no `X-Img-Final`.
 
+The website itself loads that art from the bucket's custom domain instead
+(`docs/SECURITY_SETUP.md` section 5): in a game page's Network panel the hero
+is `image/avif` from `https://media.free-steam-games.win/img/v2/460q80/…`,
+with `cf-cache-status: HIT` on a reload. A `/img/d/…` request right after it
+means the media load failed and the fallback ran - expected for a game the
+cron has not reached yet, a fault for one it has.
+
 **A stale service worker will show you the old app after a deploy.** The site
 is a PWA, so a browser that visited before the deploy serves its cached shell
 until the service worker updates. If you are checking whether a deploy landed,

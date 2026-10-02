@@ -36,3 +36,14 @@ export const SITE_ORIGIN = "https://free-steam-games.win";
  * cross-origin request.
  */
 export const API_ORIGIN = isTauri() ? SITE_ORIGIN : "";
+
+/**
+ * The R2 bucket's custom domain (bucket f2p-media, connected in the R2
+ * dashboard). The minted AVIF art is read from here, through Cloudflare's
+ * CDN cache, without the Worker running at all - a Worker always runs BEFORE
+ * the cache, so /img/* can never be served from it. Web only: the packaged
+ * apps' CSP does not list this host, so under Tauri art keeps coming through
+ * /img/* (lib/image.ts). In kit.csp img-src (svelte.config.js), web flavour
+ * only; images.test.ts keeps that literal equal to this one.
+ */
+export const MEDIA_ORIGIN = "https://media.free-steam-games.win";

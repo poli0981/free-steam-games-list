@@ -55,7 +55,7 @@ Note `web/public/` is `web/static/` since the SvelteKit migration.
 default-src 'self';
 script-src 'self' https://static.cloudflareinsights.com https://challenges.cloudflare.com;
 style-src 'self' 'unsafe-inline';
-img-src 'self' data: https://shared.akamai.steamstatic.com https://shared.fastly.steamstatic.com https://cdn.akamai.steamstatic.com;
+img-src 'self' data: https://media.free-steam-games.win https://shared.akamai.steamstatic.com https://shared.fastly.steamstatic.com https://cdn.akamai.steamstatic.com;
 font-src 'self'; connect-src 'self' https://cloudflareinsights.com;
 frame-src 'self' https://challenges.cloudflare.com;
 worker-src 'self'; manifest-src 'self'; media-src 'none'; object-src 'none';
@@ -430,7 +430,7 @@ transformations a month are included, then $0.50 per 1,000. Cloudflare has
 - **The whole catalogue is ~11k transformations once** (~5,600 sources x 2
   widths, ≈ $3 above the free 5,000); after that only new games and changed art
   (a new Steam `?t=`) cost anything. The quality is part of the key
-  (`web/worker/lib/img-store.ts`), so changing one variant's quality re-mints
+  (`web/shared/img-keys.ts`), so changing one variant's quality re-mints
   that variant only (~5,600 transformations, ≈ $3).
 - **`/cdn-cgi/image/` must not work on this zone.** The Images binding takes
   bytes and never uses that URL. With zone Transformations ON, even Sources =
@@ -458,6 +458,57 @@ transformations a month are included, then $0.50 per 1,000. Cloudflare has
 starts) and **20,000** unique transformations. The D1 counter
 (`SELECT * FROM admin_state WHERE key LIKE 'img_transforms:%'`) and the
 `img-mint` lines in Workers Logs say what the cron has done.
+
+### The media host — `media.free-steam-games.win`
+
+The web app loads the minted AVIF straight from the bucket's custom domain
+(`MEDIA_ORIGIN`, `web/src/lib/site.ts`), so a repeat view is a cache hit at
+Cloudflare that runs no Worker and reads nothing from R2. `/img/*` cannot do
+that whatever its headers say: a Worker always runs BEFORE the cache, so
+`s-maxage` there only ever saved the Steam fetch. Every such `<img>` falls back
+to `/img/*` on an error - a key not minted yet answers 404, and a browser
+without AVIF cannot decode it - and the packaged apps use `/img/*` only.
+
+1. **R2 → `f2p-media` → Settings → Custom Domains → Connect Domain** →
+   `media.free-steam-games.win`. Cloudflare creates the proxied DNS record
+   itself; the status goes from Initializing to Active in a minute or two.
+   Leave the `r2.dev` subdomain disabled.
+2. **Caching → Tiered Cache → Smart Tiered Cache**, on since 2026-10-03: a miss
+   in one data centre is filled from an upper tier before R2 is asked. The
+   Origin Configuration table there asks for cloud region hints; leave them
+   unset - its rows are Steam's and GitHub's CDNs, which the Worker fetches,
+   not origins in one cloud region.
+3. **No Cache Rule is needed.** `.avif` is one of Cloudflare's default cached
+   extensions, and every object carries the mint's
+   `Cache-Control: public, max-age=31536000, immutable`. A key that is not
+   minted yet answers 404, and the page falls back to `/img/*` until it is.
+   Add a rule only if the check below shows `cf-cache-status: DYNAMIC`.
+4. **Recommended — WAF custom rule `media-host-paths`, action Block:**
+   `http.host eq "media.free-steam-games.win" and not (starts_with(http.request.uri.path, "/img/v2/") and ends_with(http.request.uri.path, ".avif"))`.
+   The WHOLE bucket is public on this host - the mint's progress marker
+   (`meta/img-mint-v1.json`) and the superseded `img/v1/` objects included -
+   and a junk path can cost an R2 read. This leaves exactly the art. It is
+   the third of the five custom rules the Free plan allows.
+
+Already covered, nothing to add:
+
+- `human-check-pages` excludes every path starting `/img/`, on any host, and
+  every key starts `img/v2/` - the art is never challenged, as ToS §9 promises
+  for `/img/*`.
+- `blocked-countries` covers the whole zone, this host included.
+- Hotlink Protection: every `<img>` sends no Referer (section 10).
+
+Check, after connecting:
+
+```bash
+curl -sI https://media.free-steam-games.win/img/v2/460q80/730/header@1749053861.avif
+```
+
+Expected: `200`, `content-type: image/avif`,
+`cache-control: public, max-age=31536000, immutable`, and on a repeat
+`cf-cache-status: HIT`. With the rule from step 4,
+`curl -sI https://media.free-steam-games.win/meta/img-mint-v1.json` answers
+`403`.
 
 ---
 

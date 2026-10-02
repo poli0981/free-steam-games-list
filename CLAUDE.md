@@ -291,12 +291,14 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
   proxies it). Tauri sends its OWN policy as a header from
   `tauri.conf.json`, which is why that one carries `script-src 'unsafe-inline'`:
   the two intersect, and the meta policy's sha256 is what actually enforces.
-  The web policy has three hosts the Tauri one must never gain:
+  The web policy has four hosts the Tauri one must never gain:
   `https://static.cloudflareinsights.com` in `script-src` and
   `https://cloudflareinsights.com` in `connect-src`, for the analytics beacon,
-  and `https://challenges.cloudflare.com` in `script-src` AND `frame-src`, for
+  `https://challenges.cloudflare.com` in `script-src` AND `frame-src`, for
   the Turnstile human check (the widget is an iframe; without `frame-src` it
-  falls back to `default-src 'self'` and is refused). The Tauri policy has no
+  falls back to `default-src 'self'` and is refused), and
+  `https://media.free-steam-games.win` in `img-src`, for the minted art (see
+  the `/img/*` entry below). The Tauri policy has no
   `frame-src` at all. `verify-dist.mjs` fails the web build without them and
   the Tauri build with any of them.
 - **Cloudflare Web Analytics must stay on "JS Snippet installation", never
@@ -339,6 +341,15 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
   Configuration Rule (`docs/SECURITY_SETUP.md` §10). `src/lib/images.test.ts`
   fails on an `<img>` without the attribute. Do not "fix" it with a
   `<meta name="referrer">` or by relying on the webview's default.
+- **Never put `use:`, `onload` or `onerror` on an `<img>` that can be
+  prerendered.** Svelte then writes `onload="this.__e=event"` and
+  `onerror="this.__e=event"` into the HTML, to replay an event that fired
+  before hydration, and `kit.csp` is a hash policy, which refuses inline event
+  handlers: one CSP violation per page view (the game hero logged it on every
+  page until it moved to an attachment). Use `{@attach}`, which writes nothing;
+  `lib/img-fallback.ts` recovers a load that already failed from
+  `complete && naturalWidth === 0` instead. `verify-dist.mjs` fails on
+  `this.__e=event` in any page.
 - **`/img/*` NEVER transforms; only the cron does.** `worker/lib/img-mint.ts`
   mints AVIF (`s` 230 px q55, `d` 460 px q80) into R2 `f2p-media`, most-played
   first, from shards that hash to `index.json` - a list built from a lagging
@@ -355,7 +366,7 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
     because CacheFirst ignores Cache-Control.
   - `t` and `d2` are ALWAYS the JPEG: released apps request them, and `d2` is
     og:image - a crawler may claim AVIF and not render it.
-  - The R2 key AND the edge-cache key (`worker/lib/img-store.ts`) carry width,
+  - The R2 key AND the edge-cache key (`shared/img-keys.ts`) carry width,
     quality, path and Steam's `?t=`: new art or a new setting is a new key, so
     an old encoding can never be served for a new one. Changing one variant's
     quality re-mints only that variant (~5,600); `img/v2/` pins the format.
@@ -372,6 +383,26 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
     `/cdn-cgi/image/…` answers 404) and must stay off - the Images binding
     does not need them (the cron minted with them off), and while they are on
     the static files stay transformable (`docs/SECURITY_SETUP.md` §5).
+  - **On the web, art comes from `media.free-steam-games.win`, the bucket's
+    custom domain, not from `/img/*`.** A Worker always runs BEFORE the CDN
+    cache, so no `s-maxage` on `/img` could ever save an invocation; an R2
+    custom domain is cached by Cloudflare like any origin, and repeat views
+    cost neither a Worker run nor an R2 read. `lib/image.ts` builds the key
+    with `shared/img-keys.ts` - the ONE definition the cron, the Worker and the
+    page share - and every such `<img>` carries
+    `{@attach imgFallback(thumbFallback|heroFallback(...))}` with the `/img`
+    URL: an unminted key is a 404 there and a browser without AVIF fails to
+    decode, and both fire `error`. `images.test.ts` fails on an `<img>` that
+    lacks it. The packaged apps keep `/img/*` (their CSP has no media host).
+    Everything in the bucket is public on that host, the mint marker
+    included: never store anything private there.
+  - The service worker's `/img/` rule is same-origin only: the media host
+    shares the path prefix, but its responses are opaque no-cors loads it
+    could never cache. Those objects' year of immutable Cache-Control is what
+    keeps them, in the HTTP cache.
+  - `/img` remembers an R2 miss in that data centre for one cron tick
+    (`MISS_TTL`, 15 min) - the web's fallbacks and the apps ask for unminted
+    art often during a backfill.
   - URLs keep `.jpg`: Hotlink Protection matches by extension.
   - Flip `IMG_TRANSFORM` in `wrangler.jsonc`, not the dashboard: there is no
     `keep_vars`, so the next deploy resets a dashboard value.

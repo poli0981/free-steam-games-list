@@ -5,7 +5,8 @@
   import { page } from "$app/state";
   import { games, removedGames } from "$lib/games.svelte";
   import { i18n } from "$lib/i18n.svelte";
-  import { heroImage, socialImagePath } from "$lib/image";
+  import { heroFallback, heroImage, socialImagePath } from "$lib/image";
+  import { imgFallback } from "$lib/img-fallback";
   import { steamWebUrl, steamProtocolUrl } from "$lib/steam-link";
   import { isAndroid } from "$lib/external-open";
   import {
@@ -200,6 +201,7 @@
            460x215 is every Steam header's real size. -->
       <img
         src={heroImage(view.header_image)}
+        {@attach imgFallback(heroFallback(view.header_image))}
         alt=""
         referrerpolicy="no-referrer"
         fetchpriority="high"

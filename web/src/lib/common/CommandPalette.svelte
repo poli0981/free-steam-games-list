@@ -10,7 +10,8 @@
   import { games } from "../games.svelte";
   import { i18n } from "../i18n.svelte";
   import { appidOf } from "../data-store";
-  import { headerToCapsule } from "../image";
+  import { headerToCapsule, thumbFallback } from "../image";
+  import { imgFallback } from "../img-fallback";
   import { cn } from "../utils";
 
   const t = i18n.t;
@@ -193,6 +194,7 @@
               {#if g.header_image}
                 <img
                   src={headerToCapsule(g.header_image)}
+                  {@attach imgFallback(thumbFallback(g.header_image))}
                   alt=""
                   loading="lazy"
                   decoding="async"
