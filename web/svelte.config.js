@@ -213,7 +213,7 @@ const config = {
       concurrency: 4,
       /**
        * The crawler follows every same-origin `src` and `href` it finds, and a
-       * prerendered game page carries <img src="/img/d2/..."> for its header.
+       * prerendered game page carries an <img src="/img/..."> for its header.
        * /img/* and /api/* are Worker routes (wrangler.jsonc run_worker_first):
        * they exist at runtime, never in the build, so a 404 for them here is
        * expected. Anything else still fails the build.

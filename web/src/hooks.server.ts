@@ -4,7 +4,7 @@
  *
  * One job: /img/* and /api/* are Worker routes (wrangler.jsonc
  * run_worker_first) that this app does not contain. The prerender crawler
- * follows every `src`, and each game page carries <img src="/img/d2/...">, so
+ * follows every `src`, and each game page carries an <img src="/img/...">, so
  * every build asked the app for ~5,600 of them. Each request rendered the root
  * layout plus the error page, and SvelteKit's default handleError printed a
  * `[404] GET /img/...` line for it - 91% of the Workers Builds log, burying
