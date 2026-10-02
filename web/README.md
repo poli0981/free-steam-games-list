@@ -63,10 +63,10 @@ Worker:
 - `/api/data/p1/data_001.bin`, … — the shards the app actually reads: each
   committed file deflated and wrapped by `shared/data-pack.ts` (AES-GCM under
   a public key - obfuscation and ~85% less transfer, not secrecy). The app
-  unpacks them to the exact committed bytes before the usual hash check
-- `/api/data/data/data_001.jsonl`, … — the same shards plain, for released
-  apps and any runtime that cannot unpack. The readable dataset is the
+  unpacks them to the exact committed bytes before the usual hash check. The
+  plain shards below stay for released apps; the readable dataset is the
   repository itself
+- `/api/data/data/data_001.jsonl`, … — record shards
 - `/img/t/<appid>/...` — Steam artwork, proxied and edge-cached
 - `/img/gh/{u|in}/{id}` — GitHub avatars for `/activity`
 - `/api/activity` — recent commits, so `api.github.com` is absent from the
