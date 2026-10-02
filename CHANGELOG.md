@@ -4,6 +4,23 @@ All notable changes to this awesome noob repo will be documented here.
 
 ## [Unreleased]
 
+### ⚡ Faster repeat visits
+
+- **Static files are cached by what they are.** Only the hashed scripts,
+  styles and fonts had a lifetime; the icons, the favicon, the social card,
+  the manifest and Workbox's runtime were asked for again on every page load.
+  Workbox's hashed runtime is now cached for a year like the rest of the
+  build, and the art and manifest are fresh for a day and then refreshed in
+  the background. Pages, the service worker and the version signal still
+  revalidate every time, so a deploy - or a changed legal document - shows
+  on the next load.
+
+### 📚 Docs
+
+- `docs/DEPLOYMENT.md` explains which commits deploy now that documentation
+  and data commits do not - and the one trap: the legal documents are read by
+  the build, so a commit that changes only them must still trigger one.
+
 ## [v4.1.0] – 2026-10-02 (The "Featherweight" Edition)
 
 Game art and the catalogue both got much lighter, the deploy log lost its

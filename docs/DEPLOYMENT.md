@@ -71,9 +71,12 @@ counts and reviews always come from `/api/data/*` in the browser.
 That snapshot is therefore **as fresh as the last deploy**, and it should stay
 that way:
 
-- **Confirm the Workers Builds watch paths exclude `data/**`** (dashboard →
-  Worker → Settings → Build). If they included it, every bot data commit — several a
-  day — would rebuild and re-upload ~3,650 pages.
+- **The Workers Builds watch paths exclude `data/**`** (dashboard → Worker →
+  Settings → Build → Build watch paths). Before they did, every bot data commit
+  - several a day - rebuilt and re-uploaded all ~5,700 files (measured on
+  2026-10-02: a 4-file data commit re-uploaded 5,681 assets, because
+  `kit.version.name` is a timestamp) and gave every open tab a "Reload"
+  prompt.
 - A game added after the last deploy has no file. The host answers with the
   SPA fallback and `lib/fallback-route.ts` renders it client-side, so it works;
   it simply is not indexable until the next deploy.
@@ -81,6 +84,35 @@ that way:
   catalogue loads, the page shows "Game not found" with `noindex`.
 - `F2P_SKIP_GAME_PRERENDER=1 npm run build` skips them for quick local builds.
   The Tauri builds never prerender them.
+
+### Which commits deploy (build watch paths)
+
+Since 2026-10-02 a commit that touches only documentation or data does not
+deploy. That is right for nearly everything outside `web/`, with ONE trap:
+**the web build reads the legal documents.** `web/build/legal-versions.ts`
+hashes them for the consent gate and `web/src/lib/server/markdown.ts`
+renders them at `/legal/*`:
+
+`LICENSE`, `LICENSE-DATA`, `docs/DISCLAIMER.md`, `docs/ToS.md`,
+`docs/EULA.md`, `docs/PRIVACY_POLICY.md`, `docs/ACKNOWLEDGEMENTs.md`,
+`docs/Contact.md`
+
+A commit that changes only those - the ToS edit Phase B needs, for one - would
+not reach the site, and the consent gate would keep showing the old text and
+hash until the next code deploy. Either keep those files triggering a build,
+or redeploy by hand after merging such a change. Excludes are applied BEFORE
+includes, so an exclude like `docs/*` swallows them whatever the include list
+says. A configuration that does both jobs:
+
+- Include: `web/*`, `LICENSE`, `LICENSE-DATA`, `docs/DISCLAIMER.md`,
+  `docs/ToS.md`, `docs/EULA.md`, `docs/PRIVACY_POLICY.md`,
+  `docs/ACKNOWLEDGEMENTs.md`, `docs/Contact.md`
+- Exclude: `web/src-tauri/*`, `web/README.md`
+
+Everything not included - `data/**`, `scripts/**`, the other docs,
+`CHANGELOG.md`, `CLAUDE.md`, `README.md` - then never deploys. Check it once
+by merging a commit that touches only `docs/plan/` (no build) and one that
+touches only `docs/ToS.md` (a build).
 
 ## Verifying a deploy
 
