@@ -17,9 +17,10 @@ All notable changes to this awesome noob repo will be documented here.
 
 ### 📚 Docs
 
-- `docs/DEPLOYMENT.md` explains which commits deploy now that documentation
-  and data commits do not - and the one trap: the legal documents are read by
-  the build, so a commit that changes only them must still trigger one.
+- `docs/DEPLOYMENT.md` explains which commits deploy: documentation commits
+  stopped deploying, data commits still did, and it gives a configuration that
+  stops both - with the one trap: the legal documents are read by the build,
+  so a commit that changes only them must still trigger one.
 
 ## [v4.1.0] – 2026-10-02 (The "Featherweight" Edition)
 

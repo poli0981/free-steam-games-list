@@ -71,12 +71,12 @@ counts and reviews always come from `/api/data/*` in the browser.
 That snapshot is therefore **as fresh as the last deploy**, and it should stay
 that way:
 
-- **The Workers Builds watch paths exclude `data/**`** (dashboard → Worker →
-  Settings → Build → Build watch paths). Before they did, every bot data commit
-  - several a day - rebuilt and re-uploaded all ~5,700 files (measured on
-  2026-10-02: a 4-file data commit re-uploaded 5,681 assets, because
-  `kit.version.name` is a timestamp) and gave every open tab a "Reload"
-  prompt.
+- **The Workers Builds watch paths must exclude `data/**`** (dashboard →
+  Worker → Settings → Build → Build watch paths; the configuration is under
+  "Which commits deploy" below). Every bot data commit that deploys - several
+  a day - rebuilds and re-uploads all ~5,700 files (measured on 2026-10-02: a
+  4-file data commit re-uploaded 5,681 assets, because `kit.version.name` is a
+  timestamp) and gives every open tab a "Reload" prompt.
 - A game added after the last deploy has no file. The host answers with the
   SPA fallback and `lib/fallback-route.ts` renders it client-side, so it works;
   it simply is not indexable until the next deploy.
@@ -87,9 +87,12 @@ that way:
 
 ### Which commits deploy (build watch paths)
 
-Since 2026-10-02 a commit that touches only documentation or data does not
-deploy. That is right for nearly everything outside `web/`, with ONE trap:
-**the web build reads the legal documents.** `web/build/legal-versions.ts`
+Since 2026-10-02 a commit that touches only documentation does not deploy -
+but **data commits still did**: `3f9e8cff` ("Refresh store data
+[2026-10-02]", four files under `data/`) deployed a new Worker version
+(`712b4ab8`) at 16:54Z. The configuration below stops both. Skipping
+everything outside `web/` is right, with ONE trap: **the web build reads the
+legal documents.** `web/build/legal-versions.ts`
 hashes them for the consent gate and `web/src/lib/server/markdown.ts`
 renders them at `/legal/*`:
 
@@ -112,7 +115,9 @@ says. A configuration that does both jobs:
 Everything not included - `data/**`, `scripts/**`, the other docs,
 `CHANGELOG.md`, `CLAUDE.md`, `README.md` - then never deploys. Check it once
 by merging a commit that touches only `docs/plan/` (no build) and one that
-touches only `docs/ToS.md` (a build).
+touches only `docs/ToS.md` (a build), and by the next bot data commit: its
+check runs on GitHub must have no `Workers Builds: free-steam-games-list`.
+A check that IS there names a Version ID - that commit deployed.
 
 ## Verifying a deploy
 
