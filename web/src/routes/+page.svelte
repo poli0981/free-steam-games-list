@@ -38,7 +38,12 @@
     const theme = chartTheme();
     return {
       grid: gridBox({ top: 8 }),
-      xAxis: { type: "value", axisLabel: { color: theme.mutedText }, splitLine: { lineStyle: { color: theme.grid } } },
+      xAxis: {
+        type: "value",
+        // Narrow on a phone: drop the labels that would collide.
+        axisLabel: { color: theme.mutedText, hideOverlap: true },
+        splitLine: { lineStyle: { color: theme.grid } },
+      },
       yAxis: {
         type: "category",
         inverse: true,

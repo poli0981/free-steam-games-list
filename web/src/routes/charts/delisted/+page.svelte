@@ -90,7 +90,9 @@
     return {
       grid: gridBox({ bottom: 30 }),
       tooltip: { trigger: "axis", axisPointer: { type: "shadow" } },
-      legend: { bottom: 0, textStyle: { color: theme.mutedText } },
+      // scroll: a plain legend wraps to a second line on a phone and lands on
+      // the axis labels; this one stays on one line and pages instead.
+      legend: { type: "scroll", bottom: 0, textStyle: { color: theme.mutedText } },
       xAxis: {
         type: "category",
         data: timeline.labels,

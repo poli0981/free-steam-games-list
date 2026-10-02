@@ -26,7 +26,9 @@
       tooltip: { trigger: "axis", axisPointer: { type: "shadow" } },
       xAxis: {
         type: "value",
-        axisLabel: { color: theme.mutedText },
+        // On a phone the plot is narrow and every label printed over its
+        // neighbours; hideOverlap drops the ones that collide.
+        axisLabel: { color: theme.mutedText, hideOverlap: true },
         splitLine: { lineStyle: { color: theme.grid } },
       },
       yAxis: {
