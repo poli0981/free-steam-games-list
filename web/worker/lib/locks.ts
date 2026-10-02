@@ -84,6 +84,33 @@ export async function readState(db: D1Database, key: string): Promise<string | u
   }
 }
 
+/**
+ * Add `by` to an integer counter in admin_state and return the new total, or
+ * null when the table is missing. One statement, so two isolates can never
+ * both read the old value. A caller spending money on the result must treat
+ * null as "no budget" (lib/img-mint.ts does).
+ */
+export async function bumpCounter(db: D1Database, key: string, by: number, now: Date): Promise<number | null> {
+  try {
+    const row = await db
+      .prepare(
+        // Every operand cast to INTEGER: a JS number may be bound as REAL,
+        // which would store "4.0".
+        `INSERT INTO admin_state (key, value, updated_at) VALUES (?1, CAST(CAST(?2 AS INTEGER) AS TEXT), ?3)
+         ON CONFLICT(key) DO UPDATE SET
+           value = CAST(CAST(admin_state.value AS INTEGER) + CAST(?2 AS INTEGER) AS TEXT),
+           updated_at = excluded.updated_at
+         RETURNING value`,
+      )
+      .bind(key, by, now.toISOString())
+      .first<{ value: string }>();
+    return row ? Number(row.value) : null;
+  } catch (err) {
+    if (missingTable(err)) return null;
+    throw err;
+  }
+}
+
 export async function writeState(db: D1Database, key: string, value: string, now: Date): Promise<void> {
   try {
     await db

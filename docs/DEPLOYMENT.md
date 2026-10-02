@@ -96,6 +96,12 @@ curl -so /dev/null -w '%{http_code}\n' https://free-steam-games.win/api/ingest/p
 The image should come back around 3–4 KB: the Worker prefers Steam's small
 capsule asset over the full header.
 
+For the AVIF path, copy a game page's hero URL (`/img/d/<appid>/…?t=…`, the
+`?t=` matters - it is part of the R2 key) and request it with
+`-H "Accept: image/avif"`: once the cron has minted it the answer is
+`image/avif` with `X-Img-Final: 1`; before that it is the JPEG with
+`Cache-Control: public, max-age=86400` and no `X-Img-Final`.
+
 **A stale service worker will show you the old app after a deploy.** The site
 is a PWA, so a browser that visited before the deploy serves its cached shell
 until the service worker updates. If you are checking whether a deploy landed,
@@ -166,9 +172,17 @@ For `wrangler dev`, put local values in `web/.dev.vars` (gitignored);
 
 ## Cost notes
 
-Image transformations are **off** (`IMG_TRANSFORM: "false"`), so `/img/*` is a
-cached passthrough. Cloudflare Images bills separately from Workers Paid —
-5,000 unique transformations a month are free, and there is **no spend cap**.
-Measure real `/img/*` volume in Workers Logs before enabling them, and land an
-appid allowlist first: without one the endpoint can be pointed at any of
-Steam's ~200,000 apps at your expense.
+**Images.** AVIF copies of the header art are minted by the cron into the R2
+bucket `f2p-media` (`web/worker/lib/img-mint.ts`); `/img/*` only reads them, so
+requests cannot spend anything - there is nothing for an allowlist to guard.
+Images Paid bills $0.50 per 1,000 unique transformations after 5,000 a month
+and has **no spend cap**; `IMG_TRANSFORM_MONTHLY_CAP` (a D1 counter) is the
+cap. See SECURITY_SETUP.md section 5.
+
+**The bucket must exist before any deploy that binds it.** `wrangler deploy`
+fails with code 10085 otherwise (the old Worker stays live). It was created
+with `npx wrangler r2 bucket create f2p-media`; keep its r2.dev URL disabled
+and attach no custom domain - the Worker is the only reader.
+
+**R2** stays inside the free tier: ~11k objects at ~3-9 KB, about 12 list
+calls per cron tick only while minting, and reads only on an edge-cache miss.

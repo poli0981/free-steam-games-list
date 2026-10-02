@@ -5,7 +5,7 @@
   import { page } from "$app/state";
   import { games, removedGames } from "$lib/games.svelte";
   import { i18n } from "$lib/i18n.svelte";
-  import { preferWebp, socialImagePath } from "$lib/image";
+  import { heroImage, socialImagePath } from "$lib/image";
   import { steamWebUrl, steamProtocolUrl } from "$lib/steam-link";
   import { isAndroid } from "$lib/external-open";
   import {
@@ -196,13 +196,17 @@
 {:else if view}
   <article class="max-w-3xl">
     {#if view.header_image}
+      <!-- The page's largest image (its LCP): fetched first, never lazily.
+           460x215 is every Steam header's real size. -->
       <img
-        src={preferWebp(view.header_image, 920)}
+        src={heroImage(view.header_image)}
         alt=""
         referrerpolicy="no-referrer"
+        fetchpriority="high"
+        decoding="async"
         class="mb-5 w-full rounded-lg border object-cover"
-        width="920"
-        height="430"
+        width="460"
+        height="215"
       />
     {/if}
 

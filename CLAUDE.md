@@ -294,6 +294,29 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
   Configuration Rule (`docs/SECURITY_SETUP.md` §10). `src/lib/images.test.ts`
   fails on an `<img>` without the attribute. Do not "fix" it with a
   `<meta name="referrer">` or by relying on the webview's default.
+- **`/img/*` NEVER transforms; only the cron does.** `worker/lib/img-mint.ts`
+  mints AVIF (`s` 230 px q55, `d` 460 px q60) into R2 `f2p-media`, most-played
+  first, from shards that hash to `index.json` - a list built from a lagging
+  raw.githubusercontent shard would be stamped with the new generation and
+  frozen. `worker/routes/img.ts` reads Cache API → R2 → Steam's JPEG and
+  nothing else, so no request can create a billed transformation. Images Paid
+  has no spend cap: `IMG_TRANSFORM_MONTHLY_CAP` (D1 counter
+  `img_transforms:YYYY-MM`, counted BEFORE each call, fail closed) is the only
+  one. Rules that are easy to break:
+  - `s`/`d` are negotiated on `Accept` and always send `Vary: Accept`; the
+    Cache API copy has no Vary (it ignores it), so the format is in the key. An
+    AVIF browser gets the JPEG only as a PROVISIONAL answer: one day, no
+    `X-Img-Final` - the service worker caches only responses carrying it,
+    because CacheFirst ignores Cache-Control.
+  - `t` and `d2` are ALWAYS the JPEG: released apps request them, and `d2` is
+    og:image - a crawler may claim AVIF and not render it.
+  - The R2 key (`worker/lib/img-store.ts`) carries width, path and Steam's
+    `?t=`, so new art is a new key. `img/v1/` also pins format and quality;
+    changing either is a new prefix and re-mints ~11k images.
+  - URLs keep `.jpg`: Hotlink Protection matches by extension.
+  - Flip `IMG_TRANSFORM` in `wrangler.jsonc`, not the dashboard: there is no
+    `keep_vars`, so the next deploy resets a dashboard value.
+  - The bucket must exist before a deploy that binds it (code 10085).
 - **`adapter-static`'s `fallback` must not be named `index.html`.** It is
   written last and overwrites whatever shares its name, which silently replaced
   the prerendered home page with an empty shell. It is `200.html`.

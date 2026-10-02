@@ -6,9 +6,10 @@
  * from Steam and caches at the edge, so no visitor request reaches a
  * third-party host and the privacy policy can say exactly that.
  *
- * The Worker keeps transformations OFF for now (see IMG_TRANSFORM in
- * wrangler.jsonc) — these variants currently select the source asset and the
- * cache key, not a paid resize.
+ * Thumbnails (`s`) and the detail hero (`d`) are AVIF for every browser that
+ * accepts it, once the Worker's cron has minted the copy into R2; until then,
+ * and for browsers without AVIF, they are Steam's JPEG. The social card stays
+ * on `d2`, which is always JPEG. worker/routes/img.ts has the variants.
  *
  * EVERY <img> SHOWING THESE URLS SETS referrerpolicy="no-referrer". The zone
  * has Cloudflare Hotlink Protection on, which 403s `/img/*` at the edge -
@@ -21,17 +22,14 @@
  * costs nothing there. src/lib/images.test.ts fails on an <img> without it;
  * docs/SECURITY_SETUP.md section 10 has the measurements.
  */
+import { parseSteamImage, sourceKey } from "../../shared/steam-image";
 import { API_ORIGIN as IMG_ORIGIN } from "./site";
 
 /**
- * Steam serves this catalog from two hosts — shared.akamai.steamstatic.com and
- * shared.fastly.steamstatic.com (the latter is ~44% of records). Both share the
- * same path layout, so the host is dropped here and the Worker tries each.
+ * `s` 230 px and `d` 460 px are negotiated (AVIF or JPEG). `t` and `d2` are
+ * the original JPEG and stay for released apps, older pages and social cards.
  */
-const STEAM_PATH_RE =
-  /^https?:\/\/shared\.(?:akamai|fastly)\.steamstatic\.com\/store_item_assets\/steam\/apps\/(\d{1,8}(?:\/[0-9a-f]{40})?\/[a-z0-9_]{1,64}\.jpg)(?:\?t=(\d{1,12}))?/i;
-
-export type ImageVariant = "t" | "d" | "d2";
+export type ImageVariant = "s" | "d" | "t" | "d2";
 
 /**
  * Rewrite a Steam header URL to the local proxy. Returns the input unchanged if
@@ -39,40 +37,33 @@ export type ImageVariant = "t" | "d" | "d2";
  * rather than 404-ing through the proxy.
  */
 function proxied(url: string, variant: ImageVariant): string {
-  if (!url) return url;
-  const m = STEAM_PATH_RE.exec(url);
-  if (!m) return url;
-  const [, path, stamp] = m;
-  return `${IMG_ORIGIN}/img/${variant}/${path}${stamp ? `?t=${stamp}` : ""}`;
+  const src = parseSteamImage(url);
+  return src ? `${IMG_ORIGIN}/img/${variant}/${sourceKey(src)}` : url;
 }
 
 /**
- * Thumbnail for the table and command palette.
- *
- * Note the original implementation swapped header.jpg -> capsule_184x69.jpg to
- * save bandwidth. That is NOT done here: roughly 1,600 records use the hashed
- * asset path, where the capsule variant does not exist, so the swap 404s for
- * about half the catalog. Serving the header through the proxy is correct for
- * every record; narrowing it further belongs with the transformation work,
- * which can resize rather than guess at a filename.
+ * Thumbnail for the tables, cards and command palette: 230 px wide, the same
+ * aspect as the header (the old `t` variant served Steam's 184x69 capsule on
+ * half the catalogue and the full header on the rest, so the two halves
+ * cropped differently).
  */
 export function headerToCapsule(url: string): string {
-  return proxied(url, "t");
+  return proxied(url, "s");
 }
 
 /**
  * Root-relative /img/ path for a social card, or null when the URL is not a
  * Steam asset the proxy serves. Always without an origin: Seo.svelte prefixes
  * SITE_ORIGIN itself, and in the Tauri build IMG_ORIGIN is already absolute.
+ * Deliberately `d2` (always JPEG): a crawler may claim AVIF in Accept and
+ * still be unable to render it.
  */
 export function socialImagePath(url: string): string | null {
-  const m = url ? STEAM_PATH_RE.exec(url) : null;
-  if (!m) return null;
-  const [, path, stamp] = m;
-  return `/img/d2/${path}${stamp ? `?t=${stamp}` : ""}`;
+  const src = parseSteamImage(url);
+  return src ? `/img/d2/${sourceKey(src)}` : null;
 }
 
-/** Larger image for the detail drawer. */
-export function preferWebp(url: string, width?: number): string {
-  return proxied(url, width && width > 600 ? "d2" : "d");
+/** The detail page's hero: the full 460 px header, AVIF where accepted. */
+export function heroImage(url: string): string {
+  return proxied(url, "d");
 }

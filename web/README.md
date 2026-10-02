@@ -61,7 +61,10 @@ Worker:
 - `/api/data/data/index.json` — shard manifest (`max_per_file`, `total`,
   `last_updated`, `files`)
 - `/api/data/data/data_001.jsonl`, … — record shards
-- `/img/t/<appid>/...` — Steam artwork, proxied and edge-cached
+- `/img/{s|d}/<appid>/...` — Steam artwork: AVIF (230 / 460 px) for browsers
+  that accept it, read from the R2 copies the Worker's cron mints, otherwise
+  Steam's JPEG. `/img/{t|d2}/...` are always the JPEG (released apps, og:image).
+  The request path never transforms (`worker/routes/img.ts`)
 - `/img/gh/{u|in}/{id}` — GitHub avatars for `/activity`
 - `/api/activity` — recent commits, so `api.github.com` is absent from the
   site's `connect-src`
