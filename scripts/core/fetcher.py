@@ -16,6 +16,7 @@ from .constants import (
 )
 from .steam_client import get_client
 from .data_store import extract_appid, now_iso, is_info_complete, is_empty
+from .peaks import raise_peak
 from .scraper import scrape_store_page
 
 
@@ -157,6 +158,9 @@ def apply_reviews(game: dict, summary: dict) -> dict:
 
 def apply_players(game: dict, count: int) -> dict:
     game["current_players"] = f"{count:,}"
+    # A sample of 0 says nothing about a peak; anything else may beat it.
+    if count > 0:
+        raise_peak(game, count)
     old = game.get("peak_today", "N/A")
     if old in ("N/A", "Error", ""):
         game["peak_today"] = f"{count:,}"

@@ -1,0 +1,44 @@
+name: Refresh All-Time Peaks
+
+# all_time_peak - the most players a game has had at once - from SteamCharts'
+# recorded peak, a thirtieth of the catalogue a day (~186 pages, 2-3 s apart:
+# about ten minutes), so every game is asked once a month. Every run also
+# raises the field from our own Steam API samples, which needs no requests.
+# scripts/refresh_peaks.py has the rules: the field only ever goes up, and a
+# refusal from SteamCharts ends the run early with a warning, not a failure.
+#
+# 19:30 UTC sits between Refresh Store Data (16:00, ~40 minutes) and the Daily
+# Snapshot (23:00), where only the short Ingest runs are due. Scheduled runs
+# here start up to a few hours late, and the data-write group keeps only ONE
+# pending run, so this stays clear of the long morning jobs.
+#
+# The one-time backfill is a manual run with the box ticked: every game, about
+# four hours. Start it in the evening UTC, after Refresh Store Data.
+
+on:
+  schedule: [{cron: '30 19 * * *'}]
+  workflow_dispatch:
+    inputs:
+      backfill:
+        description: 'Ask SteamCharts about every game, not just today''s slice (~4 h)'
+        required: false
+        default: false
+        type: boolean
+
+permissions: {contents: write}
+
+concurrency:
+  group: data-write
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: ${{ inputs.backfill && 330 || 30 }}
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with: {python-version: '3.12'}
+      - run: chmod +x ./bash/refresh_peaks.sh && ./bash/refresh_peaks.sh
+        env:
+          PEAKS_ALL: ${{ inputs.backfill }}
