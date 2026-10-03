@@ -81,7 +81,8 @@ Worker:
 `index.json` lists a SHA-256 for every shard. The app requests shards as
 `?v=<sha256>` (packed or plain), which the Worker serves content-addressed and immutable (or 503s
 while GitHub's CDN still has the previous bytes), and hashes what it receives
-before caching it. IndexedDB holds the last generation that verified; the app
+before caching it. IndexedDB holds the last generation that verified, as the
+packs it arrived in (opaque `Uint8Array`s, `src/lib/cache.ts`); the app
 re-checks the index when the tab regains focus and every ten minutes while it is
 visible, and falls back to that cache offline.
 

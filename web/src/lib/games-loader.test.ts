@@ -40,12 +40,19 @@ async function index(stamp: string, shards: string[][], hashed = true): Promise<
   return { index: { max_per_file: 800, total: shards.flat().length, last_updated: stamp, files }, bodies };
 }
 
+/** What the harness's IndexedDB holds: a generation, and whether it will open. */
+type Cached = Generation & { corrupt?: boolean };
+
 interface Harness {
   deps: LoaderDeps;
-  cache: { value: Generation | null };
   fetchShard: ReturnType<typeof vi.fn>;
   writeCache: ReturnType<typeof vi.fn>;
+  /** Calls to the cached generation's records(): each one is a decode. */
+  decode: ReturnType<typeof vi.fn>;
 }
+
+/** A stand-in pack: the loader never opens one, it only hands it to the cache. */
+const packOf = (name: string) => enc.encode(`pack:${name}`);
 
 function harness(opts: {
   index: DataIndex | Error;
@@ -53,17 +60,21 @@ function harness(opts: {
   bodies: Map<string, string>;
   /** Shards that 503 when requested by hash. */
   notReady?: Set<string>;
-  cached?: Generation | null;
+  /** Shards that arrive over the plain path, so without a pack. */
+  plainPath?: Set<string>;
+  cached?: Cached | null;
   noCrypto?: boolean;
 }): Harness {
-  const cache = { value: opts.cached ?? null };
   const fetchShard = vi.fn(async (entry: ShardManifestEntry, versioned: boolean) => {
     if (versioned && opts.notReady?.has(entry.name)) throw new ShardNotReadyError(entry.name);
-    return enc.encode(opts.bodies.get(entry.name) ?? "").buffer as ArrayBuffer;
+    return {
+      plain: enc.encode(opts.bodies.get(entry.name) ?? "").buffer as ArrayBuffer,
+      pack: opts.plainPath?.has(entry.name) ? null : packOf(entry.name),
+    };
   });
-  const writeCache = vi.fn(async (g: Generation) => {
-    cache.value = g;
-  });
+  const writeCache = vi.fn(async (_index: DataIndex, _packs: (Uint8Array | null)[]) => {});
+  const decode = vi.fn(async (c: Cached) => (c.corrupt ? null : c.records));
+  const cached = opts.cached ?? null;
   const deps: LoaderDeps = {
     fetchIndex: async () => {
       if (opts.index instanceof Error) throw opts.index;
@@ -81,10 +92,10 @@ function harness(opts: {
         .split("\n")
         .filter(Boolean)
         .map((l) => JSON.parse(l) as GameRecord),
-    readCache: async () => cache.value,
+    readCache: async () => cached && { index: cached.index, records: () => decode(cached) },
     writeCache,
   };
-  return { deps, cache, fetchShard, writeCache };
+  return { deps, fetchShard, writeCache, decode };
 }
 
 const signal = () => new AbortController().signal;
@@ -112,7 +123,7 @@ describe("sameGeneration / isVersioned", () => {
 });
 
 describe("createLoader", () => {
-  it("verifies, parses and caches a new generation", async () => {
+  it("verifies, parses and caches a new generation - as the packs it arrived in", async () => {
     const { index: idx, bodies } = await index("t1", [["1", "2"], ["3"]]);
     const h = harness({ index: idx, bodies });
     const r = await createLoader(h.deps)(signal());
@@ -120,6 +131,14 @@ describe("createLoader", () => {
     expect(r).toMatchObject({ offline: false, unverified: false, retryInMs: null });
     expect(h.fetchShard.mock.calls.every((c) => c[1] === true)).toBe(true);
     expect(h.writeCache).toHaveBeenCalledTimes(1);
+    expect(h.writeCache).toHaveBeenCalledWith(idx, [packOf("data_001.jsonl"), packOf("data_002.jsonl")]);
+  });
+
+  it("offers a shard that came over the plain path to the cache as null", async () => {
+    const { index: idx, bodies } = await index("t1", [["1"], ["2"]]);
+    const h = harness({ index: idx, bodies, plainPath: new Set(["data_002.jsonl"]) });
+    await createLoader(h.deps)(signal());
+    expect(h.writeCache).toHaveBeenCalledWith(idx, [packOf("data_001.jsonl"), null]);
   });
 
   it("fetches no shard when the cached generation is current", async () => {
@@ -129,6 +148,25 @@ describe("createLoader", () => {
     const r = await createLoader(h.deps)(signal());
     expect(r.records).toBe(cached.records);
     expect(h.fetchShard).not.toHaveBeenCalled();
+    expect(h.decode).toHaveBeenCalledTimes(1);
+  });
+
+  it("does not open the cache just to find it is an older generation", async () => {
+    const old = await index("t1", [["1"]]);
+    const next = await index("t2", [["2"]]);
+    const h = harness({ index: next.index, bodies: next.bodies, cached: { index: old.index, records: [{ name: "1" } as GameRecord] } });
+    const r = await createLoader(h.deps)(signal());
+    expect(r.records.map((x) => x.name)).toEqual(["2"]);
+    expect(h.decode).not.toHaveBeenCalled();
+  });
+
+  it("treats a cache that will not open as a miss", async () => {
+    const { index: idx, bodies } = await index("t1", [["1"]]);
+    const h = harness({ index: idx, bodies, cached: { index: idx, records: [], corrupt: true } });
+    const r = await createLoader(h.deps)(signal());
+    expect(r.records.map((x) => x.name)).toEqual(["1"]);
+    expect(h.fetchShard).toHaveBeenCalledTimes(1);
+    expect(h.writeCache).toHaveBeenCalledTimes(1);
   });
 
   it("fetches no shard when the in-memory generation is current", async () => {
@@ -162,6 +200,17 @@ describe("createLoader", () => {
     expect(h.writeCache).not.toHaveBeenCalled();
   });
 
+  it("with nothing in memory, shows the cached generation while the shard is not ready", async () => {
+    const old = await index("t1", [["1"]]);
+    const next = await index("t2", [["2"]]);
+    const cached = { index: old.index, records: [{ name: "1" } as GameRecord] };
+    const h = harness({ index: next.index, bodies: next.bodies, notReady: new Set(["data_001.jsonl"]), cached });
+    const r = await createLoader(h.deps)(signal());
+    expect(r.records).toBe(cached.records);
+    expect(r).toMatchObject({ unverified: false, retryInMs: 60_000 });
+    expect(h.writeCache).not.toHaveBeenCalled();
+  });
+
   it("with nothing held, shows unversioned shards but does not cache them", async () => {
     const next = await index("t2", [["2"]]);
     const h = harness({ index: next.index, bodies: next.bodies, notReady: new Set(["data_001.jsonl"]) });
@@ -187,13 +236,19 @@ describe("createLoader", () => {
     await expect(createLoader(h.deps)(signal())).rejects.toThrow("Failed to fetch");
   });
 
+  it("offline with a cache that will not open rethrows", async () => {
+    const old = await index("t1", [["1"]]);
+    const h = harness({ index: new TypeError("Failed to fetch"), bodies: new Map(), cached: { index: old.index, records: [], corrupt: true } });
+    await expect(createLoader(h.deps)(signal())).rejects.toThrow("Failed to fetch");
+  });
+
   it("a legacy index loads and caches as before", async () => {
     const { index: idx, bodies } = await index("t1", [["1"]], false);
     const h = harness({ index: idx, bodies });
     const r = await createLoader(h.deps)(signal());
     expect(r.records.map((x) => x.name)).toEqual(["1"]);
     expect(h.fetchShard.mock.calls.every((c) => c[1] === false)).toBe(true);
-    expect(h.writeCache).toHaveBeenCalledTimes(1);
+    expect(h.writeCache).toHaveBeenCalledWith(idx, [packOf("data_001.jsonl")]);
   });
 
   it("without Web Crypto, trusts the Worker's own verification of ?v=", async () => {

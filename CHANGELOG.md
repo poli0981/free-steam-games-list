@@ -17,6 +17,23 @@ All notable changes to this awesome noob repo will be documented here.
   peak, and it read like one. The Disclaimer names the new source, so
   returning visitors see the consent gate once, showing that paragraph.
 
+### 🗜️ A smaller, opaque offline cache
+
+- **The catalogue your browser or app keeps for offline use is now stored as
+  the packed shards it downloads**, not as thousands of readable records:
+  about 1.4 MB instead of roughly 9.5 MB, and opaque bytes in DevTools.
+  Like the packed downloads, this is compression and obfuscation, not
+  protection: the key is public, and the dataset stays readable in Git. The
+  copy an earlier version saved keeps working until the data next changes,
+  then it is replaced and deleted. Same storage keys, so the Privacy Policy
+  and the consent gate are unchanged.
+- Opening the cached catalogue happens off the main thread now: on a
+  desktop the longest freeze while loading it fell from about 20 ms to 6 ms,
+  for about 45 ms more until the data is ready. The two cache keys are now
+  written in one transaction, so a failed write can no longer leave a new
+  index next to old data, and a cache that will not open is simply
+  downloaded again.
+
 ### 🧰 Pipeline
 
 - `scripts/refresh_peaks.py` and the daily "Refresh All-Time Peaks" workflow
