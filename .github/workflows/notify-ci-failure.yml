@@ -27,6 +27,7 @@ on:
       - "Daily Snapshot"
       - "Top Offline Leaderboard"
       - "Refresh Store Data"
+      - "Refresh All-Time Peaks"
     types: [completed]
 
 # REQUIRED: declare permissions matching the reusable workflow's needs.

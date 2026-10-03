@@ -117,6 +117,22 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
   no language table or tags), compares `description` as stored (truncated),
   and bumps `last_updated` only on a real change. A new field added to it must
   obey the same rules; `scripts/tests/test_refresh_store_data.py` holds them.
+- **`all_time_peak` only ever goes UP, and `refresh_peaks.py` is what raises
+  it** (daily 19:30 UTC, "Refresh All-Time Peaks"). A `crc32(appid) % 30`
+  slice (`core/rotation.py`, shared with `refresh_store_data.py`) reads
+  SteamCharts' recorded all-time peak - the only source older than our own
+  sampling: SteamDB forbids scraping and Valve's APIs know only today. Every
+  run also raises it from our samples (`peak_today`, which despite its name is
+  never reset, only cleared by `refetch_all.py`, and `current_players`), and
+  `apply_players()` raises it on every sample, never from a 0. SteamCharts has
+  no API, terms or robots.txt, so: one page per game a month, 2-3 s apart, a
+  User-Agent that names the project; 500 is an app it does not track (most of
+  the long tail), 404 one it has never seen; a 403, 429 or challenge page
+  stops the run with a warning, not a failure. `refetch_all.py` must never
+  clear the field - it cannot be fetched again - and nothing may lower it.
+  The backfill is a manual run with `backfill` ticked (~4 h, start it in the
+  evening UTC). DISCLAIMER section 6 names the source, so rewording it reopens
+  the consent gate. `scripts/tests/test_refresh_peaks.py` holds the rules.
 - `ingest_new.py` only reads `scripts/temp_info.jsonl`. It has exactly two
   producers now: the browser extension (`poli0981/steam-f2p-extension`, which
   pushes to the file directly) and the `/admin` approve flow (the Worker

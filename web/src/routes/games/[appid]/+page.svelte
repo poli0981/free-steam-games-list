@@ -97,11 +97,10 @@
 
   const rows = $derived.by((): Row[] => {
     if (!view) return [];
-    const players = live?.current_players
-      ? live.peak_today
-        ? `${formatNumber(live.current_players)} ${t("detail.playersPeak", { peak: formatNumber(live.peak_today) })}`
-        : formatNumber(live.current_players)
-      : undefined;
+    const players = live?.current_players ? formatNumber(live.current_players) : undefined;
+    // Not peak_today, which the page used to show as "(peak N)": that is only the
+    // highest of our sparse samples since the last refetch, never reset daily.
+    const peak = live?.all_time_peak && live.all_time_peak !== "N/A" ? formatNumber(live.all_time_peak) : undefined;
     const all: Row[] = [
       { label: "detail.labelGenre", text: view.genre },
       { label: "detail.labelType", text: view.type_game },
@@ -110,6 +109,7 @@
       { label: "detail.labelReleased", text: view.release_date },
       { label: "detail.labelPlatforms", text: view.platforms.join(", ") },
       { label: "detail.labelPlayers", text: players },
+      { label: "detail.labelAllTimePeak", text: peak },
       { label: "detail.labelAntiCheat", text: view.anti_cheat },
       { label: "detail.labelMetacritic", text: live?.metacritic },
       { label: "detail.labelDrm", text: view.drm_notes },

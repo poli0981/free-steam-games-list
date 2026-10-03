@@ -399,6 +399,7 @@
     "labelPlatforms": "Platforms",
     "labelReviews": "Reviews",
     "labelPlayers": "Players",
+    "labelAllTimePeak": "All-time peak",
     "labelAntiCheat": "Anti-cheat",
     "labelMetacritic": "Metacritic",
     "labelDrm": "DRM",
@@ -408,7 +409,6 @@
     "labelTags": "Tags",
     "labelLanguages": "Languages ({{count}})",
     "labelNotes": "Notes",
-    "playersPeak": "(peak {{peak}})",
     "descriptionSource": "Blurb by the publisher, via Steam — shortened.",
     "removedOn": "Removed from the catalogue on {{date}}: {{reason}}"
   },

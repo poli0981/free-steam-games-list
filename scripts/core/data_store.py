@@ -341,6 +341,8 @@ _SKELETON_TEMPLATE = {
     "genre": "", "type_game": "", "has_paid_dlc": False,
     "developer": [], "publisher": [], "release_date": "",
     "reviews": "N/A", "current_players": "N/A", "peak_today": "N/A",
+    # Only ever raised, never cleared: see core/peaks.py.
+    "all_time_peak": "N/A",
     "metacritic": "N/A",
     "anti_cheat": "-", "anti_cheat_note": "", "is_kernel_ac": None,
     "platforms": [], "languages": [], "language_details": [], "tags": [],

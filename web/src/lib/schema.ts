@@ -103,6 +103,9 @@ export interface GameRecord {
   reviews: string;
   current_players: string;
   peak_today: string;
+  /** Only ever raised: SteamCharts' recorded peak or our own highest sample
+   *  (scripts/core/peaks.py). "N/A" until either has a number. */
+  all_time_peak: string;
   metacritic: string;
   anti_cheat: string;
   anti_cheat_note: string;
@@ -154,6 +157,7 @@ export const SKELETON_TEMPLATE: GameRecord = {
   reviews: "N/A",
   current_players: "N/A",
   peak_today: "N/A",
+  all_time_peak: "N/A",
   metacritic: "N/A",
   anti_cheat: "-",
   anti_cheat_note: "",

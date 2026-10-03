@@ -22,6 +22,7 @@ export type ColumnKey =
   | "type_game"
   | "reviews"
   | "current_players"
+  | "all_time_peak"
   | "anti_cheat"
   | "platforms"
   | "release_date"
@@ -78,6 +79,15 @@ export const COLS: ColDef[] = [
     sortable: true,
     align: "right",
     sortValue: (g) => parseIntSafe(g.current_players),
+  },
+  {
+    key: "all_time_peak",
+    label: "detail.labelAllTimePeak",
+    width: 120,
+    sortable: true,
+    align: "right",
+    // -1 for "N/A", as for reviews: unknown peaks cluster at one end.
+    sortValue: (g) => (g.all_time_peak && g.all_time_peak !== "N/A" ? parseIntSafe(g.all_time_peak) : -1),
   },
   {
     key: "anti_cheat",
