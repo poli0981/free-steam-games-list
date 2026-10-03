@@ -399,6 +399,7 @@
     "labelPlatforms": "Nền tảng",
     "labelReviews": "Đánh giá",
     "labelPlayers": "Người chơi",
+    "labelAllTimePeak": "Đỉnh mọi thời điểm",
     "labelAntiCheat": "Anti-cheat",
     "labelMetacritic": "Metacritic",
     "labelDrm": "DRM",
@@ -408,7 +409,6 @@
     "labelTags": "Tag",
     "labelLanguages": "Ngôn ngữ ({{count}})",
     "labelNotes": "Ghi chú",
-    "playersPeak": "(đỉnh {{peak}})",
     "descriptionSource": "Mô tả do nhà phát hành viết, lấy từ Steam — đã rút gọn.",
     "removedOn": "Đã bị gỡ khỏi danh mục ngày {{date}}: {{reason}}"
   },

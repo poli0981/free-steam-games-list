@@ -15,6 +15,7 @@ const CSV_COLS: { key: keyof GameRecord; header: string }[] = [
   { key: "reviews", header: "reviews" },
   { key: "current_players", header: "current_players" },
   { key: "peak_today", header: "peak_today" },
+  { key: "all_time_peak", header: "all_time_peak" },
   { key: "metacritic", header: "metacritic" },
   { key: "anti_cheat", header: "anti_cheat" },
   { key: "anti_cheat_note", header: "anti_cheat_note" },

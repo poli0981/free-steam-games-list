@@ -4,6 +4,28 @@ All notable changes to this awesome noob repo will be documented here.
 
 ## [Unreleased]
 
+### ✨ Added
+
+- **All-time peak players.** Every game shows the most players it has ever had
+  at once: "All-time peak" on its page, and a sortable column in the games
+  table and the CSV export. The number is the peak Steam Charts has recorded,
+  which for a game it tracks goes back to the launch, read about once a month
+  per game; for the many small games Steam Charts does not track, it is the
+  most this project's own samples have seen. It only ever goes up. The
+  "(peak N)" beside the player count is gone: it was the highest of our own
+  occasional samples since the last full re-fetch, not a daily or all-time
+  peak, and it read like one. The Disclaimer names the new source, so
+  returning visitors see the consent gate once, showing that paragraph.
+
+### 🧰 Pipeline
+
+- `scripts/refresh_peaks.py` and the daily "Refresh All-Time Peaks" workflow
+  (19:30 UTC) ask Steam Charts about a thirtieth of the catalogue a day, a
+  page every two to three seconds, and stop for the day if it ever refuses;
+  every run also raises the field from the pipeline's own player counts. A
+  manual run with `backfill` ticked asks about every game at once, in about
+  four hours.
+
 ## [v4.1.1] – 2026-10-03 (The "Pocket-Sized" Edition)
 
 The site and the apps fit a phone: nothing runs off the right edge, game
