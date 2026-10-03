@@ -288,6 +288,14 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
 - `echarts-wordcloud` declares a stale `echarts@^5` peer. It runs fine on
   echarts 6 (all the legacy APIs it uses are still exported), so `package.json`
   carries an `overrides` entry. Do not "fix" it by pinning echarts back to 5.
+- **The `"@sveltejs/kit@2.70.3": { "cookie": "^0.7.2" }` override closes
+  GHSA-pxg6-pf52-xh8x** (kit 2 declares `cookie ^0.6.0`; only kit 3 moved on).
+  Kit imports just `parse`/`serialize`, which 0.7 keeps, and under
+  adapter-static that code runs only at prerender and in `vite dev`. The key
+  names kit's EXACT version because npm refuses a range key for a direct
+  dependency (`EOVERRIDE`). A kit bump therefore silently drops the override
+  and the alert comes back: re-key it, or delete it once kit asks for
+  `cookie` >= 0.7. Never carry it onto kit 3, which needs `cookie` 2.
 - **Real paths everywhere, including the packaged apps.** There is no
   HashRouter and no hash shim: `tauri::manager::get_asset()` falls back through
   `<path>.html`, `<path>/index.html`, then `index.html`, so the Tauri webview

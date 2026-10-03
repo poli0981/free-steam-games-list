@@ -26,6 +26,19 @@ All notable changes to this awesome noob repo will be documented here.
   manual run with `backfill` ticked asks about every game at once, in about
   four hours.
 
+### 🔐 Security
+
+- **Every open dependency alert is closed** (19 from Dependabot, plus the few
+  `npm audit` adds); `npm audit` reports none. Only two of the packages run in
+  production: `devalue`, whose parser is in the page and the apps (5.9.2 →
+  5.9.4), and `urllib3` in the data pipeline (2.7.0 → 2.8.0). The rest are
+  build and development tools: `undici` comes up to 7.29.1 with wrangler
+  4.147.0, and `brace-expansion`, `fast-uri` and `serialize-javascript` are
+  lockfile-only bumps. SvelteKit 2 still asks for `cookie` 0.6, whose fix is
+  only in SvelteKit 3, so an npm override gives it 0.7.2 (same API; with the
+  static adapter that code only runs while the site is built). The `sharp`
+  override is gone: wrangler's own pin now holds the patched version.
+
 ## [v4.1.1] – 2026-10-03 (The "Pocket-Sized" Edition)
 
 The site and the apps fit a phone: nothing runs off the right edge, game
