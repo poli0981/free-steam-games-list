@@ -4,6 +4,20 @@ All notable changes to this awesome noob repo will be documented here.
 
 ## [Unreleased]
 
+## [v4.2.0] – 2026-10-03 (The "All-Time High" Edition)
+
+Every game now shows the most players it has ever had at once, the catalogue
+the site and the apps keep for offline use is a fraction of its old size and
+no longer readable as text, and every open dependency alert is closed. Web
+app + desktop/Android bumped `2.1.1` → `2.2.0`; repo public-facing version
+`4.1.1` → `4.2.0`.
+
+On the website all of this is already live. The desktop app offers 2.2.0
+through its updater once the release is published; on Android, install the
+new APK over the old one. The apps also pick up the Disclaimer's new
+paragraph on where player numbers come from, so they show the consent gate
+once, with that paragraph; the website already did.
+
 ### ✨ Added
 
 - **All-time peak players.** Every game shows the most players it has ever had
