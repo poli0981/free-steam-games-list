@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { PACK_MAGIC, packBytes, sha256, unpackBytes } from "./data-pack";
+import { PACK_MAGIC, packBytes, packIvHex, sha256, unpackBytes } from "./data-pack";
 
 const enc = new TextEncoder();
 
@@ -54,5 +54,17 @@ describe("data-pack", () => {
   it("handles an empty file", async () => {
     const { packed } = await pack("");
     expect(await unpackBytes(packed.buffer as ArrayBuffer)).toEqual(new Uint8Array(0));
+  });
+
+  it("names the shard a pack holds by its IV: the sha256 prefix", async () => {
+    const { plain, packed } = await pack(SHARD);
+    const hex = [...(await sha256(plain))].map((b) => b.toString(16).padStart(2, "0")).join("");
+    expect(packIvHex(packed)).toBe(hex.slice(0, 24));
+
+    const wrongMagic = packed.slice();
+    wrongMagic[3] = 0x02;
+    expect(packIvHex(wrongMagic)).toBeNull();
+    expect(packIvHex(enc.encode('{"link":"x"}\n'))).toBeNull();
+    expect(packIvHex(packed.subarray(0, 20))).toBeNull();
   });
 });

@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { fetchRemovedText, fetchShard } from "./fetcher";
+import { decodeShard, fetchRemovedText, fetchShard } from "./fetcher";
 import { ShardNotReadyError } from "./games-loader";
 import { packBytes, sha256 } from "../../shared/data-pack";
 
@@ -38,16 +38,21 @@ afterEach(() => {
 });
 
 describe("fetchShard", () => {
-  it("fetches the pack by hash and returns the unpacked bytes", async () => {
-    fetchMock.mockResolvedValue(new Response(await packed(BODY)));
+  it("fetches the pack by hash and returns the unpacked bytes, and the pack", async () => {
+    const pack = await packed(BODY);
+    fetchMock.mockResolvedValue(new Response(pack));
     const out = await fetchShard(entry(), true);
-    expect(text(out)).toBe(BODY);
+    expect(text(out.plain)).toBe(BODY);
+    // Kept as it arrived: this is what the IndexedDB cache stores.
+    expect(out.pack).toEqual(pack);
     expect(urls()).toEqual([`/api/data/p1/data_001.bin?v=${"a".repeat(64)}`]);
   });
 
   it("asks for the unversioned pack without the browser cache", async () => {
-    fetchMock.mockResolvedValue(new Response(await packed(BODY)));
-    await fetchShard(entry(), false);
+    const pack = await packed(BODY);
+    fetchMock.mockResolvedValue(new Response(pack));
+    const out = await fetchShard(entry(), false);
+    expect(out.pack).toEqual(pack);
     expect(urls()).toEqual(["/api/data/p1/data_001.bin"]);
     expect(fetchMock.mock.calls[0][1]).toMatchObject({ cache: "no-store" });
   });
@@ -63,14 +68,16 @@ describe("fetchShard", () => {
       .mockResolvedValueOnce(new Response("not found", { status: 404 }))
       .mockResolvedValueOnce(new Response(BODY));
     const out = await fetchShard(entry(), true);
-    expect(text(out)).toBe(BODY);
+    expect(text(out.plain)).toBe(BODY);
+    expect(out.pack).toBeNull();
     expect(urls()[1]).toBe(`/api/data/data/data_001.jsonl?v=${"a".repeat(64)}`);
   });
 
   it("falls back when the answer is not a pack", async () => {
     fetchMock.mockResolvedValueOnce(new Response(BODY)).mockResolvedValueOnce(new Response(BODY));
     const out = await fetchShard(entry(), true);
-    expect(text(out)).toBe(BODY);
+    expect(text(out.plain)).toBe(BODY);
+    expect(out.pack).toBeNull();
     expect(fetchMock).toHaveBeenCalledTimes(2);
   });
 
@@ -84,8 +91,23 @@ describe("fetchShard", () => {
     vi.stubGlobal("DecompressionStream", undefined);
     fetchMock.mockResolvedValue(new Response(BODY));
     const out = await fetchShard(entry(), true);
-    expect(text(out)).toBe(BODY);
+    expect(text(out.plain)).toBe(BODY);
+    expect(out.pack).toBeNull();
     expect(urls()).toEqual([`/api/data/data/data_001.jsonl?v=${"a".repeat(64)}`]);
+  });
+});
+
+describe("decodeShard", () => {
+  it("parses plain bytes and opens a pack first", async () => {
+    const plain = enc.encode(BODY);
+    expect((await decodeShard(plain.buffer as ArrayBuffer, false)).map((r) => r.name)).toEqual(["Counter-Strike 2"]);
+    expect((await decodeShard(await packed(BODY), true)).map((r) => r.name)).toEqual(["Counter-Strike 2"]);
+  });
+
+  it("rejects a pack that will not open", async () => {
+    const bad = (await packed(BODY)).slice();
+    bad[bad.length - 1] ^= 0xff;
+    await expect(decodeShard(bad, true)).rejects.toThrow();
   });
 });
 

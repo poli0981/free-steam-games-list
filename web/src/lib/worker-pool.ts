@@ -1,19 +1,25 @@
 /**
- * Tiny single-worker JSONL parser proxy.
+ * Tiny single-worker shard parser proxy.
  *
- * One worker parses the shards (five of them at ~800 records each) off the main
- * thread, one message per shard. If the worker itself fails, every shard still
- * waiting on it is parsed on the main thread instead - see onerror.
+ * One worker turns shard bytes into records off the main thread, one message
+ * per shard: the plain JSONL bytes of a fresh download, or a pack straight
+ * from the IndexedDB cache, which it opens first (decodeShard in fetcher.ts).
+ * If the worker itself fails, every shard still waiting on it is parsed on the
+ * main thread instead - see onerror.
  */
 import type { GameRecord } from "./schema";
-import { parseJsonl } from "./fetcher";
+import { decodeShard } from "./fetcher";
+
+interface Job {
+  bytes: ArrayBuffer | Uint8Array;
+  packed: boolean;
+  resolve: (r: GameRecord[]) => void;
+  reject: (e: Error) => void;
+}
 
 let worker: Worker | null = null;
 let nextId = 1;
-const pending = new Map<
-  number,
-  { text: string; resolve: (r: GameRecord[]) => void; reject: (e: Error) => void }
->();
+const pending = new Map<number, Job>();
 
 function getWorker(): Worker | null {
   if (typeof Worker === "undefined") return null;
@@ -30,7 +36,11 @@ function getWorker(): Worker | null {
       const p = pending.get(id);
       if (!p) return;
       pending.delete(id);
-      if (error) p.reject(new Error(error));
+      // Not `if (error)`: a failed AES-GCM decrypt is a DOMException whose
+      // message is EMPTY in Chromium, and "" read as success resolved a
+      // damaged pack as a shard with no records - the cache then served the
+      // catalogue a shard short instead of counting as a miss.
+      if (typeof error === "string") p.reject(new Error(error || "the parser worker failed"));
       else p.resolve(records ?? []);
     };
     worker.onerror = (ev) => {
@@ -42,13 +52,7 @@ function getWorker(): Worker | null {
       // load hung on "Loading…" forever.
       const orphans = [...pending.values()];
       pending.clear();
-      for (const p of orphans) {
-        try {
-          p.resolve(parseJsonl(p.text));
-        } catch (err) {
-          p.reject(err instanceof Error ? err : new Error(String(err)));
-        }
-      }
+      for (const p of orphans) decodeShard(p.bytes, p.packed).then(p.resolve, p.reject);
     };
     return worker;
   } catch {
@@ -56,15 +60,26 @@ function getWorker(): Worker | null {
   }
 }
 
-export function parseShard(text: string): Promise<GameRecord[]> {
+function parse(bytes: ArrayBuffer | Uint8Array, packed: boolean): Promise<GameRecord[]> {
   const w = getWorker();
-  if (!w) {
-    // Fallback: parse on main thread.
-    return Promise.resolve(parseJsonl(text));
-  }
+  // Fallback: parse on the main thread.
+  if (!w) return decodeShard(bytes, packed);
   return new Promise((resolve, reject) => {
     const id = nextId++;
-    pending.set(id, { text, resolve, reject });
-    w.postMessage({ id, text });
+    pending.set(id, { bytes, packed, resolve, reject });
+    // Copied, not transferred: a transferred buffer is emptied on this side,
+    // and both onerror (which re-parses from it) and the loader (which hands
+    // the packs to the cache after parsing) still need it.
+    w.postMessage({ id, bytes, packed });
   });
+}
+
+/** A shard's plain JSONL bytes, as fetched. */
+export function parseShard(bytes: ArrayBuffer): Promise<GameRecord[]> {
+  return parse(bytes, false);
+}
+
+/** A shard's pack, as the IndexedDB cache holds it. Rejects if it will not open. */
+export function parsePack(pack: Uint8Array): Promise<GameRecord[]> {
+  return parse(pack, true);
 }

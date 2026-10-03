@@ -80,12 +80,39 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
   that is PUBLIC in this repository. It is obfuscation and compression (~15%
   of the JSONL), never secrecy - do not call it protection, and never commit a
   pack: Git stays the readable source. A pack unpacks to the exact committed
-  bytes, so the sha256 contract above is checked on the UNPACKED bytes and
-  `games-loader.ts` did not change. The plain `/api/data/data/*.jsonl` paths
-  must keep serving released apps (1.4.5 unversioned, 2.0.x `?v=`), which
-  cannot unpack. Packs end in `.bin` so the zone's `.jsonl` Compression Rule
-  never recompresses them. No WASM: installed apps' CSP has no
-  `'wasm-unsafe-eval'`.
+  bytes, so the sha256 contract above is checked on the UNPACKED bytes; the
+  pack itself is what the IndexedDB cache keeps (next bullet). The plain
+  `/api/data/data/*.jsonl` paths must keep serving released apps (1.4.5
+  unversioned, 2.0.x `?v=`), which cannot unpack. Packs end in `.bin` so the
+  zone's `.jsonl` Compression Rule never recompresses them. No WASM: installed
+  apps' CSP has no `'wasm-unsafe-eval'`.
+
+- **The IndexedDB cache holds PACKS, never records or plain JSONL**
+  (`web/src/lib/cache.ts`). Database `f2p-catalogue`: `f2p:index` (the
+  DataIndex, readable - public metadata, so the generation compares without
+  opening anything) and `f2p:records` (`Uint8Array[]`, each shard's pack
+  exactly as `fetchShard` received it, in `index.files` order). Rules:
+  - A generation is stored only if EVERY shard arrived packed; the browser
+    never packs (compressing ~9.5 MB is main-thread work on a phone). A
+    stored pack must carry its index entry's sha256 prefix as IV, or the
+    cache is a miss.
+  - The two key names are the ones `docs/PRIVACY_POLICY.md` lists. Renaming
+    either is a policy edit, which reopens the consent gate. The new DATABASE
+    is what keeps a tab still running app <= 2.1.x (which reads idb-keyval's
+    default `keyval-store`) from handing Uint8Arrays to the page.
+  - The legacy copy in `keyval-store` (parsed records) is read like any
+    verified generation until the next one is written, which `delMany`s it -
+    never `deleteDatabase`, which an old tab's open connection blocks. Look
+    with `indexedDB.databases()` before touching it: opening a database
+    creates it.
+  - Records are decoded in the parser worker (`parsePack`), and only when the
+    cached generation is actually used. A pack that will not open makes the
+    whole generation a miss. The worker must never reply with an empty
+    `error`: Chromium's failed AES-GCM decrypt is a DOMException with an
+    EMPTY message, and `if (error)` once resolved a damaged pack as a shard
+    with no records (`worker-pool.test.ts`, `jsonl-parser.test.ts`).
+  - Obfuscation and compression (~1.4 MB stored instead of ~9.5 MB of
+    objects), never protection - the key is public, like the wire packs'.
 
 - **`index.json` is rebuilt from scratch on every save.** `_save_index()` in
   `scripts/core/data_store.py` writes it from a fixed set of keys, so any key

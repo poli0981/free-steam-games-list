@@ -41,6 +41,23 @@ export function packsSupported(): boolean {
   return typeof DecompressionStream === "function" && typeof crypto !== "undefined" && Boolean(crypto.subtle);
 }
 
+function isPack(bytes: Uint8Array): boolean {
+  return bytes.length >= HEADER_BYTES + TAG_BYTES && PACK_MAGIC.every((b, i) => bytes[i] === b);
+}
+
+/**
+ * A format-1 pack's IV as lowercase hex, or null when `packed` is not one.
+ * The IV is the first 12 bytes of the plain bytes' SHA-256, so it names the
+ * shard a pack holds without opening it: lib/cache.ts checks every stored pack
+ * against its index entry's sha256 this way.
+ */
+export function packIvHex(packed: Uint8Array): string | null {
+  if (!isPack(packed)) return null;
+  let hex = "";
+  for (const b of packed.subarray(PACK_MAGIC.length, HEADER_BYTES)) hex += b.toString(16).padStart(2, "0");
+  return hex;
+}
+
 async function key(usage: "encrypt" | "decrypt"): Promise<CryptoKey> {
   return crypto.subtle.importKey("raw", PACK_KEY, "AES-GCM", false, [usage]);
 }
@@ -78,9 +95,7 @@ export async function packBytes(plain: Uint8Array, digest: Uint8Array): Promise<
 /** Unpack to the original bytes. Throws on anything that is not an intact pack. */
 export async function unpackBytes(packed: ArrayBuffer | Uint8Array): Promise<Uint8Array<ArrayBuffer>> {
   const bytes = packed instanceof Uint8Array ? packed : new Uint8Array(packed);
-  if (bytes.length < HEADER_BYTES + TAG_BYTES || PACK_MAGIC.some((b, i) => bytes[i] !== b)) {
-    throw new Error("data-pack: not a format-1 pack");
-  }
+  if (!isPack(bytes)) throw new Error("data-pack: not a format-1 pack");
   const iv = bytes.slice(PACK_MAGIC.length, HEADER_BYTES);
   const compressed = new Uint8Array(
     await crypto.subtle.decrypt(
