@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { acquireLease, readLease, readState, releaseLease, writeState } from "./locks";
+import { acquireLease, bumpCounter, readLease, readState, releaseLease, writeState } from "./locks";
 import { pruneAdminHistory, retentionDays, isPruneTick } from "./prune";
 import { makeEnv } from "../testing/fixtures";
 
@@ -38,6 +38,29 @@ describe("leases", () => {
     await writeState(DB, "k", "v1", T0);
     await writeState(DB, "k", "v2", later(1));
     expect(await readState(DB, "k")).toBe("v2");
+  });
+});
+
+describe("counters", () => {
+  it("bumpCounter starts at the increment and adds atomically", async () => {
+    const { DB } = makeEnv();
+    expect(await bumpCounter(DB, "c", 2, T0)).toBe(2);
+    expect(await bumpCounter(DB, "c", 2, later(1))).toBe(4);
+    expect(await bumpCounter(DB, "c", 1, later(2))).toBe(5);
+    // Readable as ordinary state, which is how img-mint reads its budget.
+    expect(await readState(DB, "c")).toBe("5");
+  });
+
+  it("continues from a value written as state", async () => {
+    const { DB } = makeEnv();
+    await writeState(DB, "c", "20000", T0);
+    expect(await bumpCounter(DB, "c", 2, later(1))).toBe(20002);
+  });
+
+  it("returns null, not a number, when the table is missing", async () => {
+    const env = makeEnv();
+    env.sqlite.db.exec("DROP TABLE admin_state;");
+    expect(await bumpCounter(env.DB, "c", 1, T0)).toBeNull();
   });
 });
 

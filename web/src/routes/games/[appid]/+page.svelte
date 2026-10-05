@@ -5,7 +5,8 @@
   import { page } from "$app/state";
   import { games, removedGames } from "$lib/games.svelte";
   import { i18n } from "$lib/i18n.svelte";
-  import { preferWebp, socialImagePath } from "$lib/image";
+  import { heroFallback, heroImage, socialImagePath } from "$lib/image";
+  import { imgFallback } from "$lib/img-fallback";
   import { steamWebUrl, steamProtocolUrl } from "$lib/steam-link";
   import { isAndroid } from "$lib/external-open";
   import {
@@ -96,11 +97,10 @@
 
   const rows = $derived.by((): Row[] => {
     if (!view) return [];
-    const players = live?.current_players
-      ? live.peak_today
-        ? `${formatNumber(live.current_players)} ${t("detail.playersPeak", { peak: formatNumber(live.peak_today) })}`
-        : formatNumber(live.current_players)
-      : undefined;
+    const players = live?.current_players ? formatNumber(live.current_players) : undefined;
+    // Not peak_today, which the page used to show as "(peak N)": that is only the
+    // highest of our sparse samples since the last refetch, never reset daily.
+    const peak = live?.all_time_peak && live.all_time_peak !== "N/A" ? formatNumber(live.all_time_peak) : undefined;
     const all: Row[] = [
       { label: "detail.labelGenre", text: view.genre },
       { label: "detail.labelType", text: view.type_game },
@@ -109,6 +109,7 @@
       { label: "detail.labelReleased", text: view.release_date },
       { label: "detail.labelPlatforms", text: view.platforms.join(", ") },
       { label: "detail.labelPlayers", text: players },
+      { label: "detail.labelAllTimePeak", text: peak },
       { label: "detail.labelAntiCheat", text: view.anti_cheat },
       { label: "detail.labelMetacritic", text: live?.metacritic },
       { label: "detail.labelDrm", text: view.drm_notes },
@@ -196,18 +197,23 @@
 {:else if view}
   <article class="max-w-3xl">
     {#if view.header_image}
+      <!-- The page's largest image (its LCP): fetched first, never lazily.
+           460x215 is every Steam header's real size. -->
       <img
-        src={preferWebp(view.header_image, 920)}
+        src={heroImage(view.header_image)}
+        {@attach imgFallback(heroFallback(view.header_image))}
         alt=""
         referrerpolicy="no-referrer"
+        fetchpriority="high"
+        decoding="async"
         class="mb-5 w-full rounded-lg border object-cover"
-        width="920"
-        height="430"
+        width="460"
+        height="215"
       />
     {/if}
 
     <div class="flex flex-wrap items-start gap-3">
-      <h1 class="min-w-0 flex-1 text-2xl font-semibold tracking-tight sm:text-3xl">
+      <h1 class="min-w-0 flex-1 text-2xl font-semibold tracking-tight wrap-break-word sm:text-3xl">
         {#if view.is_dead}<span title={t("games.deadTitle")}>💀</span>{/if}
         {view.name}
       </h1>
@@ -237,7 +243,7 @@
     </div>
 
     {#if view.description}
-      <p class="mt-4 text-sm leading-relaxed text-muted-foreground">{view.description}</p>
+      <p class="mt-4 text-sm leading-relaxed text-muted-foreground wrap-break-word">{view.description}</p>
       <p class="mt-1 text-xs text-muted-foreground">{t("detail.descriptionSource")}</p>
     {/if}
 
@@ -254,7 +260,7 @@
       {/if}
     </div>
 
-    <dl class="mt-6 grid gap-x-6 gap-y-3 rounded-lg border bg-card p-5 sm:grid-cols-2">
+    <dl class="mt-6 grid grid-cols-1 gap-x-6 gap-y-3 rounded-lg border bg-card p-5 sm:grid-cols-2">
       {#each rows as row (row.label)}
         <div class="min-w-0">
           <dt class="text-xs font-medium uppercase tracking-wide text-muted-foreground">
@@ -295,7 +301,7 @@
     {#if view.notes}
       <section class="mt-5 rounded-lg border border-warning/30 bg-warning/5 p-4">
         <h2 class="mb-1 text-sm font-semibold">{t("detail.labelNotes")}</h2>
-        <p class="whitespace-pre-wrap text-sm text-muted-foreground">{view.notes}</p>
+        <p class="whitespace-pre-wrap text-sm text-muted-foreground wrap-break-word">{view.notes}</p>
       </section>
     {/if}
   </article>

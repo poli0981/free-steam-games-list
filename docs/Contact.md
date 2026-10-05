@@ -15,15 +15,24 @@ That's me in a nutshell – unremarkable, but building this repo to spite the in
 
 ### How to reach me
 
-Two doors, and that is deliberate — the old list had nine, half of which I
-never checked.
+Still a short list, and that is deliberate — the old one had nine channels,
+half of which I never checked.
 
-- **Email**: `contact@poli0981.dev`
-  → The real one. I read it once a week when I remember it exists. If it’s not
-  a job offer with ≥5000$ salary, it goes straight to archive.
-  → Also the address for anything private, legal, or security-shaped — though for
-  security please use GitHub’s private vulnerability reporting first, see
-  [SECURITY.md](../SECURITY.md).
+- **Website**: <https://poli0981.dev/>
+  → Where I keep everything that is not this repo.
+
+- **Email** — one inbox behind all four, so pick by topic, not by urgency:
+
+  | Address | For |
+  |---|---|
+  | `contact@poli0981.dev` | Anything private. The default when nothing below fits. |
+  | `security@poli0981.dev` | A vulnerability — but GitHub’s private vulnerability reporting comes first, see [SECURITY.md](../SECURITY.md). |
+  | `privacy@poli0981.dev` | Questions about the [Privacy Policy](./PRIVACY_POLICY.md). |
+  | `copyright@poli0981.dev` | Copyright, DMCA or takedown notices from a rights holder — see [LICENSE-DATA](../LICENSE-DATA). |
+
+  → I read it once a week when I remember it exists. If it’s not a job offer
+  with ≥5000$ salary, it goes straight to archive — except the security,
+  privacy and copyright ones, which actually get read.
 
 - **Everything else**: <https://poli0981.dev/links/>
   → Chat, socials, video, donations — whatever still exists on the day you

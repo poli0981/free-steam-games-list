@@ -79,7 +79,9 @@
   <meta name="robots" content="noindex" />
 </svelte:head>
 
-<div class={cn("flex items-center justify-center p-4", inline ? "min-h-[60vh]" : "min-h-dvh")}>
+<!-- Standalone (the /error pages) it has no shell around it, so it clears the
+     Android system bars itself; inline it sits inside the padded shell. -->
+<div class={cn("flex items-center justify-center", inline ? "min-h-[60vh] p-4" : "min-h-dvh p-safe-or-4")}>
   <div class="w-full max-w-md text-center">
     <span
       class={cn(

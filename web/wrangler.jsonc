@@ -73,6 +73,27 @@
     }
   ],
 
+  // AVIF copies of Steam header art, minted by the cron (worker/lib/img-mint.ts)
+  // and read by /img/* (worker/routes/img.ts). Created 2026-10-02 with
+  // `wrangler r2 bucket create f2p-media`; it must exist before a deploy that
+  // binds it, or the deploy fails (code 10085) and the old Worker stays live.
+  // No public access: no r2.dev URL, no custom domain - the Worker is the only
+  // reader. An R2 bucket has no id; the name is the whole binding.
+  "r2_buckets": [
+    {
+      "binding": "MEDIA",
+      "bucket_name": "f2p-media"
+    }
+  ],
+
+  // Cloudflare Images, used only from the cron to encode AVIF. It takes the
+  // bytes directly, so the zone's Transformations "Sources" list is not
+  // involved - keep that list empty ("This zone only"): adding Steam's hosts
+  // would let anyone spend this account's quota through /cdn-cgi/image/.
+  "images": {
+    "binding": "IMAGES"
+  },
+
   // Reconcile approvals against the published dataset. Every 15 minutes rather
   // than hourly because the gap between approving and seeing it land is the
   // one moment a reviewer is actually watching; a tick with nothing approved
@@ -84,11 +105,22 @@
   "vars": {
     "SITE_ORIGIN": "https://free-steam-games.win",
 
-    // Image transformations bill separately from Workers Paid (5,000 unique per
-    // month free, then a distinct Images subscription) and Cloudflare has no
-    // spend cap. Ship OFF, read real /img/* volume from Workers Logs, then
-    // decide. Passthrough still gets edge caching.
-    "IMG_TRANSFORM": "false",
+    // Minting AVIF into R2 (worker/lib/img-mint.ts, from the cron). Only the
+    // cron transforms; /img/* only reads, so this is the whole kill switch.
+    // Change it HERE, by a PR: there is no keep_vars, so a dashboard value
+    // lasts only until the next deploy.
+    //
+    // Images Paid: 5,000 unique transformations a month included, then $0.50
+    // per 1,000, and Cloudflare has NO spend cap - the monthly cap below is
+    // the only one. The budget agreed for this is $15/month; 20,000 is at most
+    // $7.50, and the whole catalogue (~5,600 sources x 2 widths) is ~11k once.
+    "IMG_TRANSFORM": "true",
+    "IMG_TRANSFORM_MONTHLY_CAP": "20000",
+    // Sources minted per 15-minute tick (each is 2 transformations and ~6
+    // subrequests). The first production batch of 10 was inspected on
+    // 2026-10-02 (it is why `d` went from q60 to q80); 40 finishes the
+    // backfill in about a day and a half.
+    "IMG_MINT_PER_TICK": "40",
 
     // Days audit_log and commit_jobs rows are kept (worker/lib/prune.ts, run
     // once a day from the cron). docs/PRIVACY_POLICY.md states this number -

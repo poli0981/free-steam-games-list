@@ -90,7 +90,9 @@
     return {
       grid: gridBox({ bottom: 30 }),
       tooltip: { trigger: "axis", axisPointer: { type: "shadow" } },
-      legend: { bottom: 0, textStyle: { color: theme.mutedText } },
+      // scroll: a plain legend wraps to a second line on a phone and lands on
+      // the axis labels; this one stays on one line and pages instead.
+      legend: { type: "scroll", bottom: 0, textStyle: { color: theme.mutedText } },
       xAxis: {
         type: "category",
         data: timeline.labels,
@@ -127,7 +129,7 @@
     {t("charts.kpi.removed")}
   </p>
 
-  <div class="grid gap-4 lg:grid-cols-2">
+  <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
     <section class="rounded-lg border bg-card p-4">
       <h2 class="mb-3 text-base font-semibold">{t("charts.delisted.reasonTitle")}</h2>
       <EChart option={reasonOption} height={360} label={t("charts.delisted.reasonTitle")} />

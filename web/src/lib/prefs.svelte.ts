@@ -1,6 +1,6 @@
 /**
- * State that outlives a page load: whether the introduction has been seen, and
- * the theme. Legal consent lives in consent.svelte.ts.
+ * State that outlives a page load: whether the introduction has been seen, the
+ * theme and the scrollbar choice. Legal consent lives in consent.svelte.ts.
  *
  * All of it is localStorage-backed with no backend and no cookie — the same
  * pattern as `f2p:lang`. An incognito tab gets a fresh storage partition, so
@@ -132,3 +132,59 @@ class ThemePref {
 }
 
 export const theme = new ThemePref();
+
+/* ──────────────────────────── scrollbars ─────────────────────────── */
+
+const SCROLLBARS_KEY = "f2p:scrollbars";
+
+/**
+ * "visible" - themed bars everywhere (the default);
+ * "panels"  - hidden on .scrollbar-panel (tables, card lists, sidebar,
+ *             command palette, wide tables);
+ * "all"     - hidden there and on .scrollbar-page, the main content area.
+ * Hidden never means unscrollable. styles/theme.css holds the rules; this
+ * only sets <html data-scrollbars>. docs/PRIVACY_POLICY.md lists the key.
+ */
+export type ScrollbarMode = "visible" | "panels" | "all";
+
+export const SCROLLBAR_MODES: readonly ScrollbarMode[] = ["visible", "panels", "all"];
+
+/** A stored value back to a mode; anything unknown is the default. */
+export function scrollbarMode(stored: string | null | undefined): ScrollbarMode {
+  return stored === "panels" || stored === "all" ? stored : "visible";
+}
+
+class ScrollbarPref {
+  value = $state<ScrollbarMode>("visible");
+
+  hydrate(): void {
+    let stored: string | null = null;
+    try {
+      stored = localStorage.getItem(SCROLLBARS_KEY);
+    } catch {
+      /* blocked */
+    }
+    this.value = scrollbarMode(stored);
+    this.apply();
+  }
+
+  set(next: ScrollbarMode): void {
+    this.value = next;
+    try {
+      // The default is not stored: a reader who never changes it leaves no key.
+      if (next === "visible") localStorage.removeItem(SCROLLBARS_KEY);
+      else localStorage.setItem(SCROLLBARS_KEY, next);
+    } catch {
+      /* blocked */
+    }
+    this.apply();
+  }
+
+  apply(): void {
+    const root = document.documentElement;
+    if (this.value === "visible") delete root.dataset.scrollbars;
+    else root.dataset.scrollbars = this.value;
+  }
+}
+
+export const scrollbars = new ScrollbarPref();

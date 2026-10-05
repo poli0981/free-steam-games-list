@@ -33,6 +33,10 @@
           rotationRange: [0, 0],
           gridSize: 8,
           drawOutOfBound: false,
+          // A word too big for the box is otherwise SKIPPED, and words are
+          // placed largest first - so on a phone the most common tags were the
+          // ones missing. This shrinks them to fit instead.
+          shrinkToFit: true,
           textStyle: {
             // Deterministic, not Math.random(). The React version picked a
             // random colour per word on every render, so the same tag changed

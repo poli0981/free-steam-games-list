@@ -165,13 +165,27 @@ export default defineConfig(({ mode }) => ({
             // different URL and CacheFirst is safe. Status 200 only: caching an
             // opaque 0-status placeholder for 30 days is how a transient upstream
             // failure becomes permanent.
+            //
+            // And X-Img-Final only. /img/s and /img/d answer an AVIF-capable
+            // browser with Steam's JPEG until the cron has minted the AVIF
+            // (worker/routes/img.ts); that stand-in must not be kept, and
+            // CacheFirst ignores Cache-Control. The name stays f2p-img-v1:
+            // docs/PRIVACY_POLICY.md lists it, and editing that document
+            // reopens the consent gate for everyone.
+            //
+            // Same-origin only. The media host's AVIF (lib/image.ts) has the
+            // same /img/ path prefix, but it is a cross-origin no-cors load:
+            // an opaque response this rule can never cache, so matching it
+            // only put the worker in front of every image. Those objects carry
+            // a year of immutable Cache-Control; the HTTP cache keeps them.
             {
-              urlPattern: ({ url }: { url: URL }) => url.pathname.startsWith("/img/"),
+              urlPattern: ({ url, sameOrigin }: { url: URL; sameOrigin: boolean }) =>
+                sameOrigin && url.pathname.startsWith("/img/"),
               handler: "CacheFirst",
               options: {
                 cacheName: "f2p-img-v1",
                 expiration: { maxEntries: 800, maxAgeSeconds: 60 * 60 * 24 * 30 },
-                cacheableResponse: { statuses: [200] },
+                cacheableResponse: { statuses: [200], headers: { "X-Img-Final": "1" } },
               },
             },
           ],

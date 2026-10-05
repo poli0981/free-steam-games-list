@@ -1,13 +1,15 @@
 /// <reference lib="webworker" />
 /**
- * Web Worker: parse JSONL text off the main thread.
- * Receives { id, text }, returns { id, records } or { id, error }.
+ * Web Worker: turn shard bytes into records off the main thread.
+ * Receives { id, bytes, packed }, returns { id, records } or { id, error }.
+ * `packed` bytes are a pack from the IndexedDB cache and are opened first.
  */
-import { parseJsonl } from "../lib/fetcher";
+import { decodeShard } from "../lib/fetcher";
 
 interface InMessage {
   id: number;
-  text: string;
+  bytes: ArrayBuffer | Uint8Array;
+  packed: boolean;
 }
 
 /**
@@ -20,33 +22,37 @@ interface InMessage {
  * rejected promise instead of an unhandled throw inside the worker.
  */
 function isInMessage(d: unknown): d is InMessage {
+  if (typeof d !== "object" || d === null) return false;
+  const m = d as InMessage;
   return (
-    typeof d === "object" &&
-    d !== null &&
-    typeof (d as InMessage).id === "number" &&
-    typeof (d as InMessage).text === "string"
+    typeof m.id === "number" &&
+    (m.bytes instanceof ArrayBuffer || m.bytes instanceof Uint8Array) &&
+    typeof m.packed === "boolean"
   );
 }
 
-self.onmessage = (e: MessageEvent<unknown>) => {
+self.onmessage = async (e: MessageEvent<unknown>) => {
   if (!isInMessage(e.data)) {
     const id = (e.data as { id?: unknown } | null)?.id;
     (self as unknown as Worker).postMessage({
       id: typeof id === "number" ? id : -1,
-      error: "jsonl-parser: malformed message (expected { id: number, text: string })",
+      error: "jsonl-parser: malformed message (expected { id: number, bytes: ArrayBuffer | Uint8Array, packed: boolean })",
     });
     return;
   }
-  const { id, text } = e.data;
+  const { id, bytes, packed } = e.data;
   try {
-    const records = parseJsonl(text);
+    const records = await decodeShard(bytes, packed);
     (self as unknown as Worker).postMessage({ id, records });
   } catch (error) {
-    (self as unknown as Worker).postMessage({
-      id,
-      error: error instanceof Error ? error.message : String(error),
-    });
+    (self as unknown as Worker).postMessage({ id, error: describe(error) });
   }
 };
+
+/** Never empty: a failed decrypt is a DOMException with an empty message in Chromium. */
+function describe(error: unknown): string {
+  if (error instanceof Error) return error.message || error.name || "Error";
+  return String(error) || "unknown error";
+}
 
 export {};

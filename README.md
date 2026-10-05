@@ -148,11 +148,15 @@ scripts/
 │   ├── overrides.py        # Human corrections re-applied on every write
 │   ├── fetcher.py          # Batch processor, apply_details/reviews/players/scraped
 │   ├── scraper.py          # Store page HTML parser (languages, DLC, tags)
+│   ├── steamcharts.py      # SteamCharts all-time peak reader (polite, stops on refusal)
+│   ├── peaks.py            # all_time_peak: only ever raised
+│   ├── rotation.py         # crc32 daily slices shared by the refresh jobs
 │   └── health_checker.py   # Game status detection with cached API data
 ├── discover_new.py         # Propose new games into the /admin review queue
 ├── ingest_new.py           # Add queued games (health check + extension merge)
 ├── update_data.py          # Daily: fill in incomplete records
 ├── refresh_store_data.py   # Daily rotation: tags/languages weekly, store details monthly
+├── refresh_peaks.py        # Daily rotation: all-time peak from SteamCharts, monthly per game
 ├── update_reviews.py       # Reviews-only (every 2 days)
 ├── mark_dead_games.py      # Flag online games with no players
 ├── check_dead_links.py     # HEAD-request 404/410 scanner
@@ -176,6 +180,7 @@ scripts/
 | Top Offline           | 1st + 15th of month 05:00 UTC    | Leaderboard for single-player F2P concurrents             |
 | Update Reviews        | Every 2 days 06:00 UTC           | Reviews-only refresh                                      |
 | Refresh Store Data    | Daily 16:00 UTC                  | Rotating re-fetch: tags, languages, DLC flag weekly; name, image, description, developer/publisher, release date, platforms, Metacritic, DRM monthly |
+| Refresh All-Time Peaks | Daily 19:30 UTC                 | `all_time_peak` from SteamCharts, every game once a month, plus our own samples; manual run with `backfill` asks about every game |
 | Check Dead Links      | Every 5 days 04:00 UTC           | HEAD-request 404/410 scanner                              |
 | Purge Unhealthy       | Weekly Mon 05:00 UTC             | Full health scan + removal                                |
 | Mark Dead Games       | Mon + Thu 04:30 UTC              | Online + >1y + 0 players ≥14d → `is_dead=true` + 💀 note |

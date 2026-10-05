@@ -6,7 +6,7 @@
   import { page } from "$app/state";
   import { afterNavigate, goto } from "$app/navigation";
   import { i18n } from "$lib/i18n.svelte";
-  import { theme, welcome } from "$lib/prefs.svelte";
+  import { theme, welcome, scrollbars } from "$lib/prefs.svelte";
   import { consent } from "$lib/consent.svelte";
   import { humanCheck } from "$lib/human-check-state.svelte";
   import { appReady } from "$lib/app-ready";
@@ -43,6 +43,7 @@
   let menuOpen = $state(false);
   // Set on mount: isTauri() reads a runtime global the prerenderer does not have.
   let tauriDesktop = $state(false);
+  let androidApp = $state(false);
   // Module-level would leak across HMR reloads in dev; per-instance is enough
   // because the layout mounts once.
   let updateChecked = false;
@@ -82,6 +83,7 @@
     // dashboard, so /games/730 hydrates as "/" unless this corrects it.
     recoverFallbackRoute(page.route.id);
     theme.hydrate();
+    scrollbars.hydrate();
     consent.hydrate();
     humanCheck.hydrate();
     welcome.hydrate();
@@ -109,6 +111,7 @@
     // Desktop only: the updater plugin is not compiled for Android, which
     // checks for a newer APK below instead.
     tauriDesktop = isTauri() && !isAndroid();
+    androidApp = isTauri() && isAndroid();
 
     // Android has no native Tauri updater (the plugin is desktop-only), so the
     // APK checks GitHub Releases itself, once per session. Best-effort: a
@@ -210,7 +213,11 @@
 {:else}
   <a href="#main" class="skip-link">{i18n.t("common.skipToContent")}</a>
 
-  <div class="flex h-dvh overflow-hidden">
+  <!-- The safe-area padding keeps the shell out from under the Android status
+       bar (and a landscape cutout); <main> takes the bottom inset itself, so
+       the page scrolls behind the navigation bar but its last line clears it.
+       See the safe-area utilities in styles/theme.css. -->
+  <div class="flex h-dvh overflow-hidden pt-safe pl-safe pr-safe">
     <aside class="hidden w-60 shrink-0 border-r bg-card/40 lg:block">
       <Sidebar />
     </aside>
@@ -222,7 +229,7 @@
       <Dialog.Portal>
         <Dialog.Overlay class="fixed inset-0 z-40 bg-black/60 lg:hidden" />
         <Dialog.Content
-          class="fixed inset-y-0 left-0 z-50 w-72 border-r bg-card shadow-xl outline-none lg:hidden"
+          class="fixed inset-y-0 left-0 z-50 w-72 border-r bg-card pt-safe pb-safe pl-safe shadow-xl outline-none lg:hidden"
         >
           <Dialog.Title class="sr-only">{i18n.t("nav.menu")}</Dialog.Title>
           <Sidebar onNavigate={() => (menuOpen = false)} />
@@ -235,8 +242,7 @@
       <main
         bind:this={main}
         id="main"
-        class="flex-1 overflow-y-auto scrollbar-thin"
-        style="padding-bottom: env(safe-area-inset-bottom)"
+        class="flex-1 overflow-y-auto pb-safe scrollbar-slim scrollbar-page"
       >
         <div class="container py-6">
           {#if unmatched}
@@ -263,9 +269,27 @@
      The same kind of overlay, never open at the same time as the one above. -->
 <HumanCheck />
 
+<!-- Android app only: what shows through the transparent status bar, above
+     every overlay, so the clock stays readable on whatever is open. Why it
+     follows the system theme is in styles/theme.css (status-bar-strip). -->
+{#if androidApp}<div class="status-bar-strip" aria-hidden="true"></div>{/if}
+
 <!-- theme, not a hardcoded "dark": main.tsx pinned the Toaster to dark while
      the rest of the app had a working light mode, so every toast was a dark
      card on a white page. -->
-<Toaster theme={theme.resolved} position="bottom-right" richColors closeButton />
+<!-- The offsets add the bottom inset: in the Android app the never-expiring
+     update toast otherwise sat on the gesture bar. svelte-sonner's defaults are
+     32px, and 16px below 600px. -->
+<Toaster
+  theme={theme.resolved}
+  position="bottom-right"
+  richColors
+  closeButton
+  offset={{
+    bottom: "calc(32px + env(safe-area-inset-bottom, 0px))",
+    right: "calc(32px + env(safe-area-inset-right, 0px))",
+  }}
+  mobileOffset={{ bottom: "calc(16px + env(safe-area-inset-bottom, 0px))" }}
+/>
 <PwaIndicator />
 {#if tauriDesktop}<DesktopUpdateDialog />{/if}

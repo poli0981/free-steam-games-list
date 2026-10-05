@@ -1,11 +1,14 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
     <style name="Theme.f2p_tracker" parent="Theme.MaterialComponents.DayNight.NoActionBar">
-        <!-- Edge-to-edge (targetSdk 36): keep the system bars transparent and use
-             light icons to match the app's dark-by-default chrome. The web UI
-             paints its own background behind them via the safe-area insets in
-             Layout. (If the user picks the light in-app theme the status-bar
-             icons sit on a light strip — a minor, accepted trade-off.) -->
+        <!-- Edge-to-edge (targetSdk 36): transparent system bars. These items are
+             only the starting point: MainActivity calls enableEdgeToEdge(), whose
+             SystemBarStyle.auto sets the bar and icon colours from the SYSTEM dark
+             mode at runtime, so the windowLight* values below are overridden. The
+             web UI keeps its content out of both bars with the safe-area insets
+             (web/src/routes/+layout.svelte, utilities in web/src/styles/theme.css)
+             and paints a strip behind the status bar that follows the system
+             theme as well, so the icons read whichever theme the app is in. -->
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:navigationBarColor">@android:color/transparent</item>
         <item name="android:windowLightStatusBar">false</item>

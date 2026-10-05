@@ -23,6 +23,7 @@ import { ADMIN_API_PREFIX } from "../shared/admin-routes";
 // before `wrangler deploy`, and typecheck runs it before tsc.
 import { ADMIN_BUNDLE } from "./generated/admin-bundle";
 import { reconcileApproved } from "./lib/reconcile";
+import { mintImages } from "./lib/img-mint";
 import { defaultAdminDeps } from "./lib/deps";
 import { isPruneTick, pruneAdminHistory } from "./lib/prune";
 import { isBlockedCountry } from "./lib/geo";
@@ -90,6 +91,23 @@ export default {
         })
         .catch((err) => {
           console.error("reconcile failed", err instanceof Error ? err.message : String(err));
+        }),
+    );
+
+    // AVIF copies of Steam art into R2 (lib/img-mint.ts). The ONLY place a
+    // billed transformation can happen: /img/* never transforms. Independent
+    // of reconcile, so either failing leaves the other running.
+    ctx.waitUntil(
+      mintImages(env, defaultAdminDeps)
+        .then((out) => {
+          if (out.minted || out.failed) {
+            console.log("img-mint", out);
+          } else if (out.skipped && !["disabled", "up to date", "another run in progress"].includes(out.skipped)) {
+            console.warn("img-mint skipped", out);
+          }
+        })
+        .catch((err) => {
+          console.error("img-mint failed", err instanceof Error ? err.message : String(err));
         }),
     );
   },

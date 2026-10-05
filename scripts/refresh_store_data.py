@@ -48,9 +48,7 @@ Usage (from the repository root):
 import argparse
 import os
 import sys
-import zlib
 from collections import Counter
-from datetime import date, datetime, timezone
 from typing import Optional
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -59,6 +57,8 @@ from core.data_store import (
     extract_appid, load_main, migrate_record, now_iso, save_main, truncate_description,
 )
 from core.fetcher import process_batch
+# The rotation (crc32 slices) is shared with refresh_peaks.py.
+from core.rotation import day_number, due
 from core.scraper import scrape_store_page
 from core.steam_client import get_client
 
@@ -70,25 +70,6 @@ DETAILS_FIELDS = (
     "name", "header_image", "description", "developer", "publisher",
     "release_date", "platforms", "metacritic", "drm_notes",
 )
-
-
-# ──────────── Rotation ────────────
-
-def slice_of(appid: str, cycle: int) -> int:
-    """The day of the cycle on which this game is refreshed. Stable forever:
-    crc32 is fixed, so a game keeps its weekday and its day of the month."""
-    return zlib.crc32(appid.encode("ascii")) % cycle
-
-
-def day_number(today: Optional[date] = None) -> int:
-    """Days since 1970-01-01, UTC. Consecutive runs walk through the slices."""
-    today = today or datetime.now(timezone.utc).date()
-    return (today - date(1970, 1, 1)).days
-
-
-def due(game: dict, cycle: int, day: int) -> bool:
-    appid = extract_appid(game.get("link", ""))
-    return bool(appid) and slice_of(appid, cycle) == day % cycle
 
 
 # ──────────── Applying fresh values ────────────

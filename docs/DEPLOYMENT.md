@@ -71,9 +71,12 @@ counts and reviews always come from `/api/data/*` in the browser.
 That snapshot is therefore **as fresh as the last deploy**, and it should stay
 that way:
 
-- **Confirm the Workers Builds watch paths exclude `data/**`** (dashboard →
-  Worker → Settings → Build). If they included it, every bot data commit — several a
-  day — would rebuild and re-upload ~3,650 pages.
+- **The Workers Builds watch paths must exclude `data/**`** (dashboard →
+  Worker → Settings → Build → Build watch paths; the configuration is under
+  "Which commits deploy" below). Every bot data commit that deploys - several
+  a day - rebuilds and re-uploads all ~5,700 files (measured on 2026-10-02: a
+  4-file data commit re-uploaded 5,681 assets, because `kit.version.name` is a
+  timestamp) and gives every open tab a "Reload" prompt.
 - A game added after the last deploy has no file. The host answers with the
   SPA fallback and `lib/fallback-route.ts` renders it client-side, so it works;
   it simply is not indexable until the next deploy.
@@ -81,6 +84,40 @@ that way:
   catalogue loads, the page shows "Game not found" with `noindex`.
 - `F2P_SKIP_GAME_PRERENDER=1 npm run build` skips them for quick local builds.
   The Tauri builds never prerender them.
+
+### Which commits deploy (build watch paths)
+
+Since 2026-10-02 a commit that touches only documentation does not deploy -
+but **data commits still did**: `3f9e8cff` ("Refresh store data
+[2026-10-02]", four files under `data/`) deployed a new Worker version
+(`712b4ab8`) at 16:54Z. The configuration below stops both. Skipping
+everything outside `web/` is right, with ONE trap: **the web build reads the
+legal documents.** `web/build/legal-versions.ts`
+hashes them for the consent gate and `web/src/lib/server/markdown.ts`
+renders them at `/legal/*`:
+
+`LICENSE`, `LICENSE-DATA`, `docs/DISCLAIMER.md`, `docs/ToS.md`,
+`docs/EULA.md`, `docs/PRIVACY_POLICY.md`, `docs/ACKNOWLEDGEMENTs.md`,
+`docs/Contact.md`
+
+A commit that changes only those - the ToS edit Phase B needs, for one - would
+not reach the site, and the consent gate would keep showing the old text and
+hash until the next code deploy. Either keep those files triggering a build,
+or redeploy by hand after merging such a change. Excludes are applied BEFORE
+includes, so an exclude like `docs/*` swallows them whatever the include list
+says. A configuration that does both jobs:
+
+- Include: `web/*`, `LICENSE`, `LICENSE-DATA`, `docs/DISCLAIMER.md`,
+  `docs/ToS.md`, `docs/EULA.md`, `docs/PRIVACY_POLICY.md`,
+  `docs/ACKNOWLEDGEMENTs.md`, `docs/Contact.md`
+- Exclude: `web/src-tauri/*`, `web/README.md`
+
+Everything not included - `data/**`, `scripts/**`, the other docs,
+`CHANGELOG.md`, `CLAUDE.md`, `README.md` - then never deploys. Check it once
+by merging a commit that touches only `docs/plan/` (no build) and one that
+touches only `docs/ToS.md` (a build), and by the next bot data commit: its
+check runs on GitHub must have no `Workers Builds: free-steam-games-list`.
+A check that IS there names a Version ID - that commit deployed.
 
 ## Verifying a deploy
 
@@ -95,6 +132,19 @@ curl -so /dev/null -w '%{http_code}\n' https://free-steam-games.win/api/ingest/p
 
 The image should come back around 3–4 KB: the Worker prefers Steam's small
 capsule asset over the full header.
+
+For the AVIF path, copy a game page's hero URL (`/img/d/<appid>/…?t=…`, the
+`?t=` matters - it is part of the R2 key) and request it with
+`-H "Accept: image/avif"`: once the cron has minted it the answer is
+`image/avif` with `X-Img-Final: 1`; before that it is the JPEG with
+`Cache-Control: public, max-age=86400` and no `X-Img-Final`.
+
+The website itself loads that art from the bucket's custom domain instead
+(`docs/SECURITY_SETUP.md` section 5): in a game page's Network panel the hero
+is `image/avif` from `https://media.free-steam-games.win/img/v2/460q80/…`,
+with `cf-cache-status: HIT` on a reload. A `/img/d/…` request right after it
+means the media load failed and the fallback ran - expected for a game the
+cron has not reached yet, a fault for one it has.
 
 **A stale service worker will show you the old app after a deploy.** The site
 is a PWA, so a browser that visited before the deploy serves its cached shell
@@ -166,9 +216,26 @@ For `wrangler dev`, put local values in `web/.dev.vars` (gitignored);
 
 ## Cost notes
 
-Image transformations are **off** (`IMG_TRANSFORM: "false"`), so `/img/*` is a
-cached passthrough. Cloudflare Images bills separately from Workers Paid —
-5,000 unique transformations a month are free, and there is **no spend cap**.
-Measure real `/img/*` volume in Workers Logs before enabling them, and land an
-appid allowlist first: without one the endpoint can be pointed at any of
-Steam's ~200,000 apps at your expense.
+**Images.** AVIF copies of the header art are minted by the cron into the R2
+bucket `f2p-media` (`web/worker/lib/img-mint.ts`); `/img/*` only reads them, so
+requests cannot spend anything - there is nothing for an allowlist to guard.
+Images Paid bills $0.50 per 1,000 unique transformations after 5,000 a month
+and has **no spend cap**; `IMG_TRANSFORM_MONTHLY_CAP` (a D1 counter) is the
+cap. See SECURITY_SETUP.md section 5.
+
+**The bucket must exist before any deploy that binds it.** `wrangler deploy`
+fails with code 10085 otherwise (the old Worker stays live). It was created
+with `npx wrangler r2 bucket create f2p-media`; keep its r2.dev URL disabled
+and attach no custom domain - the Worker is the only reader.
+
+**R2** stays inside the free tier: ~11k objects at ~3-18 KB, about 12 list
+calls per cron tick only while minting, and reads only on an edge-cache miss.
+
+**Shard compression is a dashboard setting.** Cloudflare does not compress
+`application/x-ndjson` on its own, so the plain shards went out uncompressed
+(~9 MiB per full load) until the Compression Rule `ndjson-shards` was added on
+2026-10-02: Rules → Compression Rules, `http.request.uri.path.extension eq
+"jsonl"` → Custom: Brotli, Gzip. It applies to Worker responses (data_001:
+1,497,828 → 225,826 bytes). The packed `/api/data/p1/*.bin` files are
+compressed before they are encrypted and are deliberately not `.jsonl`, so the
+rule never touches them.

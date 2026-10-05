@@ -1,42 +1,47 @@
 {
   "max_per_file": 800,
-  "total": 5149,
-  "last_updated": "2026-09-28T14:45:17Z",
+  "total": 5618,
+  "last_updated": "2026-10-05T05:04:38Z",
   "files": [
     {
       "name": "data_001.jsonl",
       "count": 800,
-      "sha256": "d5ed3d171a33445c1d69d973ac00cf2da74d083cc4069fdea2df906f149c3478"
+      "sha256": "42efaf7bc38d5e651b028e09b4119efedd51f1e73b14c233f288427c31e1d0c3"
     },
     {
       "name": "data_002.jsonl",
       "count": 800,
-      "sha256": "4f5c30517f48797189b525833d46fef4f23023e477af6140eeef8b5a5aa6241e"
+      "sha256": "87a90cf524f4d94909efd29d6bdc6ffef0bd19baed8f0d4bffd16bcf4f180095"
     },
     {
       "name": "data_003.jsonl",
       "count": 800,
-      "sha256": "5b05db1d31904e9844e12f4ffb14c286a4b4cacc838bb2d8a714e6cd9d5a03e0"
+      "sha256": "0c9d907e0ba870b1d345ec75c39e52388d5bfe0f8009112b0984a2010fbd99ff"
     },
     {
       "name": "data_004.jsonl",
       "count": 800,
-      "sha256": "33524290cd4e4de5f69e4446d28654499d55ec1d11864776e23a167bf6350ea4"
+      "sha256": "700cba00645be21c11f099af9d4202ed96d09d5b596bf810735836b972760dab"
     },
     {
       "name": "data_005.jsonl",
       "count": 800,
-      "sha256": "840001dc2fe0edbc74abb9d0d033f091cb2daaf4966c2b1b9face143d26ebe86"
+      "sha256": "2afd430cf651c0f367cc8dbc51cc14c81ae5d245a865449c3900722ad6b7dfce"
     },
     {
       "name": "data_006.jsonl",
       "count": 800,
-      "sha256": "dcdc539782b249ed16b44782a549bea83c2ce721dd0e20f5c90ed0d818924187"
+      "sha256": "4b3c44a16883a714daf7bdf0d9ecc2216a0a8d447296eb93780126ab832a85e3"
     },
     {
       "name": "data_007.jsonl",
-      "count": 349,
-      "sha256": "fcbbaffc78e3dcd9225b3151dcfd1bc8f9dd4e48f08f69e30dbaa439e991e16b"
+      "count": 800,
+      "sha256": "aa509ba07a2cf24ca8db6bf1acc6038effc10546bcb1aa44dee09334a56cd047"
+    },
+    {
+      "name": "data_008.jsonl",
+      "count": 18,
+      "sha256": "19387cffff47f85b92b75e6845161e1a3c3a4dbd922408e1341d0e5f97dc7071"
     }
   ]
 }

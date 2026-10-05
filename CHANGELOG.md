@@ -4,6 +4,226 @@ All notable changes to this awesome noob repo will be documented here.
 
 ## [Unreleased]
 
+## [v4.2.0] – 2026-10-03 (The "All-Time High" Edition)
+
+Every game now shows the most players it has ever had at once, the catalogue
+the site and the apps keep for offline use is a fraction of its old size and
+no longer readable as text, and every open dependency alert is closed. Web
+app + desktop/Android bumped `2.1.1` → `2.2.0`; repo public-facing version
+`4.1.1` → `4.2.0`.
+
+On the website all of this is already live. The desktop app offers 2.2.0
+through its updater once the release is published; on Android, install the
+new APK over the old one. The apps also pick up the Disclaimer's new
+paragraph on where player numbers come from, so they show the consent gate
+once, with that paragraph; the website already did.
+
+### ✨ Added
+
+- **All-time peak players.** Every game shows the most players it has ever had
+  at once: "All-time peak" on its page, and a sortable column in the games
+  table and the CSV export. The number is the peak Steam Charts has recorded,
+  which for a game it tracks goes back to the launch, read about once a month
+  per game; for the many small games Steam Charts does not track, it is the
+  most this project's own samples have seen. It only ever goes up. The
+  "(peak N)" beside the player count is gone: it was the highest of our own
+  occasional samples since the last full re-fetch, not a daily or all-time
+  peak, and it read like one. The Disclaimer names the new source, so
+  returning visitors see the consent gate once, showing that paragraph.
+
+### 🗜️ A smaller, opaque offline cache
+
+- **The catalogue your browser or app keeps for offline use is now stored as
+  the packed shards it downloads**, not as thousands of readable records:
+  about 1.4 MB instead of roughly 9.5 MB, and opaque bytes in DevTools.
+  Like the packed downloads, this is compression and obfuscation, not
+  protection: the key is public, and the dataset stays readable in Git. The
+  copy an earlier version saved keeps working until the data next changes,
+  then it is replaced and deleted. Same storage keys, so the Privacy Policy
+  and the consent gate are unchanged.
+- Opening the cached catalogue happens off the main thread now: on a
+  desktop the longest freeze while loading it fell from about 20 ms to 6 ms,
+  for about 45 ms more until the data is ready. The two cache keys are now
+  written in one transaction, so a failed write can no longer leave a new
+  index next to old data, and a cache that will not open is simply
+  downloaded again.
+
+### 🧰 Pipeline
+
+- `scripts/refresh_peaks.py` and the daily "Refresh All-Time Peaks" workflow
+  (19:30 UTC) ask Steam Charts about a thirtieth of the catalogue a day, a
+  page every two to three seconds, and stop for the day if it ever refuses;
+  every run also raises the field from the pipeline's own player counts. A
+  manual run with `backfill` ticked asks about every game at once, in about
+  four hours.
+
+### 🔐 Security
+
+- **Every open dependency alert is closed** (19 from Dependabot, plus the few
+  `npm audit` adds); `npm audit` reports none. Only two of the packages run in
+  production: `devalue`, whose parser is in the page and the apps (5.9.2 →
+  5.9.4), and `urllib3` in the data pipeline (2.7.0 → 2.8.0). The rest are
+  build and development tools: `undici` comes up to 7.29.1 with wrangler
+  4.147.0, and `brace-expansion`, `fast-uri` and `serialize-javascript` are
+  lockfile-only bumps. SvelteKit 2 still asks for `cookie` 0.6, whose fix is
+  only in SvelteKit 3, so an npm override gives it 0.7.2 (same API; with the
+  static adapter that code only runs while the site is built). The `sharp`
+  override is gone: wrangler's own pin now holds the patched version.
+
+## [v4.1.1] – 2026-10-03 (The "Pocket-Sized" Edition)
+
+The site and the apps fit a phone: nothing runs off the right edge, game
+names are back in the leaderboards, and the Android app no longer puts its
+top bar under the clock. Web app + desktop/Android bumped `2.1.0` →
+`2.1.1`; repo public-facing version `4.1.0` → `4.1.1`.
+
+On the website the phone fixes go live with this release; the caching
+changes below already were. The desktop app offers 2.1.1 through its updater
+once the release is published; on Android, install the new APK over the old
+one. The apps also pick up the Privacy Policy line about the image host
+below, so they show the consent gate once, with that paragraph; the website
+already did.
+
+### 📱 Fits a phone
+
+- **Nothing runs off the right edge any more.** On a phone, the Dashboard's
+  "Top genres", "Playing right now" and chart cards, and every card on
+  Developers and Publishers, were wider than the screen: the counts and the
+  "View all" links were cut off and the page slid sideways. One long name was
+  enough, because a grid with no column count for small screens grows to fit
+  its longest line. Every grid now starts at one column that fits the screen,
+  and a test fails on any grid that does not.
+- **Game names are back in the leaderboards.** Top Online, Top Offline and the
+  developer and publisher pages squeezed the name to nothing to make room for
+  the genre badge and the review score. On a phone those two now give way to
+  the name.
+- **The Android app keeps out from under the status bar.** Since 2.0.0 the top
+  bar sat under the clock and the battery icon: the safe-area padding the 1.x
+  app had was lost in the rewrite. The page, the menu, the dialogs, the
+  back-to-top button and the notifications clear the status and navigation
+  bars again, and a strip behind the status bar keeps the clock readable
+  whichever theme the app and the phone are in. This needs Android System
+  WebView 136 or newer, which any phone that updates it from the Play Store
+  has.
+- **Charts that fit.** On a phone the Anti-Cheat, Delisted and Catalogue
+  growth legends no longer cover the chart, axis numbers no longer print on
+  top of each other, and the tag cloud shows the most common tags instead of
+  dropping exactly those.
+- **Smaller fixes.** The header search shows its hint instead of "Search by
+  na"; on /games a game with a long anti-cheat name no longer paints over the
+  next card; the consent gate scrolls to its top on a short screen; long
+  names and links in titles and game descriptions wrap instead of widening
+  the page.
+
+### ⚡ Faster repeat visits
+
+- **Static files are cached by what they are.** Only the hashed scripts,
+  styles and fonts had a lifetime; the icons, the favicon, the social card,
+  the manifest and Workbox's runtime were asked for again on every page load.
+  Workbox's hashed runtime is now cached for a year like the rest of the
+  build, and the art and manifest are fresh for a day and then refreshed in
+  the background. Pages, the service worker and the version signal still
+  revalidate every time, so a deploy - or a changed legal document - shows
+  on the next load.
+- **Game art comes straight out of Cloudflare's cache.** Every thumbnail and
+  hero ran the site's Worker on every view, however often it had been seen -
+  a Worker always runs before the cache. The website now loads the AVIF
+  copies from the site's own image host, `media.free-steam-games.win`, which
+  Cloudflare caches like any static file, and falls back to the old address
+  by itself for art the cron has not converted yet or a browser without AVIF.
+  The desktop and Android apps are unchanged. The Privacy Policy now names the
+  image host, so returning visitors see the consent gate once, showing that
+  paragraph.
+
+### 📚 Docs
+
+- `docs/DEPLOYMENT.md` explains which commits deploy: documentation commits
+  stopped deploying, data commits still did, and it gives a configuration that
+  stops both - with the one trap: the legal documents are read by the build,
+  so a commit that changes only them must still trigger one.
+- `docs/android-support.md` (and its Vietnamese mirror) says which Android
+  System WebView the safe areas need, and what to do on an older one.
+
+## [v4.1.0] – 2026-10-02 (The "Featherweight" Edition)
+
+Game art and the catalogue both got much lighter, the deploy log lost its
+noise, and scrollbars finally look like the rest of the site. Web app +
+desktop/Android bumped `2.0.2` → `2.1.0`; repo public-facing version `4.0.2` →
+`4.1.0`.
+
+The web changes are already live. The desktop app offers 2.1.0 through its
+updater once the release is published, and brings the packed catalogue with
+it; on Android, install the new APK over the old one. Returning visitors see
+the consent gate once, showing one new line in the Privacy Policy: the storage
+key of the new scrollbar setting.
+
+### ✨ Added
+
+- **Game art is AVIF now - heroes about 58% smaller, thumbnails about 92%.**
+  The Worker's 15-minute cron encodes each game's Steam header once with
+  Cloudflare Images - a 230 px thumbnail and a 460 px hero - and stores it in
+  R2; every request after that is served from the stored copy, never encoded
+  on the fly. The ten most-played heroes went from 40 KB to 16.8 KB (SSIM
+  0.979 against Steam's JPEG); thumbnails are ~3.4 KB. Most-played games go
+  first, the whole catalogue takes about a day and a half, and a hard monthly
+  cap keeps the Images bill bounded. Browsers that do not take AVIF keep
+  getting Steam's JPEG, and social cards always do.
+- **The catalogue downloads in about a seventh of the bytes.** The app now
+  reads each shard as a packed file (`/api/data/p1/*.bin`, 224 KB instead of
+  1.5 MB): compressed, and wrapped so the site's API is no longer a
+  ready-made JSON feed. It is obfuscation, not secrecy - the readable dataset
+  is the repository, as it always was. The app checks what it unpacks against
+  `index.json` exactly as before, and the released apps keep reading the
+  plain files.
+- **Scrollbars match the site, and can be hidden.** A warm thumb that turns
+  amber under the pointer, in both themes. Settings → Scrollbars: Visible,
+  Hidden in tables and panels, or Hidden everywhere; hidden bars still scroll
+  with the wheel, trackpad, touch or keyboard.
+
+### 🐛 Fixed
+
+- **Every deploy log was 91% noise.** The build printed one
+  `[404] GET /img/…` per prerendered game - 5,566 lines - and rendered an
+  error page for each. They were harmless (a Worker route the build cannot
+  see), but they buried anything worth reading. Now there are none.
+- **The plain catalogue went out uncompressed.** Cloudflare does not compress
+  `application/x-ndjson` by default, so every full load moved ~9 MiB. A
+  Compression Rule now brotli-compresses those files for every client,
+  released apps included (1.5 MB → 226 KB per shard).
+- **Tables showed the operating system's grey scrollbar.** Tailwind 4.3's own
+  `scrollbar-thin` merged with ours and, in Chromium, switched the themed bar
+  off. Ours is now `scrollbar-slim`, with a test that keeps it that way.
+- **Thumbnails cost two guaranteed 404s on half the catalogue**, probing for a
+  Steam capsule that hashed paths never have, and stray query strings forked
+  the image edge cache.
+- **A data-only commit redeployed the whole site** (5,681 files), against
+  what `docs/DEPLOYMENT.md` intends. The fix is the Workers Builds watch
+  paths, a dashboard setting.
+
+### 🔐 Security
+
+- **`/img/*` can no longer be used to run up the image bill.** With
+  Cloudflare's URL transformations enabled, `/cdn-cgi/image/<options>/img/…`
+  let anyone bill a new transformation per option set, through a proxy that
+  serves any Steam game's art - a scanner found such a URL within minutes. The
+  Worker now refuses the transformation service as a client, and URL
+  transformations are switched off for the zone; the cron's encoding does not
+  need them.
+
+## [v4.0.2] – 2026-09-29 (The "Right Address" Edition)
+
+A game's tags, languages and store details are now re-read on a rotation
+instead of being fetched once and never again, a long data job no longer loses
+its work when something else lands on `main`, and each kind of message now has
+an address of its own. Web app + desktop/Android bumped `2.0.1` → `2.0.2`; repo
+public-facing version `4.0.1` → `4.0.2`.
+
+The web changes are live as soon as this merges. The desktop app offers 2.0.2
+through its updater once the release is published; on Android, install the new
+APK over the old one. Returning visitors see the consent gate once, listing
+the Privacy Policy, the Terms of Use and the Data Licence — each changed only
+by a contact address, and the gate shows exactly that line.
+
 ### ✨ Added
 
 - **Tags, languages and the rest of a game's store data now stay current.**
@@ -28,6 +248,22 @@ All notable changes to this awesome noob repo will be documented here.
   but a merged pull request or an `/admin` commit still moves `main`. Every
   data job now commits through `bash/commit_push.sh`, which rebases onto
   `origin/main` and retries the push.
+
+### 📇 Contact
+
+`contact@poli0981.dev` stays the default. Three role addresses join it, each
+published where a reader of that document would look:
+
+| Address | For | Where |
+|---|---|---|
+| `security@poli0981.dev` | vulnerabilities, after GitHub's private reporting | `SECURITY.md`, `/.well-known/security.txt` |
+| `privacy@poli0981.dev` | privacy questions | Privacy Policy |
+| `copyright@poli0981.dev` | copyright, DMCA and takedown notices | Data Licence, Terms of Use §6 |
+
+The maintainer's website, <https://poli0981.dev/>, is on the About page next
+to the email and the links page. `security.txt` now lists GitHub's private
+vulnerability reporting first and `security@` second, in RFC 9116 preference
+order. The full map is in `AUTHORS.md` and `docs/Contact.md`.
 
 ## [v4.0.1] – 2026-09-23 (The "Human Check" Edition)
 

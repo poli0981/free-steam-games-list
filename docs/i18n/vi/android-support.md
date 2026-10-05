@@ -37,6 +37,9 @@ cách bypass trong app — nên ngưỡng phiên bản cũng chính là cổng c
 3. **Edge-to-edge & safe area.** Ta compile với `targetSdk 36` (Android 16), buộc
    layout edge-to-edge; UI dùng `env(safe-area-inset-*)` để né thanh status /
    gesture-nav. Những hành vi này ổn định nhất trên Android 11+.
+   WebView chỉ báo các inset này từ **Android System WebView 136**; với bản cũ
+   hơn, thanh trên cùng sẽ nằm dưới thanh trạng thái, và cập nhật "Android
+   System WebView" qua Play Store là khắc phục được.
 4. **Phạm vi test.** Ta chỉ test từ Android 11 trở lên (xem dưới); không muốn ship
    một ngưỡng không thể smoke-test.
 

@@ -163,7 +163,7 @@
       </span>
     </div>
 
-    <div class="overflow-x-auto rounded-lg border bg-card">
+    <div class="overflow-x-auto scrollbar-slim scrollbar-panel rounded-lg border bg-card">
       <table class="w-full text-sm">
         <thead class="border-b bg-muted/40 text-left text-xs text-muted-foreground">
           <tr>

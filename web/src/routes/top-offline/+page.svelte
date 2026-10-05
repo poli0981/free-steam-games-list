@@ -3,7 +3,8 @@
   import { i18n } from "$lib/i18n.svelte";
   import { topByPlayers } from "$lib/stats";
   import { appidOf } from "$lib/data-store";
-  import { headerToCapsule } from "$lib/image";
+  import { headerToCapsule, thumbFallback } from "$lib/image";
+  import { imgFallback } from "$lib/img-fallback";
   import { formatNumber, parseReviewPercent } from "$lib/utils";
   import { reviewTone } from "$lib/games/columns";
   import { chartTheme, gridBox } from "$lib/chart-theme";
@@ -25,7 +26,9 @@
       tooltip: { trigger: "axis", axisPointer: { type: "shadow" } },
       xAxis: {
         type: "value",
-        axisLabel: { color: theme.mutedText },
+        // On a phone the plot is narrow and every label printed over its
+        // neighbours; hideOverlap drops the ones that collide.
+        axisLabel: { color: theme.mutedText, hideOverlap: true },
         splitLine: { lineStyle: { color: theme.grid } },
       },
       yAxis: {
@@ -69,6 +72,7 @@
           {#if record.header_image}
             <img
               src={headerToCapsule(record.header_image)}
+              {@attach imgFallback(thumbFallback(record.header_image))}
               alt=""
               loading="lazy"
               decoding="async"
@@ -77,7 +81,9 @@
             />
           {/if}
           <span class="min-w-0 flex-1 truncate text-sm font-medium">{record.name}</span>
-          {#if record.genre}<Badge variant="outline">{record.genre}</Badge>{/if}
+          <!-- Hidden below sm with the score: a Badge cannot shrink below its
+               longest word, and on a phone it took the whole width the name had. -->
+          {#if record.genre}<Badge variant="outline" class="hidden sm:inline-flex">{record.genre}</Badge>{/if}
           {#if pct !== null}
             <span class="hidden w-12 shrink-0 text-right font-mono text-xs tnum sm:inline {reviewTone(pct)}">
               {pct}%

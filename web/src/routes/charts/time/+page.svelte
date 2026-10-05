@@ -50,7 +50,9 @@
     return {
       grid: gridBox({ top: 36 }),
       tooltip: { trigger: "axis", axisPointer: { type: "shadow" } },
-      legend: { top: 0, textStyle: { color: theme.mutedText } },
+      // scroll: a plain legend wraps to a second line on a phone and lands on
+      // the axis labels; this one stays on one line and pages instead.
+      legend: { type: "scroll", top: 0, textStyle: { color: theme.mutedText } },
       xAxis: {
         type: "category",
         data: added.map((a) => monthLabel(a.month, i18n.lang)),

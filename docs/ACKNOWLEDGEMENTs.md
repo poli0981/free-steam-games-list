@@ -6,6 +6,7 @@ Big thanks to everyone and everything that made this chaotic repo possible.
 
 - **Valve / Steam** — for existing and having a ton of free-to-play games that keep broke people like the maintainer entertained. The Steam logo, store, community, VAC, and all related marks are trademarks of Valve Corporation; this project is independent and not affiliated.
 - **GitHub** — for free hosting (data, Pages, Actions, Releases), free CI for the Python pipeline + the web app deploy + the desktop release matrix builds, and for letting unemployed devs pretend they're productive.
+- **Steam Charts** ([steamcharts.com](https://steamcharts.com/)) — for the all-time peak player counts. The pipeline reads each game's recorded peak from its public page, about once a month per game and a few seconds apart. Not affiliated with this project.
 - **The Steam community & various review aggregators** — for reviews, tags, and metadata that the pipeline scrapes off public store pages. Where copy-paste happens it stays attributed.
 - **Caffeine & instant noodles** — the real MVPs keeping the maintainer awake during update sessions.
 

@@ -10,6 +10,7 @@ import pytest
 
 import refresh_store_data as rsd
 from core.constants import MANUAL_FIELDS, DESCRIPTION_MAX
+from core.rotation import slice_of
 
 
 def _game(appid: str = "730", **fields) -> dict:
@@ -76,7 +77,7 @@ def test_slices_are_even_although_appids_are_multiples_of_ten():
     for cycle in (rsd.PAGE_CYCLE_DAYS, rsd.DETAILS_CYCLE_DAYS):
         sizes = [0] * cycle
         for a in appids:
-            sizes[rsd.slice_of(a, cycle)] += 1
+            sizes[slice_of(a, cycle)] += 1
         mean = len(appids) / cycle
         assert min(sizes) > 0.7 * mean and max(sizes) < 1.3 * mean, (cycle, sizes)
 

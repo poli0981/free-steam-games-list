@@ -104,11 +104,15 @@
   }
 </script>
 
+<!-- Both cards below centre with m-auto, not items-center: auto margins centre
+     a card that fits and collapse for one that does not, so on a short phone
+     the card scrolls from its top instead of losing it above the screen.
+     p-safe-or-4 keeps it clear of the Android system bars. -->
 {#if !open}
   <!-- nothing: the page underneath is already rendered -->
 {:else if declined}
-  <div class="fixed inset-0 z-[60] flex items-center justify-center overflow-auto bg-background/95 p-4 backdrop-blur-sm">
-    <div class="w-full max-w-md rounded-lg border border-warning/40 bg-warning/5 p-8 text-center">
+  <div class="fixed inset-0 z-[60] flex overflow-auto bg-background/95 p-safe-or-4 backdrop-blur-sm">
+    <div class="m-auto w-full max-w-md rounded-lg border border-warning/40 bg-warning/5 p-8 text-center">
       <ShieldCheck class="mx-auto mb-4 size-10 text-warning" />
       <h1 class="mb-2 text-xl font-semibold">{t("consent.declinedTitle")}</h1>
       <p class="text-sm text-muted-foreground">{t("consent.declinedBody")}</p>
@@ -118,8 +122,8 @@
     </div>
   </div>
 {:else}
-  <div class="fixed inset-0 z-[60] flex items-center justify-center overflow-auto bg-background/95 p-4 backdrop-blur-sm">
-    <div class="w-full max-w-lg rounded-xl border bg-card p-6 shadow-xl sm:p-8">
+  <div class="fixed inset-0 z-[60] flex overflow-auto bg-background/95 p-safe-or-4 backdrop-blur-sm">
+    <div class="m-auto w-full max-w-lg rounded-xl border bg-card p-6 shadow-xl sm:p-8">
       <div class="mb-5 flex items-start gap-3">
         <span class="grid size-10 shrink-0 place-items-center rounded-lg bg-primary/15 text-primary">
           {#if reviewing}

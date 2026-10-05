@@ -12,8 +12,11 @@
 # recurring task in docs/SECURITY_SETUP.md; an expired security.txt is treated
 # by scanners as no security.txt at all.
 
-Contact: mailto:contact@poli0981.dev
-Contact: https://poli0981.dev/links/
+# Contact fields are in order of preference (RFC 9116 section 2.5.3): GitHub's
+# private vulnerability reporting first, the security alias second. The
+# general links page is deliberately not listed - it is not a security channel.
+Contact: https://github.com/poli0981/free-steam-games-list/security/advisories/new
+Contact: mailto:security@poli0981.dev
 Expires: 2027-09-01T00:00:00.000Z
 Preferred-Languages: en, vi
 Canonical: https://free-steam-games.win/.well-known/security.txt

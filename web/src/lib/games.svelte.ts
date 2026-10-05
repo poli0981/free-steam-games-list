@@ -7,12 +7,13 @@
  * worker, and decides WHEN to look for newer data.
  *
  * The JSONL is parsed off the main thread in a worker, because parsing ~3,650
- * records blocks it for long enough to drop frames.
+ * records blocks it for long enough to drop frames. The same worker opens the
+ * packs the IndexedDB cache holds (lib/cache.ts).
  */
-import { fetchIndex, fetchShard, rawUrl } from "./fetcher";
-import { parseShard } from "./worker-pool";
-import { readCache, writeCache } from "./cache";
-import { createLoader, type Generation } from "./games-loader";
+import { fetchIndex, fetchRemovedText, fetchShard } from "./fetcher";
+import { parsePack, parseShard } from "./worker-pool";
+import { readCache, writeCache, type CachedBundle } from "./cache";
+import { createLoader, type CachedGeneration, type Generation } from "./games-loader";
 import { buildIndex, extractAppid } from "./data-store";
 import { Resource } from "./resource.svelte";
 import { appReady } from "./app-ready";
@@ -42,14 +43,38 @@ async function sha256Hex(bytes: ArrayBuffer): Promise<string | null> {
   return out;
 }
 
-const decoder = new TextDecoder();
+/**
+ * What the loader sees of the cache: the index at once, the records only when
+ * it asks. Packs are opened in the worker, once; any that will not open make
+ * the whole generation a miss. A legacy bundle (parsed records, app 2.1.x and
+ * older) is used as it stands until the next generation replaces it.
+ */
+function cachedGeneration(bundle: CachedBundle | null): CachedGeneration | null {
+  if (!bundle) return null;
+  if (bundle.kind === "legacy") {
+    const { records } = bundle;
+    return { index: bundle.index, records: async () => records };
+  }
+  let decoded: Promise<GameRecord[] | null> | undefined;
+  return {
+    index: bundle.index,
+    records: () =>
+      (decoded ??= Promise.all(bundle.packs.map((p) => parsePack(p))).then(
+        (parts) => parts.flat(),
+        (err: unknown) => {
+          console.warn("[cache] the cached generation would not open:", err);
+          return null;
+        },
+      )),
+  };
+}
 
 const load = createLoader({
   fetchIndex: (signal) => fetchIndex(signal),
   fetchShard: (entry, versioned, signal) => fetchShard(entry, versioned, signal),
   hash: sha256Hex,
-  parse: (bytes) => parseShard(decoder.decode(bytes)),
-  readCache,
+  parse: parseShard,
+  readCache: async () => cachedGeneration(await readCache()),
   writeCache,
 });
 
@@ -166,15 +191,8 @@ function dedup(records: RemovedGame[]): RemovedGame[] {
 }
 
 async function loadRemoved(signal: AbortSignal): Promise<RemovedGame[]> {
-  const res = await fetch(rawUrl("scripts/removed_games.jsonl"), {
-    signal,
-    cache: "no-store",
-  });
-  if (!res.ok) {
-    throw new Error(`Failed to fetch removed_games.jsonl: ${res.status}`);
-  }
   const out: RemovedGame[] = [];
-  for (const line of (await res.text()).split("\n")) {
+  for (const line of (await fetchRemovedText(signal)).split("\n")) {
     const t = line.trim();
     if (!t) continue;
     try {

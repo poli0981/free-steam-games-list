@@ -10,7 +10,8 @@
   import { games } from "../games.svelte";
   import { i18n } from "../i18n.svelte";
   import { appidOf } from "../data-store";
-  import { headerToCapsule } from "../image";
+  import { headerToCapsule, thumbFallback } from "../image";
+  import { imgFallback } from "../img-fallback";
   import { cn } from "../utils";
 
   const t = i18n.t;
@@ -143,7 +144,7 @@
         />
       </div>
 
-      <div id="cmdk-list" role="listbox" aria-label={t("cmdk.title")} class="max-h-[55vh] overflow-y-auto scrollbar-thin p-2">
+      <div id="cmdk-list" role="listbox" aria-label={t("cmdk.title")} class="max-h-[55vh] overflow-y-auto scrollbar-slim scrollbar-panel p-2">
         {#if matchedRoutes.length}
           <p class="px-2 py-1.5 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground" role="presentation">
             {t("cmdk.pages")}
@@ -193,6 +194,7 @@
               {#if g.header_image}
                 <img
                   src={headerToCapsule(g.header_image)}
+                  {@attach imgFallback(thumbFallback(g.header_image))}
                   alt=""
                   loading="lazy"
                   decoding="async"

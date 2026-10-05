@@ -74,6 +74,46 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
   Commit a shard without going through `save_main()` and every browser keeps
   serving pre-edit records. `scripts/tests/test_index_hash.py` pins both.
 
+- **The app reads shards PACKED; Git keeps them plain.** `/api/data/p1/data_NNN.bin`
+  (and `removed_games.bin`) is the committed file run through
+  `shared/data-pack.ts` at the edge: deflate-raw, then AES-GCM under a key
+  that is PUBLIC in this repository. It is obfuscation and compression (~15%
+  of the JSONL), never secrecy - do not call it protection, and never commit a
+  pack: Git stays the readable source. A pack unpacks to the exact committed
+  bytes, so the sha256 contract above is checked on the UNPACKED bytes; the
+  pack itself is what the IndexedDB cache keeps (next bullet). The plain
+  `/api/data/data/*.jsonl` paths must keep serving released apps (1.4.5
+  unversioned, 2.0.x `?v=`), which cannot unpack. Packs end in `.bin` so the
+  zone's `.jsonl` Compression Rule never recompresses them. No WASM: installed
+  apps' CSP has no `'wasm-unsafe-eval'`.
+
+- **The IndexedDB cache holds PACKS, never records or plain JSONL**
+  (`web/src/lib/cache.ts`). Database `f2p-catalogue`: `f2p:index` (the
+  DataIndex, readable - public metadata, so the generation compares without
+  opening anything) and `f2p:records` (`Uint8Array[]`, each shard's pack
+  exactly as `fetchShard` received it, in `index.files` order). Rules:
+  - A generation is stored only if EVERY shard arrived packed; the browser
+    never packs (compressing ~9.5 MB is main-thread work on a phone). A
+    stored pack must carry its index entry's sha256 prefix as IV, or the
+    cache is a miss.
+  - The two key names are the ones `docs/PRIVACY_POLICY.md` lists. Renaming
+    either is a policy edit, which reopens the consent gate. The new DATABASE
+    is what keeps a tab still running app <= 2.1.x (which reads idb-keyval's
+    default `keyval-store`) from handing Uint8Arrays to the page.
+  - The legacy copy in `keyval-store` (parsed records) is read like any
+    verified generation until the next one is written, which `delMany`s it -
+    never `deleteDatabase`, which an old tab's open connection blocks. Look
+    with `indexedDB.databases()` before touching it: opening a database
+    creates it.
+  - Records are decoded in the parser worker (`parsePack`), and only when the
+    cached generation is actually used. A pack that will not open makes the
+    whole generation a miss. The worker must never reply with an empty
+    `error`: Chromium's failed AES-GCM decrypt is a DOMException with an
+    EMPTY message, and `if (error)` once resolved a damaged pack as a shard
+    with no records (`worker-pool.test.ts`, `jsonl-parser.test.ts`).
+  - Obfuscation and compression (~1.4 MB stored instead of ~9.5 MB of
+    objects), never protection - the key is public, like the wire packs'.
+
 - **`index.json` is rebuilt from scratch on every save.** `_save_index()` in
   `scripts/core/data_store.py` writes it from a fixed set of keys, so any key
   added to that file by anything else is silently dropped the next time the
@@ -104,6 +144,22 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
   no language table or tags), compares `description` as stored (truncated),
   and bumps `last_updated` only on a real change. A new field added to it must
   obey the same rules; `scripts/tests/test_refresh_store_data.py` holds them.
+- **`all_time_peak` only ever goes UP, and `refresh_peaks.py` is what raises
+  it** (daily 19:30 UTC, "Refresh All-Time Peaks"). A `crc32(appid) % 30`
+  slice (`core/rotation.py`, shared with `refresh_store_data.py`) reads
+  SteamCharts' recorded all-time peak - the only source older than our own
+  sampling: SteamDB forbids scraping and Valve's APIs know only today. Every
+  run also raises it from our samples (`peak_today`, which despite its name is
+  never reset, only cleared by `refetch_all.py`, and `current_players`), and
+  `apply_players()` raises it on every sample, never from a 0. SteamCharts has
+  no API, terms or robots.txt, so: one page per game a month, 2-3 s apart, a
+  User-Agent that names the project; 500 is an app it does not track (most of
+  the long tail), 404 one it has never seen; a 403, 429 or challenge page
+  stops the run with a warning, not a failure. `refetch_all.py` must never
+  clear the field - it cannot be fetched again - and nothing may lower it.
+  The backfill is a manual run with `backfill` ticked (~4 h, start it in the
+  evening UTC). DISCLAIMER section 6 names the source, so rewording it reopens
+  the consent gate. `scripts/tests/test_refresh_peaks.py` holds the rules.
 - `ingest_new.py` only reads `scripts/temp_info.jsonl`. It has exactly two
   producers now: the browser extension (`poli0981/steam-f2p-extension`, which
   pushes to the file directly) and the `/admin` approve flow (the Worker
@@ -190,6 +246,47 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
   listener cannot `preventDefault()`, so `dataZoom: {type: "inside"}` and
   `roam: true` would silently stop working; `charts.test.ts` fails if either
   appears.
+- **Scrollbars are themed by `scrollbar-slim`, never Tailwind's `scrollbar-thin`.**
+  Tailwind 4.3 ships a core `scrollbar-thin` (a plain `scrollbar-width: thin`),
+  and in Chromium 121+ any standard scrollbar property switches
+  `::-webkit-scrollbar` off for that element - which is why every panel showed
+  the OS's grey bar while the page bar was themed. `styles/theme.css` gives
+  Firefox `scrollbar-color` (only where `::-webkit-scrollbar` is unsupported)
+  and everyone else the pseudo-elements; the two must never meet on one
+  element. The reader's "hide scrollbars" choice (Settings, `f2p:scrollbars`,
+  `<html data-scrollbars="panels|all">`) only reaches containers marked
+  `.scrollbar-panel` or `.scrollbar-page`; a new scroll container takes one of
+  them. Dialogs and the legal documents stay unmarked on purpose.
+  `src/lib/scrollbars.test.ts` holds all three rules.
+- **Every layout grid declares its base column count:** `grid grid-cols-1
+  gap-2 sm:grid-cols-2`, never `grid gap-2 sm:grid-cols-2`. Below the first
+  breakpoint the latter has one implicit `auto` track, as wide as its widest
+  item's min-content, and a `truncate` name counts at full length there (the
+  grid ITEM keeps `min-width:auto`, whatever `min-w-0` the span inside has).
+  One long studio name pushed every card on /publishers past a phone's edge,
+  and the dashboard lost its "View all" links and counts. A chart in such a
+  grid makes it stick: zrender gives its root a pixel width, which becomes
+  the track's minimum, so the chart can grow and never shrink back.
+  `grid-cols-N` is `repeat(N, minmax(0, 1fr))` and cannot do either. Rows of
+  fixed-width columns plus a `Badge` (which cannot shrink below its longest
+  word) squeezed game names to nothing at 360px the same way - hide the
+  extras below `sm`. `src/lib/mobile-layout.test.ts` fails on a grid without
+  a base `grid-cols-N`.
+- **The Android app draws edge-to-edge, and the UI pads for it with
+  `env(safe-area-inset-*)`.** targetSdk 36 and `enableEdgeToEdge()` put the
+  webview under the status bar and the navigation bar. The shell root carries
+  `pt-safe pl-safe pr-safe`, `<main>` `pb-safe`, the drawer `pt-safe pb-safe`
+  and full-screen overlays `p-safe-or-4` (utilities in `styles/theme.css`).
+  The React shell padded all four sides; the SvelteKit rewrite dropped three,
+  which is how the top bar of every 2.x app sat under the clock. The
+  status-bar ICONS follow the SYSTEM theme (`SystemBarStyle.auto`), not the one
+  chosen in Settings, and the app defaults to dark - so the layout puts a
+  `status-bar-strip` behind them, in the Android app only, keyed on
+  `prefers-color-scheme` and never on `.dark`. The WebView reports the insets
+  only from Android System WebView 136; an older one reads 0 and the top bar
+  is under the clock again (the cure is a WebView update, or a native inset
+  listener in `MainActivity`). `mobile-layout.test.ts` holds the shell and the
+  strip's two colours.
 - **Every chart colour must be one zrender can parse, which is stricter than
   what a canvas paints.** zrender splits `hsl()` on commas: space-separated
   `hsl(38 94% 60%)` paints, but every hover state derived from it comes back
@@ -218,6 +315,14 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
 - `echarts-wordcloud` declares a stale `echarts@^5` peer. It runs fine on
   echarts 6 (all the legacy APIs it uses are still exported), so `package.json`
   carries an `overrides` entry. Do not "fix" it by pinning echarts back to 5.
+- **The `"@sveltejs/kit@2.70.3": { "cookie": "^0.7.2" }` override closes
+  GHSA-pxg6-pf52-xh8x** (kit 2 declares `cookie ^0.6.0`; only kit 3 moved on).
+  Kit imports just `parse`/`serialize`, which 0.7 keeps, and under
+  adapter-static that code runs only at prerender and in `vite dev`. The key
+  names kit's EXACT version because npm refuses a range key for a direct
+  dependency (`EOVERRIDE`). A kit bump therefore silently drops the override
+  and the alert comes back: re-key it, or delete it once kit asks for
+  `cookie` >= 0.7. Never carry it onto kit 3, which needs `cookie` 2.
 - **Real paths everywhere, including the packaged apps.** There is no
   HashRouter and no hash shim: `tauri::manager::get_asset()` falls back through
   `<path>.html`, `<path>/index.html`, then `index.html`, so the Tauri webview
@@ -229,6 +334,26 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
   `goto(…, {replaceState})`. Do not remove it, and do not reduce it to a
   `history.replaceState`: that fixed the address bar and left the dashboard
   rendered.
+- **`web/static/_headers` sets the browser cache, by path.** Hashed output
+  (`/_app/immutable/*`, `/workbox-*`) is a year, immutable; the art and the
+  manifest, which keep their names, are a day fresh plus a week of
+  stale-while-revalidate; robots/sitemap an hour. HTML, `/sw.js` and
+  `/_app/version.json` deliberately keep `max-age=0, must-revalidate`: a
+  deploy, a changed legal document and a new service worker must show on the
+  next load. Rules match the PATH, so the SPA fallback for a missing asset
+  inherits them (accepted - only a tab open across a deploy sees it, and
+  `hooks.client.ts` reloads it); two rules giving one path a Cache-Control are
+  comma-joined. `src/lib/cache-headers.test.ts` holds all of it.
+- **Data-only and docs-only commits must not deploy** (Workers Builds watch
+  paths): a deploy re-uploads every file and gives every open tab a Reload
+  prompt. Docs stopped deploying on 2026-10-02; data commits still did, which
+  the next bot commit's check runs show (a `Workers Builds` check means it
+  deployed). But the legal documents are BUILD INPUTS
+  (`build/legal-versions.ts` hashes them for the consent gate,
+  `lib/server/markdown.ts` renders `/legal/*`). A commit touching only them
+  must still trigger a build, or the site keeps the old text and hash; see
+  `docs/DEPLOYMENT.md` "Which commits deploy" for a configuration that does
+  both. Excludes beat includes there.
 - **The CSP lives in `web/svelte.config.js` (`kit.csp`), not in `_headers`.**
   SvelteKit emits one inline bootstrap script per page and hashes it there. A
   header CSP cannot coexist: browsers enforce the INTERSECTION of header and
@@ -246,12 +371,14 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
   proxies it). Tauri sends its OWN policy as a header from
   `tauri.conf.json`, which is why that one carries `script-src 'unsafe-inline'`:
   the two intersect, and the meta policy's sha256 is what actually enforces.
-  The web policy has three hosts the Tauri one must never gain:
+  The web policy has four hosts the Tauri one must never gain:
   `https://static.cloudflareinsights.com` in `script-src` and
   `https://cloudflareinsights.com` in `connect-src`, for the analytics beacon,
-  and `https://challenges.cloudflare.com` in `script-src` AND `frame-src`, for
+  `https://challenges.cloudflare.com` in `script-src` AND `frame-src`, for
   the Turnstile human check (the widget is an iframe; without `frame-src` it
-  falls back to `default-src 'self'` and is refused). The Tauri policy has no
+  falls back to `default-src 'self'` and is refused), and
+  `https://media.free-steam-games.win` in `img-src`, for the minted art (see
+  the `/img/*` entry below). The Tauri policy has no
   `frame-src` at all. `verify-dist.mjs` fails the web build without them and
   the Tauri build with any of them.
 - **Cloudflare Web Analytics must stay on "JS Snippet installation", never
@@ -294,6 +421,72 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
   Configuration Rule (`docs/SECURITY_SETUP.md` §10). `src/lib/images.test.ts`
   fails on an `<img>` without the attribute. Do not "fix" it with a
   `<meta name="referrer">` or by relying on the webview's default.
+- **Never put `use:`, `onload` or `onerror` on an `<img>` that can be
+  prerendered.** Svelte then writes `onload="this.__e=event"` and
+  `onerror="this.__e=event"` into the HTML, to replay an event that fired
+  before hydration, and `kit.csp` is a hash policy, which refuses inline event
+  handlers: one CSP violation per page view (the game hero logged it on every
+  page until it moved to an attachment). Use `{@attach}`, which writes nothing;
+  `lib/img-fallback.ts` recovers a load that already failed from
+  `complete && naturalWidth === 0` instead. `verify-dist.mjs` fails on
+  `this.__e=event` in any page.
+- **`/img/*` NEVER transforms; only the cron does.** `worker/lib/img-mint.ts`
+  mints AVIF (`s` 230 px q55, `d` 460 px q80) into R2 `f2p-media`, most-played
+  first, from shards that hash to `index.json` - a list built from a lagging
+  raw.githubusercontent shard would be stamped with the new generation and
+  frozen. `worker/routes/img.ts` reads Cache API → R2 → Steam's JPEG and
+  nothing else, so no request can create a billed transformation. Images Paid
+  has no spend cap: `IMG_TRANSFORM_MONTHLY_CAP` (D1 counter
+  `img_transforms:YYYY-MM`, counted BEFORE each call, fail closed) is the only
+  one. Rules that are easy to break:
+  - `s`/`d` are negotiated on `Accept` and always send `Vary: Accept`; the
+    Cache API copy has no Vary (it ignores it), so the format is in the key. An
+    AVIF browser gets the JPEG only as a PROVISIONAL answer: one day, no
+    `X-Img-Final` - the service worker caches only responses carrying it,
+    because CacheFirst ignores Cache-Control.
+  - `t` and `d2` are ALWAYS the JPEG: released apps request them, and `d2` is
+    og:image - a crawler may claim AVIF and not render it.
+  - The R2 key AND the edge-cache key (`shared/img-keys.ts`) carry width,
+    quality, path and Steam's `?t=`: new art or a new setting is a new key, so
+    an old encoding can never be served for a new one. Changing one variant's
+    quality re-mints only that variant (~5,600); `img/v2/` pins the format.
+    Cloudflare's quality scale runs well below libavif's - `d` at q60 measured
+    visibly soft (SSIM 0.960), which is why it is q80.
+  - Never let `/cdn-cgi/image/` work on this zone. With zone Transformations
+    on, the zone itself is ALWAYS an allowed source (it cannot be excluded),
+    and `/img/*` proxies ANY Steam appid - so anyone could bill
+    transformations with arbitrary options, outside
+    `IMG_TRANSFORM_MONTHLY_CAP` (measured: `/cdn-cgi/image/width=77/img/d2/…`
+    answered 200). `img.ts` therefore 403s any request whose `Via` names
+    `image-resizing` (the resizer sends `1.1 image-resizing-proxy`); do not
+    remove that check. Zone Transformations are OFF (since 2026-10-02:
+    `/cdn-cgi/image/…` answers 404) and must stay off - the Images binding
+    does not need them (the cron minted with them off), and while they are on
+    the static files stay transformable (`docs/SECURITY_SETUP.md` §5).
+  - **On the web, art comes from `media.free-steam-games.win`, the bucket's
+    custom domain, not from `/img/*`.** A Worker always runs BEFORE the CDN
+    cache, so no `s-maxage` on `/img` could ever save an invocation; an R2
+    custom domain is cached by Cloudflare like any origin, and repeat views
+    cost neither a Worker run nor an R2 read. `lib/image.ts` builds the key
+    with `shared/img-keys.ts` - the ONE definition the cron, the Worker and the
+    page share - and every such `<img>` carries
+    `{@attach imgFallback(thumbFallback|heroFallback(...))}` with the `/img`
+    URL: an unminted key is a 404 there and a browser without AVIF fails to
+    decode, and both fire `error`. `images.test.ts` fails on an `<img>` that
+    lacks it. The packaged apps keep `/img/*` (their CSP has no media host).
+    Everything in the bucket is public on that host, the mint marker
+    included: never store anything private there.
+  - The service worker's `/img/` rule is same-origin only: the media host
+    shares the path prefix, but its responses are opaque no-cors loads it
+    could never cache. Those objects' year of immutable Cache-Control is what
+    keeps them, in the HTTP cache.
+  - `/img` remembers an R2 miss in that data centre for one cron tick
+    (`MISS_TTL`, 15 min) - the web's fallbacks and the apps ask for unminted
+    art often during a backfill.
+  - URLs keep `.jpg`: Hotlink Protection matches by extension.
+  - Flip `IMG_TRANSFORM` in `wrangler.jsonc`, not the dashboard: there is no
+    `keep_vars`, so the next deploy resets a dashboard value.
+  - The bucket must exist before a deploy that binds it (code 10085).
 - **`adapter-static`'s `fallback` must not be named `index.html`.** It is
   written last and overwrites whatever shares its name, which silently replaced
   the prerendered home page with an empty shell. It is `200.html`.
@@ -342,7 +535,13 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
   200, and the page errors. `__PRERENDER_GAMES__` is false for Tauri.
   `kit.prerender.handleHttpError` ignores 404s under `/img/` and `/api/` only,
   because the crawler follows the page's `<img>` into a Worker route that does
-  not exist at build time.
+  not exist at build time. That handler only decides pass/fail; the
+  `[404] GET /img/…` line per game came from SvelteKit's DEFAULT server
+  `handleError`, which no `handleHttpError` setting can silence.
+  `src/hooks.server.ts` answers both prefixes before routing (no layout render,
+  no log), and only ever runs at build time and under `vite dev`, whose proxy
+  takes `/api` and `/img` first. Keep its prefixes identical to
+  `handleHttpError`'s.
 - **Nothing may gate the markup behind `onMount`.** onMount does not run during
   prerender, so anything behind it ships an empty body and the SEO reason for
   prerendering is gone. The consent gate is an OVERLAY for this reason, not a

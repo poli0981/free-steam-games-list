@@ -112,13 +112,16 @@ any time.
 ## What the page loads
 
 Apart from the analytics beacon and the Turnstile check above, everything the site loads is fetched
-**same-origin**, through the site itself:
+from the site's own domain: **same-origin**, through the site itself, or — for game artwork — from
+`media.free-steam-games.win`, the site's own image host, which Cloudflare serves like the rest:
 
 - `/api/data/*` — the catalogue. The Worker fetches these files from GitHub on
   the server side, so your browser never contacts GitHub for them and GitHub
   does not see your IP.
-- `/img/*` — game artwork. The Worker fetches it from Valve's CDN on the server
-  side, so Valve does not see your IP either.
+- `/img/*` and `media.free-steam-games.win` — game artwork. The Worker fetches
+  it from Valve's CDN on the server side and stores smaller copies with
+  Cloudflare, which the website loads from the image host; Valve does not see
+  your IP either way.
 - `/api/activity` — the recent-commits list on the Activity page, and the
   contributor avatars shown beside each entry. Same arrangement: the Worker
   calls GitHub server-side and proxies the avatars, so your browser never
@@ -164,6 +167,7 @@ All of it stays on your device. None of it is transmitted anywhere.
 | localStorage | `f2p:human_check` | when your last Turnstile check expires, so it is not repeated for 24 hours (website only) |
 | localStorage | `f2p:theme` | light / dark / system |
 | localStorage | `f2p:lang` | interface language |
+| localStorage | `f2p:scrollbars` | whether scrollbars are hidden in tables and panels, or everywhere; only stored once you change it from the default |
 | sessionStorage | `f2p:chunk-reload` | one-shot flag so a failed script load retries once |
 | IndexedDB | `f2p:records`, `f2p:index` | the catalogue, cached so the site works offline and does not re-download ~6 MB each visit |
 | Cache Storage | `workbox-precache-*`, `f2p-img-v1` | the offline app shell and images (website only) |
@@ -213,7 +217,7 @@ delete on this end — clearing your browser storage is the complete picture.
 
 For the operational logs Cloudflare keeps as processor, requests go to
 Cloudflare under their policy. If you want to raise something directly, the
-contact address is **contact@poli0981.dev** (also in
+contact address is **privacy@poli0981.dev** (also in
 [docs/Contact.md](./Contact.md)). The maintainer is one
 person running this as a hobby, so expect a slow, human reply rather than a
 formal privacy desk.

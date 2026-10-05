@@ -40,7 +40,7 @@ These are the known classes of error you should expect when relying on the data:
    `anti_cheat`, `is_kernel_ac`, and `anti_cheat_note` are populated by matching known AC names (VAC, EAC, BattlEye, Vanguard, …) against the Steam page text. If a game ships an AC under a vendor-renamed brand or only mentions it in a launcher EULA, the field will be `-`. Cross-check before relying on this for kernel-driver risk decisions.
 
 6. **Player counts are sampled, not realtime.**
-   `current_players` and `peak_today` come from periodic Steam Web API calls and lag by minutes-to-hours.
+   `current_players` and `peak_today` come from periodic Steam Web API calls and lag by minutes-to-hours. `all_time_peak` is the higher of the all-time peak [Steam Charts](https://steamcharts.com/) recorded for the game, read about once a month, and the highest of those samples; it only ever goes up. Steam Charts samples periodically too, so a peak can sit a little under what Steam really reached, and it does not track every game: for many small ones the figure is only the most this project has seen, not a peak since launch.
 
 7. **Malware / safety flags are not antivirus output.**
    The `safe` field is a manual `y / n / ?` set by the maintainer based on personal experience or third-party reports. Run your own antivirus.

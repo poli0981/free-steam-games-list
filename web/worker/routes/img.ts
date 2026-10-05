@@ -5,9 +5,34 @@
  * so image traffic stays first-party and the privacy policy can say so.
  *
  * Two Steam CDN hosts serve this catalog, not one: shared.akamai.steamstatic.com
- * (~1,927 records) and shared.fastly.steamstatic.com (~1,496, i.e. 44%). Any
- * allowlist, CSP or cache rule that names only akamai silently misses almost
- * half the images.
+ * (~80% of records) and shared.fastly.steamstatic.com (~20%). Any allowlist,
+ * CSP or cache rule that names only akamai silently misses a fifth of the
+ * images.
+ *
+ * Variants:
+ *
+ *   s, d   Negotiated. A client whose Accept names image/avif gets the AVIF
+ *          copy the cron minted into R2 (lib/img-mint.ts, lib/img-store.ts):
+ *          `s` is 230 px wide for thumbnails, `d` 460 px - the full width of
+ *          every Steam header. Until that copy exists the original JPEG goes
+ *          out as a PROVISIONAL answer: one day, no X-Img-Final, so neither
+ *          the browser nor the service worker (vite.config.ts) keeps it once
+ *          the AVIF lands. A client without AVIF gets the JPEG as its final
+ *          answer. Every s/d response says `Vary: Accept`.
+ *   t, d2  The original JPEG, always. `t` is what released apps and older
+ *          pages ask for as a thumbnail (Steam's 184x69 capsule where one
+ *          exists). `d2` is the social card: og:image and JSON-LD point at it,
+ *          and a crawler that claims AVIF in Accept but cannot render it must
+ *          never be handed one.
+ *
+ * The web app asks the bucket's custom domain for the minted AVIF first
+ * (src/lib/image.ts) - served from Cloudflare's cache, which a Worker can
+ * never be - and comes here only when that fails: not minted yet, or no AVIF
+ * decoder. The packaged apps come here for everything.
+ *
+ * THIS PATH NEVER TRANSFORMS. Minting runs only in the cron, from the
+ * published dataset, so no request - an unknown appid, a forged ?t=, a HEAD -
+ * can create a billed transformation or an R2 object.
  *
  * /img/gh/{u|in}/{id} is the second thing this file serves: GitHub avatars for
  * the Activity page. They used to be rendered straight from
@@ -17,18 +42,13 @@
  * IP to GitHub. Proxying keeps img-src at 'self' and works in the Tauri builds,
  * whose CSP already allows free-steam-games.win, unchanged.
  */
+import type { SteamSource } from "../../shared/steam-image";
+import { sourceKey } from "../../shared/steam-image";
 import { jsonError, SECURITY_HEADERS } from "../lib/http";
+import { AVIF_VARIANTS, avifKey, mediaBucket, SOURCE_HOSTS, steamUrl, variantTag, type AvifVariant } from "../lib/img-store";
 
-/** The ONLY origins this proxy will fetch from. Anything else is SSRF. */
-const SOURCE_HOSTS = [
-  "shared.akamai.steamstatic.com",
-  "shared.fastly.steamstatic.com",
-] as const;
-
-/** variant -> target width. Kept tiny and closed: an open width parameter is
- *  an open cheque once transformations are switched on, because each distinct
- *  option set bills as its own "unique transformation". */
-const VARIANTS: Record<string, number> = { t: 184, d: 460, d2: 920 };
+/** The legacy variants: the original JPEG, never negotiated. */
+const PASSTHROUGH = new Set(["t", "d2"]);
 
 /** `<appid>/<asset>.jpg` or `<appid>/<40-hex>/<asset>.jpg`. Anchored; the
  *  asset name is restricted so this cannot address arbitrary Steam paths. */
@@ -46,6 +66,26 @@ const AVATAR_RE = /^(u|in)\/(\d{1,12})$/;
  *  a caller-chosen size is an unbounded set of cache keys. */
 const AVATAR_PX = 56;
 
+const YEAR = 31536000;
+const MONTH = 2592000;
+const DAY = 86400;
+
+/**
+ * How long this data centre remembers that R2 has no AVIF for a source: one
+ * cron tick, the soonest a mint could add it. Without it every request for a
+ * game the cron has not reached - the backfill, a new game, a changed `?t=` -
+ * paid an R2 read to learn the same thing again.
+ */
+const MISS_TTL = 900;
+
+/**
+ * Marks an answer that will not change for this URL and this client, and is
+ * therefore safe to keep. The service worker's CacheFirst rule caches only
+ * responses that carry it - CacheFirst ignores Cache-Control, so without this
+ * a provisional JPEG would be served for 30 days after the AVIF existed.
+ */
+const FINAL = { "X-Img-Final": "1" };
+
 export async function handleImg(
   request: Request,
   url: URL,
@@ -56,6 +96,18 @@ export async function handleImg(
     return jsonError(405, "method not allowed");
   }
 
+  // Never a source for Cloudflare's URL transformations. With zone
+  // Transformations on, /cdn-cgi/image/<options>/img/... is always allowed -
+  // same-zone sources cannot be excluded - and /img/* proxies ANY Steam
+  // appid, so anyone could bill transformations with arbitrary options,
+  // outside IMG_TRANSFORM_MONTHLY_CAP. The site never transforms by URL (only
+  // the cron does, through the Images binding, from Steam directly). The
+  // service fetches sources with `Via: 1.1 image-resizing-proxy` (measured
+  // with wrangler tail, 2026-10-02).
+  if (/image-resizing/i.test(request.headers.get("Via") ?? "")) {
+    return jsonError(403, "not a transformation source");
+  }
+
   const rest = url.pathname.slice("/img/".length);
   const slash = rest.indexOf("/");
   if (slash < 0) return jsonError(404, "not found");
@@ -63,59 +115,133 @@ export async function handleImg(
   const variant = rest.slice(0, slash);
 
   // Avatars are a different upstream with a different path shape, so they
-  // branch out before VARIANTS (which would reject "gh" as unknown). They keep
-  // the /img/ prefix on purpose: it is already in run_worker_first and already
-  // matched by the service worker's CacheFirst rule, so neither needed a change.
+  // branch out first. They keep the /img/ prefix on purpose: it is already in
+  // run_worker_first and already matched by the service worker's CacheFirst
+  // rule, so neither needed a change.
   if (variant === "gh") {
-    return handleAvatar(rest.slice(slash + 1), url, ctx);
+    return headOnly(request, await handleAvatar(rest.slice(slash + 1), url, ctx));
   }
 
-  const width = VARIANTS[variant];
-  if (!width) return jsonError(404, "unknown variant");
+  const avif = variant === "s" || variant === "d" ? AVIF_VARIANTS[variant] : undefined;
+  if (!avif && !PASSTHROUGH.has(variant)) return jsonError(404, "unknown variant");
 
   const m = PATH_RE.exec(rest.slice(slash + 1));
   if (!m) return jsonError(404, "not found");
   const [, appid, hash, asset] = m;
 
-  const suffix = hash ? `${appid}/${hash}/${asset}` : `${appid}/${asset}`;
+  // The first ?t= only, digits only: anything else is not a Steam mtime and
+  // must not fork a cache key.
   const stamp = url.searchParams.get("t");
-  const qs = stamp && /^\d{1,12}$/.test(stamp) ? `?t=${stamp}` : "";
+  const src: SteamSource = {
+    path: hash ? `${appid}/${hash}/${asset}` : `${appid}/${asset}`,
+    stamp: stamp && /^\d{1,12}$/.test(stamp) ? stamp : null,
+  };
 
-  // Serve from the edge cache before touching Steam or a transformation.
+  if (avif && acceptsAvif(request)) {
+    const minted = await fromR2(env, ctx, url, avif, src, asset);
+    if (minted) return headOnly(request, minted);
+    return headOnly(request, await original(ctx, url, src, { thumb: false, final: false, negotiated: true }));
+  }
+
+  return headOnly(
+    request,
+    await original(ctx, url, src, { thumb: variant === "t", final: true, negotiated: Boolean(avif) }),
+  );
+}
+
+/** Browsers add image/avif to their image Accept header only when they decode it. */
+function acceptsAvif(request: Request): boolean {
+  return /\bimage\/avif\b/i.test(request.headers.get("Accept") ?? "");
+}
+
+/**
+ * The minted AVIF, from the edge cache or R2. null when there is none yet -
+ * including when the bucket is not bound at all.
+ */
+async function fromR2(
+  env: Env,
+  ctx: ExecutionContext,
+  url: URL,
+  variant: AvifVariant,
+  src: SteamSource,
+  asset: string,
+): Promise<Response | null> {
   const cache = caches.default;
-  const cacheKey = new Request(url.toString(), { method: "GET" });
-  const hit = await cache.match(cacheKey);
-  if (hit) return hit;
+  // Normalised: the format, width and quality are in the key - the Cache API
+  // ignores Vary, an old encoding must never be served for a new one, and
+  // stray query parameters must not fork it.
+  const id = `${variantTag(variant)}/${sourceKey(src)}`;
+  const key = new Request(`${url.origin}/img/~avif/${id}`);
+  const hit = await cache.match(key);
+  if (hit) return withHeaders(hit, { Vary: "Accept" });
 
-  // Transformations are billed separately from Workers Paid and Cloudflare has
-  // no spend cap, so they stay OFF until real /img/* volume is known. When
-  // enabling: land the appid allowlist FIRST, and pin `format` to exactly one
-  // value — deriving it from Accept doubles the unique-transformation count.
-  // String(): `wrangler types` narrows this to the literal "false" from
-  // wrangler.jsonc, but the value is overridable per-environment in the
-  // dashboard, so the literal type is a lie about runtime.
-  const transform = String(env.IMG_TRANSFORM) === "true";
-  const cf = transform
-    ? { image: { width, fit: "scale-down" as const, format: "webp" as const, quality: 75 },
-        cacheTtl: 2592000, cacheEverything: true }
-    : { cacheTtl: 2592000, cacheEverything: true };
+  const bucket = mediaBucket(env);
+  if (!bucket) return null;
+  const missKey = new Request(`${url.origin}/img/~avif-miss/${id}`);
+  if (await cache.match(missKey)) return null;
+  const object = await bucket.get(avifKey(variant, src));
+  if (!object) {
+    ctx.waitUntil(
+      cache.put(missKey, new Response("", { headers: { "Cache-Control": `public, max-age=${MISS_TTL}` } })),
+    );
+    return null;
+  }
 
-  // Thumbnails: prefer Steam's own small capsule (~10 KB) over the full header
-  // (~34 KB). It does not exist for the hashed asset paths — roughly half the
-  // catalog — so it is an attempt, not a rewrite, and we fall back to the
-  // requested asset. The extra upstream request only happens on a cache miss.
+  const res = new Response(object.body, {
+    status: 200,
+    headers: {
+      "Content-Type": "image/avif",
+      // The key carries Steam's ?t=, so a changed image is a different URL.
+      "Cache-Control": `public, max-age=${YEAR}, immutable`,
+      ETag: object.httpEtag,
+      // "Save image as" would otherwise name AVIF bytes header.jpg.
+      "Content-Disposition": `inline; filename="${asset.replace(/\.jpg$/, ".avif")}"`,
+      ...FINAL,
+      ...SECURITY_HEADERS,
+    },
+  });
+  // Cached WITHOUT Vary (the Cache API ignores it; the key already says
+  // AVIF); the copy that leaves here gets it.
+  ctx.waitUntil(cache.put(key, res.clone()));
+  return withHeaders(res, { Vary: "Accept" });
+}
+
+interface OriginalOptions {
+  /** Prefer Steam's 184x69 capsule (legacy `t`). */
+  thumb: boolean;
+  /** Final for this client, rather than standing in for an AVIF not minted yet. */
+  final: boolean;
+  /** The URL is negotiated (s/d), so the answer must say Vary: Accept. */
+  negotiated: boolean;
+}
+
+/** Steam's own JPEG, edge-cached once per (shape, source version). */
+async function original(
+  ctx: ExecutionContext,
+  url: URL,
+  src: SteamSource,
+  opts: OriginalOptions,
+): Promise<Response> {
+  const cache = caches.default;
+  const key = new Request(`${url.origin}/img/~jpeg/${opts.thumb ? "thumb" : "orig"}/${sourceKey(src)}`);
+  const hit = await cache.match(key);
+  if (hit) return finish(hit, opts);
+
+  // Steam's own small capsule (~7 KB against ~34 KB) exists only on the
+  // un-hashed asset paths, so it is tried only there - on a hashed path it
+  // cost two guaranteed 404s per cache miss.
+  const hashed = src.path.split("/").length === 3;
   const candidates =
-    variant === "t" && asset !== "capsule_184x69.jpg"
-      ? [suffix.replace(/[^/]+\.jpg$/, "capsule_184x69.jpg"), suffix]
-      : [suffix];
+    opts.thumb && !hashed && !src.path.endsWith("/capsule_184x69.jpg")
+      ? [src.path.replace(/[^/]+\.jpg$/, "capsule_184x69.jpg"), src.path]
+      : [src.path];
 
   let upstream: Response | undefined;
   outer: for (const candidate of candidates) {
     for (const host of SOURCE_HOSTS) {
-      const attempt = await fetch(
-        `https://${host}/store_item_assets/steam/apps/${candidate}${qs}`,
-        { cf },
-      );
+      const attempt = await fetch(steamUrl(host, candidate, src.stamp), {
+        cf: { cacheTtl: MONTH, cacheEverything: true },
+      });
       if (attempt.ok) {
         upstream = attempt;
         break outer;
@@ -128,13 +254,41 @@ export async function handleImg(
     status: 200,
     headers: {
       "Content-Type": upstream.headers.get("Content-Type") ?? "image/jpeg",
-      // Steam's ?t= is an asset mtime, so a changed image changes the URL.
-      "Cache-Control": "public, max-age=2592000, immutable",
+      // The edge copy's lifetime. What the client is told is set in finish().
+      "Cache-Control": `public, max-age=${MONTH}`,
       ...SECURITY_HEADERS,
     },
   });
-  ctx.waitUntil(cache.put(cacheKey, res.clone()));
-  return res;
+  ctx.waitUntil(cache.put(key, res.clone()));
+  return finish(res, opts);
+}
+
+/**
+ * Client-facing headers for the JPEG. One edge copy serves both cases: final
+ * (a month, immutable - Steam's ?t= is an asset mtime, so a changed image
+ * changes the URL) and provisional (a day, and nothing that lets the service
+ * worker keep it).
+ */
+function finish(res: Response, opts: OriginalOptions): Response {
+  const out = withHeaders(res, {
+    "Cache-Control": opts.final ? `public, max-age=${MONTH}, immutable` : `public, max-age=${DAY}`,
+    ...(opts.negotiated ? { Vary: "Accept" } : {}),
+  });
+  if (opts.final) out.headers.set("X-Img-Final", "1");
+  else out.headers.delete("X-Img-Final");
+  return out;
+}
+
+/** A copy with mutable headers: responses from the cache or fetch() are not. */
+function withHeaders(res: Response, headers: Record<string, string>): Response {
+  const out = new Response(res.body, res);
+  for (const [k, v] of Object.entries(headers)) out.headers.set(k, v);
+  return out;
+}
+
+/** HEAD answers the GET's status and headers with no body. */
+function headOnly(request: Request, res: Response): Response {
+  return request.method === "HEAD" ? new Response(null, res) : res;
 }
 
 async function handleAvatar(
@@ -165,8 +319,9 @@ async function handleAvatar(
     headers: {
       "Content-Type": upstream.headers.get("Content-Type") ?? "image/png",
       // An avatar can change under a stable URL, so this is a week rather than
-      // the immutable year Steam's mtime-stamped assets get.
+      // the immutable year minted Steam art gets.
       "Cache-Control": "public, max-age=604800",
+      ...FINAL,
       ...SECURITY_HEADERS,
     },
   });

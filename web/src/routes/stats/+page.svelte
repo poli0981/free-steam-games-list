@@ -266,7 +266,7 @@
       </section>
     {/if}
 
-    <div class="grid gap-4 lg:grid-cols-2">
+    <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
       <section class="rounded-lg border bg-card p-5">
         <h2 class="text-base font-semibold">{t("stats.safetyTitle")}</h2>
         <p class="mt-1 text-sm text-muted-foreground">{t("stats.safetyDesc")}</p>
@@ -283,7 +283,7 @@
     <section class="rounded-lg border bg-card p-5">
       <h2 class="text-base font-semibold">{t("stats.reviewLabelTitle")}</h2>
       <p class="mt-1 text-sm text-muted-foreground">{t("stats.reviewLabelDesc")}</p>
-      <ul class="mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+      <ul class="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
         {#each labels as [label, count] (label)}
           <li class="flex items-center justify-between gap-2 rounded-md border bg-background px-3 py-2 text-sm">
             <span class="truncate">{label}</span>

@@ -10,7 +10,8 @@
   import { filters } from "../filters.svelte";
   import { i18n } from "../i18n.svelte";
   import { appidOf } from "../data-store";
-  import { headerToCapsule } from "../image";
+  import { headerToCapsule, thumbFallback } from "../image";
+  import { imgFallback } from "../img-fallback";
   import { recordIssues } from "../validation";
   import { formatNumber, parseReviewPercent, cn } from "../utils";
   import { openExternal } from "../external-open";
@@ -62,7 +63,7 @@
 </script>
 
 <div class="overflow-hidden rounded-lg border bg-card">
-  <div bind:this={viewport} class="h-[calc(100dvh-20rem)] overflow-auto scrollbar-thin">
+  <div bind:this={viewport} class="h-[calc(100dvh-20rem)] overflow-auto scrollbar-slim scrollbar-panel">
     <div style:width="{TOTAL_WIDTH}px" style:min-width="100%">
       <!-- Sticky header. A real <table> cannot be virtualised without either
            losing sticky headers or fighting the row heights, so this is a grid
@@ -135,6 +136,7 @@
                   {#if g.header_image}
                     <img
                       src={headerToCapsule(g.header_image)}
+                      {@attach imgFallback(thumbFallback(g.header_image))}
                       alt=""
                       loading="lazy"
                       decoding="async"
@@ -176,6 +178,8 @@
                   {/if}
                 {:else if col.key === "current_players"}
                   <span class="font-mono tnum">{formatNumber(g.current_players)}</span>
+                {:else if col.key === "all_time_peak"}
+                  <span class="font-mono tnum">{formatNumber(g.all_time_peak)}</span>
                 {:else if col.key === "anti_cheat"}
                   {#if g.anti_cheat && g.anti_cheat !== "-"}
                     <Badge variant={g.is_kernel_ac ? "destructive" : "warning"}>{g.anti_cheat}</Badge>

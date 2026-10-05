@@ -1,8 +1,8 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
     <style name="Theme.f2p_tracker" parent="Theme.MaterialComponents.DayNight.NoActionBar">
-        <!-- Mirror values/themes.xml: transparent system bars + light icons for
-             the dark-by-default web UI under edge-to-edge (targetSdk 36). -->
+        <!-- Mirror values/themes.xml, which explains why enableEdgeToEdge()
+             overrides the icon colours and how the web UI handles the insets. -->
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:navigationBarColor">@android:color/transparent</item>
         <item name="android:windowLightStatusBar">false</item>

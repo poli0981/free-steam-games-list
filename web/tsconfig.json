@@ -12,8 +12,9 @@
     //     declare `self`, `onmessage` and friends with different types.
     //   - TypeScript resolves `cookie` to the HOISTED 1.1.1 (pulled in by
     //     wrangler -> miniflare -> youch) while @sveltejs/kit has its own
-    //     nested cookie@0.6.0 and uses that at runtime. The type error is a
-    //     resolution artifact, not a real version conflict.
+    //     nested cookie@0.7.x (package.json `overrides`) and uses that at
+    //     runtime. The type error is a resolution artifact, not a real version
+    //     conflict.
     "skipLibCheck": true,
     "strict": true,
     "noUnusedLocals": true,
