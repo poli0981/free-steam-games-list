@@ -9,6 +9,7 @@ Optimizations vs v2.1:
 """
 import random
 import time
+from typing import Optional
 
 from .constants import (
     STEAM_API_KEY, SKIP_GENRE_TAGS, ANTI_CHEAT_PATTERNS,
@@ -16,8 +17,10 @@ from .constants import (
 )
 from .steam_client import get_client
 from .data_store import extract_appid, now_iso, is_info_complete, is_empty
+from .normalize import decode_entities, normalize_release_date
 from .peaks import raise_peak
 from .scraper import scrape_store_page
+from .store_items import paid_dlc_from_items, parse_store_item
 
 
 # Steam category descriptions that imply online multiplayer. Bias toward
@@ -59,7 +62,8 @@ def apply_details(game: dict, data: dict) -> dict:
         game["name"] = data.get("name", "")
 
     if is_empty(game.get("description")):
-        sd = (data.get("short_description") or "").strip()
+        # appdetails returns the blurb HTML-escaped ("&quot;game&quot;").
+        sd = decode_entities((data.get("short_description") or "").strip())
         if sd:
             game["description"] = sd
 
@@ -82,7 +86,8 @@ def apply_details(game: dict, data: dict) -> dict:
         game["publisher"] = pubs if isinstance(pubs, list) else [pubs]
 
     if is_empty(game.get("release_date")):
-        game["release_date"] = data.get("release_date", {}).get("date", "N/A")
+        game["release_date"] = normalize_release_date(
+            data.get("release_date", {}).get("date", "N/A"))
 
     if is_empty(game.get("platforms")):
         p = data.get("platforms", {})
@@ -174,16 +179,72 @@ def apply_players(game: dict, count: int) -> dict:
 
 
 def apply_scraped(game: dict, scraped: dict) -> dict:
-    """Apply HTML-scraped data (languages, tags, DLC)."""
+    """Apply scraped store-page data (languages, tags, DLC)."""
     if is_empty(game.get("languages")) and scraped.get("languages"):
         game["languages"] = scraped["languages"]
     if is_empty(game.get("language_details")) and scraped.get("language_details"):
         game["language_details"] = scraped["language_details"]
     if is_empty(game.get("tags")) and scraped.get("tags"):
         game["tags"] = scraped["tags"]
-    # DLC: HTML scrape is authoritative
-    game["has_paid_dlc"] = scraped.get("has_paid_dlc", False)
+    # DLC: the store page is authoritative, and so are the prices of the DLC
+    # appdetails lists when the page is gated. None means neither could be
+    # read and leaves the stored value alone - an age gate once wrote False.
+    if scraped.get("has_paid_dlc") is not None:
+        game["has_paid_dlc"] = scraped["has_paid_dlc"]
     return game
+
+
+# ──────────── Store-page fields ────────────
+
+def _paid_dlc(client, appid: str, details: Optional[dict]) -> Optional[bool]:
+    """has_paid_dlc for a game whose store page could not be read: whether any
+    DLC appdetails lists has a price. None when that cannot be told."""
+    if details is None:
+        details = client.fetch_app_details(appid)
+    if not details:
+        return None
+    dlc = [str(d) for d in details.get("dlc") or []]
+    if not dlc:
+        return False
+    items = client.fetch_store_items(dlc)
+    return None if items is None else paid_dlc_from_items(items.values())
+
+
+def scrape_store_fields(client, appid: str, details: Optional[dict] = None) -> Optional[dict]:
+    """languages, language_details, tags and has_paid_dlc for one game, in
+    scrape_store_page()'s shape, or None when nothing could be read.
+
+    The store page first. Where Steam will not show it - the age gate, which
+    for an 'Adult Only' game is a Sign In page no cookie opens, or a redirect
+    away from the game - the same facts come from Steam's JSON API
+    (core/store_items.py), and has_paid_dlc from the prices of the game's DLC.
+    A page missing its language table or its tags gets only the missing part
+    from the API. A failed request, or a 404, reads as nothing at all.
+
+    `details` is the game's appdetails when the caller already has them; they
+    are fetched here only if a DLC check needs them.
+    """
+    status, page = client.fetch_store_page_full(appid)
+    if status in ("network_error", "not_found"):
+        return None
+    scraped = scrape_store_page(page) if status == "ok" else None
+    real_page = bool(scraped and (scraped["languages"] or scraped["tags"]))
+    if real_page and scraped["languages"] and scraped["tags"]:
+        return scraped
+
+    item = (client.fetch_store_items([appid]) or {}).get(str(appid))
+    if item is None:
+        return scraped if real_page else None
+    api = parse_store_item(item, client.fetch_tag_names())
+    if not real_page:
+        api["has_paid_dlc"] = _paid_dlc(client, appid, details)
+        return api
+    if not scraped["languages"] and api["languages"]:
+        scraped["languages"] = api["languages"]
+        scraped["language_details"] = api["language_details"]
+    if not scraped["tags"]:
+        scraped["tags"] = api["tags"]
+    return scraped
 
 
 # ──────────── fetch_full ────────────
@@ -220,7 +281,8 @@ def fetch_full(game: dict, client=None, fetch_players=True,
         if count is not None:
             apply_players(game, count)
 
-    # 4) HTML scrape (languages + tags + DLC pricing) – single request
+    # 4) Store page (languages + tags + DLC pricing) – single request, or
+    #    Steam's JSON API when the page is gated (scrape_store_fields).
     #    Always scrape if has_paid_dlc hasn't been set by extension,
     #    or if any of languages/tags/language_details are missing.
     needs_scrape = (
@@ -230,9 +292,9 @@ def fetch_full(game: dict, client=None, fetch_players=True,
         not game.get("_dlc_checked")  # internal flag: DLC not yet verified from HTML
     )
     if scrape and needs_scrape:
-        html = c.fetch_store_page(appid)
-        if html:
-            apply_scraped(game, scrape_store_page(html))
+        scraped = scrape_store_fields(c, appid, details=data)
+        if scraped:
+            apply_scraped(game, scraped)
             game["_dlc_checked"] = True
 
     # Housekeeping

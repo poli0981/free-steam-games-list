@@ -36,6 +36,7 @@ import os
 from typing import Optional
 
 from .constants import MANUAL_FIELDS, MACHINE_NOTE_MARKERS, OVERRIDES_DIR
+from .normalize import translate_notes
 
 OVERRIDE_SCHEMA = 1
 
@@ -211,7 +212,11 @@ def apply_overrides(games: list[dict], quiet: bool = False) -> ApplyStats:
                 continue
 
             if field == "notes":
-                value = preserve_machine_notes(game.get("notes", ""), value)
+                # Translated as save_main() translates the stored notes: an
+                # override still saying "Có DLC trả phí" would otherwise put it
+                # back after every normalisation, bump last_updated and commit
+                # on every run.
+                value = preserve_machine_notes(game.get("notes", ""), translate_notes(value))
 
             stats.enforced += 1
             if game.get(field) != value:

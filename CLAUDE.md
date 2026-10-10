@@ -21,6 +21,31 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
   `current_players: "492,197"`, `reviews: "86% (Very Positive)"`,
   `metacritic: "N/A"`. Parse before comparing or sorting.
 
+- **`save_main()` decides how values are WRITTEN** (`scripts/core/normalize.py`),
+  before overrides, on every record of every write, never touching
+  `last_updated`:
+  - `release_date` has ONE shape, `Aug 21, 2012`. Any full date Steam writes,
+    in either English order or any store language (`28 апр. 2025 г.`,
+    `28 Thg04, 2025`, `2025年4月28日`…), comes out that way. Anything else
+    (`Coming soon`, `Q1 2026`, `2026`) is kept verbatim. Steam's day/month
+    order changes from response to response, and the extension sends
+    `21 Aug, 2012`. Never store ISO: the released apps `Date.parse` the
+    field, and `2012-08-21` parses as UTC midnight, a day early west of
+    Greenwich.
+  - name/developer/publisher/description lose invisible characters (ZWSP,
+    bidi controls, zero-width watermark runs) and stray whitespace. Single
+    ZWJ/ZWNJ and the ideographic space are spelling and stay; a developer
+    left empty is dropped from its list.
+  - Tags and descriptions are HTML-unescaped (`Point &amp; Click`,
+    appdetails' `&quot;`), references with a semicolon only.
+  - The extension's `Có DLC trả phí` in `notes` reads `Has paid DLC`.
+    `apply_overrides()` translates an override's notes too, or it would put
+    the phrase back after every normalisation and commit on every run.
+
+  Every rule must stay idempotent: one that changed anything on a second
+  pass would rewrite every shard on every run. `test_normalize.py` holds
+  that, and `refresh_store_data.py` compares fresh values in this form.
+
 - **`MANUAL_FIELDS` are human judgements.** They are `anti_cheat`,
   `anti_cheat_note`, `is_kernel_ac`, `notes`, `type_game`, `safe`, `genre`.
   Two mechanisms protect them, and they are not the same thing:
@@ -141,9 +166,31 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
   appids are mostly multiples of 10, which leaves most slices empty. It
   replaces values only with NON-EMPTY ones, never writes `MANUAL_FIELDS` or
   `notes`, trusts `has_paid_dlc` only from a real store page (an age gate has
-  no language table or tags), compares `description` as stored (truncated),
-  and bumps `last_updated` only on a real change. A new field added to it must
-  obey the same rules; `scripts/tests/test_refresh_store_data.py` holds them.
+  no language table or tags) or a gated game's DLC prices, compares every
+  value as stored (normalised, `description` truncated - and a blurb merely
+  cut off later, now that `&quot;` is one character, is written without
+  counting as news), and bumps `last_updated` only on a real change. A game
+  with empty tags, languages or `language_details` is in the page group EVERY
+  day, first, capped at `MISSING_DAILY_CAP`; `--missing-only` runs just those.
+  A new field added to it must obey the same rules;
+  `scripts/tests/test_refresh_store_data.py` holds them.
+- **A store page behind Steam's age gate is never parsed.** An 'Adult Only'
+  game goes `/app/<id>/ → /agecheck/app/<id>/ → /login/?redir=…`, 200 at the
+  end, and no cookie opens it (measured 2026-10-10). Read as a page, the gate
+  had no languages, no tags and no DLC section: 25 games sat empty and every
+  one had `has_paid_dlc=false`. `fetch_store_page_full()` classifies the
+  whole redirect chain, and returns HTML only for the game's own page. Pages
+  are fetched with age cookies (`STORE_AGE_COOKIES`, for the M-rated games the
+  US runners were gated on), and the cookies go with store-page requests ONLY,
+  so discovery's search results are unchanged. `fetcher.scrape_store_fields()`
+  is the one path both `fetch_full()` and the refresh use. For a gated or
+  redirected game it reads `IStoreBrowseService/GetItems`, which is keyless:
+  tag ids are named by `IStoreService/GetTagList`, language ids by the tables
+  in `core/store_items.py`, and an unknown id is skipped, never stored. It
+  reads `has_paid_dlc` from the prices of the DLC appdetails lists. `None`
+  means unknown and leaves the stored value. Never use a Steam login cookie in
+  CI; it would expire silently, like the PAT did. appdetails is always asked
+  with `l=english`: without it, a runner was once answered in Russian.
 - **`all_time_peak` only ever goes UP, and `refresh_peaks.py` is what raises
   it** (daily 19:30 UTC, "Refresh All-Time Peaks"). A `crc32(appid) % 30`
   slice (`core/rotation.py`, shared with `refresh_store_data.py`) reads

@@ -3,8 +3,12 @@ Store page HTML scraper v2.2.
 
 Pre-compiled regexes for hot paths.
 All parsers operate on the same HTML string (fetched once).
+
+Text is HTML-unescaped before it is stored: the tag regex used to keep
+"Point &amp; Click", and the site renders tags as text.
 """
 import re
+from html import unescape as _unescape
 
 # ──── Pre-compiled patterns ────
 
@@ -34,6 +38,11 @@ _RE_DLC_PRICE_TEXT = re.compile(
 _RE_HAS_DIGIT = re.compile(r'\d')
 
 _RE_APP_TAG = re.compile(r'class\s*=\s*"app_tag"[^>]*>\s*([^<]+?)\s*</a>')
+
+# Steam's own page sometimes prints a language's localisation token where its
+# name belongs: TrackMania Nations Forever lists "#lang_slovakian". A token
+# with no entry here is dropped rather than stored as a language.
+_LANGUAGE_TOKENS = {"#lang_slovakian": "Slovak"}
 
 
 # ──── Language table ────
@@ -77,7 +86,9 @@ def parse_language_table(html: str) -> dict:
         if len(cells) < 2:
             continue
 
-        name = _RE_STRIP_HTML.sub('', cells[0]).strip()
+        name = _unescape(_RE_STRIP_HTML.sub('', cells[0])).strip()
+        if name.startswith("#"):
+            name = _LANGUAGE_TOKENS.get(name.lower(), "")
         if not name:
             continue
 
@@ -152,7 +163,7 @@ def parse_tags(html: str) -> list[str]:
     """Extract user-defined tags. Deduplicated, order preserved."""
     tags, seen = [], set()
     for m in _RE_APP_TAG.finditer(html):
-        t = m.group(1).strip()
+        t = _unescape(m.group(1)).strip()
         key = t.lower()
         if t and t != "+" and key not in seen:
             tags.append(t)
