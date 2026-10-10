@@ -4,6 +4,19 @@ All notable changes to this awesome noob repo will be documented here.
 
 ## [Unreleased]
 
+## [v4.2.1] – 2026-10-10 (The "Age Gate" Edition)
+
+Adult Only games now have their tags, languages and paid-DLC flag. Every
+release date reads the same way, and the catalogue's text no longer carries
+HTML escapes, invisible characters or Vietnamese notes. Only the data
+pipeline changed: the web app and the desktop/Android apps stay at `2.2.0`,
+with no new build. Repo public-facing version `4.2.0` → `4.2.1`.
+
+The fixes reach the catalogue through the pipeline itself. The next data job
+rewrites the dates, notes and text once. The next `Refresh Store Data` run
+fills the games that were empty. Every app, old or new, picks the changes up
+with its next catalogue download.
+
 ### 🐛 Fixed
 
 - **Adult Only games had no tags, no languages and the wrong paid-DLC flag.**
