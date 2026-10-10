@@ -20,6 +20,7 @@ from .constants import (
     MAX_RECORDS_PER_FILE, SHARD_PREFIX,
     MANUAL_FIELDS, ARRAY_FIELDS, DESCRIPTION_MAX,
 )
+from .normalize import normalize_records
 
 # ──────────── Link helpers ────────────
 
@@ -211,7 +212,17 @@ def save_main(records: list[dict], apply_human_overrides: bool = True):
 
     apply_human_overrides=False exists for tooling that must see the
     un-overridden values (an audit report). Never pass it from the pipeline.
+
+    The representation rules of core/normalize.py run first - one release
+    date shape, no invisible characters, no HTML entities, no Vietnamese
+    notes - so every writer gets them, the browser extension's ingest
+    included. Like the truncation, they never touch last_updated.
     """
+    # Before the truncation: a decoded "&quot;" is one character, not six.
+    normalized = normalize_records(records)
+    if normalized:
+        print("  normalised: " + ", ".join(f"{rule} {n}" for rule, n in normalized.items()))
+
     # Before overrides, so a human decision always has the last word. (No
     # override can currently set `description` -- it is not a MANUAL_FIELD --
     # but the ordering should not depend on that staying true.)

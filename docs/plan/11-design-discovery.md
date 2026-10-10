@@ -18,7 +18,7 @@ Everything below is grounded in the code I read and in endpoint probes I ran dur
 | Bundles on this query | `data-ds-bundleid` and `data-ds-packageid` counts were **0**, no comma ids on page 0 — `category1=998` already excludes them. Keep the comma guard anyway; it costs one `in` test **[measured]** |
 | `supportedlang=english` | dropping it raises `total_count` 16,668 → **18,205** (+1,537, 8.4%) **[measured]** |
 | Search "Coming soon" vs appdetails | appid `5033550` showed **"Coming soon"** in search and `coming_soon: false, date "10 Sep, 2026"` in appdetails minutes later **[measured]**. The search text lags — usable as a *this-run* skip, never as a durable rejection |
-| Date format inconsistency | same batch returned `"Sep 10, 2026"` and `"10 Sep, 2026"` **[measured]**. Carry `release_date` verbatim as a string; never parse it (the skeleton stores it as a string anyway, `scripts/core/data_store.py:201`) |
+| Date format inconsistency | same batch returned `"Sep 10, 2026"` and `"10 Sep, 2026"` **[measured]**. Carry `release_date` verbatim as a string; never parse it (the skeleton stores it as a string anyway, `scripts/core/data_store.py:201`). *2026-10-10:* still true of discovery's copy in D1; the DATASET now stores one shape, `Aug 21, 2012`, normalised inside `save_main()` (`scripts/core/normalize.py`) |
 
 ### The backlog, measured
 

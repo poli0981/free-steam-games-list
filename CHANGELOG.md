@@ -4,6 +4,52 @@ All notable changes to this awesome noob repo will be documented here.
 
 ## [Unreleased]
 
+## [v4.2.1] – 2026-10-10 (The "Age Gate" Edition)
+
+Adult Only games now have their tags, languages and paid-DLC flag. Every
+release date reads the same way, and the catalogue's text no longer carries
+HTML escapes, invisible characters or Vietnamese notes. Only the data
+pipeline changed: the web app and the desktop/Android apps stay at `2.2.0`,
+with no new build. Repo public-facing version `4.2.0` → `4.2.1`.
+
+The fixes reach the catalogue through the pipeline itself. The next data job
+rewrites the dates, notes and text once. The next `Refresh Store Data` run
+fills the games that were empty. Every app, old or new, picks the changes up
+with its next catalogue download.
+
+### 🐛 Fixed
+
+- **Adult Only games had no tags, no languages and the wrong paid-DLC flag.**
+  Steam answers an anonymous visit to such a game's store page with its age
+  check, a Sign In page no cookie gets past, and the pipeline read that page
+  as the game's own: no language table, no tags, no DLC section. 25 games
+  were stuck that way: about 16 adult games, plus Warframe, PUBG, Rainbow Six
+  Siege and other age-rated games that were gated on the US servers the
+  pipeline runs on. Every one of them was marked "no paid DLC". A gated page
+  is now recognised and never read. Those games come from Steam's own store
+  data instead: tags, languages with their interface/audio/subtitle columns,
+  and the paid-DLC flag from the prices of their DLC. A game with empty tags
+  or languages is retried every day until they fill.
+- **"Point &amp; Click".** 458 games had the tag written out with its HTML
+  escape, next to 10 with "Point & Click", so the tag filter listed both
+  (also "Design &amp; Illustration" and "Animation &amp; Modeling"). About 320
+  descriptions showed `&quot;` instead of quotation marks.
+- TrackMania Nations Forever listed a language called "#lang_slovakian"; it
+  is Slovak.
+
+### 🧹 Changed
+
+- **One release-date format.** Every release date reads like "Aug 21, 2012".
+  The catalogue held three shapes: about 1,360 games in "21 Aug, 2012" and
+  one in Russian. Dates sent in another order or another store language are
+  converted when they are saved. Placeholders such as "Coming soon" are left
+  as they are.
+- The note "Có DLC trả phí", which the browser extension wrote on 482 games,
+  now reads "Has paid DLC".
+- Invisible characters (zero-width spaces, stray direction marks) and stray
+  spaces or tabs are removed from 56 games' names, developers, publishers and
+  descriptions. Two games listed a publisher that was only a space.
+
 ## [v4.2.0] – 2026-10-03 (The "All-Time High" Edition)
 
 Every game now shows the most players it has ever had at once, the catalogue
