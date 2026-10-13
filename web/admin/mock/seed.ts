@@ -9,7 +9,7 @@
  */
 import type { SqliteD1 } from "../../worker/testing/sqlite-d1";
 import type { FakeRepo } from "../../worker/testing/fixtures";
-import { appendEntries, makeEntry } from "../../shared/removal";
+import { appendEntries, makeEntry, REMOVAL_REASONS } from "../../shared/removal";
 
 interface Rec {
   link: string;
@@ -205,7 +205,7 @@ export function seed(sqlite: SqliteD1, repo: FakeRepo, records: Rec[], now: Date
   repo.files.set("data/blocklist.jsonl", appendEntries("", entries));
   for (const e of entries) {
     db.prepare("UPDATE ingest_queue SET status = 'rejected', reject_reason = ? WHERE appid = ?").run(
-      `removed from catalogue: ${e.reason}`,
+      `removed from catalogue: ${REMOVAL_REASONS[e.reason]}`,
       e.appid,
     );
     decide.run(e.appid, "rejected", `removed:${e.reason}${e.note ? ` - ${e.note}` : ""}`, reviewer, e.blocked_at);

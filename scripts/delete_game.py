@@ -10,7 +10,7 @@ the discovery sweep - can bring it back. Restoring is done in /admin (Remove ->
 Removed -> Restore), because it also has to clear the review queue's record.
 
   python scripts/delete_game.py 730 --reason not_a_game
-  python scripts/delete_game.py https://store.steampowered.com/app/730/ 440 \
+  python scripts/delete_game.py https://store.steampowered.com/app/730/ 440 \\
       --reason duplicate --note "same game as 2357570" --apply
   python scripts/delete_game.py --list
   python scripts/delete_game.py --check        # validate the file (runs in CI)

@@ -1,6 +1,7 @@
 /**
  * /api/ingest/* — the producer surface. The discovery pipeline POSTs candidate
- * games here; a human reviews them later under /admin.
+ * games here; a reviewer decides on them later under /admin, or the
+ * auto-approve rule a reviewer turned on there does (lib/auto-approve.ts).
  *
  * Authenticated by a Cloudflare Access SERVICE TOKEN, not a human login. The
  * caller is a GitHub Actions job, so there is no browser and no session.
@@ -14,8 +15,12 @@
  *
  * IMPORTANT: this surface can only ever PROPOSE. It writes rows with
  * status='pending' and cannot approve, commit, or otherwise reach the
- * repository. A stolen service token buys an attacker a filled review queue,
- * nothing more.
+ * repository. A stolen service token buys an attacker a filled review queue -
+ * and, while auto-approve is on, requests for some of it, capped per day.
+ * Every claim in a payload (free, a game, healthy) is the caller's word: a
+ * request still has to pass ingest_new.py, which asks Steam itself and keeps
+ * only reachable, free apps of type "game" (and minAgeHours gives a reviewer
+ * time to look first).
  */
 import { jsonError, SECURITY_HEADERS } from "../lib/http";
 import type { AccessIdentity } from "../lib/access";

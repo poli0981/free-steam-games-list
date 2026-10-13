@@ -2,7 +2,9 @@ name: Discover New Games
 
 # Finds newly-released free-to-play titles on Steam and PROPOSES them to the
 # admin review queue in D1. It cannot add a game to the catalogue: publication
-# stays a human decision made under /admin.
+# is decided under /admin - by a reviewer, or by the auto-approve rule a
+# reviewer turned on there (off by default, capped per day) - and is still
+# only a request that ingest_new.py checks game by game.
 #
 # The `permissions: contents: read` below is the enforcement, not a formality.
 # Every other data workflow in this repo declares `contents: write`; this one

@@ -59,7 +59,7 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
 
 - **`data/overrides/<appid>.json` is human intent, and it is permanent.**
   `apply_overrides()` is called from inside `save_main()` — the single choke
-  point through which all 11 data-writing scripts pass, and the only code that
+  point through which all 14 data-writing scripts pass, and the only code that
   writes `data/data_*.jsonl`. An override is therefore re-imposed as the last
   act of every write, so it survives `refetch_all.py` and
   `normalize_genres.py --apply` without either script knowing it exists. Add a
@@ -79,6 +79,43 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
     `mark_dead_games.py` only appends while `is_dead` is False, so a stripped
     marker is never re-added. `preserve_machine_notes()` re-attaches them; do
     not bypass it.
+
+- **`data/blocklist.jsonl` is the other kind of human intent: games taken
+  OUT.** One line per game (`scripts/core/blocklist.py`; the Worker's twin is
+  `web/shared/removal.ts`), written by `/admin/remove` and
+  `scripts/delete_game.py`, READ by the pipeline. `save_main()` applies it
+  FIRST, on every write and whatever `apply_human_overrides` says: a blocked
+  record is left out of a NEW list (never the caller's - scripts hold indexes
+  into theirs), so no writer can bring the game back - not an extension push,
+  not a refetch. Rules that are easy to break:
+  - **A drop is logged once.** `log_admin_removals()` writes
+    `status_code: "admin_removed"` to `scripts/removed_games.jsonl`, built from
+    the blocklist line alone with `removed_at = blocked_at`, so writing it
+    again is byte-identical and nothing churns. It touches the file only when a
+    row is missing. A later purge line for the same game keeps winning.
+    `blocked_at` is whole seconds, like `now_iso()`: `dedup_removed()`
+    compares the strings.
+  - **More than 500 drops in one save raises before anything is written**
+    (`BLOCKLIST_MAX_DROP`): a damaged file must fail the job, not empty the
+    catalogue. `remove_games.py --max-drop` is the deliberate override.
+  - **A line it cannot honour blocks nothing** (bad JSON, no `blocked_at`, an
+    unknown reason); at save time that is one printed line in a job log -
+    `delete_game.py --check` in `check-overrides.yml` is what makes it loud.
+    The reasons in `blocklist.py` and `removal.ts` are held equal by a test; a
+    code only one side knows blocks nothing.
+  - **Never name the file `data_*`**: `save_main()` deletes shards it did not
+    write.
+  - **Writers append or delete whole lines**, never re-serialise the others.
+    The line format (key order, compact JSON, U+2028/U+2029 escaped) is held
+    byte-equal across Python and TypeScript by
+    `scripts/tests/fixtures/blocklist_golden.jsonl`.
+  - **Restore is the only way back**, and it is one commit: the line goes and
+    the link is appended to `scripts/temp_info.jsonl`, so the ingest that
+    follows cannot find the game still blocked. Deleting a line by hand leaves
+    D1's `removed:` decision behind (discovery keeps skipping the game).
+  - Overrides of a removed game stay, as orphans, and apply again after a
+    restore. `ingest_new.py` skips blocked links before any Steam request, and
+    discovery counts them as known.
 
 - **Shard assignment is unstable.** `save_main()` re-chunks the entire record
   list into 800-record files from scratch on every run and deletes leftovers.
@@ -209,13 +246,61 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
   the consent gate. `scripts/tests/test_refresh_peaks.py` holds the rules.
 - `ingest_new.py` only reads `scripts/temp_info.jsonl`. It has exactly two
   producers now: the browser extension (`poli0981/steam-f2p-extension`, which
-  pushes to the file directly) and the `/admin` approve flow (the Worker
-  appends via `createCommitOnBranch`). The issue-template and Telegram paths
-  were removed. Both producers APPEND; anything that overwrites this file
-  destroys whatever the other queued.
+  pushes to the file directly) and `/admin` (the Worker appends via
+  `createCommitOnBranch`: a reviewer's approvals, an auto-approve batch, a
+  Restore). The issue-template and Telegram paths were removed. Both producers
+  APPEND; anything that overwrites this file destroys whatever the other
+  queued. It skips a blocklisted link before any Steam request, and rejects
+  anything appdetails calls other than `type: "game"` (`status_code:
+  not_a_game` in `removed_games.jsonl`) - the check that makes auto-approve
+  safe, and why the extension can no longer add a free DLC, demo or tool. The
+  check lives in ingest only: in `health_checker` it would make Purge delete
+  old records every week.
+- **`ingest-new.yml` is also the removal job.** `bash/ingest.sh` runs
+  `remove_games.py` (applies `data/blocklist.jsonl`) and then
+  `ingest_new.py`, and commits once ("Apply removals" when `temp_info` did not
+  change). A separate removal workflow would keep evicting the ingest from
+  `data-write`'s single pending slot, and the ingest it. The workflow checks
+  out `ref: main`, not the triggering SHA: a run that waited its turn would
+  otherwise work on the data as it was when it was queued.
 - New games ARE discovered automatically now, by `scripts/discover_new.py`
-  into the D1 review queue — but discovery only PROPOSES. Publication stays a
-  human decision made in `/admin`.
+  into the D1 review queue — but discovery only PROPOSES. Publication is
+  decided in `/admin`: by a reviewer, batch by batch, or by the auto-approve
+  rule a reviewer turned on there (off by default, at most 500 a day). Either
+  way it is a REQUEST in `temp_info.jsonl` that `ingest_new.py` still checks
+  game by game.
+- **Auto-approve (`worker/lib/auto-approve.ts`, run by the cron after
+  reconcile) commits a batch only when every gate says yes**, and a gate it
+  cannot evaluate says no: enabled (or "Run one batch now"), its D1 lease,
+  today's budget (`min(dailyLimit, AUTO_DAILY_CEILING)` - the 500 is in code
+  and re-applied to whatever is stored, reserved with `bumpCounter` BEFORE the
+  commit and given back if it fails), `temp_info.jsonl` on `main` EMPTY, no
+  `data-write` workflow running or waiting, and something eligible (the SQL the
+  page previews is the SQL that runs). The empty-file gate is checked again
+  inside the commit (`requireEmptyQueue`), so a batch never lands mid-ingest;
+  "no row is approved" would have stalled it for the 12 hours a skipped row
+  stays approved. The idle gate exists because a push while a data job waits
+  EVICTS that job. `shared/pipeline.ts` lists every `data-write` workflow by
+  file, and `pipeline.test.ts` fails when a workflow joins the group without
+  joining the list. Settings, limits and their validation are
+  `shared/automation.ts`, imported by the Worker and the page. A scheduled
+  batch's D1 actor is `auto-approve`; a failure is audited once per distinct
+  cause, not every 15 minutes.
+- **Removing a game is a blocklist line plus D1, and Restore is its exact
+  inverse** (`worker/routes/remove.ts`, ≤100 per request, both under the
+  `blocklist` lease). The Worker may write `scripts/temp_info.jsonl`,
+  `data/overrides/*.json` and `data/blocklist.jsonl` (`WRITABLE` in
+  `git-commit.ts`) - never a shard or `index.json`. Remove sets the game's
+  decision to `rejected`, reason `removed:<code>`, even over `approved`, and
+  every row for it that is not rejected to `rejected`: a leftover `committed`
+  row would keep `publishedSql()` true, and the game locked, forever. Removing
+  an already-blocklisted game commits nothing and re-applies D1, which is how a
+  desync is repaired. Reopen refuses a `removed:` rejection (409, `removed`).
+  Restore drops the line and queues the link in ONE commit, deletes only a
+  `removed:` decision, and enters an approved row (source `restore`) for
+  reconcile to promote - or to age to `failed`, which can be approved again.
+  Name and link come from the catalogue, read server-side and sha256-checked
+  per shard (`readCatalogue()`), never from the request.
 - **Queue rules live in `web/shared/queue-rules.ts`, imported by the Worker AND
   the admin UI.** A row is read-only when its status is not decidable
   (`approved` = the request is committed to Git, `committed` = the game was
@@ -234,9 +319,11 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
   applied by hand, so `lib/locks.ts` treats a missing table as "unavailable" and
   every caller falls back — deploy order must never matter. Keep it that way for
   any future migration a Worker change depends on.
-- **Nothing `/admin` writes to Git may name a person.** Commit bodies and
-  `data/overrides/*.json` say `ADMIN_ATTRIBUTION` ("admin",
-  `web/shared/admin-api.ts`); a public repository keeps them forever.
+- **Nothing `/admin` writes to Git may name a person.** Commit bodies,
+  `data/overrides/*.json` and `data/blocklist.jsonl` lines say
+  `ADMIN_ATTRIBUTION` ("admin", `web/shared/admin-api.ts`); a public repository
+  keeps them forever. A removal's reason and note are public too, which the
+  page says before anyone types one.
   `appendLinks()` takes no actor parameter at all, so the old
   `Approved in /admin by <email>` cannot come back by a call site forgetting.
   D1 still stores the real Access identity in `audit_log.actor`,
@@ -721,6 +808,13 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
 - **Routes are `shared/admin-routes.ts`.** `serveAdmin` 404s every other path
   under `/admin` (the old Worker served the queue for any typo). A new page goes
   there AND in `App.svelte`'s `NAV`; `admin/security.test.ts` holds them equal.
+  `/admin` is the Overview and the queue is `/admin/queue`; `legacyQueuePath()`
+  sends an old `/admin?status=…` bookmark there with `replaceState`.
+- **No `/admin/api` route may answer 401 or 403 for anything but Access.** The
+  SPA reads both as a lapsed session (next bullet) and reloads: GitHub trouble
+  is a 502, missing D1 state or an unreadable catalogue a 503, each with a JSON
+  `error`. The Overview calls the other pages' endpoints, one card each, so
+  one failing endpoint blanks one card.
 - **It may import only pure modules of the public app**: `src/lib/ui/*`,
   `src/lib/utils.ts`, `src/lib/prefs.svelte.ts`, `src/fonts.css`,
   `src/styles/theme.css` (the design tokens, shared by both builds). Never
