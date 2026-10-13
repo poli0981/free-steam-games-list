@@ -16,9 +16,10 @@ from datetime import datetime, timezone
 from typing import Optional
 
 from .constants import (
-    DATA_DIR, LEGACY_JSONL, TEMP_JSONL,
+    DATA_DIR, LEGACY_JSONL, TEMP_JSONL, REMOVED_JSONL,
     MAX_RECORDS_PER_FILE, SHARD_PREFIX,
     MANUAL_FIELDS, ARRAY_FIELDS, DESCRIPTION_MAX,
+    BLOCKLIST_MAX_DROP,
 )
 from .normalize import normalize_records
 
@@ -128,6 +129,68 @@ def dedup_removed(records: list[dict]) -> list[dict]:
     return list(latest.values())
 
 
+def log_admin_removals(rows: list[dict]) -> int:
+    """Make sure the removed-games log carries these blocklist rows.
+
+    A row is added only when the log's latest line for that appid is not
+    already exactly it. Because each row is built from its blocklist line
+    (removed_at = blocked_at), writing it a second time is a no-op, and a later
+    line for the same game - a purge that logged it first - keeps winning, as
+    dedup_removed() already decides. The file is left untouched unless
+    something actually changes, so this can run on every save.
+    """
+    if not rows:
+        return 0
+    existing = load_jsonl(REMOVED_JSONL)
+    latest = {}
+    for r in dedup_removed(existing):
+        latest[r.get("appid") or extract_appid(r.get("link", ""))] = r
+    missing = [row for row in rows if latest.get(row["appid"]) != row]
+    if not missing:
+        return 0
+    merged = dedup_removed(existing + missing)
+    if merged == existing:
+        return 0
+    os.makedirs(os.path.dirname(REMOVED_JSONL) or ".", exist_ok=True)
+    save_jsonl(REMOVED_JSONL, merged)
+    return len(missing)
+
+
+def apply_blocklist(records: list[dict], max_drop: int = BLOCKLIST_MAX_DROP) -> list[dict]:
+    """The records to WRITE: everything except games in data/blocklist.jsonl.
+
+    Returns a new list and never touches the caller's: several scripts hold
+    positions into theirs (ingest_new.py's appid -> index map) and some save
+    part-way through a loop. A drop is logged in scripts/removed_games.jsonl,
+    once. More than `max_drop` drops in one save raises BEFORE anything is
+    written - a damaged file must fail the job loudly, not empty the catalogue.
+    """
+    from .blocklist import BlocklistError, load_blocklist, removed_row, split_blocked
+
+    blocked = load_blocklist()
+    if not blocked:
+        return records
+    kept, dropped = split_blocked(records, blocked, extract_appid)
+    if not dropped:
+        return records
+    if len(dropped) > max_drop:
+        raise BlocklistError(
+            f"data/blocklist.jsonl would remove {len(dropped)} games in one save "
+            f"(limit {max_drop}). Refusing to write anything. If that is intended, "
+            f"run scripts/remove_games.py --max-drop {len(dropped)}."
+        )
+    appids = []
+    for record in dropped:
+        appid = extract_appid(record.get("link", ""))
+        if appid not in appids:
+            appids.append(appid)
+    logged = log_admin_removals([removed_row(blocked[a]) for a in appids])
+    print(f"  blocklist: left out {len(appids)} blocked game(s)"
+          + (f", logged {logged} in {REMOVED_JSONL}" if logged else "")
+          + f": {', '.join(appids[:10])}{' …' if len(appids) > 10 else ''}")
+    return kept
+
+
 # ──────────── Shard helpers ────────────
 
 def _shard_paths() -> list[str]:
@@ -200,15 +263,21 @@ def truncate_descriptions(records: list[dict]) -> int:
     return n
 
 
-def save_main(records: list[dict], apply_human_overrides: bool = True):
+def save_main(records: list[dict], apply_human_overrides: bool = True,
+              max_blocked_drop: int = BLOCKLIST_MAX_DROP):
     """Save records to sharded JSONL files (MAX_RECORDS_PER_FILE per shard).
 
     Human overrides are re-imposed here, immediately before the write. This is
-    the single choke point for the dataset - all 11 data-writing scripts call
+    the single choke point for the dataset - all 14 data-writing scripts call
     save_main() and nothing else writes data/data_*.jsonl - so applying them
     here is what makes a correction survive refetch_all.py and
     normalize_genres.py --apply without either script knowing this layer
     exists. See core/overrides.py.
+
+    The blocklist (core/blocklist.py) is applied FIRST, the same way: a game
+    the maintainer removed is left out of every write, whichever script made
+    it, and that is never switched off - not even with
+    apply_human_overrides=False. The caller's list is not modified.
 
     apply_human_overrides=False exists for tooling that must see the
     un-overridden values (an audit report). Never pass it from the pipeline.
@@ -218,6 +287,11 @@ def save_main(records: list[dict], apply_human_overrides: bool = True):
     notes - so every writer gets them, the browser extension's ingest
     included. Like the truncation, they never touch last_updated.
     """
+    # Before everything else, so no work is spent on records that are not
+    # written, and a blocked game's override reports as an orphan (its file
+    # stays, and applies again if the game is restored).
+    records = apply_blocklist(records, max_drop=max_blocked_drop)
+
     # Before the truncation: a decoded "&quot;" is one character, not six.
     normalized = normalize_records(records)
     if normalized:

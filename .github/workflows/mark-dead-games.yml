@@ -28,6 +28,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        # The tip of main when the job starts, not when it was queued: a run
+        # that waited behind a long data job would otherwise rewrite stale shards.
+        with:
+          ref: main
 
       - uses: actions/setup-python@v5
         with:
@@ -49,14 +53,9 @@ jobs:
 
       - name: Commit changes
         if: ${{ inputs.dry_run != true }}
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/ scripts/dead_games.log
-          if git diff --cached --quiet; then
-            echo "No changes."
-          else
-            git commit -m "chore(data): mark dead games"
-            git push
-          fi
-
+        # Through commit_push.sh like every other data job: it rebases and
+        # retries when main moved during the run (a bare `git push` threw the
+        # run away), and it commits the whole tree, so scripts/removed_games.jsonl
+        # goes with the shards when save_main() applied a removal
+        # (scripts/core/blocklist.py).
+        run: bash ./bash/commit_push.sh "chore(data): mark dead games"

@@ -26,6 +26,7 @@ import urllib.request
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
+from core.blocklist import blocked_appids
 from core.data_store import load_main, extract_appid
 from core.steam_client import get_client
 
@@ -134,8 +135,14 @@ def parse_search_rows(results_html):
 
 
 def catalogue_appids():
-    """Appids already in data/."""
-    out = set()
+    """Appids already in data/, plus the ones the maintainer removed.
+
+    A game in data/blocklist.jsonl was taken out on purpose; proposing it again
+    would only put it back in the review queue. The Worker refuses it too (its
+    removal recorded a rejected decision), so this is the second fence, and the
+    one that holds even when D1 and Git disagree.
+    """
+    out = set(blocked_appids())
     for rec in load_main():
         aid = extract_appid(rec.get("link", ""))
         if aid:

@@ -3,7 +3,12 @@ on :
   # branches filter is REQUIRED: without it every v*/desktop-v* tag push
   # matches the paths filter (tag pushes compare against an empty base),
   # fires the ingest on a detached HEAD, and dies with exit 128 on push.
-  push : { branches : [ main ], paths : [ 'scripts/temp_info.jsonl' ] }
+  #
+  # data/blocklist.jsonl is here too: this job also applies removals
+  # (bash/ingest.sh runs scripts/remove_games.py first). A separate removal
+  # workflow would share `data-write` with this one, and each would evict the
+  # other's pending run.
+  push : { branches : [ main ], paths : [ 'scripts/temp_info.jsonl', 'data/blocklist.jsonl' ] }
   # Orphan recovery, not a poll. `data-write` keeps at most ONE run pending and
   # cancels the older one, so a push here that queues behind a ~115-minute data
   # job is silently evicted the moment any OTHER data-write workflow queues --
@@ -23,6 +28,11 @@ jobs :
     steps :
       -
         uses : actions/checkout@v6
+        # The tip of main when the job STARTS, not the commit that triggered
+        # it. A run that waited behind a long data job would otherwise work on
+        # shards that job has since rewritten, and its push would fail to
+        # rebase.
+        with : { ref : main }
       -
         uses : actions/setup-python@v6
         with : { python-version : '3.12' }

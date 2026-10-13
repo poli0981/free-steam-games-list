@@ -8,6 +8,7 @@ so fetch_full() can skip its own fetch_app_details() call → eliminates double-
 import sys, os
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
+from core.blocklist import blocked_appids
 from core.constants import REMOVED_JSONL, MANUAL_FIELDS
 from core.data_store import (
     load_main, save_main, load_temp, clear_temp,
@@ -20,13 +21,25 @@ from core.steam_client import get_client
 from core.health_checker import check_game_health, NETWORK_ERROR
 
 
+def _link_text(value) -> str:
+    """A queued link as text. `{"link": 730}` used to reach normalize_link() as
+    an int and crash the run before it saved or cleared the queue - so it
+    crashed again on every three-hourly retry. A number is an appid; anything
+    else that is not text becomes "" and is reported as an invalid line."""
+    if isinstance(value, bool):
+        return ""
+    if isinstance(value, int):
+        return str(value)
+    return value.strip() if isinstance(value, str) else ""
+
+
 def parse_entries(records):
     entries = []
     for rec in records:
-        if isinstance(rec, str):
-            entries.append({"link": rec.strip()})
-        elif isinstance(rec, dict) and rec.get("link"):
-            entries.append(rec)
+        if isinstance(rec, (str, int)) and not isinstance(rec, bool):
+            entries.append({"link": _link_text(rec)})
+        elif isinstance(rec, dict) and rec.get("link") not in (None, ""):
+            entries.append({**rec, "link": _link_text(rec["link"])})
     return entries
 
 
@@ -39,9 +52,12 @@ def main():
     games = load_main()
     index = build_index(games)
     entries = parse_entries(temp)
+    # data/blocklist.jsonl: games the maintainer removed. save_main() would
+    # drop them anyway; skipping here also saves the Steam requests.
+    blocked = blocked_appids()
     print(f"Found {len(entries)} entries\n")
 
-    added = skipped_dup = skipped_bad = skipped_net = 0
+    added = skipped_dup = skipped_bad = skipped_net = skipped_blocked = 0
     rejected = []
     client = get_client()
 
@@ -55,6 +71,10 @@ def main():
             continue
 
         appid = extract_appid(link)
+        if appid in blocked:
+            print(f"  ⛔ Blocked ({appid}): removed by the maintainer, see data/blocklist.jsonl")
+            skipped_blocked += 1
+            continue
         if appid in index:
             print(f"  ⏭ Dup ({appid})")
             skipped_dup += 1
@@ -108,7 +128,8 @@ def main():
     clear_temp()
 
     print(f"\n{'─'*50}")
-    print(f"Added: {added} | Dup: {skipped_dup} | Bad: {skipped_bad} | Net: {skipped_net}")
+    print(f"Added: {added} | Dup: {skipped_dup} | Bad: {skipped_bad} | Net: {skipped_net}"
+          f" | Blocked: {skipped_blocked}")
     print(f"Total: {len(games)}")
 
 

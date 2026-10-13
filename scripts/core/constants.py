@@ -11,6 +11,13 @@ DEAD_LINKS_LOG = "scripts/dead_links.log"
 REMOVED_JSONL  = "scripts/removed_games.jsonl"
 GAMES_DIR      = "games"
 OVERRIDES_DIR  = "data/overrides"   # one <appid>.json per human-edited game
+# Games the maintainer took out of the catalogue (core/blocklist.py). Never
+# name it data_*: save_main() treats data/data_*.jsonl as shards and deletes
+# the ones it did not write.
+BLOCKLIST_JSONL = "data/blocklist.jsonl"
+# More blocked games than this in ONE save is treated as a damaged file, not a
+# decision: save_main() refuses before writing anything (5 x the /admin cap).
+BLOCKLIST_MAX_DROP = 500
 
 # ──────────── Sharding ────────────
 MAX_RECORDS_PER_FILE = 800

@@ -1,10 +1,8 @@
 # NOTE: committing this file REPLACES the Dependabot configuration currently
-# set through repo settings. Existing open Dependabot PRs (e.g. #111) are
-# superseded and will be recreated against these groups on the next run.
+# set through repo settings.
 #
-# web/worker/ is intentionally absent: it does not exist yet. Add a fifth
-# npm entry for it as part of the Cloudflare Worker work — that package will
-# hold the repo-write credential, so it must be covered.
+# web/worker/ and web/admin/ need no entry of their own: they are built from
+# web/package.json, which the /web entry below covers.
 version: 2
 
 updates:
@@ -36,19 +34,22 @@ updates:
         patterns: ['@tauri-apps/*']
     ignore:
       # Framework majors are migrations with their own staged PRs, not
-      # something to take as an unattended bump.
-      - dependency-name: react
+      # something to take as an unattended bump. (SvelteKit 3 needs the
+      # cookie override in package.json re-keyed or dropped; see CLAUDE.md.)
+      - dependency-name: '@sveltejs/kit'
         update-types: [version-update:semver-major]
-      - dependency-name: react-dom
+      - dependency-name: '@sveltejs/adapter-static'
         update-types: [version-update:semver-major]
-      - dependency-name: react-router-dom
+      - dependency-name: svelte
         update-types: [version-update:semver-major]
       - dependency-name: tailwindcss
         update-types: [version-update:semver-major]
       - dependency-name: typescript
         update-types: [version-update:semver-major]
-      # lucide-react ships breaking icon renames on 0.x minors.
-      - dependency-name: lucide-react
+      # The type definitions follow the Node the build runs on (24, in
+      # web-ci.yml and the release workflows), not the newest Node.
+      - dependency-name: '@types/node'
+        update-types: [version-update:semver-major]
 
   # ── Desktop / Android shell ───────────────────────────────────────────────
   - package-ecosystem: cargo
