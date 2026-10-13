@@ -27,6 +27,7 @@
  */
 import { audit } from "./audit";
 import { approveRows } from "./approve";
+import { errorText } from "./http";
 import type { AdminDeps } from "./deps";
 import { TEMP_INFO_PATH } from "./git-commit";
 import { activeDataWrite, recentRuns } from "./github-runs";
@@ -154,7 +155,7 @@ export async function autoApprove(
   try {
     result = await run(env, deps, settings, now, opts);
   } catch (err) {
-    result = { outcome: "failed", detail: err instanceof Error ? err.message : String(err) };
+    result = { outcome: "failed", detail: errorText(err) };
   } finally {
     await releaseLease(env.DB, LEASE, owner);
   }
@@ -190,7 +191,7 @@ async function run(
   try {
     ({ files } = await deps.readRepoFiles(env, [TEMP_INFO_PATH, BLOCKLIST_PATH]));
   } catch (err) {
-    return { outcome: "skipped", detail: `GitHub unreachable: ${err instanceof Error ? err.message : String(err)}` };
+    return { outcome: "skipped", detail: `GitHub unreachable: ${errorText(err)}` };
   }
   if ((files[0] ?? "").trim()) return { outcome: "skipped", detail: "the previous batch is still in scripts/temp_info.jsonl" };
   const blocked = parseBlocklist(files[1] ?? "");
@@ -202,7 +203,7 @@ async function run(
     const busy = activeDataWrite(await recentRuns(env, deps));
     if (busy) return { outcome: "skipped", detail: `pipeline busy: ${busy.name || busy.file} is ${busy.status}` };
   } catch (err) {
-    return { outcome: "skipped", detail: `GitHub unreachable: ${err instanceof Error ? err.message : String(err)}` };
+    return { outcome: "skipped", detail: `GitHub unreachable: ${errorText(err)}` };
   }
 
   // Reserve the budget, then spend it.

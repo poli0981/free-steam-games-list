@@ -6,7 +6,7 @@
  * GitHub trouble is a 502 with a JSON body, never a 401/403: the admin page
  * reads those two as "your Access session expired" and reloads.
  */
-import { jsonError, SECURITY_HEADERS } from "../lib/http";
+import { errorText, jsonError, SECURITY_HEADERS } from "../lib/http";
 import type { AccessIdentity } from "../lib/access";
 import { defaultAdminDeps, type AdminDeps } from "../lib/deps";
 import { TEMP_INFO_PATH } from "../lib/git-commit";
@@ -38,7 +38,7 @@ export async function handlePipelineApi(
   try {
     runs = await recentRuns(env, deps, { fresh: url.searchParams.get("fresh") === "1" });
   } catch (err) {
-    return jsonError(502, err instanceof Error ? err.message : String(err));
+    return jsonError(502, errorText(err));
   }
 
   // A weekly job can fall out of the last 100 runs; ask for those by file.

@@ -60,6 +60,14 @@ export function clampOffset(raw: string | null, max = 1_000_000): number {
   return Math.min(n, max);
 }
 
+/**
+ * A caught error as text a response may carry: an Error's message, never its
+ * stack. Anything else that was thrown is only described.
+ */
+export function errorText(err: unknown): string {
+  return err instanceof Error ? err.message : `non-Error thrown: ${err}`;
+}
+
 export function jsonError(status: number, message: string): Response {
   return new Response(JSON.stringify({ error: message }), {
     status,

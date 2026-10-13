@@ -1,4 +1,4 @@
-import { readdirSync, readFileSync, statSync } from "node:fs";
+import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { ADMIN_MIGRATIONS, AUDIT_ACTIONS, JOB_KINDS } from "./admin-api";
@@ -15,11 +15,13 @@ describe("ADMIN_MIGRATIONS", () => {
 /** Every non-test .ts file under worker/, as text. */
 function workerSources(dir = join(__dirname, "..", "worker")): string[] {
   const out: string[] = [];
-  for (const name of readdirSync(dir)) {
-    const full = join(dir, name);
-    if (statSync(full).isDirectory()) {
-      if (name !== "testing" && name !== "generated") out.push(...workerSources(full));
-    } else if (name.endsWith(".ts") && !name.endsWith(".test.ts") && !name.endsWith(".d.ts")) {
+  // The directory entry says what each path is; a separate stat before the
+  // read would be a check-then-use race (CodeQL js/file-system-race).
+  for (const entry of readdirSync(dir, { withFileTypes: true })) {
+    const full = join(dir, entry.name);
+    if (entry.isDirectory()) {
+      if (entry.name !== "testing" && entry.name !== "generated") out.push(...workerSources(full));
+    } else if (entry.name.endsWith(".ts") && !entry.name.endsWith(".test.ts") && !entry.name.endsWith(".d.ts")) {
       out.push(readFileSync(full, "utf-8"));
     }
   }
