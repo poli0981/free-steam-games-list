@@ -21,7 +21,7 @@ export const AUTO_ACTOR = "auto-approve";
  * settings, so no stored value can exceed it.
  */
 export const AUTO_DAILY_CEILING = 500;
-export const AUTO_MAX_SOURCES = 10;
+const AUTO_MAX_SOURCES = 10;
 export const AUTO_MAX_AGE_HOURS = 168;
 
 export const AUTO_ORDERS = ["oldest", "newest", "players"] as const;

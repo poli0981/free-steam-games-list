@@ -17,6 +17,8 @@
  *   mock_github=down cookie
  *   x-mock-session header,  "expired" answers like Access does for a lapsed
  *   mock_session cookie     session, so the SPA's re-login path can be tried
+ *   mock_pipeline=busy      a data-write run is in progress, so auto-approve
+ *   cookie                  waits and /admin/pipeline shows it
  *
  * In preview mode it also serves /admin* through worker/routes/admin-spa.ts
  * and the generated bundle, exactly as production does - the only way to see
@@ -67,7 +69,41 @@ function loadRecords(): Record<string, unknown>[] {
 }
 
 /** Per-request switches, set by the middleware from the environment or a cookie. */
-const mock = { githubDown: false };
+const mock = { githubDown: false, pipelineBusy: false };
+
+/**
+ * GitHub Actions runs for /admin/pipeline and auto-approve's idle gate. The
+ * pipeline is idle unless the mock_pipeline=busy cookie says otherwise.
+ */
+function demoRuns(busy: boolean) {
+  const at = (hoursAgo: number) => new Date(Date.now() - hoursAgo * 3_600_000).toISOString();
+  const run = (file: string, name: string, hoursAgo: number, status: string, conclusion: string | null, event = "schedule") => ({
+    path: `.github/workflows/${file}`,
+    name,
+    status,
+    conclusion,
+    event,
+    display_title: name,
+    created_at: at(hoursAgo),
+    run_started_at: at(hoursAgo),
+    updated_at: at(hoursAgo - (status === "completed" ? 0.3 : 0)),
+    html_url: `https://github.com/poli0981/free-steam-games-list/actions/runs/${Math.round(hoursAgo * 1000)}${file.length}`,
+    run_number: Math.round(1000 - hoursAgo),
+  });
+  return [
+    ...(busy ? [run("update-reviews.yml", "Update Reviews", 0.5, "in_progress", null)] : []),
+    run("ingest-new.yml", "Ingest New Game Links", 1, "completed", "success", "push"),
+    run("refresh-store-data.yml", "Refresh Store Data", 5, "completed", "success"),
+    run("update-json.yml", "Auto Update JSON Data", 9, "completed", "success"),
+    run("refresh-peaks.yml", "Refresh All-Time Peaks", 14, "completed", "failure"),
+    run("ingest-new.yml", "Ingest New Game Links", 4, "completed", "success"),
+    run("snapshot-daily.yml", "Daily Snapshot", 18, "completed", "success"),
+    run("update-reviews.yml", "Update Reviews", 30, "completed", "cancelled"),
+    run("top-online.yml", "Top Online Leaderboard", 40, "completed", "success"),
+    run("discover-new.yml", "Discover New Games", 20, "completed", "success"),
+    run("purge-unhealthy.yml", "Purge Unhealthy Games", 100, "completed", "success"),
+  ];
+}
 
 async function createBackend(server: ViteDevServer, preview: boolean): Promise<Backend> {
   const load = <T>(file: string) => server.ssrLoadModule(join(WEB, file)) as Promise<T>;
@@ -89,12 +125,32 @@ async function createBackend(server: ViteDevServer, preview: boolean): Promise<B
   const deps = fakeDeps({
     records: byAppid,
     now: now(),
-    gh: async () =>
-      mock.githubDown ? new Response("unavailable", { status: 503 }) : new Response("[]", { status: 200 }),
+    gh: async (_env, path) => {
+      if (mock.githubDown) return new Response("unavailable", { status: 503 });
+      if (path.includes("/actions/")) {
+        // /actions/workflows/<file>/runs answers for that workflow alone.
+        const file = /\/actions\/workflows\/([^/]+)\/runs/.exec(path)?.[1];
+        const runs = demoRuns(mock.pipelineBusy).filter((r) => !file || r.path.endsWith(`/${file}`));
+        return new Response(JSON.stringify({ workflow_runs: runs }), { status: 200 });
+      }
+      return new Response("[]", { status: 200 });
+    },
   });
   deps.now = now;
   let hidden = new Set<string>();
+  // What the fake repository was given (a removal, a restore, an approval)
+  // wins over the real file on disk, so the pages show it straight away.
+  const fromRepoOrDisk = (path: string): string | null => {
+    if (deps.repo.files.has(path)) return deps.repo.files.get(path)!;
+    const full = join(REPO, path);
+    return existsSync(full) ? readFileSync(full, "utf-8") : null;
+  };
+  deps.readRepoFiles = (async (_env: Env, paths: string[]) => ({
+    head: "mock",
+    files: paths.map(fromRepoOrDisk),
+  })) as typeof deps.readRepoFiles;
   deps.fetchRaw = async (path: string) => {
+    if (deps.repo.files.has(path)) return deps.repo.files.get(path)!;
     const full = join(REPO, path);
     if (!existsSync(full)) return null;
     const text = readFileSync(full, "utf-8");
@@ -181,6 +237,7 @@ export function adminDevApi(options: { preview: boolean }): Plugin {
           }
           mock.githubDown =
             process.env.MOCK_GITHUB === "down" || /(?:^|;\s*)mock_github=down(?:;|$)/.test(req.headers.cookie ?? "");
+          mock.pipelineBusy = /(?:^|;\s*)mock_pipeline=busy(?:;|$)/.test(req.headers.cookie ?? "");
           backend ??= createBackend(server, options.preview);
           const ready = await backend;
           const url = new URL(req.url ?? "/", "http://localhost");

@@ -14,7 +14,7 @@ const run = (file: string, status: string, extra: Record<string, unknown> = {}) 
   status,
   conclusion: status === "completed" ? "success" : null,
   created_at: "2026-09-17T10:00:00Z",
-  html_url: `https://github.com/x/runs/${file}`,
+  html_url: `https://github.com/x/runs/${file}/${status}`,
   ...extra,
 });
 
@@ -25,7 +25,8 @@ describe("GET /admin/api/pipeline", () => {
       gh: async (_env, path) => {
         asked.push(path);
         if (path.includes("/actions/workflows/")) {
-          return new Response(JSON.stringify({ workflow_runs: [run(path.split("/")[5], "completed")] }));
+          // /repos/<owner>/<repo>/actions/workflows/<file>/runs
+          return new Response(JSON.stringify({ workflow_runs: [run(path.split("/")[6], "completed")] }));
         }
         return new Response(
           JSON.stringify({
@@ -51,6 +52,20 @@ describe("GET /admin/api/pipeline", () => {
     expect(asked.some((p) => p.includes("/actions/workflows/purge-unhealthy.yml/runs"))).toBe(true);
     const purge = body.workflows.find((w: any) => w.file === ".github/workflows/purge-unhealthy.yml");
     expect(purge.latest.status).toBe("completed");
+  });
+
+  it("lists each run once, however GitHub answered", async () => {
+    const same = run("update-reviews.yml", "in_progress");
+    const deps = fakeDeps({
+      gh: async () => new Response(JSON.stringify({ workflow_runs: [same, same, run("ingest-new.yml", "completed")] })),
+    });
+    const { body } = await call(makeEnv(), deps, "/admin/api/pipeline");
+    const urls = [...body.active, ...body.workflows.flatMap((w: any) => w.recent)].map((r: any) => r.html_url);
+    expect(body.active).toHaveLength(1);
+    expect(new Set(body.workflows.flatMap((w: any) => w.recent).map((r: any) => r.html_url)).size).toBe(
+      body.workflows.flatMap((w: any) => w.recent).length,
+    );
+    expect(urls.length).toBeGreaterThan(0);
   });
 
   it("answers GitHub trouble with a 502, never a 401/403", async () => {

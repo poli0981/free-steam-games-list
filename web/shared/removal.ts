@@ -22,9 +22,6 @@ export const MAX_NOTE = 300;
 /** ingest_decisions.reason prefix that marks a removal rather than a rejection. */
 export const REMOVED_DECISION_PREFIX = "removed:";
 
-/** status_code of a removal in scripts/removed_games.jsonl. */
-export const REMOVED_STATUS_CODE = "admin_removed";
-
 /** Written into every line instead of a person: the file is public forever. */
 const ATTRIBUTION = "admin";
 
@@ -65,7 +62,7 @@ const ENTRY_KEYS = ["appid", "link", "name", "reason", "note", "blocked_at", "by
 const APPID_RE = /^\d{1,10}$/;
 const ISO_SECONDS_RE = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/;
 
-export function canonicalLink(appid: string): string {
+function canonicalLink(appid: string): string {
   return `https://store.steampowered.com/app/${appid}/`;
 }
 

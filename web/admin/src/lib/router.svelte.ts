@@ -1,13 +1,13 @@
 /**
- * A history router for five pages. The admin has no nested routes, no route
- * parameters and no data loading to coordinate, so a framework router would be
- * all weight and no function.
+ * A history router for a handful of pages. The admin has no nested routes, no
+ * route parameters and no data loading to coordinate, so a framework router
+ * would be all weight and no function.
  *
  * Page state that should survive a reload or a shared link (the queue's tab,
  * search, sort and page; the edit page's appid) lives in the query string and
  * is read and written through `query` and `setQuery`.
  */
-import { isAdminRoute, type AdminRoute } from "../../../shared/admin-routes";
+import { isAdminRoute, legacyQueuePath, type AdminRoute } from "../../../shared/admin-routes";
 
 type Guard = () => string | null;
 
@@ -80,6 +80,12 @@ class Router {
     // "/admin/" is the Vite dev server's base; production redirects it.
     if (location.pathname.length > 1 && location.pathname.endsWith("/")) {
       history.replaceState(null, "", location.pathname.replace(/\/+$/, "") + location.search);
+      this.sync();
+    }
+    // A bookmark from before the queue moved to /admin/queue.
+    const legacy = legacyQueuePath(location.pathname, location.search);
+    if (legacy) {
+      history.replaceState(null, "", legacy);
       this.sync();
     }
 

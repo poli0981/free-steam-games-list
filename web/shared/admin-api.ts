@@ -299,7 +299,7 @@ export interface RemoveResponse {
   job: string | null;
 }
 
-export interface RemovedItem extends BlocklistEntry {
+interface RemovedItem extends BlocklistEntry {
   /** Still in data/ - waiting for the pipeline. null when the catalogue could not be read. */
   inCatalogue: boolean | null;
   decision: { decision: string; reason: string | null } | null;

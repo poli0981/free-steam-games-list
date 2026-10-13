@@ -1,8 +1,13 @@
 <script lang="ts">
   import { onMount } from "svelte";
   import { Toaster } from "svelte-sonner";
+  import LayoutDashboard from "@lucide/svelte/icons/layout-dashboard";
   import Inbox from "@lucide/svelte/icons/inbox";
+  import Bot from "@lucide/svelte/icons/bot";
   import SquarePen from "@lucide/svelte/icons/square-pen";
+  import ArchiveX from "@lucide/svelte/icons/archive-x";
+  import ListChecks from "@lucide/svelte/icons/list-checks";
+  import Workflow from "@lucide/svelte/icons/workflow";
   import GitCommitHorizontal from "@lucide/svelte/icons/git-commit-horizontal";
   import ScrollText from "@lucide/svelte/icons/scroll-text";
   import HeartPulse from "@lucide/svelte/icons/heart-pulse";
@@ -16,17 +21,27 @@
   import { reportError } from "./lib/notify";
   import type { MeResponse } from "../../shared/admin-api";
   import type { AdminRoute } from "../../shared/admin-routes";
+  import OverviewView from "./views/OverviewView.svelte";
   import QueueView from "./views/QueueView.svelte";
+  import AutomationView from "./views/AutomationView.svelte";
   import EditView from "./views/EditView.svelte";
+  import RemoveView from "./views/RemoveView.svelte";
+  import QualityView from "./views/QualityView.svelte";
+  import PipelineView from "./views/PipelineView.svelte";
   import JobsView from "./views/JobsView.svelte";
   import AuditView from "./views/AuditView.svelte";
   import HealthView from "./views/HealthView.svelte";
   import NotFound from "./views/NotFound.svelte";
 
-  /** Every entry in shared/admin-routes.ts, and nothing else (app.test.ts). */
+  /** Every entry in shared/admin-routes.ts, in its order, and nothing else (security.test.ts). */
   const NAV: { path: AdminRoute; label: string; title: string; icon: typeof Inbox }[] = [
-    { path: "/admin", label: "Queue", title: "Review queue", icon: Inbox },
+    { path: "/admin", label: "Overview", title: "Overview", icon: LayoutDashboard },
+    { path: "/admin/queue", label: "Queue", title: "Review queue", icon: Inbox },
+    { path: "/admin/automation", label: "Automation", title: "Auto-approve", icon: Bot },
     { path: "/admin/edit", label: "Edit", title: "Correct published games", icon: SquarePen },
+    { path: "/admin/remove", label: "Remove", title: "Remove and restore games", icon: ArchiveX },
+    { path: "/admin/quality", label: "Quality", title: "Data quality", icon: ListChecks },
+    { path: "/admin/pipeline", label: "Pipeline", title: "Pipeline runs", icon: Workflow },
     { path: "/admin/jobs", label: "Jobs", title: "Commit jobs", icon: GitCommitHorizontal },
     { path: "/admin/audit", label: "Audit", title: "Audit log", icon: ScrollText },
     { path: "/admin/health", label: "Health", title: "Health", icon: HeartPulse },
@@ -82,13 +97,18 @@
           {@const active = router.route === item.path}
           <a
             href={item.path}
+            title={item.title}
             aria-current={active ? "page" : undefined}
-            class="inline-flex shrink-0 items-center gap-1.5 rounded-md px-2.5 py-1.5 text-sm font-medium transition-colors
+            class="relative inline-flex shrink-0 items-center gap-1.5 rounded-md px-2.5 py-1.5 text-sm font-medium transition-colors
               {active ? 'bg-accent text-foreground' : 'text-muted-foreground hover:bg-accent/60 hover:text-foreground'}"
           >
             <item.icon class="size-4" />
-            <span class="hidden md:inline">{item.label}</span>
-            <span class="sr-only md:hidden">{item.label}</span>
+            <!-- Ten pages: words only where they fit, icons and a tooltip below that.
+                 `relative` on the link keeps the sr-only label inside the
+                 scrolling nav; without it the label of a link scrolled out of
+                 view escaped to the sticky header and widened the page. -->
+            <span class="hidden xl:inline">{item.label}</span>
+            <span class="sr-only xl:hidden">{item.label}</span>
           </a>
         {/each}
       </nav>
@@ -121,9 +141,19 @@
 
   <main id="main" class="mx-auto max-w-7xl px-4 py-6 pb-24">
     {#if router.route === "/admin"}
+      <OverviewView />
+    {:else if router.route === "/admin/queue"}
       <QueueView />
+    {:else if router.route === "/admin/automation"}
+      <AutomationView />
     {:else if router.route === "/admin/edit"}
       <EditView />
+    {:else if router.route === "/admin/remove"}
+      <RemoveView />
+    {:else if router.route === "/admin/quality"}
+      <QualityView />
+    {:else if router.route === "/admin/pipeline"}
+      <PipelineView />
     {:else if router.route === "/admin/jobs"}
       <JobsView />
     {:else if router.route === "/admin/audit"}

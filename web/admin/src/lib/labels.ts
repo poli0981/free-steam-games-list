@@ -35,6 +35,8 @@ export const REOPEN_TEXT: Record<string, string> = {
   published: "This game is already in the catalogue, so its rejection cannot be reopened.",
   "open-row-exists":
     "Another row for this game is still open (pending, deferred or approved) or committed. Decide that row instead.",
+  removed:
+    "This game was removed from the catalogue. Bring it back with Restore (Remove -> Removed), which also unblocks it in data/blocklist.jsonl.",
 };
 
 export const ACTION_LABEL: Record<DecideAction, string> = {

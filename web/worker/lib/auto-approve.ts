@@ -65,7 +65,7 @@ const ORDER_SQL: Record<AutoSettings["order"], string> = {
  * The WHERE clause and its bindings for "eligible now". One builder for the
  * run and for the page's preview, so what the page shows is what runs.
  */
-export function eligibleWhere(settings: AutoSettings, now: Date): { where: string; binds: unknown[] } {
+function eligibleWhere(settings: AutoSettings, now: Date): { where: string; binds: unknown[] } {
   const cutoff = new Date(now.getTime() - settings.minAgeHours * 3_600_000).toISOString();
   const clauses = [
     "q.status = 'pending'",

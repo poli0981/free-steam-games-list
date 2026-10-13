@@ -12,10 +12,10 @@
   import { isAbort, reportError } from "../lib/notify";
   import { router } from "../lib/router.svelte";
   import { commitUrl, exactTime, fileUrl, relativeTime, shortSha } from "../lib/format";
-  import type { CommitJob, Paged } from "../../../shared/admin-api";
+  import { JOB_KINDS, type CommitJob, type Paged } from "../../../shared/admin-api";
 
   const STATUSES = ["pending", "committed", "conflict", "failed"];
-  const KINDS = ["approve", "override", "override.delete"];
+  const KINDS: readonly string[] = JOB_KINDS;
   const SIZES = [25, 50, 100, 200];
 
   const query = $derived(router.query);
