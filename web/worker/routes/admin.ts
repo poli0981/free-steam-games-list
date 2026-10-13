@@ -17,6 +17,8 @@ import { readLease } from "../lib/locks";
 import { retentionDays } from "../lib/prune";
 import { defaultAdminDeps, type AdminDeps } from "../lib/deps";
 import { handleEditApi } from "./edit";
+import { handleRemoveApi, REMOVE_ROUTES } from "./remove";
+import { REMOVED_DECISION_PREFIX } from "../../shared/removal";
 import {
   DECIDE_ACTIONS,
   MAX_DECIDE,
@@ -55,6 +57,11 @@ export async function handleAdminApi(
   // write data/overrides/, never data/ and never the queue.
   if (route === "game" || route === "edit" || route === "genres" || route === "by-genre") {
     return handleEditApi(request, url, env, who, deps);
+  }
+
+  // Removing published games, and restoring one: data/blocklist.jsonl.
+  if ((REMOVE_ROUTES as readonly string[]).includes(route)) {
+    return handleRemoveApi(request, url, env, who, deps);
   }
 
   // Who am I? Confirms the Access -> Worker identity chain end to end.
@@ -524,7 +531,9 @@ export async function handleAdminApi(
           ${alias}.status = 'rejected'
       AND NOT EXISTS (SELECT 1 FROM ingest_queue o WHERE o.appid = ${alias}.appid AND o.id <> ${alias}.id
                         AND o.status IN (${sqlList([...OPEN_STATUSES, "committed"])}))
-      AND NOT EXISTS (SELECT 1 FROM ingest_decisions d WHERE d.appid = ${alias}.appid AND d.decision = 'approved')`;
+      AND NOT EXISTS (SELECT 1 FROM ingest_decisions d WHERE d.appid = ${alias}.appid AND d.decision = 'approved')
+      AND NOT EXISTS (SELECT 1 FROM ingest_decisions r WHERE r.appid = ${alias}.appid AND r.decision = 'rejected'
+                        AND r.reason LIKE '${REMOVED_DECISION_PREFIX}%')`;
 
     const results = await env.DB.batch([
       env.DB.prepare(
@@ -541,12 +550,18 @@ export async function handleAdminApi(
 
     if ((results[1]?.meta?.changes ?? 0) === 0) {
       const row = await env.DB.prepare(
-        `SELECT q.status, q.appid, ${publishedSql("q")} AS published FROM ingest_queue q WHERE q.id = ?`,
+        `SELECT q.status, q.appid, ${publishedSql("q")} AS published,
+                EXISTS (SELECT 1 FROM ingest_decisions r WHERE r.appid = q.appid AND r.decision = 'rejected'
+                          AND r.reason LIKE '${REMOVED_DECISION_PREFIX}%') AS removed
+           FROM ingest_queue q WHERE q.id = ?`,
       )
         .bind(id)
-        .first<{ status: string; appid: string; published: number }>();
+        .first<{ status: string; appid: string; published: number; removed: number }>();
       if (!row) return jsonError(404, "not found");
-      const reason = row.status !== "rejected" ? "not-rejected" : row.published ? "published" : "open-row-exists";
+      // A removed game comes back through Restore (Remove -> Removed), which
+      // also unblocks it in Git; reopening its row would leave it blocked.
+      const reason =
+        row.status !== "rejected" ? "not-rejected" : row.removed ? "removed" : row.published ? "published" : "open-row-exists";
       return new Response(JSON.stringify({ error: `cannot reopen: ${reason}`, reason }), {
         status: 409,
         headers: { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store", ...SECURITY_HEADERS },
