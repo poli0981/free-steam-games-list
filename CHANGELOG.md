@@ -71,6 +71,14 @@ Auto-approve is **off** until it is turned on at `/admin/automation`.
   `Check Overrides` validates the blocklist on every push that touches it.
 - Discovery counts removed games as already known.
 
+### 🔐 Security
+
+- The app shell's lockfile takes `rustls` 0.23.45 (and `rustls-webpki`
+  0.103.15), closing GHSA-2mjx-qc3c-rqvc: TLS 1.3 handshake messages were
+  accepted across encryption-level boundaries. Only the desktop updater's
+  HTTPS client uses it; the Android app does not include it. The desktop app
+  picks it up in its next build, and 2.2.0 is unchanged.
+
 ### 🧹 Housekeeping
 
 - 25 merged branches on GitHub, their local copies and 7 stale worktrees are
