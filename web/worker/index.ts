@@ -23,6 +23,7 @@ import { ADMIN_API_PREFIX } from "../shared/admin-routes";
 // before `wrangler deploy`, and typecheck runs it before tsc.
 import { ADMIN_BUNDLE } from "./generated/admin-bundle";
 import { reconcileApproved } from "./lib/reconcile";
+import { autoApprove } from "./lib/auto-approve";
 import { mintImages } from "./lib/img-mint";
 import { defaultAdminDeps } from "./lib/deps";
 import { isPruneTick, pruneAdminHistory } from "./lib/prune";
@@ -91,6 +92,17 @@ export default {
         })
         .catch((err) => {
           console.error("reconcile failed", err instanceof Error ? err.message : String(err));
+        })
+        // Auto-approve AFTER reconcile, in the same chain: a batch the
+        // pipeline has just published is then already marked committed when
+        // the next one is chosen. Off by default; a disabled tick is one D1
+        // read (lib/auto-approve.ts).
+        .then(() => autoApprove(env, defaultAdminDeps))
+        .then((out) => {
+          if (out.outcome !== "skipped") console.log("auto-approve", out);
+        })
+        .catch((err) => {
+          console.error("auto-approve failed", err instanceof Error ? err.message : String(err));
         }),
     );
 

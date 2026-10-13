@@ -34,6 +34,12 @@ export interface QueueRowInput {
   decided_by?: string | null;
   decided_at?: string | null;
   reject_reason?: string | null;
+  /** Left at the schema defaults unless given (auto-approve filters on them). */
+  source?: string;
+  app_type?: string;
+  is_free?: 0 | 1;
+  health_status?: string;
+  current_players_num?: number | null;
 }
 
 let counter = 0;
@@ -59,7 +65,25 @@ export function insertRow(env: Env, row: QueueRowInput): string {
       seen,
       seen,
     );
+  const extra = (["source", "app_type", "is_free", "health_status", "current_players_num"] as const).filter(
+    (k) => row[k] !== undefined,
+  );
+  if (extra.length) {
+    (env as unknown as { sqlite: SqliteD1 }).sqlite.db
+      .prepare(`UPDATE ingest_queue SET ${extra.map((k) => `${k} = ?`).join(", ")} WHERE id = ?`)
+      .run(...extra.map((k) => row[k] ?? null), id);
+  }
   return id;
+}
+
+/** A pending row auto-approve may take: a free game, healthy, from `source`. */
+export function insertCandidate(
+  env: Env,
+  appid: string,
+  source = "backfill:2024Q3",
+  first_seen_at = "2026-09-01T00:00:00Z",
+): string {
+  return insertRow(env, { appid, source, app_type: "game", is_free: 1, health_status: "ok", first_seen_at });
 }
 
 export function insertDecision(env: Env, appid: string, decision: "approved" | "rejected"): void {

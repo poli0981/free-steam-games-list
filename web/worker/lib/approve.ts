@@ -31,6 +31,12 @@ export interface ApproveOptions {
   append?: Omit<AppendRequest, "reason">;
   /** Rows the caller already reported as skipped, for the audit row's count. */
   skippedBefore?: number;
+  /**
+   * Leave a failed commit out of the audit log; the caller records it. The
+   * schedule does, once per distinct failure, so a GitHub outage does not
+   * write a row every fifteen minutes.
+   */
+  quietFailure?: boolean;
 }
 
 export type ApproveOutcome =
@@ -78,7 +84,9 @@ export async function approveRows(
     await env.DB.prepare("UPDATE commit_jobs SET status='failed', error=?, finished_at=? WHERE id=?")
       .bind(message.slice(0, 500), deps.now().toISOString(), jobId)
       .run();
-    await audit(env, opts.actor, `${opts.kind}.failed`, jobId, { message, count: rows.length, reason: opts.reason });
+    if (!opts.quietFailure) {
+      await audit(env, opts.actor, `${opts.kind}.failed`, jobId, { message, count: rows.length, reason: opts.reason });
+    }
     return { status: "commit-failed", jobId, message };
   }
 

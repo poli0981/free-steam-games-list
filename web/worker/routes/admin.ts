@@ -18,6 +18,7 @@ import { retentionDays } from "../lib/prune";
 import { defaultAdminDeps, type AdminDeps } from "../lib/deps";
 import { handleEditApi } from "./edit";
 import { handleRemoveApi, REMOVE_ROUTES } from "./remove";
+import { AUTOMATION_ROUTES, handleAutomationApi } from "./automation";
 import { REMOVED_DECISION_PREFIX } from "../../shared/removal";
 import {
   DECIDE_ACTIONS,
@@ -62,6 +63,11 @@ export async function handleAdminApi(
   // Removing published games, and restoring one: data/blocklist.jsonl.
   if ((REMOVE_ROUTES as readonly string[]).includes(route)) {
     return handleRemoveApi(request, url, env, who, deps);
+  }
+
+  // Auto-approve: its settings, a preview of the next batch, a manual run.
+  if ((AUTOMATION_ROUTES as readonly string[]).includes(route)) {
+    return handleAutomationApi(request, url, env, who, deps);
   }
 
   // Who am I? Confirms the Access -> Worker identity chain end to end.

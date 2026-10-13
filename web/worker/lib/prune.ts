@@ -11,6 +11,7 @@
  * history is what the admin screen shows for a game's past rows.
  */
 import { audit } from "./audit";
+import { AUTO_COUNT_PREFIX } from "../../shared/automation";
 
 export interface PruneResult {
   cutoff: string;
@@ -34,6 +35,15 @@ export async function pruneAdminHistory(
     env.DB.prepare("DELETE FROM commit_jobs WHERE created_at < ?").bind(cutoff),
   ]);
   const result = { cutoff, audit: auditRes.meta.changes ?? 0, jobs: jobsRes.meta.changes ?? 0 };
+  // Auto-approve's per-day counters (auto.approve.count:YYYY-MM-DD) matter
+  // only for their own day; a month is kept for reference. On its own and
+  // tolerant: admin_state may predate migration 0002 on some database.
+  try {
+    const keep = `${AUTO_COUNT_PREFIX}${new Date(now.getTime() - 31 * 86_400_000).toISOString().slice(0, 10)}`;
+    await env.DB.prepare("DELETE FROM admin_state WHERE key LIKE ? AND key < ?").bind(`${AUTO_COUNT_PREFIX}%`, keep).run();
+  } catch {
+    /* no admin_state: nothing to prune */
+  }
   // Recorded only when something went, so an idle day leaves no row behind.
   if (result.audit || result.jobs) {
     await audit(env as Env, "retention", "admin.prune", null, result);
