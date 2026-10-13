@@ -16,7 +16,7 @@ and a hand-made correction is reverted with no error and no trace.
 
 An override is therefore NOT applied once. It lives permanently in Git as
 `data/overrides/<appid>.json`, and `apply_overrides()` is called from inside
-`save_main()` — the single choke point through which all 11 data-writing
+`save_main()` — the single choke point through which all 14 data-writing
 scripts pass, and the only code that writes `data/data_*.jsonl`. Whatever a
 script did to a record, the human's decision is re-imposed as the last act
 before bytes hit the disk. No script needs to know this layer exists.

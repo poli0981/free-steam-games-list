@@ -33,6 +33,7 @@ import {
   type AvifVariant,
 } from "./img-store";
 import { acquireLease, bumpCounter, readState, releaseLease, writeState } from "./locks";
+import { sha256Hex } from "./hash";
 
 const LEASE_MS = 10 * 60 * 1000;
 
@@ -304,11 +305,4 @@ function isQuotaError(err: unknown): boolean {
 function positiveInt(value: unknown): number {
   const n = Number.parseInt(String(value ?? ""), 10);
   return Number.isFinite(n) && n > 0 ? n : 0;
-}
-
-async function sha256Hex(text: string): Promise<string> {
-  const digest = new Uint8Array(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text)));
-  let out = "";
-  for (const b of digest) out += b.toString(16).padStart(2, "0");
-  return out;
 }

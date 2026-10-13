@@ -9,6 +9,7 @@
  */
 import type { SqliteD1 } from "../../worker/testing/sqlite-d1";
 import type { FakeRepo } from "../../worker/testing/fixtures";
+import { appendEntries, makeEntry, REMOVAL_REASONS } from "../../shared/removal";
 
 interface Rec {
   link: string;
@@ -177,6 +178,40 @@ export function seed(sqlite: SqliteD1, repo: FakeRepo, records: Rec[], now: Date
       2,
     ) + "\n",
   );
+
+  // ── Auto-approve: off, with one batch run today and the last tick's reason.
+  const state = db.prepare("INSERT OR REPLACE INTO admin_state (key, value, updated_at) VALUES (?, ?, ?)");
+  const settings = { enabled: false, batchSize: 25, dailyLimit: 100, sources: [], minAgeHours: 0, order: "oldest" };
+  state.run("auto.approve.settings", JSON.stringify(settings), iso(10 * HOUR));
+  state.run(`auto.approve.count:${now.toISOString().slice(0, 10)}`, "25", iso(3 * HOUR));
+  state.run(
+    "auto.approve.last",
+    JSON.stringify({ at: iso(1 * HOUR), outcome: "skipped", detail: "pipeline busy: Update Reviews is in_progress" }),
+    iso(1 * HOUR),
+  );
+  job.run("job-7", "auto.approve", "committed", "scripts/temp_info.jsonl", sha(7), null, "auto-approve", iso(3 * HOUR), iso(3 * HOUR));
+  audit.run(reviewer, "automation.settings", null, JSON.stringify({ before: { ...settings, dailyLimit: 300 }, after: settings }), iso(10 * HOUR));
+  audit.run("auto-approve", "auto.approve", "job-7", JSON.stringify({ appids: ["1"], sha: sha(7), appended: 25 }), iso(3 * HOUR));
+
+  // ── Two removed games: one the pipeline has applied (hidden from data/),
+  // one still in data/ and waiting for it. Both were published, so their rows
+  // and decisions say "removed", as routes/remove.ts leaves them.
+  const removedNow = committed[1];
+  const removedDone = hide(committed[2]);
+  const entries = [
+    makeEntry(appidOf(removedDone), removedDone.name ?? "", "not_a_game", "a soundtrack", iso(60 * HOUR).replace(/\.\d{3}Z$/, "Z")),
+    makeEntry(appidOf(removedNow), removedNow.name ?? "", "duplicate", "", iso(1 * HOUR).replace(/\.\d{3}Z$/, "Z")),
+  ];
+  repo.files.set("data/blocklist.jsonl", appendEntries("", entries));
+  for (const e of entries) {
+    db.prepare("UPDATE ingest_queue SET status = 'rejected', reject_reason = ? WHERE appid = ?").run(
+      `removed from catalogue: ${REMOVAL_REASONS[e.reason]}`,
+      e.appid,
+    );
+    decide.run(e.appid, "rejected", `removed:${e.reason}${e.note ? ` - ${e.note}` : ""}`, reviewer, e.blocked_at);
+  }
+  job.run("job-8", "remove", "committed", "data/blocklist.jsonl", sha(8), null, reviewer, iso(1 * HOUR), iso(1 * HOUR));
+  audit.run(reviewer, "remove", "job-8", JSON.stringify({ appids: [entries[1].appid], reason: "duplicate" }), iso(1 * HOUR));
 
   return { hidden };
 }

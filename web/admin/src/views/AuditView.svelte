@@ -10,27 +10,10 @@
   import { isAbort, reportError } from "../lib/notify";
   import { router } from "../lib/router.svelte";
   import { exactTime, prettyJson, relativeTime } from "../lib/format";
-  import type { AuditEntry, Paged } from "../../../shared/admin-api";
+  import { AUDIT_ACTIONS, type AuditEntry, type Paged } from "../../../shared/admin-api";
 
-  /** Every action the Worker records. A filter, not a validator: the server checks the shape. */
-  const ACTIONS = [
-    "approve",
-    "approve.failed",
-    "approve.desynced",
-    "reject",
-    "defer",
-    "requeue",
-    "reopen",
-    "reconcile.manual",
-    "reconcile.approved",
-    "override",
-    "override.failed",
-    "override.delete",
-    "override.delete.failed",
-    "ingest.candidates",
-    "admin.prune",
-    "ping",
-  ];
+  /** Every action the Worker records (shared/admin-api.ts). A filter, not a validator: the server checks the shape. */
+  const ACTIONS: readonly string[] = AUDIT_ACTIONS;
   const SIZES = [25, 50, 100, 200];
 
   const query = $derived(router.query);

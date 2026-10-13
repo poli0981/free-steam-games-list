@@ -21,7 +21,7 @@ credential that lives only on the server, and a GitHub App is the right shape:
 | Credential at rest | the token itself | the token itself | a private key that mints 1-hour tokens |
 | Attribution in history | your account | your account | its own bot identity |
 
-Neither the App's identity nor yours appears as a name in what `/admin` writes: commit bodies and `data/overrides/*.json` say **`admin`** (`ADMIN_ATTRIBUTION` in `web/shared/admin-api.ts`), because both are public forever. The acting Access identity is recorded in D1 — `audit_log.actor`, `ingest_queue.decided_by`, `ingest_decisions.decided_by`, `commit_jobs.requested_by` — which is where `/admin/audit` reads it from and filters on it.
+Neither the App's identity nor yours appears as a name in what `/admin` writes: commit bodies, `data/overrides/*.json` and `data/blocklist.jsonl` say **`admin`** (`ADMIN_ATTRIBUTION` in `web/shared/admin-api.ts`), because all three are public forever. The acting Access identity is recorded in D1 — `audit_log.actor`, `ingest_queue.decided_by`, `ingest_decisions.decided_by`, `commit_jobs.requested_by` — which is where `/admin/audit` reads it from and filters on it.
 
 The App's private key never expires; the tokens it mints die in an hour. That
 removes the failure mode that already bit this project once.
@@ -47,7 +47,7 @@ else:
 
 | Permission | Access | Why |
 |---|---|---|
-| **Contents** | **Read and write** | commit to `data/*.jsonl`, `data/index.json`, `scripts/temp_info.jsonl` |
+| **Contents** | **Read and write** | commit to `scripts/temp_info.jsonl`, `data/overrides/*.json` and `data/blocklist.jsonl` — and nothing else: the Worker refuses every other path (`WRITABLE` in `web/worker/lib/git-commit.ts`), so it never writes a shard or `data/index.json` |
 | **Metadata** | Read-only | mandatory; GitHub adds it automatically |
 
 Leave everything else at **No access**. In particular:
@@ -55,7 +55,12 @@ Leave everything else at **No access**. In particular:
 - **Actions — not needed.** A push made with an App installation token *does*
   trigger workflows (unlike the built-in `GITHUB_TOKEN`), so committing to
   `scripts/temp_info.jsonl` starts `ingest-new.yml` on its own. Do not grant
-  Actions write just to dispatch runs.
+  Actions write just to dispatch runs. The Pipeline page and auto-approve
+  *read* workflow runs, which a public repository allows without it; if GitHub
+  ever refuses the token, the Worker retries anonymously (a small, shared
+  budget), and auto-approve waits rather than guess. Granting **Actions:
+  Read-only** would make that read independent of the anonymous budget, and is
+  harmless.
 - **Issues, Pull requests, Workflows — not needed.** The Worker only writes
   data files. Granting `Workflows` would let a compromised Worker rewrite
   `.github/workflows/**`, which is the single worst permission to hand out.
@@ -299,7 +304,11 @@ gh workflow run "Discover New Games" -f dry_run=true
 
 `/api/ingest/*` writes rows with `status='pending'` and nothing else. It cannot
 approve, cannot commit, and cannot reach the repository. A leaked discovery
-token buys an attacker a cluttered review screen. The workflows reinforce this
+token buys an attacker a cluttered review screen — and, while auto-approve is
+on (§11), requests for some of those rows, within its daily limit. A payload's
+claims (free, a game, healthy) are only the caller's word; `ingest_new.py`
+asks Steam itself and keeps only reachable, free apps of type `game`. Set
+**Minimum wait** if you want a day to look before anything is approved. The workflows reinforce this
 with `permissions: contents: read` and a grep step that fails the run if a
 discovery script so much as references a dataset-writing helper.
 
@@ -360,7 +369,9 @@ When the backlog is closed, delete `scripts/backfill_discover.py`, delete
 
 ## 9. Reviewing the queue
 
-`/admin` is the review screen. It is a small Svelte app (`web/admin/`) built
+`/admin/queue` is the review screen. (`/admin` itself is the Overview, §13; an
+old bookmark such as `/admin?status=failed` is forwarded to the queue with its
+filters.) The admin is a small Svelte app (`web/admin/`) built
 separately from the public site and **embedded in the Worker**
 (`worker/generated/admin-bundle.ts`), never placed in `dist/`. Everything in
 `dist/` is served to anyone, precached by the service worker and packaged into
@@ -413,7 +424,10 @@ durable decision for the game, and every other row the queue holds for the same
 appid. A `rejected` row has **Reopen** there. It moves that one row back to
 `pending` and deletes the rejection, but only if no other row for the game is
 open or committed and the game has no approved decision; otherwise the dialog
-says which of those stopped it. There is no bulk reopen, on purpose.
+says which of those stopped it. There is no bulk reopen, on purpose. A game
+that was *removed from the catalogue* (§12) cannot be reopened at all — its
+rejection says `removed:` — and the dialog sends you to **Restore** instead,
+which is the only way to undo a removal.
 
 ### The three actions are not symmetric
 
@@ -612,13 +626,155 @@ Two safeguards worth knowing:
 
 ---
 
+## 11. Approving automatically
+
+`/admin/automation` lets the Worker's cron approve the queue for you, one batch
+at a time. A batch is exactly what **Approve** does by hand (§9): one commit
+appending `{"link": ...}` lines to `scripts/temp_info.jsonl`, the rows go to
+`approved`, and reconcile promotes them once the games appear in `data/`. It
+never publishes anything itself: `ingest_new.py` still checks every game —
+reachable, free, of Steam type `game`, not already listed — and refuses the
+rest into `removed_games.jsonl`.
+
+**It is off until you turn it on.**
+
+| Setting | Default | Range |
+|---|---|---|
+| Run on the schedule | off | every 15 minutes when on |
+| Games per batch | 100 | 1–100 |
+| Games per day (UTC) | 300 | 1–**500**; the 500 is in code and re-applied to whatever is stored |
+| Minimum wait | 0 h | 0–168 h a row must have waited — time to reject something by hand first |
+| Order | oldest first | oldest, newest, most players |
+| Sources | every source | tick some to restrict; `backfill:*` matches by prefix |
+
+A row is eligible when it is `pending`, free, Steam type `game`, healthy, has
+waited long enough, comes from a ticked source, its game has **no decision at
+all** (never rejected, never removed) and is not already committed, and it is
+not in `data/blocklist.jsonl`. **Next batch** on the page is the same query the
+run uses, so what it lists is what would be approved.
+
+A batch is committed only when **all** of these hold, and a check it cannot make
+counts as *no* — the page's *Last run* line says which one stopped it:
+
+- **The previous batch has been ingested**: `scripts/temp_info.jsonl` on `main`
+  is empty. Checked again inside the commit itself, so a batch never lands in
+  the middle of an ingest.
+- **No data job is running or waiting.** The `data-write` group keeps one
+  waiting run, and the ingest a batch starts would cancel a job already waiting
+  its turn. The list of those workflows is `web/shared/pipeline.ts`, which a
+  test holds to the YAML.
+- **Today's budget is not spent.** It is reserved before the commit and given
+  back if the commit fails.
+
+So the throughput is one batch per ingest: the next batch waits until the
+ingest the last one started has emptied the queue file.
+
+**Run one batch now** ignores the on/off switch and obeys everything else; D1
+records it under your identity, a scheduled batch under `auto-approve`. The
+commit (`queue: N auto-approved games`) names no one. A failure is audited once
+per distinct cause (`auto.approve.failed`), not every 15 minutes; a skipped tick
+is not audited at all.
+
+Start at around 100 a day for a cycle and look at what landed (Overview,
+**Pipeline**, `removed_games.jsonl`) before raising it.
+
+## 12. Removing and restoring games
+
+`/admin/remove` takes games **out** of the catalogue, up to 100 at a time.
+
+A removal is not a deletion the Worker performs — it cannot write a shard. It
+commits a line per game to `data/blocklist.jsonl`, a standing instruction like
+an override: `save_main()` leaves every listed game out of **every** write. The
+commit starts **Ingest New Game Links**, whose first step
+(`scripts/remove_games.py`) takes the games out of `data/` and logs each one
+once in `scripts/removed_games.jsonl` (`status_code: admin_removed`, with the
+reason's label). From then on no scrape, refetch or browser-extension push can
+bring the game back, and the discovery sweep never proposes it again.
+
+**Remove.** Search by name or appid, or paste appids and store links (separated
+by spaces, commas or new lines; up to 100). Each one is previewed; a game that is not in the catalogue, or
+is already removed, is skipped with that reason. Pick a reason from the list
+and add a note if it helps (up to 300 characters; required for *Other*). **Both
+are public**: they go into the blocklist and the commit message, in a public
+repository. The confirmation lists every game before anything is committed.
+
+On the public site the game leaves the catalogue with the next data
+generation. It is counted with the removed games on the dashboard, appears under
+*Other* on `/charts/delisted`, and its page says it was removed and why. A
+prerendered page for it stays until the next deploy, like a purged game's.
+
+The review queue is told the same thing: the game's decision becomes `rejected`
+with reason `removed:<code>` (even if it was approved), and every row for it
+that was not rejected is. Removing a game that is already in the blocklist
+commits nothing and only re-applies that, which is how to repair the queue if
+the commit landed but D1 did not (`remove.desynced` in the audit log).
+
+**Removed** (`/admin/remove?tab=removed`) lists every blocklisted game: when,
+why, and whether the pipeline has applied it yet. **Restore** is one game at a
+time and one commit: the line leaves the blocklist and the store link is queued
+for `ingest_new.py` in the same commit, so the ingest cannot run in between and
+find the game still blocked. Ingest fetches it fresh from Steam, so it can still
+refuse it (no longer free, say), and the row then shows `failed`. Corrections
+you made as overrides come back with it — the override files stay — but
+anything changed by other means is gone. In D1, Restore deletes only the
+`removed:` decision and enters an approved row (source `restore`) for reconcile
+to promote.
+
+Remove and Restore share a lease, so two of them never interleave.
+
+From the command line (dry run unless `--apply`):
+
+```bash
+python scripts/delete_game.py 730 --reason duplicate --note "same game as 2357570"
+python scripts/delete_game.py 730 --reason duplicate --note "same game as 2357570" --apply
+python scripts/delete_game.py --list
+python scripts/delete_game.py --check    # validates the file; runs in CI
+```
+
+It writes the same bytes `/admin` does, and refuses a game that is not in
+`data/`. It cannot restore: that has to clear the review queue's record too, so
+use `/admin`. Deleting a line from the file by hand unblocks the game but leaves
+D1's `removed:` decision, so discovery would go on skipping it.
+
+Two safeguards: a save that would remove more than **500** games stops the job
+before anything is written (`remove_games.py --max-drop N` is the deliberate
+override), and a line the pipeline cannot honour blocks nothing — `--check`
+fails CI on it.
+
+## 13. Overview, Pipeline and Data quality
+
+**Overview** (`/admin`) is the first page: the queue's counts and the backlog
+by source, auto-approve's day and last run, how many removals are waiting for
+the pipeline, data jobs running now, the data-quality totals, and any commit job
+that failed or is stuck. Each card loads on its own, so one failing endpoint
+blanks one card, not the page.
+
+**Pipeline** (`/admin/pipeline`) shows the latest runs of every data workflow,
+what is running or waiting for its turn, and how many lines are waiting in
+`scripts/temp_info.jsonl` and `data/blocklist.jsonl`. It reads GitHub with a
+one-minute cache; **Refresh** asks again.
+
+**Data quality** (`/admin/quality`) counts published games that fail a check:
+
+| Group | Checks | Fixed by |
+|---|---|---|
+| Needs a judgement | safety never set, safety `?` (the review backlog), kernel anti-cheat unknown | you, on the Edit page (an override) |
+| Manual field left empty | online game with no anti-cheat, no genre, online/offline not set | you, on the Edit page |
+| Missing store data | header, description, tags, languages, developer, publisher, release date | Refresh Store Data, which retries these on its own |
+| For reference | dead, store page gone | the pipeline |
+
+Click a count for the games, and a game for its Edit page.
+
+---
+
 ## Working on the admin locally
 
 A real Worker cannot show the admin locally: every `/admin` request, the
 page's and its API's, needs an Access JWT, which cannot be minted offline, so
 `wrangler dev` answers 404. The admin has its own dev server instead. It runs the **real**
-handlers (`worker/routes/admin.ts`, `edit.ts`) against an in-memory D1 with the
-real migrations, fed by the real `data/` shards, with GitHub faked. Nothing
+handlers (`worker/routes/admin.ts` and every route it delegates to) against an
+in-memory D1 with the real migrations, fed by the real `data/` shards, with
+GitHub faked. Nothing
 leaves the machine and nothing is written to disk.
 
 ```bash
@@ -629,13 +785,16 @@ npm run preview:admin   # the built bundle through the real serveAdmin(), produc
 
 The demo data (`web/admin/mock/seed.ts`) has every status, rows locked because
 their game is published, a rejected row that cannot be reopened, commit jobs in
-every state, audit history, and an override on 730 to edit. Two switches, as
-cookies set from the browser console:
+every state, audit history, an override on 730 to edit, auto-approve settings
+with a batch already run today, two removed games (one the pipeline has applied,
+one still waiting for it) and a set of workflow runs. Three switches, as cookies
+set from the browser console:
 
 | Cookie | Effect |
 |---|---|
 | `mock_github=down` | health reports GitHub unreachable, a 503 (or start the server with `MOCK_GITHUB=down`) |
 | `mock_session=expired` | the API answers the way Access does for a lapsed session |
+| `mock_pipeline=busy` | a data job is running, so auto-approve waits and the Pipeline page shows it |
 
 None of this exists in the Worker. Nothing under `worker/` or `admin/src`
 imports the mock (`admin/security.test.ts` checks), and there is no flag that
@@ -648,6 +807,10 @@ it first, because the Worker imports the generated bundle.
 
 - **A rejection stays until you reopen it.** There is no `suppress_until`, so a
   game rejected for a temporary reason is not offered again on its own.
+- **Restore is one game at a time**, and a removal reaches `data/` only when
+  the pipeline next runs (the commit starts it; the Removed tab says which games
+  are still waiting).
+- **Auto-approve never rejects.** What it does not take stays `pending` for you.
 - **One field per bulk change.** Several fields on several games means several
   commits.
 - **English only.** The admin has one audience, so it has no translations.

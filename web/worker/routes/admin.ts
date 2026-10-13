@@ -10,14 +10,19 @@
 import { jsonError, SECURITY_HEADERS, clampLimit, clampOffset } from "../lib/http";
 import { audit } from "../lib/audit";
 import type { AccessIdentity } from "../lib/access";
-import { TEMP_INFO_PATH } from "../lib/git-commit";
 import { reconcileApproved } from "../lib/reconcile";
+import { approveRows } from "../lib/approve";
+import { DECIDABLE_SQL, openSiblingSql, publishedSql, type DecideRow } from "../lib/queue-sql";
 import { readLease } from "../lib/locks";
 import { retentionDays } from "../lib/prune";
 import { defaultAdminDeps, type AdminDeps } from "../lib/deps";
 import { handleEditApi } from "./edit";
+import { handleRemoveApi, REMOVE_ROUTES } from "./remove";
+import { AUTOMATION_ROUTES, handleAutomationApi } from "./automation";
+import { handlePipelineApi } from "./pipeline";
+import { handleQualityApi } from "./quality";
+import { REMOVED_DECISION_PREFIX } from "../../shared/removal";
 import {
-  DECIDABLE,
   DECIDE_ACTIONS,
   MAX_DECIDE,
   OPEN_STATUSES,
@@ -42,39 +47,6 @@ function json(body: unknown, status = 200): Response {
   });
 }
 
-/**
- * Whether the game a row names is already published, as SQL over `alias`.
- *
- * Per GAME, not per row: a committed row for the appid (reconcile saw it in
- * data/), or an approved decision (the durable record of the same fact, which
- * outlives queue history). Every decide UPDATE repeats this in its WHERE
- * clause, so a page held open across a reconcile cannot act on a game that
- * went live in the meantime.
- */
-function publishedSql(alias: string): string {
-  return `(EXISTS (SELECT 1 FROM ingest_decisions pd WHERE pd.appid = ${alias}.appid AND pd.decision = 'approved')
-        OR EXISTS (SELECT 1 FROM ingest_queue pc WHERE pc.appid = ${alias}.appid AND pc.status = 'committed'))`;
-}
-
-/** Another OPEN row for the same appid (the rows uq_queue_open_appid counts). */
-function openSiblingSql(alias: string): string {
-  return `EXISTS (SELECT 1 FROM ingest_queue os WHERE os.appid = ${alias}.appid AND os.id <> ${alias}.id
-                     AND os.status IN (${sqlList(OPEN_STATUSES)}))`;
-}
-
-const DECIDABLE_SQL = sqlList(DECIDABLE);
-
-interface DecideRow {
-  id: string;
-  appid: string;
-  link: string;
-  name: string;
-  status: string;
-  first_seen_at: string;
-  published: number;
-  open_sibling: number;
-}
-
 export async function handleAdminApi(
   request: Request,
   url: URL,
@@ -89,6 +61,20 @@ export async function handleAdminApi(
   if (route === "game" || route === "edit" || route === "genres" || route === "by-genre") {
     return handleEditApi(request, url, env, who, deps);
   }
+
+  // Removing published games, and restoring one: data/blocklist.jsonl.
+  if ((REMOVE_ROUTES as readonly string[]).includes(route)) {
+    return handleRemoveApi(request, url, env, who, deps);
+  }
+
+  // Auto-approve: its settings, a preview of the next batch, a manual run.
+  if ((AUTOMATION_ROUTES as readonly string[]).includes(route)) {
+    return handleAutomationApi(request, url, env, who, deps);
+  }
+
+  // Read-only views over GitHub Actions and the published catalogue.
+  if (route === "pipeline") return handlePipelineApi(request, url, env, who, deps);
+  if (route === "quality") return handleQualityApi(request, url, env, who, deps);
 
   // Who am I? Confirms the Access -> Worker identity chain end to end.
   if (route === "me" && request.method === "GET") {
@@ -446,104 +432,34 @@ export async function handleAdminApi(
     const notPublished = `AND NOT ${publishedSql("ingest_queue")}`;
 
     if (action === "approve") {
-      const jobId = crypto.randomUUID();
-      // Written BEFORE the commit is attempted: a Worker that dies mid-flight
-      // leaves a 'pending' job as evidence rather than no trace at all.
-      await env.DB.prepare(
-        `INSERT INTO commit_jobs (id, kind, status, target_path, requested_by, created_at)
-         VALUES (?, 'approve', 'pending', ?, ?, ?)`,
-      )
-        .bind(jobId, TEMP_INFO_PATH, who.email, now)
-        .run();
-
-      let result;
-      try {
-        result = await deps.appendLinks(env, rows.map((r) => r.link), reason);
-      } catch (err) {
-        const message = err instanceof Error ? err.message : String(err);
-        await env.DB.prepare(
-          "UPDATE commit_jobs SET status='failed', error=?, finished_at=? WHERE id=?",
-        )
-          .bind(message.slice(0, 500), deps.now().toISOString(), jobId)
-          .run();
-        await audit(env, who.email, "approve.failed", jobId, { message, count: rows.length, reason });
-        // Rows are deliberately left untouched. A row marked approved with no
-        // commit behind it is invisible to the queue AND to the reconciler.
-        return jsonError(502, "commit failed: " + message);
+      const out = await approveRows(env, deps, rows, {
+        kind: "approve",
+        actor: who.email,
+        reason,
+        skippedBefore: skipped.length,
+      });
+      if (out.status === "commit-failed" || out.status === "busy") {
+        return jsonError(502, "commit failed: " + (out.status === "busy" ? "the queue file was not empty" : out.message));
       }
-
-      // The job's outcome is recorded ON ITS OWN, before the queue batch. It
-      // used to share that batch, so when the batch failed the job was rolled
-      // back to 'pending' forever despite a commit having landed.
-      try {
-        await env.DB.prepare(
-          "UPDATE commit_jobs SET status='committed', commit_sha=?, error=?, finished_at=? WHERE id=?",
-        )
-          .bind(result.sha, result.sha ? null : "nothing to commit: every link was already queued", deps.now().toISOString(), jobId)
-          .run();
-      } catch (err) {
-        console.error("approve: commit_jobs update failed", err instanceof Error ? err.message : String(err));
-      }
-
-      let decidedIds: string[];
-      try {
-        const results = await env.DB.batch(
-          rows.flatMap((r) => [
-            // Stand any RIVAL open row for this appid down FIRST.
-            //
-            // uq_queue_open_appid covers ('pending','deferred','approved') but
-            // not 'failed', so a failed row can coexist with a fresh pending
-            // row for the same appid. Promoting this one into 'approved' while
-            // the other is still open violates the index and throws. D1 runs a
-            // batch sequentially in one transaction, so demoting the rival
-            // before the promotion keeps the index satisfied at every step.
-            env.DB.prepare(
-              `UPDATE ingest_queue
-                  SET status='failed', reject_reason='superseded by a duplicate approval'
-                WHERE appid=? AND id<>? AND status IN (${sqlList(OPEN_STATUSES)})`,
-            ).bind(r.appid, r.id),
-            env.DB.prepare(
-              `UPDATE ingest_queue
-                  SET status='approved', decided_by=?, decided_at=?, reject_reason=NULL
-                WHERE id=? AND status IN (${DECIDABLE_SQL}) ${notPublished}`,
-            ).bind(who.email, now, r.id),
-          ]),
-        );
-        decidedIds = settle(results, 2, 0);
-      } catch (err) {
-        // The commit LANDED; only the bookkeeping failed. Say exactly that,
-        // and what happens next.
-        const message = err instanceof Error ? err.message : String(err);
-        await audit(env, who.email, "approve.desynced", jobId, {
-          message, sha: result.sha, appids: rows.map((r) => r.appid), reason,
-        });
+      if (out.status === "desynced") {
         return jsonError(
           500,
-          `commit ${result.sha ?? "(none - already queued)"} landed but the queue could not be updated (${message}). ` +
+          `commit ${out.sha ?? "(none - already queued)"} landed but the queue could not be updated (${out.message}). ` +
             "The rows are unchanged, so approving them again is safe and will not queue them twice. " +
             "Once the pipeline publishes the games, reconcile marks these rows committed on its own.",
         );
       }
-
-      await audit(env, who.email, "approve", jobId, {
-        appids: rows.map((r) => r.appid),
-        sha: result.sha,
-        appended: result.appended,
-        already_queued: result.skipped.length,
-        skipped: skipped.length,
-        reason,
-      });
-
+      skipped.push(...out.concurrent);
       return json({
         action,
-        decided: decidedIds.length,
-        decidedIds,
+        decided: out.decidedIds.length,
+        decidedIds: out.decidedIds,
         skipped,
         // null when every link was already queued - the UI reads this to avoid
         // announcing a commit that was never made.
-        commit: result.sha,
-        appended: result.appended,
-        already_queued: result.skipped.length,
+        commit: out.sha,
+        appended: out.appended,
+        already_queued: out.alreadyQueued,
       });
     }
 
@@ -627,7 +543,9 @@ export async function handleAdminApi(
           ${alias}.status = 'rejected'
       AND NOT EXISTS (SELECT 1 FROM ingest_queue o WHERE o.appid = ${alias}.appid AND o.id <> ${alias}.id
                         AND o.status IN (${sqlList([...OPEN_STATUSES, "committed"])}))
-      AND NOT EXISTS (SELECT 1 FROM ingest_decisions d WHERE d.appid = ${alias}.appid AND d.decision = 'approved')`;
+      AND NOT EXISTS (SELECT 1 FROM ingest_decisions d WHERE d.appid = ${alias}.appid AND d.decision = 'approved')
+      AND NOT EXISTS (SELECT 1 FROM ingest_decisions r WHERE r.appid = ${alias}.appid AND r.decision = 'rejected'
+                        AND r.reason LIKE '${REMOVED_DECISION_PREFIX}%')`;
 
     const results = await env.DB.batch([
       env.DB.prepare(
@@ -644,12 +562,18 @@ export async function handleAdminApi(
 
     if ((results[1]?.meta?.changes ?? 0) === 0) {
       const row = await env.DB.prepare(
-        `SELECT q.status, q.appid, ${publishedSql("q")} AS published FROM ingest_queue q WHERE q.id = ?`,
+        `SELECT q.status, q.appid, ${publishedSql("q")} AS published,
+                EXISTS (SELECT 1 FROM ingest_decisions r WHERE r.appid = q.appid AND r.decision = 'rejected'
+                          AND r.reason LIKE '${REMOVED_DECISION_PREFIX}%') AS removed
+           FROM ingest_queue q WHERE q.id = ?`,
       )
         .bind(id)
-        .first<{ status: string; appid: string; published: number }>();
+        .first<{ status: string; appid: string; published: number; removed: number }>();
       if (!row) return jsonError(404, "not found");
-      const reason = row.status !== "rejected" ? "not-rejected" : row.published ? "published" : "open-row-exists";
+      // A removed game comes back through Restore (Remove -> Removed), which
+      // also unblocks it in Git; reopening its row would leave it blocked.
+      const reason =
+        row.status !== "rejected" ? "not-rejected" : row.removed ? "removed" : row.published ? "published" : "open-row-exists";
       return new Response(JSON.stringify({ error: `cannot reopen: ${reason}`, reason }), {
         status: 409,
         headers: { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store", ...SECURITY_HEADERS },

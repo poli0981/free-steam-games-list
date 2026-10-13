@@ -24,6 +24,7 @@
   import { exactTime, prettyJson, relativeTime, steamUrl } from "../lib/format";
   import { LOCK_HELP, REOPEN_TEXT } from "../lib/labels";
   import { lockReason } from "../../../shared/queue-rules";
+  import { REMOVED_DECISION_PREFIX } from "../../../shared/removal";
   import type { Candidate, ReopenResponse } from "../../../shared/admin-api";
 
   type Props = {
@@ -169,11 +170,19 @@
               </span>
             </div>
             {#if data.decision.reason}<p class="mt-1.5 break-words">{data.decision.reason}</p>{/if}
-            <p class="mt-1.5 text-xs text-muted-foreground">
-              {data.decision.decision === "approved"
-                ? "Recorded when the game was seen in data/. It is what keeps every row for this game read-only."
-                : "Discovery will not offer this game again while this rejection stands."}
-            </p>
+            {#if data.decision.decision === "rejected" && data.decision.reason?.startsWith(REMOVED_DECISION_PREFIX)}
+              <p class="mt-1.5 text-xs text-muted-foreground">
+                Removed from the catalogue. Bring it back with
+                <a class="text-primary hover:underline" href="/admin/remove?tab=removed" onclick={() => (open = false)}>Restore</a>,
+                which also unblocks it in data/blocklist.jsonl - Reopen cannot.
+              </p>
+            {:else}
+              <p class="mt-1.5 text-xs text-muted-foreground">
+                {data.decision.decision === "approved"
+                  ? "Recorded when the game was seen in data/. It is what keeps every row for this game read-only."
+                  : "Discovery will not offer this game again while this rejection stands."}
+              </p>
+            {/if}
           </div>
         {:else}
           <p class="text-sm text-muted-foreground">No durable decision is recorded for this game.</p>

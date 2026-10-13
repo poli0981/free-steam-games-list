@@ -15,7 +15,7 @@
  * Change one, change the other.
  */
 import { jsonError, SECURITY_HEADERS, clampLimit, clampOffset } from "../lib/http";
-import { audit } from "../lib/audit";
+import { commitWithJob } from "../lib/commit-job";
 import { serialiseOverride } from "../lib/override-doc";
 import type { AccessIdentity } from "../lib/access";
 import { DELETE_FILE } from "../lib/git-commit";
@@ -383,12 +383,11 @@ export async function handleEditApi(
 }
 
 /**
- * One override commit, with its commit_jobs row.
+ * One override commit, with its commit_jobs row (lib/commit-job.ts).
  *
  * Override commits used to leave no job at all - only an audit row written
  * AFTER the commit - so an edit whose Worker died mid-flight left no trace, and
- * the admin "Commit jobs" view never showed an override. The job is written
- * before the attempt, like an approval's.
+ * the admin "Commit jobs" view never showed an override.
  */
 async function commitOverride(
   env: Env,
@@ -405,43 +404,7 @@ async function commitOverride(
     response: Record<string, unknown>;
   },
 ): Promise<Response> {
-  const jobId = crypto.randomUUID();
-  const startedAt = deps.now().toISOString();
-  try {
-    await env.DB.prepare(
-      `INSERT INTO commit_jobs (id, kind, status, target_path, requested_by, created_at)
-       VALUES (?, ?, 'pending', ?, ?, ?)`,
-    )
-      .bind(jobId, plan.kind, plan.targetPath.slice(0, 500), who.email, startedAt)
-      .run();
-  } catch (err) {
-    // The commit is the point; a bookkeeping failure must not block it.
-    console.error("override: commit_jobs insert failed", err instanceof Error ? err.message : String(err));
-  }
-
-  let sha: string | null;
-  try {
-    sha = await deps.commitFiles(env, plan.edits, plan.headline, plan.body);
-  } catch (err) {
-    const message = err instanceof Error ? err.message : String(err);
-    await env.DB.prepare("UPDATE commit_jobs SET status='failed', error=?, finished_at=? WHERE id=?")
-      .bind(message.slice(0, 500), deps.now().toISOString(), jobId)
-      .run()
-      .catch(() => undefined);
-    await audit(env, who.email, `${plan.kind}.failed`, plan.appids.join(","), { ...plan.auditDetail, message });
-    return jsonError(502, "commit failed: " + message);
-  }
-
-  await env.DB.prepare("UPDATE commit_jobs SET status='committed', commit_sha=?, error=?, finished_at=? WHERE id=?")
-    .bind(sha, sha ? null : "nothing to commit: the files already said this", deps.now().toISOString(), jobId)
-    .run()
-    .catch((err: unknown) =>
-      console.error("override: commit_jobs update failed", err instanceof Error ? err.message : String(err)),
-    );
-
-  // Best-effort on purpose: the commit has already landed, so a D1 failure
-  // here must not report the override as failed. See lib/audit.ts.
-  await audit(env, who.email, plan.kind, plan.appids.join(","), { ...plan.auditDetail, sha, job: jobId });
-
-  return json({ ...plan.response, commit: sha, job: jobId });
+  const out = await commitWithJob(env, deps, who.email, plan);
+  if (!out.ok) return jsonError(502, "commit failed: " + out.message);
+  return json({ ...plan.response, commit: out.sha, job: out.jobId });
 }

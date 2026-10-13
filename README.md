@@ -16,7 +16,7 @@ A **curated list** of free-to-play games on Steam — now ~3,600 of them — no 
 - a **web app** at <https://free-steam-games.win/> (SvelteKit, served by a Cloudflare Worker) with a virtualised table of every game, charts, fuzzy search, filters you can link to, CSV/JSON export, a command palette, a page per game that search engines can read, **en/vi i18n**, and an installable offline mode. It is read-only for visitors: there is no sign-in;
 - a **desktop app** (Tauri 2, resizable window, updates itself from GitHub Releases — Win/Mac/Linux installers);
 - an **Android app** (sideloaded APK, Android 11+);
-- a **review queue** at `/admin`, behind Cloudflare Access, where games found by the daily discovery sweep wait for a human to approve them;
+- an **admin** at `/admin`, behind Cloudflare Access: a review queue for the games the daily discovery sweep finds (approved by the maintainer, or in capped daily batches by a rule the maintainer turns on), corrections to published games, and removals;
 - the same **Python pipeline** that has run daily under GitHub Actions since v1.
 
 **Powered ~70 % by AI** (Grok for v1, Claude for v2 + the entire web/desktop layer) — code is reviewed and tested, but mistakes happen. See the [Disclaimer](docs/DISCLAIMER.md) for the specific accuracy caveats (genre best-effort, English-only assumptions, test-data leakage, unsigned-commit dev artefacts).
@@ -76,9 +76,9 @@ npm run tauri:build    # release binary into web/src-tauri/target/release/bundle
 </details>
 
 <details>
-<summary><b>The review queue at <code>/admin</code></b></summary>
+<summary><b>The admin at <code>/admin</code></b></summary>
 
-`Discover New Games` sweeps the Steam store daily and proposes candidates into a Cloudflare D1 queue. The maintainer reviews them in a small Svelte app embedded in the Worker (never shipped to visitors): approving commits the store link to `scripts/temp_info.jsonl`, and the pipeline does the rest. Decided and already-published rows are read-only. Corrections to published games are saved as override files that survive every pipeline run. See [`docs/ADMIN.md`](docs/ADMIN.md).
+`Discover New Games` sweeps the Steam store daily and proposes candidates into a Cloudflare D1 queue. The maintainer reviews them in a small Svelte app embedded in the Worker (never shipped to visitors): approving commits the store link to `scripts/temp_info.jsonl`, and the pipeline does the rest, checking every game again (free, a game, reachable) before it is published. Approval can also run on its own, in batches with a daily cap, once the maintainer turns it on. Decided and already-published rows are read-only. Corrections to published games are saved as override files that survive every pipeline run, and a removed game goes into `data/blocklist.jsonl`, which keeps it out of the catalogue until it is restored. An overview, the pipeline's runs and a data-quality report complete it. See [`docs/ADMIN.md`](docs/ADMIN.md).
 
 </details>
 
@@ -146,6 +146,7 @@ scripts/
 │   ├── steam_client.py     # HTTP client, backoff, retry, session pooling
 │   ├── data_store.py       # JSONL I/O, validation, dedup, save_main() + index.json
 │   ├── overrides.py        # Human corrections re-applied on every write
+│   ├── blocklist.py        # Removed games, left out of every write
 │   ├── fetcher.py          # Batch processor, apply_details/reviews/players/scraped
 │   ├── scraper.py          # Store page HTML parser (languages, DLC, tags)
 │   ├── steamcharts.py      # SteamCharts all-time peak reader (polite, stops on refusal)
@@ -154,6 +155,7 @@ scripts/
 │   └── health_checker.py   # Game status detection with cached API data
 ├── discover_new.py         # Propose new games into the /admin review queue
 ├── ingest_new.py           # Add queued games (health check + extension merge)
+├── remove_games.py         # Apply data/blocklist.jsonl now (runs before every ingest)
 ├── update_data.py          # Daily: fill in incomplete records
 ├── refresh_store_data.py   # Daily rotation: tags/languages weekly, store details monthly
 ├── refresh_peaks.py        # Daily rotation: all-time peak from SteamCharts, monthly per game
@@ -164,7 +166,7 @@ scripts/
 ├── top_online.py / top_offline.py  # Leaderboards
 ├── edit_game.py            # Overrides from the command line
 ├── refetch_all.py          # Force re-fetch ALL (manual only)
-└── delete_game.py          # Interactive delete
+└── delete_game.py          # Remove games (blocklist) from the command line
 ```
 
 </details>
@@ -175,7 +177,7 @@ scripts/
 | --------------------- | -------------------------------- | --------------------------------------------------------- |
 | Auto Update JSON      | Daily 00:00 UTC                  | Fills in incomplete records (API + HTML scrape)           |
 | Discover New Games    | Daily 05:00 UTC                  | Propose new free games into the `/admin` review queue     |
-| Ingest New            | On `scripts/temp_info.jsonl` push | Add approved and extension-submitted games               |
+| Ingest New            | On `scripts/temp_info.jsonl` or `data/blocklist.jsonl` push, and every 3 h | Apply removals, then add approved and extension-submitted games |
 | Top Online            | Sun/Wed/Fri 03:00 UTC            | Live player leaderboard                                   |
 | Top Offline           | 1st + 15th of month 05:00 UTC    | Leaderboard for single-player F2P concurrents             |
 | Update Reviews        | Every 2 days 06:00 UTC           | Reviews-only refresh                                      |
@@ -200,8 +202,10 @@ to `scripts/temp_info.jsonl`; `Ingest New Game Links` merges and dedupes on push
 This is the only submission route.
 
 Most new games arrive on their own: `Discover New Games` sweeps the Steam store
-daily into a review queue, and the maintainer approves them at `/admin`.
-Discovery only proposes — publication is always a human decision.
+daily into a review queue, and the maintainer approves them at `/admin` — by
+hand, or with an auto-approve rule that has a daily cap and is off until turned
+on. Discovery only proposes, and every approved game is checked again by the
+pipeline (free, a game, reachable) before it is published.
 
 **Issues** are for reports, not submissions:
 [Bug report](.github/ISSUE_TEMPLATE/bug_report.yml),

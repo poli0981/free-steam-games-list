@@ -275,6 +275,9 @@
               Override file <ExternalLink class="size-3.5" />
             </a>
           {/if}
+          <a class="inline-flex items-center gap-1 text-destructive hover:underline" href="/admin/remove?appids={game.appid}">
+            Remove from the catalogue…
+          </a>
         </div>
         <p class="text-sm">
           {#if game.override}

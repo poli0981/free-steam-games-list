@@ -182,7 +182,7 @@
               {#if health.queue}
                 <div class="flex flex-wrap gap-2">
                   {#each QUEUE_STATUSES as s (s)}
-                    <a href={s === "pending" ? "/admin" : `/admin?status=${s}`} class="inline-flex items-center gap-1.5 hover:underline">
+                    <a href={s === "pending" ? "/admin/queue" : `/admin/queue?status=${s}`} class="inline-flex items-center gap-1.5 hover:underline">
                       <StatusBadge status={s} />
                       <span class="tnum">{formatInt(health.queue[s] ?? 0)}</span>
                     </a>

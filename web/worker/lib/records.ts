@@ -13,6 +13,9 @@
  * record was found in is true only for this request.
  */
 
+import { sha256Hex } from "./hash";
+import { qualityIssues, type QualityCheck } from "../../shared/quality";
+
 const RAW_BASE =
   "https://raw.githubusercontent.com/poli0981/free-steam-games-list/main";
 
@@ -193,4 +196,117 @@ export async function listByGenre(
     }
   }
   return { total, items };
+}
+
+
+/** One catalogue game, as the admin screens need it - not the whole record. */
+export interface CatalogueGame {
+  appid: string;
+  link: string;
+  name: string;
+  header_image: string;
+  release_date: string;
+  type_game: string;
+  genre: string;
+  is_dead: boolean;
+  status: string;
+  issues: QualityCheck[];
+}
+
+export interface Catalogue {
+  /** Same shape as reconcile.ts's and img-mint.ts's, from data/index.json. */
+  generation: string;
+  /** Every shard hashed to what data/index.json records for it. */
+  verified: boolean;
+  games: CatalogueGame[];
+  byAppid: Map<string, CatalogueGame>;
+}
+
+/**
+ * The last VERIFIED read, per isolate. A read with a shard that did not match
+ * its hash is returned but never kept: raw.githubusercontent.com can serve the
+ * previous shard for ~5 minutes after a commit, and a copy built from it would
+ * otherwise be frozen under the new generation (the img-mint lesson). Keyed on
+ * the fetcher too, so tests and the mock server never share a copy.
+ */
+let memo: { fetcher: unknown; catalogue: Catalogue } | null = null;
+
+/**
+ * Every published game, read from the shards data/index.json lists.
+ *
+ * Only a projection is kept (name, art, a few fields and the quality issues):
+ * ~6,600 full records with their language tables would be most of an
+ * isolate's 128 MB. null when the index or a shard cannot be read at all - a
+ * partial catalogue would read as "these games are not published".
+ */
+export async function readCatalogue(fetchText: typeof fetchRaw = fetchRaw): Promise<Catalogue | null> {
+  const indexText = await fetchText("data/index.json", 0);
+  if (!indexText) return null;
+  let files: { name: string; sha256: string }[];
+  let generation: string;
+  try {
+    const parsed = JSON.parse(indexText) as { last_updated?: unknown; files?: { name?: unknown; sha256?: unknown }[] };
+    files = (parsed.files ?? []).flatMap((f) =>
+      typeof f?.name === "string" && /^data_\d{3}\.jsonl$/.test(f.name)
+        ? [{ name: f.name, sha256: typeof f.sha256 === "string" ? f.sha256 : "" }]
+        : [],
+    );
+    generation = JSON.stringify([parsed.last_updated, files.map((f) => f.sha256 || f.name)]);
+  } catch {
+    return null;
+  }
+  if (!files.length) return null;
+  if (memo && memo.fetcher === fetchText && memo.catalogue.generation === generation) return memo.catalogue;
+
+  const texts = await Promise.all(files.map((f) => fetchText(`data/${f.name}`, SHARD_TTL)));
+  let verified = true;
+  for (let i = 0; i < files.length; i++) {
+    if (texts[i] === null) return null;
+    if (!/^[0-9a-f]{64}$/.test(files[i].sha256)) {
+      verified = false;
+      continue;
+    }
+    if ((await sha256Hex(texts[i]!)) === files[i].sha256) continue;
+    // Stale edge copy: ask once more, past the cache.
+    texts[i] = await fetchText(`data/${files[i].name}`, 0);
+    if (texts[i] === null) return null;
+    if ((await sha256Hex(texts[i]!)) !== files[i].sha256) verified = false;
+  }
+
+  const games: CatalogueGame[] = [];
+  const byAppid = new Map<string, CatalogueGame>();
+  for (const text of texts as string[]) {
+    for (const line of text.split("\n")) {
+      if (!line.trim()) continue;
+      let rec: Record<string, unknown>;
+      try {
+        rec = JSON.parse(line) as Record<string, unknown>;
+      } catch {
+        continue;
+      }
+      const link = typeof rec.link === "string" ? rec.link : "";
+      const appid = /\/app\/(\d+)/.exec(link)?.[1];
+      // One entry per appid: a duplicate record must not become a duplicate
+      // key in a keyed {#each} on the admin screens.
+      if (!appid || byAppid.has(appid)) continue;
+      const game: CatalogueGame = {
+        appid,
+        link,
+        name: typeof rec.name === "string" ? rec.name : "",
+        header_image: typeof rec.header_image === "string" ? rec.header_image : "",
+        release_date: typeof rec.release_date === "string" ? rec.release_date : "",
+        type_game: typeof rec.type_game === "string" ? rec.type_game : "",
+        genre: typeof rec.genre === "string" ? rec.genre : "",
+        is_dead: rec.is_dead === true,
+        status: typeof rec.status === "string" ? rec.status : "",
+        issues: qualityIssues(rec),
+      };
+      games.push(game);
+      byAppid.set(appid, game);
+    }
+  }
+
+  const catalogue: Catalogue = { generation, verified, games, byAppid };
+  if (verified) memo = { fetcher: fetchText, catalogue };
+  return catalogue;
 }

@@ -8,6 +8,6 @@
 <div class="rounded-lg border border-border">
   <EmptyState icon={Compass} title="No admin page at {router.path}">
     <p>The address may be mistyped.</p>
-    <Button class="mt-4" variant="outline" size="sm" href="/admin">Go to the queue</Button>
+    <Button class="mt-4" variant="outline" size="sm" href="/admin">Go to the overview</Button>
   </EmptyState>
 </div>

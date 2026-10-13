@@ -6,13 +6,14 @@
  * error mapping - run against an in-memory D1 without a GitHub App or the live
  * dataset. There is deliberately no flag in the Worker that swaps these.
  */
-import { appendLinks, commitFiles } from "./git-commit";
+import { appendLinks, commitFiles, readRepoFiles } from "./git-commit";
 import { gh } from "./github-app";
 import { fetchRaw, findOverride, findRecord, genreCounts, listByGenre } from "./records";
 
 export interface AdminDeps {
   appendLinks: typeof appendLinks;
   commitFiles: typeof commitFiles;
+  readRepoFiles: typeof readRepoFiles;
   gh: typeof gh;
   findRecord: typeof findRecord;
   findOverride: typeof findOverride;
@@ -25,6 +26,7 @@ export interface AdminDeps {
 export const defaultAdminDeps: AdminDeps = {
   appendLinks,
   commitFiles,
+  readRepoFiles,
   gh,
   findRecord,
   findOverride,

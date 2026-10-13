@@ -82,6 +82,19 @@ describe("retention", () => {
     expect(actions.map((a) => a.action)).toEqual(["ping", "admin.prune"]);
   });
 
+  it("keeps a month of auto-approve day counters and nothing else of admin_state", async () => {
+    const env = makeEnv();
+    const put = env.sqlite.db.prepare("INSERT INTO admin_state (key, value, updated_at) VALUES (?, '1', 'x')");
+    const now = new Date("2026-10-13T03:00:00Z");
+    put.run("auto.approve.count:2026-08-01");
+    put.run("auto.approve.count:2026-09-12");
+    put.run("auto.approve.count:2026-10-13");
+    put.run("reconcile.index");
+    await pruneAdminHistory(env, now);
+    const keys = (env.sqlite.db.prepare("SELECT key FROM admin_state ORDER BY key").all() as any[]).map((r) => r.key);
+    expect(keys).toEqual(["auto.approve.count:2026-09-12", "auto.approve.count:2026-10-13", "reconcile.index"]);
+  });
+
   it("never lets a bad value shrink the window below a week", () => {
     expect(retentionDays({ ADMIN_RETENTION_DAYS: "180" } as Env)).toBe(180);
     expect(retentionDays({ ADMIN_RETENTION_DAYS: "0" } as unknown as Env)).toBe(180);

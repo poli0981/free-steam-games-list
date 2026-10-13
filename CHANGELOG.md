@@ -4,6 +4,92 @@ All notable changes to this awesome noob repo will be documented here.
 
 ## [Unreleased]
 
+## [v4.3.0] – 2026-10-13 (The "Autopilot" Edition)
+
+The admin can now approve the review queue on its own, a batch at a time and
+within a daily limit, and it can take games out of the catalogue and put them
+back. Four new admin pages show what is going on. Only the admin, its Worker
+routes and the data pipeline changed: the desktop and Android apps stay at
+`2.2.0` with no new build, there is no D1 migration, and the GitHub App keeps
+the same permissions. Repo public-facing version `4.2.1` → `4.3.0`.
+
+Auto-approve is **off** until it is turned on at `/admin/automation`.
+
+### ✨ Added
+
+- **Auto-approve.** Every 15 minutes the Worker's cron can approve one batch
+  of pending games, exactly as a reviewer's Approve does: a request in
+  `scripts/temp_info.jsonl` that the ingest still checks game by game (free,
+  reachable, a game, not already listed). The page sets the limits: games per
+  batch (up to 100), games per day (up to 500, a ceiling written in code), a
+  minimum wait before a game can be taken, the order, and which discovery
+  sources. A batch is committed only when the previous one has been ingested
+  and no data job is running or waiting its turn, since pushing then would
+  cancel that job. Anything it cannot check counts as "not now". **Run one
+  batch now** does one on demand, within the same limits.
+- **Removing games.** `/admin/remove` takes up to 100 games out of the
+  catalogue at once, with a reason from a fixed list and an optional note.
+  Both are public. A removal is a line in the new `data/blocklist.jsonl`, and
+  every pipeline write leaves those games out. No scrape, re-fetch or
+  browser-extension push can bring one back, and discovery never proposes it
+  again. Each removal is logged once in `scripts/removed_games.jsonl`, so the
+  game's page says it was removed and why. **Restore** puts a game back in one
+  commit, and the game is fetched fresh from Steam. `scripts/delete_game.py`
+  does the same from the command line. It used to be an interactive prompt
+  that kept no record and did not stop the game from coming back.
+- **Overview** at `/admin`, with one card each for the queue, auto-approve's
+  day, removals waiting for the pipeline, data jobs running now, data-quality
+  totals, and commit jobs that failed or are stuck. The queue moved to `/admin/queue`, and old
+  links are forwarded there.
+- **Pipeline** (`/admin/pipeline`): the latest runs of every data workflow, and
+  what is running or waiting.
+- **Data quality** (`/admin/quality`): published games with something missing
+  or unreviewed, such as safety never set or never reviewed, no genre, no tags
+  or no publisher. Each game links to its Edit page.
+
+### 🐛 Fixed
+
+- **A free DLC, demo or tool could be added as a game.** The ingest now
+  refuses anything Steam does not call a game, and logs it as `not_a_game`.
+  This applies to the browser extension too.
+- `ingest_new.py` crashed on an entry whose link was a number, and would have
+  crashed again on every three-hourly run until the file was cleaned by hand.
+  A number is now read as an appid, and anything else unusable is counted as
+  a bad entry.
+- An ingest run that waited behind a long data job worked on the data as it
+  was when the run was queued. It now starts from the tip of `main`.
+- `Mark Dead Games` pushed with a bare `git push`, so a commit landing during
+  its run threw the run away. It now commits through the same
+  rebase-and-retry helper as every other data job.
+
+### 🧰 Pipeline
+
+- `scripts/remove_games.py` applies the blocklist. `Ingest New Game Links`
+  runs it before every ingest, and a push to `data/blocklist.jsonl` starts that
+  workflow. A save that would remove more than 500 games stops before writing
+  anything, so a damaged file fails loudly instead of emptying the catalogue.
+  `Check Overrides` validates the blocklist on every push that touches it.
+- Discovery counts removed games as already known.
+
+### 🔐 Security
+
+- The app shell's lockfile takes `rustls` 0.23.45 (and `rustls-webpki`
+  0.103.15), closing GHSA-2mjx-qc3c-rqvc: TLS 1.3 handshake messages were
+  accepted across encryption-level boundaries. Only the desktop updater's
+  HTTPS client uses it; the Android app does not include it. The desktop app
+  picks it up in its next build, and 2.2.0 is unchanged.
+
+### 🧹 Housekeeping
+
+- 25 merged branches on GitHub, their local copies and 7 stale worktrees are
+  gone. GitHub now deletes a pull request's branch when it is merged.
+- Dependencies: Tauri 2.12.2 and its plugins (#181), and eleven npm
+  minor/patch updates including Svelte 5.57.2, Vite 8.3.4 and wrangler
+  4.149.0 (#182). The website already runs them; the apps pick them up in
+  their next build. Dependabot no longer proposes SvelteKit 3,
+  adapter-static 4, a new Svelte, Tailwind or TypeScript major, or a
+  `@types/node` ahead of the Node 24 the project runs on.
+
 ## [v4.2.1] – 2026-10-10 (The "Age Gate" Edition)
 
 Adult Only games now have their tags, languages and paid-DLC flag. Every
