@@ -12,24 +12,12 @@
  */
 import type { AdminDeps } from "./deps";
 import { DATA_WORKFLOWS, isActiveRun } from "../../shared/pipeline";
+import type { RunSummary } from "../../shared/admin-api";
 
 const RUNS_PATH = "/repos/poli0981/free-steam-games-list/actions/runs?per_page=100&exclude_pull_requests=true";
 const MEMO_MS = 60_000;
 
-export interface RunSummary {
-  /** The workflow file, e.g. ".github/workflows/ingest-new.yml". */
-  file: string;
-  name: string;
-  status: string;
-  conclusion: string | null;
-  event: string;
-  title: string;
-  created_at: string;
-  run_started_at: string | null;
-  updated_at: string;
-  html_url: string;
-  run_number: number;
-}
+export type { RunSummary };
 
 interface ApiRun {
   path?: string;

@@ -19,6 +19,8 @@ import { defaultAdminDeps, type AdminDeps } from "../lib/deps";
 import { handleEditApi } from "./edit";
 import { handleRemoveApi, REMOVE_ROUTES } from "./remove";
 import { AUTOMATION_ROUTES, handleAutomationApi } from "./automation";
+import { handlePipelineApi } from "./pipeline";
+import { handleQualityApi } from "./quality";
 import { REMOVED_DECISION_PREFIX } from "../../shared/removal";
 import {
   DECIDE_ACTIONS,
@@ -69,6 +71,10 @@ export async function handleAdminApi(
   if ((AUTOMATION_ROUTES as readonly string[]).includes(route)) {
     return handleAutomationApi(request, url, env, who, deps);
   }
+
+  // Read-only views over GitHub Actions and the published catalogue.
+  if (route === "pipeline") return handlePipelineApi(request, url, env, who, deps);
+  if (route === "quality") return handleQualityApi(request, url, env, who, deps);
 
   // Who am I? Confirms the Access -> Worker identity chain end to end.
   if (route === "me" && request.method === "GET") {

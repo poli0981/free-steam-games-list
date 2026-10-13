@@ -6,6 +6,9 @@
  * and svelte-check points at every screen that reads it.
  */
 import type { DecideAction, QueueStatus, SkippedRow } from "./queue-rules";
+import type { AutoLast, AutoSettings } from "./automation";
+import type { QualityCheck } from "./quality";
+import type { BlocklistEntry } from "./removal";
 
 export interface QueueItem {
   id: string;
@@ -263,4 +266,118 @@ export interface EditResponse {
   retired?: string[];
   deleted?: boolean;
   applied?: boolean;
+}
+
+// ── Removal (worker/routes/remove.ts) ──────────────────────────────────────
+
+export interface CatalogueGameSummary {
+  appid: string;
+  name: string;
+  header_image: string;
+  release_date: string;
+  is_dead: boolean;
+  status: string;
+}
+
+export interface CatalogueSearchResponse {
+  q: string;
+  total: number;
+  verified: boolean;
+  items: (CatalogueGameSummary & { blocked: BlocklistEntry | null })[];
+}
+
+export interface CataloguePreviewResponse {
+  verified: boolean;
+  items: { appid: string; found: boolean; game: CatalogueGameSummary | null; blocked: BlocklistEntry | null }[];
+}
+
+export interface RemoveResponse {
+  removed: string[];
+  repaired: string[];
+  skipped: { appid: string; reason: "not-in-catalogue" | "already-removed" }[];
+  commit: string | null;
+  job: string | null;
+}
+
+export interface RemovedItem extends BlocklistEntry {
+  /** Still in data/ - waiting for the pipeline. null when the catalogue could not be read. */
+  inCatalogue: boolean | null;
+  decision: { decision: string; reason: string | null } | null;
+}
+
+export interface RemovedResponse {
+  total: number;
+  items: RemovedItem[];
+}
+
+export interface RemovedSummary {
+  total: number;
+  pending: number | null;
+}
+
+export interface RestoreResponse {
+  restored: string;
+  commit: string | null;
+  job: string;
+}
+
+// ── Auto-approve (worker/routes/automation.ts) ─────────────────────────────
+
+export interface AutomationResponse {
+  settings: AutoSettings;
+  defaults: AutoSettings;
+  ceiling: number;
+  maxBatch: number;
+  stateAvailable: boolean;
+  today: { date: string; used: number; limit: number };
+  last: AutoLast | null;
+  eligible: number;
+  preview: { id: string; appid: string; name: string; source: string; first_seen_at: string }[];
+  sources: { source: string; pending: number; failed: number; total: number }[];
+  inFlight: number;
+  history: AuditEntry[];
+}
+
+export interface AutoRunResponse {
+  outcome: "approved" | "skipped" | "failed";
+  detail: string;
+  count?: number;
+  sha?: string | null;
+}
+
+// ── Pipeline and quality (worker/routes/pipeline.ts, quality.ts) ──────────
+
+export interface RunSummary {
+  file: string;
+  name: string;
+  status: string;
+  conclusion: string | null;
+  event: string;
+  title: string;
+  created_at: string;
+  run_started_at: string | null;
+  updated_at: string;
+  html_url: string;
+  run_number: number;
+}
+
+export interface PipelineResponse {
+  fetchedAt: string;
+  workflows: { file: string; label: string; dataWrite: boolean; latest: RunSummary | null; recent: RunSummary[] }[];
+  active: RunSummary[];
+  queue: { tempInfo: number | null; blocklist: number | null };
+}
+
+export interface QualitySummaryResponse {
+  total: number;
+  verified: boolean;
+  counts: Record<QualityCheck, number>;
+}
+
+export interface QualityListResponse {
+  check: QualityCheck;
+  total: number;
+  limit: number;
+  offset: number;
+  items: { appid: string; name: string; header_image: string; release_date: string; type_game: string; genre: string; issues: QualityCheck[] }[];
 }
