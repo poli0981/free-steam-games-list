@@ -78,3 +78,24 @@ def test_a_blocked_game_is_skipped_before_any_steam_request(repo):
     ingest_new.main()
     assert repo == ["570"]
     assert _appids() == ["1", "570"]
+
+
+def test_a_free_dlc_demo_or_tool_is_refused_and_logged(repo, monkeypatch):
+    real = ingest_new.check_game_health
+    kinds = {"700": "dlc", "800": "demo", "900": "game", "950": None}
+
+    def health(link, name="", client=None):
+        appid = data_store.extract_appid(link)
+        kind = kinds[appid]
+        return real(link, name, client, details={"name": f"Game {appid}", **({"type": kind} if kind else {})})
+
+    monkeypatch.setattr(ingest_new, "check_game_health", health)
+    _queue(*({"link": a} for a in kinds))
+    ingest_new.main()
+    # No type at all (the HEAD fallback) is not evidence against the game.
+    assert _appids() == ["1", "900", "950"]
+    rows = data_store.load_jsonl(os.path.join("scripts", "removed_games.jsonl"))
+    assert sorted((r["appid"], r["status_code"], r["reason"]) for r in rows) == [
+        ("700", "not_a_game", "Not a game (Steam type: dlc)"),
+        ("800", "not_a_game", "Not a game (Steam type: demo)"),
+    ]

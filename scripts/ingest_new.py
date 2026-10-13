@@ -95,6 +95,19 @@ def main():
                              "removed_at": now_iso()})
             skipped_bad += 1
             continue
+        # The catalogue is games. Discovery only proposes appdetails type
+        # "game", but this queue is also fed by the extension and - with
+        # auto-approve on - by candidates nobody looked at, so a free DLC, demo
+        # or tool is refused HERE, where Steam's own answer is in hand. Not in
+        # health_checker: Purge uses it, and would start deleting records.
+        app_type = str((health.data or {}).get("type") or "").strip().lower()
+        if app_type and app_type != "game":
+            print(f"❌ not a game (Steam type: {app_type})")
+            rejected.append({"link": link, "name": health.name, "appid": appid,
+                             "reason": f"Not a game (Steam type: {app_type})",
+                             "status_code": "not_a_game", "removed_at": now_iso()})
+            skipped_bad += 1
+            continue
         print("✅")
 
         # Build record
