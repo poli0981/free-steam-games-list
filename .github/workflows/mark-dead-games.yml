@@ -58,4 +58,5 @@ jobs:
         # run away), and it commits the whole tree, so scripts/removed_games.jsonl
         # goes with the shards when save_main() applied a removal
         # (scripts/core/blocklist.py).
-        run: bash ./bash/commit_push.sh "chore(data): mark dead games"
+        run: |
+          bash ./bash/commit_push.sh "chore(data): mark dead games"
