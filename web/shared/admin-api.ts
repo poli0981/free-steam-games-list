@@ -133,6 +133,45 @@ export interface Paged<T> {
 }
 
 /**
+ * Every commit_jobs.kind the Worker writes - the Jobs page's filter. A test
+ * (admin-api.test.ts) reads worker/ and fails on a kind missing here.
+ */
+export const JOB_KINDS = ["approve", "auto.approve", "override", "override.delete", "remove", "restore"] as const;
+
+/**
+ * Every audit_log.action the Worker writes - the Audit page's filter. Same
+ * test. A filter, not a validator: the server checks only the shape.
+ */
+export const AUDIT_ACTIONS = [
+  "approve",
+  "approve.failed",
+  "approve.desynced",
+  "auto.approve",
+  "auto.approve.failed",
+  "auto.approve.desynced",
+  "automation.settings",
+  "reject",
+  "defer",
+  "requeue",
+  "reopen",
+  "remove",
+  "remove.failed",
+  "remove.desynced",
+  "restore",
+  "restore.failed",
+  "restore.desynced",
+  "reconcile.manual",
+  "reconcile.approved",
+  "override",
+  "override.failed",
+  "override.delete",
+  "override.delete.failed",
+  "ingest.candidates",
+  "admin.prune",
+  "ping",
+] as const;
+
+/**
  * The D1 migrations this build expects, by file name, so the health page can
  * name the ones not applied yet. admin-api.test.ts holds it equal to
  * worker/migrations/.

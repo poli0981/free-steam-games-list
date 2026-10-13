@@ -6,11 +6,11 @@
  * in the repository shows as Verified. The REST path would require carrying a
  * signing key in the Worker, next to a credential that can already write.
  *
- * Scope: this module may append to `scripts/temp_info.jsonl` and write or
- * delete `data/overrides/<appid>.json` (see WRITABLE). It cannot touch the
- * data/ shards. Publication stays the pipeline's job — the Worker only
- * enqueues a request, `ingest_new.py` decides whether the game is real, free
- * and reachable, and Git remains the source of truth either way.
+ * Scope: this module may append to `scripts/temp_info.jsonl`, write or
+ * delete `data/overrides/<appid>.json`, and edit `data/blocklist.jsonl` (see
+ * WRITABLE). It cannot touch the data/ shards. Publication and removal stay
+ * the pipeline's job - the Worker only commits a request or a standing
+ * instruction, save_main() applies it, and Git remains the source of truth.
  */
 import { gh } from "./github-app";
 import { ADMIN_ATTRIBUTION } from "../../shared/admin-api";
@@ -35,6 +35,9 @@ export const TEMP_INFO_PATH = "scripts/temp_info.jsonl";
 const WRITABLE = [
   /^scripts\/temp_info\.jsonl$/,
   /^data\/overrides\/\d{1,10}\.json$/,
+  // Removed games (shared/removal.ts BLOCKLIST_PATH). Lines are appended or
+  // deleted whole, never rewritten.
+  /^data\/blocklist\.jsonl$/,
 ];
 
 function assertWritable(path: string): void {
@@ -116,14 +119,14 @@ async function readHeadAndFile(env: Env, path: string, transport: GitHubTranspor
   const data = await graphql<{
     repository: {
       defaultBranchRef: { target: { oid: string } } | null;
-      object: { text?: string; isBinary?: boolean } | null;
+      object: { text?: string; isBinary?: boolean; isTruncated?: boolean } | null;
     };
   }>(
     env,
     `query($owner:String!, $name:String!, $expr:String!) {
        repository(owner:$owner, name:$name) {
          defaultBranchRef { target { oid } }
-         object(expression:$expr) { ... on Blob { text isBinary } }
+         object(expression:$expr) { ... on Blob { text isBinary isTruncated } }
        }
      }`,
     { owner: REPO_OWNER, name: REPO_NAME, expr: `${BRANCH}:${path}` },
@@ -134,9 +137,11 @@ async function readHeadAndFile(env: Env, path: string, transport: GitHubTranspor
   if (!oid) throw new Error(`cannot read ${BRANCH} head`);
 
   const obj = data.repository.object;
-  // isBinary means GitHub refused to give us text. Rewriting a blob we cannot
-  // read would destroy it.
+  // isBinary means GitHub refused to give us text, isTruncated that it gave us
+  // only the start of it. Rewriting a blob we cannot read whole would destroy
+  // the rest of it.
   if (obj?.isBinary) throw new Error(`${path} is not text`);
+  if (obj?.isTruncated) throw new Error(`${path} is too large to read through the API`);
   return { oid, text: obj?.text ?? "" };
 }
 
@@ -146,6 +151,23 @@ export interface CommitResult {
   appended: number;
   /** Already queued in the file, so not appended again. */
   skipped: string[];
+  /** requireEmptyQueue was set and the file was not empty: nothing committed. */
+  busy?: true;
+}
+
+export interface AppendRequest {
+  /** Kept in the commit body. */
+  reason?: string;
+  /** An auto-approve batch (lib/auto-approve.ts): the commit says so, and names its daily limit. */
+  auto?: { dailyLimit: number };
+  /**
+   * Commit only if the queue file is EMPTY at the very head the commit is made
+   * on. Auto-approve uses it to stay out of the way of an ingest run that has
+   * not finished with the previous batch - checked here, against the same
+   * expectedHeadOid, so an extension push between its own check and this
+   * commit cannot slip past.
+   */
+  requireEmptyQueue?: boolean;
 }
 
 /**
@@ -165,9 +187,10 @@ export interface CommitResult {
 export async function appendLinks(
   env: Env,
   links: string[],
-  reason = "",
+  request: AppendRequest = {},
   transport: GitHubTransport = gh,
 ): Promise<CommitResult> {
+  const reason = request.reason ?? "";
   let lastError = "";
 
   // One line per appid, which is what this function's contract promises.
@@ -179,6 +202,7 @@ export async function appendLinks(
 
   for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
     const { oid, text } = await readHeadAndFile(env, TEMP_INFO_PATH, transport);
+    if (request.requireEmptyQueue && text.trim()) return { sha: null, appended: 0, skipped: [], busy: true };
 
     // Dedup against what is already queued. Without this, approving a game
     // twice before the pipeline runs queues it twice; ingest_new.py would
@@ -210,10 +234,15 @@ export async function appendLinks(
     const next =
       text + sep + fresh.map((l) => JSON.stringify({ link: l })).join("\n") + "\n";
 
+    const kind = request.auto ? "auto-approved" : "approved";
     const headline =
       fresh.length === 1
-        ? `queue: 1 approved game`
-        : `queue: ${fresh.length} approved games`;
+        ? `queue: 1 ${kind} game`
+        : `queue: ${fresh.length} ${kind} games`;
+    // Who approved it stays in D1; an automatic batch says WHAT approved it.
+    const by = request.auto
+      ? `Approved automatically by the /admin schedule (at most ${request.auto.dailyLimit} a day), enabled by ${ADMIN_ATTRIBUTION}.`
+      : `Approved in /admin by ${ADMIN_ATTRIBUTION}.`;
 
     try {
       const data = await graphql<{
@@ -236,7 +265,7 @@ export async function appendLinks(
               // backup that matters, and Git is. WHO approved it stays in D1 -
               // this body is public forever.
               body:
-                `Approved in /admin by ${ADMIN_ATTRIBUTION}.` +
+                by +
                 (reason ? `\n\nReason: ${reason}` : "") +
                 `\n\nQueued for scripts/ingest_new.py, which decides whether each game is actually free, reachable and not already present. This commit is a request, not a publication.`,
             },
@@ -303,7 +332,7 @@ async function readHeadAndFiles(
   transport: GitHubTransport,
 ): Promise<{ oid: string; files: { text: string; exists: boolean }[] }> {
   const aliases = paths
-    .map((_, i) => `f${i}: object(expression: $e${i}) { ... on Blob { text isBinary } }`)
+    .map((_, i) => `f${i}: object(expression: $e${i}) { ... on Blob { text isBinary isTruncated } }`)
     .join("\n         ");
   const params = paths.map((_, i) => `$e${i}:String!`).join(", ");
 
@@ -331,11 +360,31 @@ async function readHeadAndFiles(
   const files = paths.map((path, i) => {
     const obj = repo[`f${i}`];
     if (obj?.isBinary) throw new Error(`${path} is not text`);
+    if (obj?.isTruncated) throw new Error(`${path} is too large to read through the API`);
     // A null object is a file that does not exist on the branch - which a
     // deletion must know, because deleting a missing path fails the commit.
     return { text: (obj?.text ?? "") as string, exists: obj !== null && obj !== undefined };
   });
   return { oid, files };
+}
+
+/**
+ * The current text of repository files on `main`, read through GraphQL in one
+ * query - null for a file that does not exist. Fresh, unlike fetchRaw(): a
+ * raw.githubusercontent.com copy can trail a commit by minutes, and the
+ * callers (the blocklist screens, auto-approve's queue check) act on what the
+ * branch says NOW.
+ */
+export async function readRepoFiles(
+  env: Env,
+  paths: string[],
+  transport: GitHubTransport = gh,
+): Promise<{ head: string; files: (string | null)[] }> {
+  for (const p of paths) {
+    if (p.includes("..") || p.startsWith("/")) throw new Error(`refusing to read ${p}`);
+  }
+  const { oid, files } = await readHeadAndFiles(env, paths, transport);
+  return { head: oid, files: files.map((f) => (f.exists ? f.text : null)) };
 }
 
 /** Returned by FileEdit.build() to delete the file in the same commit. */

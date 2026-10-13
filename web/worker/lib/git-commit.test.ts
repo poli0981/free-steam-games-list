@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { appendLinks, commitFiles, DELETE_FILE, type GitHubTransport } from "./git-commit";
+import { appendLinks, commitFiles, DELETE_FILE, readRepoFiles, type GitHubTransport } from "./git-commit";
 import { ADMIN_ATTRIBUTION } from "../../shared/admin-api";
 
 /**
@@ -104,10 +104,66 @@ describe("commitFiles", () => {
 
   it("refuses a path outside the allowlist, before any request", async () => {
     const { fn, calls } = transport({});
-    await expect(
-      commitFiles(env, [{ path: "data/data_001.jsonl", build: () => DELETE_FILE }], "h", "b", fn),
-    ).rejects.toThrow(/not an allowed path/);
+    for (const path of ["data/data_001.jsonl", "data/index.json", "data/blocklist.jsonl.bak", "data/blocklist_jsonl"]) {
+      await expect(commitFiles(env, [{ path, build: () => DELETE_FILE }], "h", "b", fn)).rejects.toThrow(
+        /not an allowed path/,
+      );
+    }
     expect(calls).toEqual([]);
+  });
+
+  it("may edit the blocklist", async () => {
+    const { fn, calls } = transport({ "data/blocklist.jsonl": "" });
+    const sha = await commitFiles(env, [{ path: "data/blocklist.jsonl", build: (c) => c + "x\n" }], "h", "b", fn);
+    expect(sha).toBe("newsha");
+    expect(calls.at(-1)!.variables.input.fileChanges.additions[0].path).toBe("data/blocklist.jsonl");
+  });
+
+  it("refuses to rewrite a file GitHub only gave part of", async () => {
+    const calls: Call[] = [];
+    const fn: GitHubTransport = async (_env, _path, init) => {
+      calls.push(JSON.parse(String(init?.body)) as Call);
+      return new Response(
+        JSON.stringify({
+          data: {
+            repository: {
+              defaultBranchRef: { target: { oid: "head" } },
+              f0: { text: "the first megabyte", isBinary: false, isTruncated: true },
+            },
+          },
+        }),
+      );
+    };
+    await expect(
+      commitFiles(env, [{ path: "data/blocklist.jsonl", build: (c) => c + "x" }], "h", "b", fn),
+    ).rejects.toThrow(/too large/);
+    expect(calls.some((c) => c.query.includes("createCommitOnBranch"))).toBe(false);
+  });
+});
+
+describe("readRepoFiles", () => {
+  it("reads several files at one head, null for a missing one", async () => {
+    const { fn } = transport({ "scripts/temp_info.jsonl": "", "data/blocklist.jsonl": null });
+    expect(await readRepoFiles(env, ["scripts/temp_info.jsonl", "data/blocklist.jsonl"], fn)).toEqual({
+      head: "head",
+      files: ["", null],
+    });
+    await expect(readRepoFiles(env, ["../secrets"], fn)).rejects.toThrow(/refusing/);
+  });
+});
+
+describe("appendLinks requireEmptyQueue", () => {
+  it("commits nothing while the queue file still holds a batch", async () => {
+    const { fn, calls } = queueTransport('{"link":"https://store.steampowered.com/app/1/"}\n');
+    const out = await appendLinks(env, ["https://store.steampowered.com/app/2/"], { requireEmptyQueue: true }, fn);
+    expect(out).toEqual({ sha: null, appended: 0, skipped: [], busy: true });
+    expect(calls.some((c) => c.query.includes("createCommitOnBranch"))).toBe(false);
+  });
+
+  it("commits when the file is empty", async () => {
+    const { fn } = queueTransport("");
+    const out = await appendLinks(env, ["https://store.steampowered.com/app/2/"], { requireEmptyQueue: true }, fn);
+    expect(out.sha).toBe("newsha");
   });
 });
 
@@ -120,11 +176,25 @@ describe("commit bodies", () => {
    */
   it("names /admin, never a person", async () => {
     const { fn, calls } = queueTransport("");
-    await appendLinks(env, ["https://store.steampowered.com/app/730/"], "looks free", fn);
+    await appendLinks(env, ["https://store.steampowered.com/app/730/"], { reason: "looks free" }, fn);
 
     const body = String(calls.at(-1)!.variables.input.message.body);
     expect(body).toContain(`Approved in /admin by ${ADMIN_ATTRIBUTION}.`);
     expect(body).toContain("Reason: looks free");
     expect(body).not.toContain("@");
+  });
+
+  it("says when the schedule approved, still naming no person", async () => {
+    const { fn, calls } = queueTransport("");
+    await appendLinks(
+      env,
+      ["https://store.steampowered.com/app/730/", "https://store.steampowered.com/app/440/"],
+      { reason: "auto", auto: { dailyLimit: 300 } },
+      fn,
+    );
+    const message = calls.at(-1)!.variables.input.message;
+    expect(message.headline).toBe("queue: 2 auto-approved games");
+    expect(String(message.body)).toContain("Approved automatically by the /admin schedule (at most 300 a day)");
+    expect(String(message.body)).not.toContain("@");
   });
 });

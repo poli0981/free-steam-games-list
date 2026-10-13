@@ -189,7 +189,7 @@ def test_the_golden_lines_round_trip_byte_for_byte():
 
 
 def test_notes_are_one_line():
-    e = make_entry("1", "A B", "other", " first\nsecond\t\u0001 third ", "2026-10-13T12:00:00Z")
+    e = make_entry("1", "A\u2028B", "other", " first\nsecond\t\u0001 third ", "2026-10-13T12:00:00Z")
     assert e["note"] == "first second third"
     assert e["name"] == "A B"
     assert e["by"] == "admin"
