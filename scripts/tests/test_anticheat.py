@@ -134,13 +134,40 @@ def test_category_vac_in_any_position():
     ("RICOCHET Anti-Cheat", "Ricochet"),
     ("Denuvo", "Denuvo AC"),
     ("FACEIT Anti-Cheat", "FACEIT AC"),
-    # Not a known product: Steam's name, as it is.
-    ("Anti-Cheat Expert (ACE)", "Anti-Cheat Expert (ACE)"),
-    ("EA Javelin Anticheat", "EA Javelin Anticheat"),
+    # Added when Steam's disclosures came in (v4.3.2).
+    ("Anti-Cheat Expert (ACE)", "ACE"),
+    ("ACE", "ACE"),
+    ("Anti-Cheat Toolkit", "Anti-Cheat Toolkit"),
+    ("Anti-Cheat Toolkit 2024", "Anti-Cheat Toolkit"),
+    ("CrackProof®", "CrackProof"),
     ("HoYoKProtect", "HoYoKProtect"),
+    ("NGS (Nexon Game Security)", "NGS"),
+    ("Nexon Game Security", "NGS"),
+    ("EA Javelin AntiCheat", "EA Javelin"),
+    ("SARD Anti-Cheat & LSS Security", "SARD"),
+    # Not a known product: Steam's name, as it is.
+    ("Fairguard", "Fairguard"),
+    ("IRONSHIELD", "IRONSHIELD"),
 ])
 def test_labels(name, label):
     assert ac.label(name) == label
+
+
+@pytest.mark.parametrize("name, key", [
+    # A key or a pattern counts only as whole words: "ace" is in all of these.
+    ("FACEIT AC", "FACEIT AC"),
+    ("Space Guard", None),
+    ("Interface Shield", None),
+    ("Peacekeeper", None),
+    ("Vacuum Protect", None),
+    ("Sardine Shield", None),
+    ("Kssentials", None),
+    ("Strinova ACE", "ACE"),
+    ("EasyAntiCheat_EOS", "EAC"),
+    ("XIGNCODE3", "XIGNCODE"),
+])
+def test_names_match_as_whole_words(name, key):
+    assert ac.canonical(name) == key
 
 
 FRONTIER = ("Frontier uses SCUE4 as its anti-cheat, which comes pre-built with the game. It operates "
@@ -211,7 +238,7 @@ def test_an_empty_game_gets_all_three():
     game = _game()
     assert sorted(apply_anti_cheat(game, ACE)) == ["anti_cheat", "anti_cheat_note", "is_kernel_ac"]
     assert (game["anti_cheat"], game["anti_cheat_note"], game["is_kernel_ac"]) == \
-        ("Anti-Cheat Expert (ACE)", "Anti-Cheat Expert (ACE) [Kernel]", True)
+        ("ACE", "Anti-Cheat Expert (ACE) [Kernel]", True)
     game = _game(anti_cheat="")
     apply_anti_cheat(game, Disclosure("RICOCHET Anti-Cheat", True, True))
     assert (game["anti_cheat"], game["anti_cheat_note"]) == ("Ricochet", "RICOCHET Anti-Cheat [Kernel]; Boot Protection")
@@ -253,7 +280,7 @@ def test_another_product_is_replaced_only_by_the_sweep():
     assert game["anti_cheat"] == "EAC"
     assert sorted(apply_anti_cheat(game, ACE, replace=True)) == ["anti_cheat", "anti_cheat_note", "is_kernel_ac"]
     assert (game["anti_cheat"], game["anti_cheat_note"], game["is_kernel_ac"]) == \
-        ("Anti-Cheat Expert (ACE)", "Anti-Cheat Expert (ACE) [Kernel]", True)
+        ("ACE", "Anti-Cheat Expert (ACE) [Kernel]", True)
 
 
 def test_a_known_label_stays_as_it_was_written():
@@ -310,7 +337,7 @@ def test_a_locked_kernel_flag_decides_the_suffix():
 def test_a_retired_value_is_never_written_back():
     # apply_overrides() restores `was` whenever the stored value equals the
     # retired one: writing it would flip-flop every day.
-    guard = _guard(retired={"anti_cheat": {"value": "Anti-Cheat Expert (ACE)", "was": "-"}})
+    guard = _guard(retired={"anti_cheat": {"value": "ACE", "was": "-"}})
     assert apply_anti_cheat(_game(), ACE, replace=True, guard=guard) == []
     # Another value is fine, and so is an entry whose `was` is its value.
     guard = _guard(retired={"anti_cheat": {"value": "EAC", "was": "-"},

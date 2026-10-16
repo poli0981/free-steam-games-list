@@ -50,6 +50,10 @@ SKIP_GENRE_TAGS = frozenset({
 })
 
 # ──────────── Anti-Cheat patterns ────────────
+# A key or a pattern matches a name only as whole words (core/anticheat.py
+# _has_term; the web's canonicalAc() the same way): "ace" is inside "faceit
+# ac", "space" and "interface". Mirrored, in this order, by
+# web/src/lib/anti-cheat.ts and ANTI_CHEAT_ENUM (anti-cheat.test.ts).
 ANTI_CHEAT_PATTERNS: dict[str, list[str]] = {
     "VAC":        ["valve anti-cheat", "valve anti cheat", "vac enabled"],
     "EAC":        ["easy anti-cheat", "easy anti cheat", "easyanticheat"],
@@ -66,6 +70,14 @@ ANTI_CHEAT_PATTERNS: dict[str, list[str]] = {
     "KSS":        ["kss", "krafton security"],
     "NetEase GS": ["netease game security"],
     "Hyperion":   ["hyperion", "byfron"],
+    # The names Steam's disclosures use most beyond the above (2026-10-16).
+    "ACE":        ["anti-cheat expert", "anticheat expert"],
+    "Anti-Cheat Toolkit": ["anti-cheat toolkit", "anticheat toolkit"],
+    "CrackProof": ["crackproof"],
+    "HoYoKProtect": ["hoyokprotect"],
+    "NGS":        ["nexon game security"],
+    "EA Javelin": ["javelin"],
+    "SARD":       ["sard"],
 }
 
 # ──────────── Field classification ────────────
