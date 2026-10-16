@@ -4,6 +4,29 @@ All notable changes to this awesome noob repo will be documented here.
 
 ## [Unreleased]
 
+## [v4.3.2] – 2026-10-16 (The "Pigeonhole" Edition)
+
+The anti-cheat charts and filters know the products Steam's declarations
+brought in. Only the website's anti-cheat grouping and the pipeline's labels
+changed: the desktop and Android apps stay at `2.2.0`, with no new build, and
+group these products from their next release. Repo public-facing version
+`4.3.1` → `4.3.2`.
+
+### ✨ Added
+
+- **Seven more anti-cheat families**: ACE (Anti-Cheat Expert), Anti-Cheat
+  Toolkit, CrackProof, HoYoKProtect, NGS (Nexon Game Security), EA Javelin and
+  SARD. After v4.3.1, 68 of the 159 games with a named anti-cheat sat in the
+  charts' "Other" slice; now 35 do, and those are one-off names a developer
+  typed. New games get the short name as their label; a label already stored
+  stays as it was written, so nothing in the catalogue is rewritten.
+
+### 🐛 Fixed
+
+- A product name now has to appear as a whole word to count. Matching inside
+  words would have filed "Space Guard", "Interface Shield" or "Peacekeeper"
+  under ACE, and "Vacuum Protect" under VAC.
+
 ## [v4.3.1] – 2026-10-16 (The "Fair Play" Edition)
 
 Anti-cheat information comes from Steam again, for every game, and the
