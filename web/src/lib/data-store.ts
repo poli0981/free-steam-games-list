@@ -79,18 +79,6 @@ export function migrateRecord(game: Record<string, unknown>): GameRecord {
     delete out.desc;
   }
 
-  for (const k of [
-    "free_type",
-    "is_free",
-    "is_dlc",
-    "is_demo",
-    "is_playtest",
-    "price",
-    "auto_notes",
-  ]) {
-    delete out[k];
-  }
-
   return out as unknown as GameRecord;
 }
 

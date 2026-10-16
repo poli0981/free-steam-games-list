@@ -13,8 +13,8 @@ import pytest
 
 from core import data_store
 from core.normalize import (
-    clean_list, clean_text, decode_entities, decode_tags, normalize_record,
-    normalize_release_date, translate_notes,
+    clean_list, clean_notes, clean_text, decode_entities, decode_tags, normalize_record,
+    normalize_release_date,
 )
 
 
@@ -126,14 +126,33 @@ def test_tags_are_decoded_and_the_duplicates_that_makes_are_dropped():
 # ──────────── notes ────────────
 
 @pytest.mark.parametrize("raw, expected", [
-    ("Có DLC trả phí", "Has paid DLC"),
-    ("Có DLC trả phí 💀 Dead game (no players ≥14d)", "Has paid DLC 💀 Dead game (no players ≥14d)"),
-    ("Có DLC trả phí; Easy Anti-Cheat [Kernel]", "Has paid DLC; Easy Anti-Cheat [Kernel]"),
-    ("Not reviewed yet", "Not reviewed yet"),
-    ("English only", "English only"),
+    # Every shape the 517 notes the retired browser extension began came in.
+    ("Has paid DLC", "Not reviewed yet"),
+    ("[hover-add]", "Not reviewed yet"),
+    ("Has paid DLC 💀 Dead game (no players ≥14d)", "💀 Dead game (no players ≥14d)"),
+    ("Has paid DLC; Easy Anti-Cheat [Kernel]", "Easy Anti-Cheat [Kernel]"),
+    ("Has paid DLC; EAC", "EAC"),
+    ("Has paid DLC; Anti-Cheat Toolkit [Non-Kernel] ⚠ No longer free!",
+     "Anti-Cheat Toolkit [Non-Kernel] ⚠ No longer free!"),
 ])
-def test_the_extensions_vietnamese_notes_read_in_english(raw, expected):
-    assert translate_notes(raw) == expected
+def test_the_extensions_leading_phrases_are_dropped(raw, expected):
+    assert clean_notes(raw) == expected
+
+
+@pytest.mark.parametrize("raw", [
+    "", "Not reviewed yet", "English only", "Has paid DLCs", "Toxic max; Has paid DLC",
+    "has paid dlc", "  Has paid DLC", "[hover-add]er", None,
+])
+def test_anything_else_is_kept_exactly(raw):
+    # An empty note stays empty: only a note the rule emptied becomes
+    # "Not reviewed yet". A phrase in the middle is a person's sentence.
+    assert clean_notes(raw) == raw
+
+
+def test_clean_notes_is_a_fixed_point():
+    for raw in ("Has paid DLC", "[hover-add]", "Has paid DLC; EAC", "Has paid DLC 💀 Dead game"):
+        once = clean_notes(raw)
+        assert clean_notes(once) == once
 
 
 # ──────────── Records ────────────
@@ -153,7 +172,7 @@ def _messy(appid: int) -> dict:
         "release_date": "28 апр. 2025 г.",
         "description": "an art &quot;game&quot;",
         "tags": ["Point &amp; Click"],
-        "notes": "Có DLC trả phí",
+        "notes": "Has paid DLC; EAC",
         "last_updated": "2026-01-01T00:00:00Z",
     }
 
@@ -180,7 +199,7 @@ def test_save_main_writes_every_record_normalised_and_none_as_news(workdir):
     assert stored["release_date"] == "Apr 28, 2025"
     assert stored["description"] == 'an art "game"'
     assert stored["tags"] == ["Point & Click"]
-    assert stored["notes"] == "Has paid DLC"
+    assert stored["notes"] == "EAC"
     assert stored["last_updated"] == "2026-01-01T00:00:00Z"
 
 
@@ -191,16 +210,40 @@ def test_saving_what_was_loaded_changes_no_byte(workdir):
     assert _shards() == before
 
 
-def test_an_override_in_vietnamese_does_not_flip_flop(workdir):
+def _override(appid: int, doc: dict) -> None:
+    os.makedirs(os.path.join("data", "overrides"), exist_ok=True)
+    with open(os.path.join("data", "overrides", f"{appid}.json"), "w", encoding="utf-8") as fh:
+        json.dump({"schema": 1, "appid": str(appid), **doc}, fh)
+
+
+def test_an_override_with_the_phrase_does_not_flip_flop(workdir):
     # The override would put the phrase back after every normalisation, bump
-    # last_updated and commit on every run, if it were not translated too.
-    os.makedirs(os.path.join("data", "overrides"))
-    with open(os.path.join("data", "overrides", "1.json"), "w", encoding="utf-8") as fh:
-        json.dump({"schema": 1, "appid": "1", "fields": {
-            "notes": {"value": "Có DLC trả phí; EAC", "was": "Not reviewed yet"}}}, fh)
+    # last_updated and commit on every run, if it were not cleaned too.
+    _override(1, {"fields": {"notes": {"value": "Has paid DLC; EAC", "was": "Not reviewed yet"}}})
     data_store.save_main([_messy(1)])
     before = _shards()
     [stored] = data_store.load_main()
-    assert stored["notes"] == "Has paid DLC; EAC"
+    assert stored["notes"] == "EAC"
     data_store.save_main(data_store.load_main())
     assert _shards() == before
+
+
+def test_an_override_of_only_the_phrase_keeps_the_marker(workdir):
+    game = dict(_messy(1), notes="Has paid DLC 💀 Dead game (no players ≥14d)")
+    _override(1, {"fields": {"notes": {"value": "Has paid DLC", "was": ""}}})
+    data_store.save_main([game])
+    before = _shards()
+    [stored] = data_store.load_main()
+    assert stored["notes"] == "Not reviewed yet 💀 Dead game (no players ≥14d)"
+    data_store.save_main(data_store.load_main())
+    assert _shards() == before
+
+
+def test_a_retired_entry_that_restores_nothing_is_not_news(workdir):
+    # was == value: putting `was` back changes nothing, and used to bump
+    # last_updated on every save all the same.
+    game = dict(_messy(1), genre="FPS")
+    _override(1, {"fields": {}, "retired": {"genre": {"value": "FPS", "was": "FPS"}}})
+    data_store.save_main([game])
+    [stored] = data_store.load_main()
+    assert stored["last_updated"] == "2026-01-01T00:00:00Z"

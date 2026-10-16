@@ -164,8 +164,8 @@ export interface AppendRequest {
    * Commit only if the queue file is EMPTY at the very head the commit is made
    * on. Auto-approve uses it to stay out of the way of an ingest run that has
    * not finished with the previous batch - checked here, against the same
-   * expectedHeadOid, so an extension push between its own check and this
-   * commit cannot slip past.
+   * expectedHeadOid, so a commit landing between its own check and this one
+   * cannot slip past.
    */
   requireEmptyQueue?: boolean;
 }
@@ -173,10 +173,10 @@ export interface AppendRequest {
 /**
  * Append one `{"link": ...}` line per appid to the queue file.
  *
- * APPEND, never replace. This file has two producers — the browser extension
- * (poli0981/steam-f2p-extension pushes to it directly) and this Worker — and
- * overwriting it silently discards whatever the other queued. That exact bug
- * was found and fixed once already, in the since-removed issue-ingest
+ * APPEND, never replace. This Worker is not the file's only writer - Restore
+ * appends here too, a pull request may add a link, and the ingest clears it -
+ * and overwriting it silently discards whatever another one queued. That exact
+ * bug was found and fixed once already, in the since-removed issue-ingest
  * workflow; do not reintroduce it here.
  *
  * It takes no actor. The commit body says ADMIN_ATTRIBUTION, and the parameter

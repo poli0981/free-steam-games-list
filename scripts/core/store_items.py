@@ -20,6 +20,8 @@ Everything here is pure; steam_client.py makes the requests.
 """
 from typing import Iterable, Optional
 
+from .anticheat import from_store_item
+
 # Steam's ELanguage ids, named the way the store page names them. Derived on
 # 2026-10-10 by pairing GetItems' rows with stored HTML scrapes of the same games
 # (row order is the same; one game lists all 102 languages). 29 never appeared.
@@ -83,6 +85,7 @@ def parse_store_item(item: dict, tag_names: dict[int, str]) -> dict:
     what tells apply_scraped()/apply_store_page() to leave the stored value
     alone. Rows follow the page's rules - a language with none of the three
     columns ticked is not listed, a tag at most once (case-insensitively).
+    anti_cheat is the developer's disclosure (core/anticheat.py), None for none.
     """
     languages, details = [], []
     for row in item.get("supported_languages") or []:
@@ -113,6 +116,7 @@ def parse_store_item(item: dict, tag_names: dict[int, str]) -> dict:
         "language_details": details,
         "tags": tags,
         "has_paid_dlc": None,
+        "anti_cheat": from_store_item(item),
     }
 
 

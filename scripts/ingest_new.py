@@ -9,14 +9,15 @@ import sys, os
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from core.blocklist import blocked_appids
-from core.constants import REMOVED_JSONL, MANUAL_FIELDS
+from core.constants import REMOVED_JSONL
 from core.data_store import (
     load_main, save_main, load_temp, clear_temp,
     load_jsonl, save_jsonl, dedup_removed,
     normalize_link, extract_appid, build_index,
-    make_skeleton, merge_extension_data, now_iso, is_empty,
+    make_skeleton, now_iso,
 )
 from core.fetcher import fetch_full
+from core.overrides import OverrideGuard
 from core.steam_client import get_client
 from core.health_checker import check_game_health, NETWORK_ERROR
 
@@ -34,12 +35,16 @@ def _link_text(value) -> str:
 
 
 def parse_entries(records):
+    """The queued links, as [{"link": text}]. A line is a store link and
+    nothing else: /admin writes {"link": url}, and any other key on a line -
+    the retired browser extension sent a whole record - is ignored, so a
+    queued line can never decide a field. The game comes from Steam."""
     entries = []
     for rec in records:
         if isinstance(rec, (str, int)) and not isinstance(rec, bool):
             entries.append({"link": _link_text(rec)})
         elif isinstance(rec, dict) and rec.get("link") not in (None, ""):
-            entries.append({**rec, "link": _link_text(rec["link"])})
+            entries.append({"link": _link_text(rec["link"])})
     return entries
 
 
@@ -60,6 +65,9 @@ def main():
     added = skipped_dup = skipped_bad = skipped_net = skipped_blocked = 0
     rejected = []
     client = get_client()
+    # A restored game keeps its overrides: fetch_full() must not write a
+    # manual field one of them would undo.
+    guard = OverrideGuard.load()
 
     for entry in entries:
         link = normalize_link(entry.get("link", ""))
@@ -82,7 +90,7 @@ def main():
 
         # Health check (also fetches appdetails → cached in result.data)
         print(f"  🔍 {appid}...", end=" ")
-        health = check_game_health(link, entry.get("name", ""), client)
+        health = check_game_health(link, "", client)
 
         if health.status == NETWORK_ERROR:
             print("⚠ network – skip")
@@ -96,10 +104,10 @@ def main():
             skipped_bad += 1
             continue
         # The catalogue is games. Discovery only proposes appdetails type
-        # "game", but this queue is also fed by the extension and - with
-        # auto-approve on - by candidates nobody looked at, so a free DLC, demo
-        # or tool is refused HERE, where Steam's own answer is in hand. Not in
-        # health_checker: Purge uses it, and would start deleting records.
+        # "game", but this queue also takes a link a pull request adds and -
+        # with auto-approve on - candidates nobody looked at, so a free DLC,
+        # demo or tool is refused HERE, where Steam's own answer is in hand.
+        # Not in health_checker: Purge uses it, and would start deleting records.
         app_type = str((health.data or {}).get("type") or "").strip().lower()
         if app_type and app_type != "game":
             print(f"❌ not a game (Steam type: {app_type})")
@@ -110,21 +118,12 @@ def main():
             continue
         print("✅")
 
-        # Build record
+        # Build the record from Steam (reusing the health check's appdetails,
+        # so no second call). Human values arrive through overrides, which
+        # save_main() re-imposes.
         game = make_skeleton(link)
-        merge_extension_data(game, entry)
-
-        # Save manual overrides
-        overrides = {k: game[k] for k in MANUAL_FIELDS
-                     if not is_empty(game.get(k))}
-
-        # Fetch (reuse health check data → no second appdetails call)
         print(f"  ➕ Fetching ({appid})...")
-        fetch_full(game, client=client, prefetched_details=health.data)
-
-        # Re-apply overrides
-        for k, v in overrides.items():
-            game[k] = v
+        fetch_full(game, client=client, prefetched_details=health.data, guard=guard)
 
         games.append(game)
         index[appid] = len(games) - 1

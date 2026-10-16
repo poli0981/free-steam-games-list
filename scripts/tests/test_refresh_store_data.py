@@ -176,6 +176,19 @@ def test_description_is_compared_as_stored():
     assert "description" not in rsd.apply_app_details(game, {"short_description": blurb})
 
 
+def test_a_disclosed_anti_cheat_changes_no_manual_field():
+    # The page now carries the anti-cheat disclosure too; refresh_anticheat.py
+    # applies it, never this job.
+    page = _page() + ('<div class="anticheat_section DRM_notice" ><div>Uses Kernel Level Anti-Cheat</div>'
+                      '<div class="anticheat_name">BattlEye<span class="anticheat_uninstalls"></span></div></div>')
+    game = _game(is_kernel_ac=None, anti_cheat_note="")
+    scraped = scrape_store_page(page)
+    assert scraped["anti_cheat"].name == "BattlEye"
+    changed = rsd.apply_store_page(game, scraped)
+    assert not set(changed) & MANUAL_FIELDS
+    assert (game["anti_cheat"], game["anti_cheat_note"], game["is_kernel_ac"]) == ("VAC", "", None)
+
+
 def test_the_refreshed_fields_never_include_human_judgement():
     assert not (set(rsd.PAGE_FIELDS) | set(rsd.DETAILS_FIELDS)) & MANUAL_FIELDS
     assert "notes" not in rsd.PAGE_FIELDS + rsd.DETAILS_FIELDS

@@ -347,7 +347,7 @@ export async function handleRemoveApi(
           },
           {
             path: TEMP_INFO_PATH,
-            // APPEND, never replace: the extension writes this file too.
+            // APPEND, never replace: approvals and pull requests write this file too.
             build: (current) => {
               for (const line of current.split("\n")) {
                 try {

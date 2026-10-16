@@ -5,8 +5,8 @@ data/blocklist.jsonl holds one line per blocked game. It is written by the
 Worker (/admin/remove appends lines, Restore deletes one) and by
 scripts/delete_game.py, and only READ here. Like data/overrides/, it is human
 intent that every write re-imposes: save_main() drops a blocked record before
-anything else happens to it, so no writer - the ingest of a link the browser
-extension queued again, a full refetch, a purge - can put the game back. The
+anything else happens to it, so no writer - the ingest of a link queued again,
+a full refetch, a purge - can put the game back. The
 only way back is to delete the line (Restore in /admin), which also queues the
 link for ingest_new.py in the same commit.
 

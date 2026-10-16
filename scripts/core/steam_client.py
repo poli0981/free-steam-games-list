@@ -216,37 +216,75 @@ class SteamClient:
         _, html = self.fetch_store_page_full(appid)
         return html
 
+    def _store_items_batch(self, ids: list[str], data_request: dict) -> Optional[list[dict]]:
+        """One GetItems request: the items Steam knows (success 1), or None if
+        the request failed. An id Steam does not know comes back as success 15
+        with appid 0."""
+        request = {
+            "ids": [{"appid": int(a)} for a in ids],
+            "context": {"language": "english", "country_code": "US", "steam_realm": 1},
+            "data_request": data_request,
+        }
+        resp = self._get(
+            STORE_ITEMS_URL,
+            params={"input_json": json.dumps(request)},
+            throttle_fn=self._throttle_api,
+        )
+        if not resp or resp.status_code != 200:
+            return None
+        try:
+            items = resp.json()["response"].get("store_items") or []
+        except (ValueError, KeyError, AttributeError):
+            return None
+        return [i for i in items if isinstance(i, dict) and i.get("success") == 1 and i.get("id")]
+
     def fetch_store_items(self, appids) -> Optional[dict[str, dict]]:
         """IStoreBrowseService/GetItems: {appid: item} for the ids Steam knows.
 
-        Keyless, and it answers for games whose store page needs a login. An id
-        Steam does not know comes back as success 15 with appid 0, so items are
-        keyed by the id that was asked for and kept only with success 1. None
-        if any request failed, so a partial answer is never read as a whole one.
+        Keyless, and it answers for games whose store page needs a login. Items
+        are keyed by the id that was asked for. Tags, languages and the
+        anti-cheat disclosure (extra_details, core/anticheat.py) are asked for.
+        None if any request failed, so a partial answer is never read as a
+        whole one.
         """
         ids = [str(a) for a in appids if str(a).isdigit()]
         out: dict[str, dict] = {}
+        request = {"include_tag_count": 20, "include_supported_languages": True,
+                   "include_extra_details": True}
         for start in range(0, len(ids), STORE_ITEMS_BATCH):
-            request = {
-                "ids": [{"appid": int(a)} for a in ids[start:start + STORE_ITEMS_BATCH]],
-                "context": {"language": "english", "country_code": "US", "steam_realm": 1},
-                "data_request": {"include_tag_count": 20, "include_supported_languages": True},
-            }
-            resp = self._get(
-                STORE_ITEMS_URL,
-                params={"input_json": json.dumps(request)},
-                throttle_fn=self._throttle_api,
-            )
-            if not resp or resp.status_code != 200:
-                return None
-            try:
-                items = resp.json()["response"].get("store_items") or []
-            except (ValueError, KeyError, AttributeError):
+            items = self._store_items_batch(ids[start:start + STORE_ITEMS_BATCH], request)
+            if items is None:
                 return None
             for item in items:
-                if isinstance(item, dict) and item.get("success") == 1 and item.get("id"):
-                    out[str(item["id"])] = item
+                out[str(item["id"])] = item
         return out
+
+    def fetch_anticheat_items(self, appids, give_up_after: int = 10) -> tuple[dict[str, dict], set[str]]:
+        """GetItems asking only for extra_details - each game's anti-cheat
+        disclosure - for a whole catalogue: ({appid: item}, ids not answered).
+
+        Unlike fetch_store_items() a failed batch costs only its own ids, which
+        the caller must treat as unknown, never as "no disclosure". After
+        `give_up_after` failed batches in a row the rest is not asked at all.
+        """
+        ids = [str(a) for a in appids if str(a).isdigit()]
+        out: dict[str, dict] = {}
+        failed: set[str] = set()
+        in_a_row = 0
+        for start in range(0, len(ids), STORE_ITEMS_BATCH):
+            chunk = ids[start:start + STORE_ITEMS_BATCH]
+            if in_a_row >= give_up_after:
+                failed.update(chunk)
+                continue
+            items = self._store_items_batch(chunk, {"include_extra_details": True})
+            if items is None:
+                failed.update(chunk)
+                in_a_row += 1
+                continue
+            in_a_row = 0
+            for item in items:
+                out[str(item["id"])] = item
+        return out, failed
 
     def fetch_tag_names(self) -> dict[int, str]:
         """{tagid: English name} from IStoreService/GetTagList, fetched once per

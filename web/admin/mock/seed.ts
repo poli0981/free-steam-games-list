@@ -66,7 +66,7 @@ export function seed(sqlite: SqliteD1, repo: FakeRepo, records: Rec[], now: Date
       r.current_players ?? "N/A",
       players(r),
       JSON.stringify({ link: r.link, name: r.name, reviews: r.reviews, current_players: r.current_players }),
-      extra.source ?? (n % 5 === 0 ? "extension" : "discover"),
+      extra.source ?? (n % 5 === 0 ? "backfill:2025" : "discover"),
       status,
       extra.by ?? null,
       extra.at ?? null,
@@ -121,7 +121,7 @@ export function seed(sqlite: SqliteD1, repo: FakeRepo, records: Rec[], now: Date
   // Locked because the GAME is published: undecided rows for a game that
   // already has a committed row. Neither may be approved, rejected or deferred.
   const published = committed[0];
-  row(published, "pending", { seenAgo: 2 * HOUR, source: "extension" });
+  row(published, "pending", { seenAgo: 2 * HOUR, source: "backfill:2025" });
   row(published, "failed", { reason: "never appeared in data/ or removed_games.jsonl - approve again to retry", by: reviewer, at: iso(80 * HOUR) });
 
   // A rejected row that cannot be reopened: another row for the game is open.

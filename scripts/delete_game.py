@@ -5,8 +5,8 @@ Remove games from the catalogue - the command-line twin of /admin/remove.
 Removing a game is not a one-time deletion. It adds a line to
 data/blocklist.jsonl, a standing instruction that save_main() re-imposes on
 every write (core/blocklist.py): the game leaves data/, is logged once in
-scripts/removed_games.jsonl, and nothing - the browser extension, a refetch,
-the discovery sweep - can bring it back. Restoring is done in /admin (Remove ->
+scripts/removed_games.jsonl, and nothing - a queued link, a refetch, the
+discovery sweep - can bring it back. Restoring is done in /admin (Remove ->
 Removed -> Restore), because it also has to clear the review queue's record.
 
   python scripts/delete_game.py 730 --reason not_a_game

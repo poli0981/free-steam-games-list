@@ -213,24 +213,29 @@ def decode_tags(tags):
 
 # ──────────── notes ────────────
 
-# The browser extension (poli0981/steam-f2p-extension) records "this game has
-# paid DLC" as Vietnamese text in `notes`. The catalogue is English - nine
-# records already said "Has paid DLC" - and has_paid_dlc carries the fact.
-_NOTE_TRANSLATIONS = (
-    ("Có DLC trả phí", "Has paid DLC"),
-)
+# The retired browser extension (poli0981/steam-f2p-extension) began `notes`
+# with two phrases a reader gains nothing from: "Has paid DLC" (written in
+# Vietnamese, then translated in v4.2.1) - a fact has_paid_dlc carries and the
+# weekly store refresh keeps true, where the note went stale: 10 contradicted
+# the flag and 791 games with paid DLC never had it - and "[hover-add]", how
+# the game was added. Measured 2026-10-16, both only ever came first.
+_RE_NOTE_ARTEFACT = re.compile(r"^(?:Has paid DLC|\[hover-add\])(?=$|;|\s)\s*;?\s*")
+NOT_REVIEWED = "Not reviewed yet"
 
 
-def translate_notes(value):
-    """notes with the extension's Vietnamese phrases in English; the rest of the
-    note ("; Easy Anti-Cheat [Kernel]", "💀 Dead game ...") stays as it is."""
+def clean_notes(value):
+    """notes without the extension's leading phrases. The rest of the note
+    ("Easy Anti-Cheat [Kernel]", "💀 Dead game ...") stays as it is; a note
+    that was nothing else reads "Not reviewed yet", as fetch_full() writes it
+    for a game nobody has looked at. An empty note stays empty."""
     if not isinstance(value, str):
         return value
-    nfc = unicodedata.normalize("NFC", value)
-    out = nfc
-    for vi, en in _NOTE_TRANSLATIONS:
-        out = out.replace(vi, en)
-    return out if out != nfc else value
+    out = value
+    while (m := _RE_NOTE_ARTEFACT.match(out)) is not None:
+        out = out[m.end():]
+    if out == value:
+        return value
+    return out if out.strip() else NOT_REVIEWED
 
 
 # ──────────── Records ────────────
@@ -265,7 +270,7 @@ def normalize_record(game: dict) -> list[str]:
         hit.append("text")
     if "release_date" in game and _set(game, "release_date", normalize_release_date(game["release_date"])):
         hit.append("release_date")
-    if "notes" in game and _set(game, "notes", translate_notes(game["notes"])):
+    if "notes" in game and _set(game, "notes", clean_notes(game["notes"])):
         hit.append("notes")
     return hit
 

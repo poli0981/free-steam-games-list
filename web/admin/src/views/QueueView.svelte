@@ -401,7 +401,7 @@
     <div>
       <h1 class="text-2xl font-semibold tracking-tight">Review queue</h1>
       <p class="text-sm text-muted-foreground">
-        Candidates found by discovery and the browser extension. Approving asks the pipeline to publish a game.
+        Candidates found by discovery. Approving asks the pipeline to publish a game.
       </p>
     </div>
     <div class="flex flex-wrap items-center gap-2">

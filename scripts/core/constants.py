@@ -61,7 +61,8 @@ ANTI_CHEAT_PATTERNS: dict[str, list[str]] = {
     "Ricochet":   ["ricochet anti-cheat", "ricochet"],
     "mHyprot":    ["mhyprot", "mhyprot2"],
     "FACEIT AC":  ["faceit anti-cheat", "faceit ac"],
-    "Denuvo AC":  ["denuvo anti-cheat"],
+    # Steam's own name for it, in a disclosure, is just "Denuvo".
+    "Denuvo AC":  ["denuvo anti-cheat", "denuvo"],
     "KSS":        ["kss", "krafton security"],
     "NetEase GS": ["netease game security"],
     "Hyperion":   ["hyperion", "byfron"],
@@ -91,17 +92,6 @@ MACHINE_NOTE_MARKERS = (
     "💀 Delisted",
     "⚠ No longer free!",
 )
-ARRAY_FIELDS = frozenset({
-    "platforms", "languages", "language_details", "tags",
-    "developer", "publisher",
-})
-EXTENSION_FIELDS = frozenset({
-    "name", "genre", "type_game", "has_paid_dlc",
-    "developer", "publisher", "release_date", "description",
-    "header_image", "anti_cheat", "anti_cheat_note", "is_kernel_ac",
-    "platforms", "languages", "language_details", "tags",
-    "notes", "safe",
-})
 
 TOP_ONLINE_LIMIT   = 100
 TOP_OFFLINE_LIMIT  = 100

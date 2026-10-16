@@ -4,8 +4,8 @@
 # A data job can run for hours (update-reviews, check-dead-links,
 # purge-unhealthy), and `concurrency: data-write` serialises only the
 # WORKFLOWS. main still moves underneath one: a merged pull request, an /admin
-# approval or override the Worker commits, the extension's push to
-# scripts/temp_info.jsonl. A plain `git push` is then rejected ("fetch first")
+# approval, removal or override the Worker commits. A plain `git push` is then
+# rejected ("fetch first")
 # and the whole run is thrown away - purge-unhealthy lost four hours of work
 # that way on 2026-09-21.
 #

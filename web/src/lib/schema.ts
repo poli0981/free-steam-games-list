@@ -1,6 +1,6 @@
 /**
  * Schema constants — port of scripts/core/constants.py.
- * Keep MANUAL_FIELDS, ARRAY_FIELDS, EXTENSION_FIELDS in sync with the Python source.
+ * Keep MANUAL_FIELDS and the record shape in sync with the Python source.
  */
 
 export const REPO_OWNER = "poli0981";
@@ -29,36 +29,6 @@ export const MANUAL_FIELDS = [
   "type_game",
   "safe",
   "genre",
-] as const;
-
-export const ARRAY_FIELDS = [
-  "platforms",
-  "languages",
-  "language_details",
-  "tags",
-  "developer",
-  "publisher",
-] as const;
-
-export const EXTENSION_FIELDS = [
-  "name",
-  "genre",
-  "type_game",
-  "has_paid_dlc",
-  "developer",
-  "publisher",
-  "release_date",
-  "description",
-  "header_image",
-  "anti_cheat",
-  "anti_cheat_note",
-  "is_kernel_ac",
-  "platforms",
-  "languages",
-  "language_details",
-  "tags",
-  "notes",
-  "safe",
 ] as const;
 
 export const SKIP_GENRE_TAGS = new Set([
@@ -178,8 +148,4 @@ export const SKELETON_TEMPLATE: GameRecord = {
 
 export function isManualField(key: string): key is ManualField {
   return (MANUAL_FIELDS as readonly string[]).includes(key);
-}
-
-export function isArrayField(key: string): boolean {
-  return (ARRAY_FIELDS as readonly string[]).includes(key);
 }

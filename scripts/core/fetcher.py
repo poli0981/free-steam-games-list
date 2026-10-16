@@ -11,13 +11,15 @@ import random
 import time
 from typing import Optional
 
+from .anticheat import apply_anti_cheat, from_categories
 from .constants import (
-    STEAM_API_KEY, SKIP_GENRE_TAGS, ANTI_CHEAT_PATTERNS,
+    STEAM_API_KEY, SKIP_GENRE_TAGS,
     BATCH_SIZE, BATCH_PAUSE_MIN, BATCH_PAUSE_MAX,
 )
 from .steam_client import get_client
 from .data_store import extract_appid, now_iso, is_info_complete, is_empty
 from .normalize import decode_entities, normalize_release_date
+from .overrides import OverrideGuard
 from .peaks import raise_peak
 from .scraper import scrape_store_page
 from .store_items import paid_dlc_from_items, parse_store_item
@@ -97,23 +99,11 @@ def apply_details(game: dict, data: dict) -> dict:
         if p.get("linux"):   plats.append("Linux")
         game["platforms"] = plats
 
-    # Anti-cheat from categories
-    ac = game.get("anti_cheat", "-")
-    if is_empty(ac) or ac == "-":
-        for cat in data.get("categories", []):
-            desc_lower = cat.get("description", "").lower()
-            for label, pats in ANTI_CHEAT_PATTERNS.items():
-                if any(p in desc_lower for p in pats):
-                    game["anti_cheat"] = label
-                    if is_empty(game.get("anti_cheat_note")):
-                        game["anti_cheat_note"] = cat["description"]
-                    break
-            if game["anti_cheat"] != "-":
-                break
+    # Anti-cheat is not read here: fetch_full() takes it from the developer's
+    # disclosure on the store page, and from these categories only for VAC.
 
-    # Infer type_game from categories when not manually set. Manual prefills
-    # win because MANUAL_FIELDS gates the merge in merge_extension_data(),
-    # and ingest_new.py re-applies overrides after fetch_full.
+    # Infer type_game from categories when not set. It is a manual field: only
+    # an empty one is inferred, and an override still wins in save_main().
     if is_empty(game.get("type_game")):
         inferred = _infer_type_game(data.get("categories", []))
         if inferred:
@@ -220,6 +210,7 @@ def scrape_store_fields(client, appid: str, details: Optional[dict] = None) -> O
     (core/store_items.py), and has_paid_dlc from the prices of the game's DLC.
     A page missing its language table or its tags gets only the missing part
     from the API. A failed request, or a 404, reads as nothing at all.
+    `anti_cheat` is the page's disclosure, or the API's when the API was asked.
 
     `details` is the game's appdetails when the caller already has them; they
     are fetched here only if a DLC check needs them.
@@ -244,19 +235,24 @@ def scrape_store_fields(client, appid: str, details: Optional[dict] = None) -> O
         scraped["language_details"] = api["language_details"]
     if not scraped["tags"]:
         scraped["tags"] = api["tags"]
+    if scraped.get("anti_cheat") is None:
+        scraped["anti_cheat"] = api.get("anti_cheat")
     return scraped
 
 
 # ──────────── fetch_full ────────────
 
 def fetch_full(game: dict, client=None, fetch_players=True,
-               scrape=True, prefetched_details=None) -> dict:
+               scrape=True, prefetched_details=None, guard=None) -> dict:
     """
     Fetch all data for one game.
 
     Args:
         prefetched_details: If health_checker already fetched appdetails,
                             pass it here to avoid a second API call.
+        guard: an overrides.OverrideGuard. The anti-cheat fields are written
+               only where no override would undo them (an override may hold
+               is_kernel_ac at null, which reads as empty).
     """
     c = client or get_client()
     appid = extract_appid(game.get("link", ""))
@@ -281,24 +277,23 @@ def fetch_full(game: dict, client=None, fetch_players=True,
         if count is not None:
             apply_players(game, count)
 
-    # 4) Store page (languages + tags + DLC pricing) – single request, or
-    #    Steam's JSON API when the page is gated (scrape_store_fields).
-    #    Always scrape if has_paid_dlc hasn't been set by extension,
-    #    or if any of languages/tags/language_details are missing.
-    needs_scrape = (
-        is_empty(game.get("languages")) or
-        is_empty(game.get("tags")) or
-        is_empty(game.get("language_details")) or
-        not game.get("_dlc_checked")  # internal flag: DLC not yet verified from HTML
-    )
-    if scrape and needs_scrape:
+    # 4) Store page (languages + tags + DLC pricing + anti-cheat disclosure) -
+    #    a single request, or Steam's JSON API when the page is gated
+    #    (scrape_store_fields).
+    disclosure = None
+    if scrape:
         scraped = scrape_store_fields(c, appid, details=data)
         if scraped:
             apply_scraped(game, scraped)
-            game["_dlc_checked"] = True
+            disclosure = scraped.get("anti_cheat")
+
+    # 5) Anti-cheat, fill only (refresh_anticheat.py is what replaces): what the
+    #    developer declares on Steam, else appdetails' VAC category.
+    apply_anti_cheat(game, disclosure, guard=guard)
+    if is_empty(game.get("anti_cheat")):
+        apply_anti_cheat(game, from_categories((data or {}).get("categories")), guard=guard)
 
     # Housekeeping
-    game.pop("_dlc_checked", None)  # internal flag, don't persist
     if not game.get("type_game"):
         game["type_game"] = "offline"
     if not game.get("notes", "").strip():
@@ -337,7 +332,8 @@ def update_all_full(games, force=False):
     if not to_fetch:
         print("All up to date!")
         return
-    process_batch(to_fetch, lambda g: fetch_full(g, client=client), "Fetching")
+    guard = OverrideGuard.load()
+    process_batch(to_fetch, lambda g: fetch_full(g, client=client, guard=guard), "Fetching")
 
 
 def update_reviews_only(games):
