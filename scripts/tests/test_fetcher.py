@@ -58,7 +58,7 @@ def _fetch(game=None, client=None, details=DETAILS, guard=None) -> dict:
 def test_fetch_full_fills_from_the_page():
     game = _fetch()
     assert (game["anti_cheat"], game["anti_cheat_note"], game["is_kernel_ac"]) == \
-        ("Anti-Cheat Expert (ACE)", "Anti-Cheat Expert (ACE) [Kernel]", True)
+        ("ACE", "Anti-Cheat Expert (ACE) [Kernel]", True)
 
 
 def test_a_gated_game_is_filled_from_steam_s_json():
@@ -73,7 +73,7 @@ def test_vac_comes_from_the_category_only_when_steam_declares_nothing():
     assert (game["anti_cheat"], game["anti_cheat_note"], game["is_kernel_ac"]) == \
         ("VAC", "VAC (Valve Anti-Cheat) [Non-Kernel]", False)
     # A disclosure wins over the category.
-    assert _fetch(details=VAC_DETAILS)["anti_cheat"] == "Anti-Cheat Expert (ACE)"
+    assert _fetch(details=VAC_DETAILS)["anti_cheat"] == "ACE"
 
 
 def test_fetch_full_never_replaces_another_product():
@@ -94,5 +94,5 @@ def test_the_guard_reaches_fetch_full():
     # flag": filling it would be undone by save_main() on every run.
     guard = OverrideGuard({"2507950": {"fields": {"is_kernel_ac": {"value": None}}}})
     game = _fetch(guard=guard)
-    assert game["anti_cheat"] == "Anti-Cheat Expert (ACE)"
+    assert game["anti_cheat"] == "ACE"
     assert game["is_kernel_ac"] is None

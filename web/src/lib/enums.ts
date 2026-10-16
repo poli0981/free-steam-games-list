@@ -29,6 +29,13 @@ export const ANTI_CHEAT_ENUM = [
   "KSS",
   "NetEase GS",
   "Hyperion",
+  "ACE",
+  "Anti-Cheat Toolkit",
+  "CrackProof",
+  "HoYoKProtect",
+  "NGS",
+  "EA Javelin",
+  "SARD",
 ] as const;
 
 export type AntiCheatValue = (typeof ANTI_CHEAT_ENUM)[number];

@@ -124,8 +124,8 @@ CATALOGUE = [
 def test_conflicts_resolve_steam_first(repo, capsys):
     games = repo([dict(g) for g in CATALOGUE], STEAM)
     trio = {a: (g["anti_cheat"], g["anti_cheat_note"], g["is_kernel_ac"]) for a, g in games.items()}
-    assert trio["2507950"] == ("Anti-Cheat Expert (ACE)", "Anti-Cheat Expert (ACE) [Kernel]", True)
-    assert trio["3513350"] == ("Anti-Cheat Expert (ACE)", "Anti-Cheat Expert (ACE) [Kernel]", True)
+    assert trio["2507950"] == ("ACE", "Anti-Cheat Expert (ACE) [Kernel]", True)
+    assert trio["3513350"] == ("ACE", "Anti-Cheat Expert (ACE) [Kernel]", True)
     assert trio["4224240"] == ("Fairguard", "Fairguard [Non-Kernel]", False)
     assert trio["2767030"] == ("NetEase Game Security", "NetEase Game Security [Non-Kernel]", False)
     # The same product under the name the extension wrote: nothing to do.
@@ -199,7 +199,7 @@ def test_an_active_override_is_not_fought(repo):
 def test_a_retired_value_is_not_written_back(repo):
     # Retired: the human's ACE gave way to the old "-". Writing ACE again would
     # make apply_overrides() restore "-" on every save - a commit a day.
-    _override("2507950", {"fields": {}, "retired": {"anti_cheat": {"value": "Anti-Cheat Expert (ACE)", "was": "-"}}})
+    _override("2507950", {"fields": {}, "retired": {"anti_cheat": {"value": "ACE", "was": "-"}}})
     games = repo([dict(g) for g in CATALOGUE], STEAM)
     assert games["2507950"]["anti_cheat"] == "-"
     before = _bytes()

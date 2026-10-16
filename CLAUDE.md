@@ -198,8 +198,10 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
 - **`web/src/lib/schema.ts` mirrors `scripts/core/constants.py`.** `MANUAL_FIELDS`
   and the record shape exist in both, and `ANTI_CHEAT_PATTERNS` is mirrored by
   `web/src/lib/anti-cheat.ts` (+ the `ANTI_CHEAT_ENUM` order in `enums.ts`;
-  `anti-cheat.test.ts` parses `constants.py` and holds them equal). Change
-  one, change the other.
+  `anti-cheat.test.ts` parses `constants.py` and holds them equal). Both sides
+  match a key or a pattern only as WHOLE WORDS (`_has_term()` / `hasTerm()`):
+  substring matching filed "space", "interface" and "FACEIT AC" under ACE.
+  Change one, change the other.
 
 ## Pipeline
 
@@ -278,7 +280,10 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
   batch is unknown, never "none"; a disclosure with no name anywhere writes
   nothing. `fetch_full()` fills (never replaces) from the page it already
   fetched, else appdetails' VAC category. Labels are `ANTI_CHEAT_PATTERNS`
-  keys, else Steam's name; notes `"<name> [Kernel]"` / `"[Non-Kernel]"`.
+  keys, else Steam's name (cut at 40 characters); notes `"<name> [Kernel]"` /
+  `"[Non-Kernel]"`. Adding a key never rewrites a stored label: the old raw
+  name and the new key are the same family, and a known label stays as it was
+  written (so "Easy Anti-Cheat" and "EAC" both occur; the site groups them).
   `scripts/tests/test_anticheat.py` and `test_refresh_anticheat.py` hold it.
 - `ingest_new.py` only reads `scripts/temp_info.jsonl`, and a line is a store
   LINK and nothing else: every other key is ignored and the game is built from

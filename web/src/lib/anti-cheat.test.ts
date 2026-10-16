@@ -45,6 +45,26 @@ describe("anti-cheat patterns", () => {
     expect(canonicalAc("Denuvo")).toBe("Denuvo AC");
     expect(canonicalAc("VAC (Valve Anti-Cheat)")).toBe("VAC");
     expect(canonicalAc("KSS (Krafton Security Services)")).toBe("KSS");
+    expect(canonicalAc("Anti-Cheat Expert (ACE)")).toBe("ACE");
+    expect(canonicalAc("Anti-Cheat Toolkit 2024")).toBe("Anti-Cheat Toolkit");
+    expect(canonicalAc("CrackProof®")).toBe("CrackProof");
+    expect(canonicalAc("NGS (Nexon Game Security)")).toBe("NGS");
+    expect(canonicalAc("EA Javelin AntiCheat")).toBe("EA Javelin");
+    expect(canonicalAc("SARD Anti-Cheat & LSS Security")).toBe("SARD");
+    expect(canonicalAc("Fairguard")).toBe("Other");
     expect(canonicalAc("-")).toBeNull();
+  });
+
+  it("matches a key or a pattern only as whole words", () => {
+    // "ace" is inside every one of these; plain includes() filed them as ACE.
+    expect(canonicalAc("FACEIT AC")).toBe("FACEIT AC");
+    expect(canonicalAc("Space Guard")).toBe("Other");
+    expect(canonicalAc("Interface Shield")).toBe("Other");
+    expect(canonicalAc("Peacekeeper")).toBe("Other");
+    expect(canonicalAc("Vacuum Protect")).toBe("Other");
+    expect(canonicalAc("Sardine Shield")).toBe("Other");
+    expect(canonicalAc("Strinova ACE")).toBe("ACE");
+    expect(canonicalAc("EasyAntiCheat_EOS")).toBe("EAC");
+    expect(canonicalAc("XIGNCODE3")).toBe("XIGNCODE");
   });
 });

@@ -146,13 +146,25 @@ def _alnum(text: str) -> str:
 _RE_ACRONYM = re.compile(r"\(([A-Za-z0-9]{2,6})\)")
 
 
+def _has_term(text: str, term: str) -> bool:
+    """`term` in `text` as whole words: no letter or digit right before or
+    after it. "ace" is not in "faceit ac", "space" or "interface"."""
+    start = 0
+    while (i := text.find(term, start)) >= 0:
+        end = i + len(term)
+        if (i == 0 or not text[i - 1].isalnum()) and (end == len(text) or not text[end].isalnum()):
+            return True
+        start = i + 1
+    return False
+
+
 def canonical(text: str) -> Optional[str]:
-    """The ANTI_CHEAT_PATTERNS key a name belongs to: one of its patterns, or
-    the key's own name ("EAC", "KSS"). None for anything else."""
+    """The ANTI_CHEAT_PATTERNS key a name belongs to: the key's own name
+    ("EAC", "ACE") or one of its patterns, as whole words. None for anything
+    else. web/src/lib/anti-cheat.ts canonicalAc() decides the same way."""
     low = str(text).lower()
-    flat = _alnum(text)
     for key, patterns in ANTI_CHEAT_PATTERNS.items():
-        if flat == _alnum(key) or any(p in low for p in patterns):
+        if _has_term(low, key.lower()) or any(_has_term(low, p) for p in patterns):
             return key
     return None
 

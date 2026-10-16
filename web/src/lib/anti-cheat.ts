@@ -1,11 +1,12 @@
 /**
  * Canonicalising the free-text `anti_cheat` field.
  *
- * Mirrors `ANTI_CHEAT_PATTERNS` in `scripts/core/constants.py`. The field is a
- * human judgement written by hand, so "EasyAntiCheat", "Easy Anti-Cheat" and
- * "easy anti cheat" all occur and all mean the same product. Keep the two in
- * sync: a pattern added on the Python side and not here means the chart shows
- * an "Other" slice for something the pipeline already classifies.
+ * Mirrors `ANTI_CHEAT_PATTERNS` in `scripts/core/constants.py`. The field holds
+ * the name a developer declared on Steam, a short key for a known product, or
+ * a person's correction, so "EasyAntiCheat", "Easy Anti-Cheat" and "EAC" all
+ * occur and all mean the same product. Keep the two in sync (anti-cheat.test.ts
+ * checks): a pattern added on the Python side and not here means the chart
+ * shows an "Other" slice for something the pipeline already classifies.
  *
  * Lifted out of AntiCheatList.tsx so the list page and the stacked chart
  * bucket identically — they previously each had their own copy of the table,
@@ -29,19 +30,42 @@ const AC_PATTERNS: Record<string, string[]> = {
   KSS: ["kss", "krafton security"],
   "NetEase GS": ["netease game security"],
   Hyperion: ["hyperion", "byfron"],
+  ACE: ["anti-cheat expert", "anticheat expert"],
+  "Anti-Cheat Toolkit": ["anti-cheat toolkit", "anticheat toolkit"],
+  CrackProof: ["crackproof"],
+  HoYoKProtect: ["hoyokprotect"],
+  NGS: ["nexon game security"],
+  "EA Javelin": ["javelin"],
+  SARD: ["sard"],
 };
 
 /** "-" is the skeleton default meaning "none recorded", not a product. */
 export const CANONICAL_ORDER = ANTI_CHEAT_ENUM.filter((k) => k !== "-");
+
+const WORD = /[\p{L}\p{N}]/u;
+
+/**
+ * `term` in `s` as whole words: no letter or digit right before or after it.
+ * Plain `includes` filed "space", "interface" and "FACEIT AC" under ACE.
+ * scripts/core/anticheat.py _has_term() is the same rule.
+ */
+function hasTerm(s: string, term: string): boolean {
+  for (let i = s.indexOf(term); i >= 0; i = s.indexOf(term, i + 1)) {
+    const before = i > 0 ? s[i - 1] : "";
+    const after = s[i + term.length] ?? "";
+    if (!WORD.test(before) && !WORD.test(after)) return true;
+  }
+  return false;
+}
 
 export function canonicalAc(raw: string | undefined | null): string | null {
   if (!raw) return null;
   const s = raw.trim().toLowerCase();
   if (!s || s === "-" || s === "none" || s === "no" || s === "n/a") return null;
   for (const name of CANONICAL_ORDER) {
-    if (s.includes(name.toLowerCase())) return name;
+    if (hasTerm(s, name.toLowerCase())) return name;
     for (const p of AC_PATTERNS[name] ?? []) {
-      if (s.includes(p)) return name;
+      if (hasTerm(s, p)) return name;
     }
   }
   return "Other";
