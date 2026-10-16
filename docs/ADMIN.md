@@ -455,8 +455,8 @@ The commit is made with the GraphQL `createCommitOnBranch` mutation, so GitHub
 signs it and it shows as **Verified**. It carries `expectedHeadOid`, so if the
 pipeline commits between the read and the write the mutation is rejected and
 retried against the newer file rather than overwriting it. The file is
-**appended** to, never replaced — the browser extension and this Worker write
-to it too.
+**appended** to, never replaced — Restore and pull requests add links to it
+too, and the ingest clears it.
 
 Because the commit comes from a GitHub App installation token rather than
 `GITHUB_TOKEN`, it **does** trigger workflows, so `Ingest New Game Links` starts
@@ -474,8 +474,8 @@ so one bad day (a delisting, a Steam outage) does not permanently hide a game.
 A `failed` row can be approved again, deferred, or sent **Back to pending**.
 
 The same pass also **sweeps** undecided rows. A `pending`, `deferred` or
-`failed` row whose game has appeared in `data/` by some other route (the
-browser extension, a manual edit) is marked `committed` by `reconcile`, with an
+`failed` row whose game has appeared in `data/` by some other route (a link a
+pull request queued, a manual edit) is marked `committed` by `reconcile`, with an
 approved decision, so it stops asking for a review it no longer needs. The
 sweep reads the dataset only when something is approved, when you press
 Reconcile, or when `data/index.json` has changed since the last sweep.
@@ -688,8 +688,8 @@ an override: `save_main()` leaves every listed game out of **every** write. The
 commit starts **Ingest New Game Links**, whose first step
 (`scripts/remove_games.py`) takes the games out of `data/` and logs each one
 once in `scripts/removed_games.jsonl` (`status_code: admin_removed`, with the
-reason's label). From then on no scrape, refetch or browser-extension push can
-bring the game back, and the discovery sweep never proposes it again.
+reason's label). From then on no scrape, refetch or queued link can bring the
+game back, and the discovery sweep never proposes it again.
 
 **Remove.** Search by name or appid, or paste appids and store links (separated
 by spaces, commas or new lines; up to 100). Each one is previewed; a game that is not in the catalogue, or

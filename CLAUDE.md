@@ -28,19 +28,22 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
     in either English order or any store language (`28 апр. 2025 г.`,
     `28 Thg04, 2025`, `2025年4月28日`…), comes out that way. Anything else
     (`Coming soon`, `Q1 2026`, `2026`) is kept verbatim. Steam's day/month
-    order changes from response to response, and the extension sends
-    `21 Aug, 2012`. Never store ISO: the released apps `Date.parse` the
-    field, and `2012-08-21` parses as UTC midnight, a day early west of
-    Greenwich.
+    order changes from response to response (`21 Aug, 2012` and
+    `Aug 21, 2012` from the same client). Never store ISO: the released apps
+    `Date.parse` the field, and `2012-08-21` parses as UTC midnight, a day
+    early west of Greenwich.
   - name/developer/publisher/description lose invisible characters (ZWSP,
     bidi controls, zero-width watermark runs) and stray whitespace. Single
     ZWJ/ZWNJ and the ideographic space are spelling and stay; a developer
     left empty is dropped from its list.
   - Tags and descriptions are HTML-unescaped (`Point &amp; Click`,
     appdetails' `&quot;`), references with a semicolon only.
-  - The extension's `Có DLC trả phí` in `notes` reads `Has paid DLC`.
-    `apply_overrides()` translates an override's notes too, or it would put
-    the phrase back after every normalisation and commit on every run.
+  - `notes` loses the retired browser extension's two leading phrases,
+    `Has paid DLC` (what `has_paid_dlc` says, kept true by the store refresh)
+    and `[hover-add]` (`clean_notes()`); a note left with nothing becomes
+    `Not reviewed yet`, an empty one stays empty. `apply_overrides()` cleans an
+    override's notes too, or it would put the phrase back after every
+    normalisation and commit on every run.
 
   Every rule must stay idempotent: one that changed anything on a second
   pass would rewrite every shard on every run. `test_normalize.py` holds
@@ -50,21 +53,28 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
   `anti_cheat_note`, `is_kernel_ac`, `notes`, `type_game`, `safe`, `genre`.
   Two mechanisms protect them, and they are not the same thing:
 
-  1. *Fill-if-empty*, in `merge_extension_data()` and `apply_details()`: a
-     scrape will not overwrite a non-empty value. This is weak — it cannot
-     tell a human correction from earlier scraper output, so
-     `normalize_genres.py --apply`, which rewrites `genre` for every game,
-     silently reverts corrections.
+  1. *Fill-if-empty*, in `apply_details()` and `fetch_full()`: a scrape will
+     not overwrite a non-empty value. This is weak — it cannot tell a human
+     correction from earlier scraper output, so `normalize_genres.py --apply`,
+     which rewrites `genre` for every game, silently reverts corrections.
   2. *Overrides*, below. This is the durable one.
+
+  The anti-cheat trio is the exception on purpose: `refresh_anticheat.py`
+  REPLACES `anti_cheat`/`anti_cheat_note`/`is_kernel_ac` with what the
+  developer declares on Steam (Pipeline, below), so for those three an
+  override is the only way to disagree with Steam. A writer that sets manual
+  fields on a schedule asks `OverrideGuard` first (`core/overrides.py`): a
+  field an active override covers, or a retired entry's value, would be undone
+  by `apply_overrides()` and bump `last_updated` on every run.
 
 - **`data/overrides/<appid>.json` is human intent, and it is permanent.**
   `apply_overrides()` is called from inside `save_main()` — the single choke
-  point through which all 14 data-writing scripts pass, and the only code that
+  point through which all 15 data-writing scripts pass, and the only code that
   writes `data/data_*.jsonl`. An override is therefore re-imposed as the last
-  act of every write, so it survives `refetch_all.py` and
-  `normalize_genres.py --apply` without either script knowing it exists. Add a
-  new dataset writer and it inherits this for free — provided it goes through
-  `save_main()`, which it must.
+  act of every write, so it survives `refetch_all.py`, `refresh_anticheat.py`
+  and `normalize_genres.py --apply` without those scripts knowing it exists.
+  Add a new dataset writer and it inherits this for free — provided it goes
+  through `save_main()`, which it must.
 
   Three rules that are not obvious:
   - **An override may not set a field empty.** The next scrape would refill it
@@ -86,8 +96,8 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
   `scripts/delete_game.py`, READ by the pipeline. `save_main()` applies it
   FIRST, on every write and whatever `apply_human_overrides` says: a blocked
   record is left out of a NEW list (never the caller's - scripts hold indexes
-  into theirs), so no writer can bring the game back - not an extension push,
-  not a refetch. Rules that are easy to break:
+  into theirs), so no writer can bring the game back - not a queued link, not
+  a refetch. Rules that are easy to break:
   - **A drop is logged once.** `log_admin_removals()` writes
     `status_code: "admin_removed"` to `scripts/removed_games.jsonl`, built from
     the blocklist line alone with `removed_at = blocked_at`, so writing it
@@ -185,8 +195,10 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
   gone, along with sign-in and in-app editing. The public app no longer writes
   anything.)
 
-- **`web/src/lib/schema.ts` mirrors `scripts/core/constants.py`.** `MANUAL_FIELDS`,
-  `ARRAY_FIELDS`, `EXTENSION_FIELDS` and the record shape exist in both. Change
+- **`web/src/lib/schema.ts` mirrors `scripts/core/constants.py`.** `MANUAL_FIELDS`
+  and the record shape exist in both, and `ANTI_CHEAT_PATTERNS` is mirrored by
+  `web/src/lib/anti-cheat.ts` (+ the `ANTI_CHEAT_ENUM` order in `enums.ts`;
+  `anti-cheat.test.ts` parses `constants.py` and holds them equal). Change
   one, change the other.
 
 ## Pipeline
@@ -244,18 +256,43 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
   The backfill is a manual run with `backfill` ticked (~4 h, start it in the
   evening UTC). DISCLAIMER section 6 names the source, so rewording it reopens
   the consent gate. `scripts/tests/test_refresh_peaks.py` holds the rules.
-- `ingest_new.py` only reads `scripts/temp_info.jsonl`. It has exactly two
-  producers now: the browser extension (`poli0981/steam-f2p-extension`, which
-  pushes to the file directly) and `/admin` (the Worker appends via
-  `createCommitOnBranch`: a reviewer's approvals, an auto-approve batch, a
-  Restore). The issue-template and Telegram paths were removed. Both producers
-  APPEND; anything that overwrites this file destroys whatever the other
-  queued. It skips a blocklisted link before any Steam request, and rejects
-  anything appdetails calls other than `type: "game"` (`status_code:
-  not_a_game` in `removed_games.jsonl`) - the check that makes auto-approve
-  safe, and why the extension can no longer add a free DLC, demo or tool. The
-  check lives in ingest only: in `health_checker` it would make Purge delete
-  old records every week.
+- **Anti-cheat is what the developer declares on Steam, and
+  `refresh_anticheat.py` re-reads it for EVERY game daily** (end of the
+  Refresh Store Data job, its own commit; `only: anticheat` runs just it).
+  Until v4.3.1 only the browser extension read the disclosure, so the 4,704
+  games added after it stopped (2026-06) had none. Steam shows it in two places
+  (measured 2026-10-16, `core/anticheat.py`):
+  `IStoreBrowseService/GetItems` with `include_extra_details` gives
+  `extra_details.anticheat` (`kernel_mode`, `boot_protection`, `name`; false
+  booleans omitted, `{}` = not kernel, no key = no disclosure), keyless and
+  for gated games too, but with only Steam's own product names; the store page
+  has one `div.anticheat_section` whose HEADING (`Uses Kernel Level
+  Anti-Cheat` / `Uses Anti-Cheat Software`) decides kernel - never the class,
+  `DRM_notice` also marks boot protection - with a `div.anticheat_name` per
+  row; a `Boot Protection` row is not a product. The sweep asks GetItems for
+  all games (~160 requests) and reads a page only for a disclosure without a
+  name. Rules: Steam wins (another product or kernel flag is REPLACED, compared
+  with `same_family()`, so "EAC" = "Easy Anti-Cheat"); an override wins over
+  Steam and is never fought (`OverrideGuard`); NO disclosure never clears
+  anything (Warframe, Overwatch 2, NARAKA declare none); a failed GetItems
+  batch is unknown, never "none"; a disclosure with no name anywhere writes
+  nothing. `fetch_full()` fills (never replaces) from the page it already
+  fetched, else appdetails' VAC category. Labels are `ANTI_CHEAT_PATTERNS`
+  keys, else Steam's name; notes `"<name> [Kernel]"` / `"[Non-Kernel]"`.
+  `scripts/tests/test_anticheat.py` and `test_refresh_anticheat.py` hold it.
+- `ingest_new.py` only reads `scripts/temp_info.jsonl`, and a line is a store
+  LINK and nothing else: every other key is ignored and the game is built from
+  Steam (`merge_extension_data()` went with the archived browser extension;
+  it let one queued line decide any field). The producer is `/admin` (the
+  Worker appends via `createCommitOnBranch`: a reviewer's approvals, an
+  auto-approve batch, a Restore), plus a link a pull request adds. The
+  issue-template, Telegram and extension paths were removed. Writers APPEND;
+  anything that overwrites this file destroys whatever another queued. It
+  skips a blocklisted link before any Steam request, and rejects anything
+  appdetails calls other than `type: "game"` (`status_code: not_a_game` in
+  `removed_games.jsonl`) - the check that makes auto-approve safe, and why a
+  queued link cannot add a free DLC, demo or tool. The check lives in ingest
+  only: in `health_checker` it would make Purge delete old records every week.
 - **`ingest-new.yml` is also the removal job.** `bash/ingest.sh` runs
   `remove_games.py` (applies `data/blocklist.jsonl`) and then
   `ingest_new.py`, and commits once ("Apply removals" when `temp_info` did not
@@ -351,11 +388,12 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
   purge - start mid-morning UTC and run 2-4 hours; Refresh Store Data is at
   16:00 for that reason).
 - **Every data job commits through `bash/commit_push.sh`.** The group
-  serialises workflows, not `main`: a merged PR, an /admin commit or the
-  extension's push can land during a four-hour job, and a bare `git push` is
-  then rejected and the run thrown away (purge-unhealthy, 2026-09-21). The
-  helper rebases onto `origin/main` and retries; none of those writers touch
-  the shards, so the rebase is clean. A new wrapper must use it.
+  serialises workflows, not `main`: a merged PR or an /admin commit can land
+  during a four-hour job, and a bare `git push` is then rejected and the run
+  thrown away (purge-unhealthy, 2026-09-21). The helper rebases onto
+  `origin/main` and retries; none of those writers touch the shards, so the
+  rebase is clean. A new wrapper must use it, once per commit (Refresh Store
+  Data commits twice: the store refresh, then the anti-cheat sweep).
 - Workflows push with the built-in `GITHUB_TOKEN`; each declares
   `permissions: {contents: write}`. Do not reintroduce a PAT — a PAT expiring
   silently is what stalled the pipeline for a month in 2026.

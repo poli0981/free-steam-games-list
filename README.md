@@ -88,8 +88,7 @@ npm run tauri:build    # release binary into web/src-tauri/target/release/bundle
 The Python pipeline that powered v2 is untouched and runs daily as before:
 
 - Schema v2.2 (23 + manual fields per record), CC BY 4.0 (see [LICENSE-DATA](LICENSE-DATA)), sharded data in `data/data_*.jsonl` (cap 800 records/shard) plus a `data/index.json` manifest with a SHA-256 per shard.
-- Extension-compatible: the [Chrome extension](https://github.com/poli0981/steam-f2p-extension) pushes pre-fetched rich data straight into `scripts/temp_info.jsonl`; the ingest workflow merges and dedupes.
-- HTML scraper for accurate language tables, DLC pricing, and user tags — single GET per game.
+- HTML scraper for accurate language tables, DLC pricing, user tags and the developer's anti-cheat disclosure — single GET per game.
 - Health-checked: dead-link sweep every 5 days, full purge every Monday.
 - Reviews-only refresh every 2 days; full refresh daily.
 
@@ -148,16 +147,18 @@ scripts/
 │   ├── overrides.py        # Human corrections re-applied on every write
 │   ├── blocklist.py        # Removed games, left out of every write
 │   ├── fetcher.py          # Batch processor, apply_details/reviews/players/scraped
-│   ├── scraper.py          # Store page HTML parser (languages, DLC, tags)
+│   ├── scraper.py          # Store page HTML parser (languages, DLC, tags, anti-cheat)
+│   ├── anticheat.py        # Steam's anti-cheat disclosure and the rule that applies it
 │   ├── steamcharts.py      # SteamCharts all-time peak reader (polite, stops on refusal)
 │   ├── peaks.py            # all_time_peak: only ever raised
 │   ├── rotation.py         # crc32 daily slices shared by the refresh jobs
 │   └── health_checker.py   # Game status detection with cached API data
 ├── discover_new.py         # Propose new games into the /admin review queue
-├── ingest_new.py           # Add queued games (health check + extension merge)
+├── ingest_new.py           # Add queued games (health check + fetch from Steam)
 ├── remove_games.py         # Apply data/blocklist.jsonl now (runs before every ingest)
 ├── update_data.py          # Daily: fill in incomplete records
 ├── refresh_store_data.py   # Daily rotation: tags/languages weekly, store details monthly
+├── refresh_anticheat.py    # Daily: every game's anti-cheat, as its developer declares it on Steam
 ├── refresh_peaks.py        # Daily rotation: all-time peak from SteamCharts, monthly per game
 ├── update_reviews.py       # Reviews-only (every 2 days)
 ├── mark_dead_games.py      # Flag online games with no players
@@ -177,11 +178,11 @@ scripts/
 | --------------------- | -------------------------------- | --------------------------------------------------------- |
 | Auto Update JSON      | Daily 00:00 UTC                  | Fills in incomplete records (API + HTML scrape)           |
 | Discover New Games    | Daily 05:00 UTC                  | Propose new free games into the `/admin` review queue     |
-| Ingest New            | On `scripts/temp_info.jsonl` or `data/blocklist.jsonl` push, and every 3 h | Apply removals, then add approved and extension-submitted games |
+| Ingest New            | On `scripts/temp_info.jsonl` or `data/blocklist.jsonl` push, and every 3 h | Apply removals, then add approved games |
 | Top Online            | Sun/Wed/Fri 03:00 UTC            | Live player leaderboard                                   |
 | Top Offline           | 1st + 15th of month 05:00 UTC    | Leaderboard for single-player F2P concurrents             |
 | Update Reviews        | Every 2 days 06:00 UTC           | Reviews-only refresh                                      |
-| Refresh Store Data    | Daily 16:00 UTC                  | Rotating re-fetch: tags, languages, DLC flag weekly; name, image, description, developer/publisher, release date, platforms, Metacritic, DRM monthly |
+| Refresh Store Data    | Daily 16:00 UTC                  | Rotating re-fetch: tags, languages, DLC flag weekly; name, image, description, developer/publisher, release date, platforms, Metacritic, DRM monthly. Then every game's anti-cheat from Steam's disclosure (committed separately; manual run with `only: anticheat` does just that) |
 | Refresh All-Time Peaks | Daily 19:30 UTC                 | `all_time_peak` from SteamCharts, every game once a month, plus our own samples; manual run with `backfill` asks about every game |
 | Check Dead Links      | Every 5 days 04:00 UTC           | HEAD-request 404/410 scanner                              |
 | Purge Unhealthy       | Weekly Mon 05:00 UTC             | Full health scan + removal                                |
@@ -196,16 +197,16 @@ The site itself is deployed by Cloudflare Workers Builds on every push to `main`
 
 ### Contribute
 
-**The browser extension.** The companion [Chrome extension](https://github.com/poli0981/steam-f2p-extension) detects
-free-to-play games on Steam store pages and pushes pre-fetched metadata straight
-to `scripts/temp_info.jsonl`; `Ingest New Game Links` merges and dedupes on push.
-This is the only submission route.
-
-Most new games arrive on their own: `Discover New Games` sweeps the Steam store
+New games arrive on their own: `Discover New Games` sweeps the Steam store
 daily into a review queue, and the maintainer approves them at `/admin` — by
 hand, or with an auto-approve rule that has a daily cap and is off until turned
 on. Discovery only proposes, and every approved game is checked again by the
-pipeline (free, a game, reachable) before it is published.
+pipeline (free, a game, reachable) before it is published. Missing a free game
+a few days after it went free? Post its store link in
+[Discussions › Ideas](https://github.com/poli0981/free-steam-games-list/discussions/categories/ideas).
+
+The companion browser extension, [steam-f2p-extension](https://github.com/poli0981/steam-f2p-extension),
+is archived and no longer a way in.
 
 **Issues** are for reports, not submissions:
 [Bug report](.github/ISSUE_TEMPLATE/bug_report.yml),
@@ -213,14 +214,14 @@ pipeline (free, a game, reachable) before it is published.
 [Delete game](.github/ISSUE_TEMPLATE/delete_game.yml) and
 [Feedback](.github/ISSUE_TEMPLATE/feedback.yml). All reviewed by hand.
 
-**The manual way.** Fork, append to `scripts/temp_info.jsonl`, and push:
+**The manual way.** Fork, append store links to `scripts/temp_info.jsonl`, and open a pull request:
 
 ```jsonl
-{"link": "730", "type_game": "online", "safe": "y", "notes": "CS2 babyyy"}
-{"link": "https://store.steampowered.com/app/570/", "genre": "MOBA"}
+{"link": "730"}
+{"link": "https://store.steampowered.com/app/570/"}
 ```
 
-Accepts a full URL, short URL, or bare appid. Optional manual fields: `type_game`, `genre`, `anti_cheat`, `anti_cheat_note`, `is_kernel_ac`, `safe`, `notes`. The ingest pipeline preserves these on top of whatever it fetches from Steam.
+Accepts a full URL, short URL, or bare appid. A line is a link and nothing else: any other key is ignored, and the game is fetched from Steam. A correction to a published game (genre, anti-cheat, notes…) goes in a Discussion; the maintainer records it as an override.
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for the full flow.
 
@@ -241,7 +242,7 @@ Unemployed, introvert max level, dropped out uni year 3, mooching off family. Ne
 
 - [AUTHORS](AUTHORS.md) — maintainer + canonical handle map + AI-assistant disclosure.
 - [CHANGELOG](CHANGELOG.md) — what changed in each version.
-- [CONTRIBUTING](CONTRIBUTING.md) — issue templates, the browser extension, manual fork.
+- [CONTRIBUTING](CONTRIBUTING.md) — issue templates, suggesting a game, manual fork.
 - [PC spec](docs/pc_spec.md) ([VI](docs/i18n/vi/pc_spec.md)) — maintainer's dev hardware + test devices.
 - [Dev environment](docs/dev_env.md) ([VI](docs/i18n/vi/dev_env.md)) — IDE, toolchains (Python 3.12 / Node 24 / Rust stable / Tauri 2), workflow.
 - [Tauri build](web/src-tauri/TAURI.md) — desktop build prerequisites + signing + auto-update.

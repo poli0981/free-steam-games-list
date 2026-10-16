@@ -20,7 +20,7 @@ You acknowledge the following:
 2. **English-only assumptions.** The scraper, ingest pipeline, and web app assume Steam responses come back in English. Regional storefronts can return localised strings that break parsing. Names, genres, language-support tables, and DLC flags can be wrong for non-EN sessions. Compare against the canonical EN store page before acting on the data.
 3. **Test data may have leaked in.** During web-app development the maintainer ran live edit / add / delete tests against the production repo, so some rows may carry test artefacts. The daily pipeline cleans most of these up but stragglers exist. In-browser editing was removed in September 2026, so no new artefacts of this kind can appear.
 4. **`unsigned` Activity entries are dev artefacts.** Many commits during development were made while the GPG key was locked. They are not malicious — just unsigned. If you require Verified-only trust, filter the Activity feed accordingly.
-5. **Anti-cheat detection is regex-based.** `anti_cheat` / `is_kernel_ac` are populated by matching known AC names against page text; rebrands and launcher-only mentions are missed.
+5. **Anti-cheat is what the developer declares on Steam.** `anti_cheat` / `is_kernel_ac` come from the anti-cheat disclosure on the Steam store page; one the developer has not declared there is missed, and a declaration can be wrong.
 6. **Player counts are sampled.** `current_players` and `peak_today` lag by minutes-to-hours.
 
 ### 4. Liability

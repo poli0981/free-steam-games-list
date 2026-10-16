@@ -39,33 +39,35 @@ Go to the [Issues tab](https://github.com/poli0981/free-steam-games-list/issues/
 
 Fill the form (checkboxes, dropdowns, short descriptions). Every template is reviewed by hand when caffeine hits — none of them auto-run a workflow.
 
-> Issues are for **reports**, not game submissions. To add a game, use the browser extension (section 2).
+> Issues are for **reports**, not game submissions. To suggest a game, see section 2.
 
 
-### 2. Browser extension
+### 2. Suggest a game, or a correction
 
-The companion [Chrome extension](https://github.com/poli0981/steam-f2p-extension) detects F2P games on Steam store pages and pushes pre-fetched metadata to `scripts/temp_info.jsonl`. The `Ingest New Game Links` workflow merges and dedupes on push.
+New free games are found on Steam automatically every day and reviewed before they are listed, so most turn up on their own. If one is still missing a few days after it went free, or a published game has something wrong (genre, anti-cheat, notes…), post it in [Discussions › Ideas](https://github.com/poli0981/free-steam-games-list/discussions/categories/ideas) with the store link. A correction becomes an override that every pipeline run keeps.
+
+The companion browser extension ([steam-f2p-extension](https://github.com/poli0981/steam-f2p-extension)) is archived and no longer a way in.
 
 ### 3. Manual: fork + commit (most invasive)
 
-For code changes or bigger data edits:
+For code changes, or to queue games yourself:
 
 1. Fork → branch.
-2. Edit code in `scripts/` / `web/src/` / docs, or append rows to `scripts/temp_info.jsonl`:
+2. Edit code in `scripts/` / `web/src/` / docs, or append store links to `scripts/temp_info.jsonl`:
    ```jsonl
-   {"link": "730", "type_game": "online", "safe": "y", "notes": "CS2 babyyy"}
-   {"link": "https://store.steampowered.com/app/570/", "genre": "MOBA"}
+   {"link": "730"}
+   {"link": "https://store.steampowered.com/app/570/"}
    ```
 3. Push → open PR. Reviewer (= me) will look when caffeine hits.
 
-Manual fields preserved through the ingest pipeline: `type_game`, `genre`, `anti_cheat`, `anti_cheat_note`, `is_kernel_ac`, `safe`, `notes`.
+A queued line is a link and nothing else: any other key is ignored, and the game is fetched from Steam and checked (free, a game, reachable) before it is published.
 
 ---
 
 ## Tips for smooth contributions
 
 - **Games must be free-to-play on Steam.** No demos, no paid-now games, no malware-flagged ones.
-- **Notes / safe fields** are optional but useful. Examples: `"safe": "y"`, `"notes": "Toxic max"`, `"notes": "Grind phê Easy mode"`.
+- **Notes / safe** are worth mentioning in a suggestion ("safe to play", "Toxic max", "Grind phê Easy mode"); the maintainer records them as overrides.
 - **Spam / off-topic** issues get closed without comment. Don't be that person.
 - **Code style:** match the surrounding file. No hard rules. The Python pipeline is intentionally low-ceremony; the web side (SvelteKit, the Worker, `admin/`) is TS-strict.
 - **Tests:** for web changes, `npm run typecheck && npm test && npm run build` must pass (in `web/`). For pipeline changes, `python -m pytest scripts/tests`.

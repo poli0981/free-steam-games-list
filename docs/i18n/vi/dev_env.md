@@ -85,5 +85,5 @@ Feature lớn (gộp nhiều task như v3.x) gom thành phase-PR để history d
 
 - [`pc_spec.md`](pc_spec.md) — cấu hình máy
 - [`../../../web/src-tauri/TAURI.md`](../../../web/src-tauri/TAURI.md) — yêu cầu build Tauri 2 desktop
-- [`../../../CONTRIBUTING.md`](../../../CONTRIBUTING.md) — các đường đóng góp (issue / extension / fork)
+- [`../../../CONTRIBUTING.md`](../../../CONTRIBUTING.md) — các đường đóng góp (issue / discussion / fork)
 - [`../../../web/README.md`](../../../web/README.md) — chi tiết stack web + changelog từng phase
