@@ -5,7 +5,6 @@ Optimizations:
   - _is_empty() simplified with early returns (no set lookup)
   - save_jsonl() uses json.dumps directly (faster than jsonlines writer for large files)
   - build_index() O(n) single pass
-  - merge_extension_data() avoids repeated key lookups
 """
 import glob as _glob
 import hashlib
@@ -18,7 +17,7 @@ from typing import Optional
 from .constants import (
     DATA_DIR, LEGACY_JSONL, TEMP_JSONL, REMOVED_JSONL,
     MAX_RECORDS_PER_FILE, SHARD_PREFIX,
-    MANUAL_FIELDS, ARRAY_FIELDS, DESCRIPTION_MAX,
+    DESCRIPTION_MAX,
     BLOCKLIST_MAX_DROP,
 )
 from .normalize import normalize_records
@@ -268,11 +267,11 @@ def save_main(records: list[dict], apply_human_overrides: bool = True,
     """Save records to sharded JSONL files (MAX_RECORDS_PER_FILE per shard).
 
     Human overrides are re-imposed here, immediately before the write. This is
-    the single choke point for the dataset - all 14 data-writing scripts call
+    the single choke point for the dataset - every data-writing script calls
     save_main() and nothing else writes data/data_*.jsonl - so applying them
-    here is what makes a correction survive refetch_all.py and
-    normalize_genres.py --apply without either script knowing this layer
-    exists. See core/overrides.py.
+    here is what makes a correction survive refetch_all.py,
+    refresh_anticheat.py and normalize_genres.py --apply without those scripts
+    knowing this layer exists. See core/overrides.py.
 
     The blocklist (core/blocklist.py) is applied FIRST, the same way: a game
     the maintainer removed is left out of every write, whichever script made
@@ -283,9 +282,9 @@ def save_main(records: list[dict], apply_human_overrides: bool = True,
     un-overridden values (an audit report). Never pass it from the pipeline.
 
     The representation rules of core/normalize.py run first - one release
-    date shape, no invisible characters, no HTML entities, no Vietnamese
-    notes - so every writer gets them, the browser extension's ingest
-    included. Like the truncation, they never touch last_updated.
+    date shape, no invisible characters, no HTML entities, none of the retired
+    browser extension's note phrases - so every writer gets them. Like the
+    truncation, they never touch last_updated.
     """
     # Before everything else, so no work is spent on records that are not
     # written, and a blocked game's override reports as an orphan (its file
@@ -493,7 +492,7 @@ def is_info_complete(game: dict) -> bool:
     return True
 
 
-# ──────────── Extension data merge ────────────
+# ──────────── Migration ────────────
 
 def _normalize_to_list(val) -> list[str]:
     if isinstance(val, list):
@@ -501,54 +500,6 @@ def _normalize_to_list(val) -> list[str]:
     if isinstance(val, str) and val:
         return [s.strip() for s in val.split(",") if s.strip()]
     return []
-
-
-# Pre-compute sets for O(1) membership tests
-# Keys from extension that should NEVER be stored in data.jsonl
-_SKIP_MERGE_KEYS = frozenset({
-    "link", "appid", "added_at",
-    # Extension-only classification (not stored server-side)
-    "free_type", "is_free", "is_dlc", "is_demo", "is_playtest",
-    "price", "auto_notes",
-})
-_NORMALIZE_LIST_KEYS = frozenset({"developer", "publisher"})
-_DESC_KEYS = frozenset({"description", "desc"})
-
-
-def merge_extension_data(game: dict, ext: dict) -> dict:
-    """
-    Merge extension data into game record.
-    Optimized: single pass over ext keys, minimal dict lookups.
-    """
-    for key, val in ext.items():
-        if key in _SKIP_MERGE_KEYS or is_empty(val):
-            continue
-
-        if key in _NORMALIZE_LIST_KEYS:
-            val = _normalize_to_list(val)
-
-        if key in _DESC_KEYS:
-            target = "description"
-            if is_empty(game.get(target)):
-                game[target] = val
-            continue
-
-        if key in MANUAL_FIELDS:
-            if is_empty(game.get(key)):
-                game[key] = val
-            continue
-
-        if key in ARRAY_FIELDS:
-            game[key] = val
-            continue
-
-        # EXTENSION_FIELDS or unknown: overwrite
-        game[key] = val
-
-    # Strip any ephemeral fields that may have leaked through
-    for k in ("free_type", "is_free", "is_dlc", "is_demo", "is_playtest", "price", "auto_notes"):
-        game.pop(k, None)
-    return game
 
 
 def migrate_record(game: dict) -> dict:
@@ -569,10 +520,5 @@ def migrate_record(game: dict) -> dict:
         if game.get("desc") and is_empty(game.get("description")):
             game["description"] = game["desc"]
         del game["desc"]
-
-    # Remove deprecated/ephemeral fields
-    for k in ("free_type", "is_free", "is_dlc", "is_demo",
-              "is_playtest", "price", "auto_notes"):
-        game.pop(k, None)
 
     return game

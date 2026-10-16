@@ -13,10 +13,11 @@
  * and it writes one only after observing the appid in the published dataset.
  *
  * It also SWEEPS: a pending, deferred or failed row whose game is already in
- * data/ is marked committed. That happens when the browser extension queues a
- * game discovery also proposed, and when an approval aged out to 'failed' (see
- * STALE_AFTER_MS) and was published afterwards anyway - before the sweep such a
- * row stayed 'failed' forever for a game that was live.
+ * data/ is marked committed. That happens when a game reaches the catalogue by
+ * another route (a pull request's link, a manual edit) while discovery also
+ * proposed it, and when an approval aged out to 'failed' (see STALE_AFTER_MS)
+ * and was published afterwards anyway - before the sweep such a row stayed
+ * 'failed' forever for a game that was live.
  */
 import type { AdminDeps } from "./deps";
 import { acquireLease, releaseLease, readState, writeState } from "./locks";

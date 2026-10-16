@@ -10,6 +10,8 @@ Text is HTML-unescaped before it is stored: the tag regex used to keep
 import re
 from html import unescape as _unescape
 
+from .anticheat import parse_page
+
 # ──── Pre-compiled patterns ────
 
 _RE_LANG_TABLE = re.compile(
@@ -174,11 +176,13 @@ def parse_tags(html: str) -> list[str]:
 # ──── Combined ────
 
 def scrape_store_page(html: str) -> dict:
-    """Parse languages + DLC pricing + tags from one HTML string."""
+    """Parse languages + DLC pricing + tags + the anti-cheat disclosure
+    (core/anticheat.py; None when the page has none) from one HTML string."""
     lang = parse_language_table(html)
     return {
         "languages": lang["languages"],
         "language_details": lang["language_details"],
         "has_paid_dlc": parse_has_paid_dlc(html),
         "tags": parse_tags(html),
+        "anti_cheat": parse_page(html),
     }

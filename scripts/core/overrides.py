@@ -4,22 +4,25 @@ Human edits as standing instructions, not one-time mutations.
 The problem this solves
 -----------------------
 MANUAL_FIELDS (anti_cheat, anti_cheat_note, is_kernel_ac, notes, type_game,
-safe, genre) are protected only by "fill if empty": merge_extension_data()
-skips them when the existing value is non-empty. Nothing anywhere records which
-value a human chose and which a scraper guessed, so:
+safe, genre) are protected only by "fill if empty": apply_details() and
+fetch_full() skip them when the existing value is non-empty. Nothing anywhere
+records which value a human chose and which a scraper guessed, so:
 
   * `normalize_genres.py --apply` rewrites `genre` for every game and cannot
     tell a correction from scraper output;
+  * `refresh_anticheat.py` replaces the three anti-cheat fields with what
+    Steam's disclosure says;
   * `refetch_all.py` re-fetches everything;
 
 and a hand-made correction is reverted with no error and no trace.
 
 An override is therefore NOT applied once. It lives permanently in Git as
 `data/overrides/<appid>.json`, and `apply_overrides()` is called from inside
-`save_main()` — the single choke point through which all 14 data-writing
-scripts pass, and the only code that writes `data/data_*.jsonl`. Whatever a
-script did to a record, the human's decision is re-imposed as the last act
-before bytes hit the disk. No script needs to know this layer exists.
+`save_main()` — the single choke point through which every data-writing script
+passes, and the only code that writes `data/data_*.jsonl`. Whatever a script
+did to a record, the human's decision is re-imposed as the last act before
+bytes hit the disk. No script needs to know this layer exists; one that writes
+manual fields daily asks OverrideGuard first, so it does not fight it.
 
 Retiring an override
 --------------------
@@ -36,7 +39,7 @@ import os
 from typing import Optional
 
 from .constants import MANUAL_FIELDS, MACHINE_NOTE_MARKERS, OVERRIDES_DIR
-from .normalize import translate_notes
+from .normalize import clean_notes
 
 OVERRIDE_SCHEMA = 1
 
@@ -167,6 +170,42 @@ def validate_value(field: str, value) -> Optional[str]:
     return None
 
 
+class OverrideGuard:
+    """Which writes to a manual field an override would undo.
+
+    A script that writes a manual field into a record an override governs gains
+    nothing - save_main() puts the human value back - and loses a lot: the
+    record's last_updated moves on every run, and so do the shard bytes. Two
+    cases, decided exactly as apply_overrides() decides them:
+
+      - an ACTIVE entry (an object whose value passes validate_value()) owns
+        its field, whatever is written there;
+      - a RETIRED entry restores `was` whenever the stored value equals its
+        `value`, so writing that value would flip-flop every day.
+    """
+
+    def __init__(self, docs: dict[str, dict]):
+        self._active: dict[str, set[str]] = {}
+        self._retired: dict[str, dict[str, tuple]] = {}
+        for appid, doc in docs.items():
+            for field, entry in (doc.get("fields") or {}).items():
+                if isinstance(entry, dict) and validate_value(field, entry.get("value")) is None:
+                    self._active.setdefault(appid, set()).add(field)
+            for field, entry in (doc.get("retired") or {}).items():
+                if isinstance(entry, dict) and field in MANUAL_FIELDS:
+                    self._retired.setdefault(appid, {})[field] = (entry.get("value"), entry.get("was"))
+
+    @classmethod
+    def load(cls) -> "OverrideGuard":
+        return cls(load_overrides())
+
+    def allows(self, appid: str, field: str, value) -> bool:
+        if field in self._active.get(str(appid), ()):
+            return False
+        retired = self._retired.get(str(appid), {}).get(field)
+        return not (retired and retired[0] == value and retired[1] != value)
+
+
 def apply_overrides(games: list[dict], quiet: bool = False) -> ApplyStats:
     """Re-impose every human decision onto `games`, in place.
 
@@ -212,11 +251,11 @@ def apply_overrides(games: list[dict], quiet: bool = False) -> ApplyStats:
                 continue
 
             if field == "notes":
-                # Translated as save_main() translates the stored notes: an
-                # override still saying "Có DLC trả phí" would otherwise put it
-                # back after every normalisation, bump last_updated and commit
-                # on every run.
-                value = preserve_machine_notes(game.get("notes", ""), translate_notes(value))
+                # Cleaned as save_main() cleans the stored notes: an override
+                # still starting "Has paid DLC" would otherwise put it back
+                # after every normalisation, bump last_updated and commit on
+                # every run.
+                value = preserve_machine_notes(game.get("notes", ""), clean_notes(value))
 
             stats.enforced += 1
             if game.get(field) != value:
@@ -230,7 +269,9 @@ def apply_overrides(games: list[dict], quiet: bool = False) -> ApplyStats:
             # Restore only while the stored value is still the one this
             # override put there. Once restored the two differ, so every later
             # pass is a no-op and the entry can stay in the file as history.
-            if game.get(field) == entry.get("value"):
+            # An entry whose `was` IS its value restores nothing, and must not
+            # count as a change: it would bump last_updated on every save.
+            if game.get(field) == entry.get("value") and entry.get("was") != entry.get("value"):
                 game[field] = entry.get("was")
                 stats.restored += 1
                 touched = True

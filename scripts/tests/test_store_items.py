@@ -6,6 +6,7 @@ and that a DLC price - which arrives as a string - is read as money.
 
 Run from the repository root:  python -m pytest scripts/tests
 """
+from core.anticheat import Disclosure
 from core.scraper import scrape_store_page
 from core.store_items import language_name, paid_dlc_from_items, parse_store_item
 
@@ -68,6 +69,15 @@ def test_rows_follow_the_page_scrapes_rules():
 
 def test_the_tagids_list_is_read_when_weights_are_missing():
     assert parse_store_item({"tagids": [9130, "6650"]}, TAG_NAMES)["tags"] == ["Hentai", "Nudity"]
+
+
+def test_an_item_carries_its_anti_cheat():
+    # Horizon Walker (3279780): a login-gated game whose page cannot be read.
+    item = {"extra_details": {"anticheat": {"kernel_mode": True}}}
+    assert parse_store_item(item, TAG_NAMES)["anti_cheat"] == Disclosure("", True, False)
+    assert parse_store_item({"extra_details": {}}, TAG_NAMES)["anti_cheat"] is None
+    # The page scrape has the same key, so either can stand in for the other.
+    assert scrape_store_page("<html></html>")["anti_cheat"] is None
 
 
 def test_a_dlc_price_is_money_even_as_a_string():

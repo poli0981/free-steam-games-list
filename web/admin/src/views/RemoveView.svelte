@@ -235,7 +235,7 @@
     <h1 class="text-2xl font-semibold tracking-tight">Remove games</h1>
     <p class="max-w-3xl text-sm text-muted-foreground">
       A removed game leaves data/ on the next pipeline run, is listed on the site's removed-games page, and stays out:
-      discovery, the browser extension and every later run skip it until it is restored here.
+      discovery, a queued link and every later run skip it until it is restored here.
     </p>
   </div>
 

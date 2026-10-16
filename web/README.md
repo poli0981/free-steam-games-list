@@ -289,10 +289,11 @@ publish a **draft** release — smoke-test the binaries before publishing.
 
 ## Schema sync
 
-`MANUAL_FIELDS`, `ARRAY_FIELDS`, `EXTENSION_FIELDS` and the record shape in
+`MANUAL_FIELDS` and the record shape in
 [`src/lib/schema.ts`](src/lib/schema.ts) mirror
-[`scripts/core/constants.py`](../scripts/core/constants.py). Change one, change
-the other.
+[`scripts/core/constants.py`](../scripts/core/constants.py), and so do the
+anti-cheat patterns in [`src/lib/anti-cheat.ts`](src/lib/anti-cheat.ts)
+(`anti-cheat.test.ts` holds those equal). Change one, change the other.
 
 ## Deployment
 

@@ -42,10 +42,13 @@ half of which I never checked.
   picking a random game from my 400+ backlog and pretending I’m having fun. Do
   not disturb. Touch grass instead.
 
-**Adding a F2P game to the list?** Don’t DM me about it. Use the
-[browser extension](https://github.com/poli0981/steam-f2p-extension) — it is the
-only submission path now. The Telegram bot and the issue template are gone; if
-you read about whitelisting a Telegram `user_id` somewhere, that doc is stale.
+**Adding a F2P game to the list?** Don’t DM me about it. New free games are
+found on Steam automatically every day and reviewed before they are listed. If
+one is still missing a few days after it went free, post its store link in
+[Discussions › Ideas](https://github.com/poli0981/free-steam-games-list/discussions/categories/ideas).
+The browser extension is archived, and the Telegram bot and the issue template
+are gone; if you read about whitelisting a Telegram `user_id` somewhere, that
+doc is stale.
 
 Or open an issue here (Wiki first, or gentle RTFM). Luck’s on your side.
 

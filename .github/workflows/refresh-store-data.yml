@@ -9,6 +9,13 @@ name: Refresh Store Data
 # scripts/refresh_store_data.py explains the rotation and the rules (never
 # blanks a value, never touches MANUAL_FIELDS).
 #
+# Then the anti-cheat sweep, committed separately: every game's anti-cheat as
+# its developer declares it on Steam, about 160 GetItems requests plus a store
+# page for each disclosure Steam does not name there (~70), a few minutes.
+# scripts/refresh_anticheat.py has its rules: Steam wins, an override wins
+# over Steam, and no disclosure never clears a value. `only: anticheat` runs
+# just the sweep.
+#
 # 16:00 UTC is the quiet part of this repository's day. Scheduled runs here
 # start two to five hours late, the morning data jobs (reviews, dead links,
 # purge) run for two to four hours, and the data-write group keeps only ONE
@@ -20,11 +27,11 @@ on:
   workflow_dispatch:
     inputs:
       only:
-        description: 'Refresh one group only; leave empty for both'
+        description: 'One part only: a store group, or the anti-cheat sweep; leave empty for all'
         required: false
         default: ''
         type: choice
-        options: ['', 'page', 'details']
+        options: ['', 'page', 'details', 'anticheat']
 
 permissions: {contents: write}
 
@@ -37,7 +44,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 120
     steps:
+      # main, not the triggering commit: a run that waited its turn in
+      # data-write must work on the data as it is now, not as it was queued.
       - uses: actions/checkout@v6
+        with: {ref: main}
       - uses: actions/setup-python@v6
         with: {python-version: '3.12'}
       - run: chmod +x ./bash/refresh_store.sh && ./bash/refresh_store.sh

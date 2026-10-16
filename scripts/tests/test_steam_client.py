@@ -113,6 +113,34 @@ def test_store_items_are_asked_for_in_batches_and_a_failed_batch_fails_all(monke
     assert len(session.requests) == 2
 
 
+def test_store_items_ask_for_the_anti_cheat_disclosure_too():
+    client, session = _client(_Resp(steam_client.STORE_ITEMS_URL, body={"response": {"store_items": []}}))
+    client.fetch_store_items(["2279510"])
+    sent = json.loads(session.requests[0]["params"]["input_json"])
+    assert sent["data_request"] == {"include_tag_count": 20, "include_supported_languages": True,
+                                    "include_extra_details": True}
+
+
+def test_anticheat_items_survive_a_failed_batch(monkeypatch):
+    monkeypatch.setattr(steam_client, "STORE_ITEMS_BATCH", 2)
+    one = {"response": {"store_items": [{"id": 1, "success": 1, "extra_details": {"anticheat": {}}}]}}
+    client, session = _client(_Resp(steam_client.STORE_ITEMS_URL, status_code=403),
+                              _Resp(steam_client.STORE_ITEMS_URL, body=one))
+    items, failed = client.fetch_anticheat_items(["3", "4", "1"])
+    assert list(items) == ["1"] and failed == {"3", "4"}
+    sent = json.loads(session.requests[1]["params"]["input_json"])
+    assert sent["data_request"] == {"include_extra_details": True}
+
+
+def test_anticheat_items_give_up_after_failures_in_a_row(monkeypatch):
+    monkeypatch.setattr(steam_client, "STORE_ITEMS_BATCH", 1)
+    bad = [_Resp(steam_client.STORE_ITEMS_URL, status_code=403) for _ in range(2)]
+    client, session = _client(*bad)
+    items, failed = client.fetch_anticheat_items(["1", "2", "3", "4"], give_up_after=2)
+    assert items == {} and failed == {"1", "2", "3", "4"}
+    assert len(session.requests) == 2              # the rest was not asked
+
+
 def test_tag_names_are_fetched_once():
     body = {"response": {"tags": [{"tagid": 12095, "name": "Sexual Content"}]}}
     client, session = _client(_Resp(steam_client.TAG_LIST_URL, body=body))

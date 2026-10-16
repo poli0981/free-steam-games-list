@@ -4,6 +4,83 @@ All notable changes to this awesome noob repo will be documented here.
 
 ## [Unreleased]
 
+## [v4.3.1] – 2026-10-16 (The "Fair Play" Edition)
+
+Anti-cheat information comes from Steam again, for every game, and the
+retired browser extension leaves the repository. Only the data pipeline, the
+admin, the docs and two legal documents changed: the desktop and Android apps
+stay at `2.2.0`, with no new build. Repo public-facing version `4.3.0` →
+`4.3.1`.
+
+The data catches up through the pipeline itself. The first data job after
+this release cleans the notes once (about 520 games). The first anti-cheat
+sweep fills and corrects every game Steam has a declaration for, and every
+daily sweep after it keeps them in step.
+
+### 🐛 Fixed
+
+- **No game added since September had an anti-cheat.** The browser extension
+  was the only part of the project that read the anti-cheat a developer
+  declares on Steam, and it stopped in June; the pipeline itself only looked
+  for VAC. None of the 4,700 games added since then had one, Delta Force's
+  kernel-level ACE included. The pipeline now reads Steam's own declaration:
+  the product, whether it runs in the kernel, and whether it needs Secure
+  Boot. It does so when a game is added, and for the whole catalogue every
+  day. More than 80 games that declare an anti-cheat on Steam had none here,
+  among them Brawlhalla, Destiny 2, THE FINALS, Delta Force, Albion Online,
+  SMITE 2, Throne and Liberty and Dark and Darker; about 20 more get the
+  kernel flag or note they were missing. A developer who types a paragraph
+  where the product name goes gets a label cut to 40 characters, with the
+  whole text kept in the note.
+- **Where the list and Steam disagree, Steam's declaration wins.** Wuthering
+  Waves uses ACE, not EAC; Jujutsu Kaisen Phantom Parade's anti-cheat does not
+  run in the kernel; Marvel Rivals' kernel flag is now known. A correction
+  made in the admin still beats Steam. A game that declares nothing on Steam
+  keeps what it has, because no declaration is not proof that a game has no
+  anti-cheat (Warframe, Overwatch 2 and NARAKA declare none).
+- A game whose anti-cheat had been reset to an empty value had only its first
+  Steam category checked for VAC, and a full re-fetch reset `-` to an empty
+  value.
+
+### ✨ Added
+
+- **The anti-cheat sweep** (`scripts/refresh_anticheat.py`), at the end of the
+  daily Refresh Store Data run, with a commit of its own. About 160 requests
+  to Steam's store API cover every game; a store page is read only for a
+  declaration whose name the API leaves out. A manual Refresh Store Data run
+  with `only: anticheat` runs just the sweep.
+
+### 🧹 Changed
+
+- **The browser extension is archived**
+  ([steam-f2p-extension](https://github.com/poli0981/steam-f2p-extension);
+  v2.8.0 was its last release). The ingest queue (`scripts/temp_info.jsonl`)
+  now takes store links only: any other key on a line is ignored, and the game
+  is fetched from Steam. The code that merged the extension's fields is gone,
+  along with the field lists that existed only for it.
+- The notes the extension left behind are removed: "Has paid DLC" at the
+  start of 491 notes (the paid-DLC flag already says it, and 10 of those notes
+  contradicted the flag) and "[hover-add]" on 26. A note left with nothing
+  else reads "Not reviewed yet".
+- DISCLAIMER section 5 and Terms of Use item 5 now say where anti-cheat comes
+  from: the developer's declaration on Steam. On the website the consent
+  screen shows those two changes once.
+- "Denuvo", Steam's name for Denuvo Anti-Cheat, is grouped with it in the
+  charts and filters.
+
+### 🧰 Pipeline
+
+- Refresh Store Data checks out the tip of `main` when it starts, as the
+  ingest does, so a run that waited its turn works on current data.
+- A retired override whose old value equals its new one no longer counts as a
+  change on every save.
+
+### 📚 Docs
+
+- README, CONTRIBUTING and the contact page no longer send anyone to the
+  extension. A missing game or a correction goes in Discussions › Ideas, and
+  the manual fork path queues links only.
+
 ## [v4.3.0] – 2026-10-13 (The "Autopilot" Edition)
 
 The admin can now approve the review queue on its own, a batch at a time and

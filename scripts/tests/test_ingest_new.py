@@ -1,7 +1,8 @@
 """
-ingest_new.py reads scripts/temp_info.jsonl, which two producers append to (the
-browser extension and /admin). These pin the lines that used to crash or
-slip through: a link that is not text, and a game the maintainer removed.
+ingest_new.py reads scripts/temp_info.jsonl, which /admin appends to (and a
+pull request may). A line is a store link and nothing else. These pin the lines
+that used to crash or slip through: a link that is not text, a line carrying
+fields of its own, and a game the maintainer removed.
 
 Steam is never called: check_game_health and fetch_full are replaced.
 
@@ -33,7 +34,7 @@ def repo(tmp_path, monkeypatch):
         return HealthResult(OK, appid, f"Game {appid}", link,
                             data=details if details is not None else {"type": "game", "name": f"Game {appid}"})
 
-    def fetch(game, client=None, prefetched_details=None):
+    def fetch(game, client=None, prefetched_details=None, **_):
         game["name"] = (prefetched_details or {}).get("name", game.get("name", ""))
 
     monkeypatch.setattr(ingest_new, "check_game_health", health)
@@ -61,6 +62,24 @@ def test_parse_entries_turns_numbers_into_links_and_drops_nothing_silently():
         {"link": ""},   # reported as an invalid line, not a crash
         {"link": ""},
     ]
+
+
+def test_parse_entries_keeps_only_the_link():
+    line = {"link": "730", "genre": "MOBA", "anti_cheat": "VAC", "notes": "x", "name": "Fake",
+            "status": "removed", "last_updated": "2030-01-01T00:00:00Z"}
+    assert ingest_new.parse_entries([line]) == [{"link": "730"}]
+
+
+def test_a_line_s_own_fields_never_reach_the_record(repo):
+    # The retired browser extension sent whole records; its merge let one line
+    # decide any field, a manual one or the record's status alike.
+    _queue({"link": "730", "genre": "MOBA", "safe": "y", "notes": "CS2 babyyy",
+            "status": "delisted", "is_dead": True})
+    ingest_new.main()
+    game = next(g for g in data_store.load_main() if g["link"].endswith("/730/"))
+    assert game["name"] == "Game 730"
+    assert game["genre"] == "" and game["safe"] == "?" and game["notes"] == ""
+    assert game["status"] == "active" and game["is_dead"] is False
 
 
 def test_a_numeric_link_no_longer_crashes_the_run(repo):

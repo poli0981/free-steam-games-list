@@ -25,7 +25,7 @@ const AC_PATTERNS: Record<string, string[]> = {
   Ricochet: ["ricochet anti-cheat", "ricochet"],
   mHyprot: ["mhyprot", "mhyprot2"],
   "FACEIT AC": ["faceit anti-cheat", "faceit ac"],
-  "Denuvo AC": ["denuvo anti-cheat"],
+  "Denuvo AC": ["denuvo anti-cheat", "denuvo"],
   KSS: ["kss", "krafton security"],
   "NetEase GS": ["netease game security"],
   Hyperion: ["hyperion", "byfron"],

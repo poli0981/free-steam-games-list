@@ -3,8 +3,9 @@
  * pipeline so manual edits stay compatible with what the daily refetch
  * produces.
  *
- *   ANTI_CHEAT_ENUM — keys of ANTI_CHEAT_PATTERNS in scripts/core/constants.py:45
- *                     (extend both sides if you add a new AC).
+ *   ANTI_CHEAT_ENUM — keys of ANTI_CHEAT_PATTERNS in scripts/core/constants.py
+ *                     (extend both sides if you add a new AC; anti-cheat.test.ts
+ *                     holds them equal).
  *   GENRE_ENUM     — curated short list of common Steam genre buckets.
  *                     Combobox-style: free-text new entries are allowed.
  *   TYPE_GAME_ENUM — fixed.
