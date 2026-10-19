@@ -51,24 +51,31 @@ jobs:
           cache: 'npm'
           cache-dependency-path: web/package-lock.json
 
+      # Third-party actions are pinned to a commit, with the version in a
+      # comment for Dependabot: a moved tag must not reach a job holding the
+      # updater's signing key. rust-toolchain is pinned to a MASTER commit and
+      # given its toolchain explicitly - its `stable` branch is regenerated on
+      # top of master, so a commit of that branch can disappear.
       - name: Install Rust toolchain
-        uses: dtolnay/rust-toolchain@stable
+        uses: dtolnay/rust-toolchain@683b588c487a69d01f6c6ddf40f036ff682cc2c8 # v1 (master)
         with:
+          toolchain: stable
           targets: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
 
-      - uses: Swatinem/rust-cache@v2
+      - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
         with:
           workspaces: 'web/src-tauri -> target'
 
       # Plain `npm ci`, as in web-ci.yml. The `|| npm install` fallback is what
       # hid a lockfile conflict for a month: a release must build from exactly
-      # the dependencies that were tested, or not at all.
+      # the dependencies that were tested, or not at all. No lifecycle scripts
+      # (web-ci.yml says why none is needed).
       - name: Install web dependencies
         working-directory: web
-        run: npm ci
+        run: npm ci --ignore-scripts
 
       - name: Build Tauri app
-        uses: tauri-apps/tauri-action@v1
+        uses: tauri-apps/tauri-action@1deb371b0cd8bd54025b384f1cd735e725c4060f # v1.0.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           # Inject the updater minisign private key so artefacts are signed

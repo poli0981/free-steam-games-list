@@ -59,12 +59,14 @@ jobs:
           cache: 'npm'
           cache-dependency-path: web/package-lock.json
 
+      # Third-party actions are pinned to a commit (see release-desktop.yml).
       - name: Install Rust toolchain + Android targets
-        uses: dtolnay/rust-toolchain@stable
+        uses: dtolnay/rust-toolchain@683b588c487a69d01f6c6ddf40f036ff682cc2c8 # v1 (master)
         with:
+          toolchain: stable
           targets: aarch64-linux-android,armv7-linux-androideabi,i686-linux-android,x86_64-linux-android
 
-      - uses: Swatinem/rust-cache@v2
+      - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
         with:
           workspaces: 'web/src-tauri -> target'
 
@@ -74,14 +76,14 @@ jobs:
       # whole release stops before building (android-v2.0.0, 2026-09-17).
       # Gradle installs the build-tools and platform it needs on its own.
       - name: Set up Android SDK
-        uses: android-actions/setup-android@v4
+        uses: android-actions/setup-android@be39fa834029ff78f1a44aa3bb0819b8fc2bd8fd # v4.0.4
         with:
           packages: platform-tools
           log-accepted-android-sdk-licenses: false
 
       - name: Set up Android NDK
         id: setup-ndk
-        uses: nttld/setup-ndk@v1
+        uses: nttld/setup-ndk@ed92fe6cadad69be94a966a7ee3271275e62f779 # v1.6.0
         with:
           ndk-version: r27
           link-to-sdk: true
@@ -93,8 +95,8 @@ jobs:
       - name: Install web dependencies
         working-directory: web
         # Plain `npm ci`, as in web-ci.yml: build from the tested lockfile or
-        # not at all.
-        run: npm ci
+        # not at all, and with no lifecycle scripts (web-ci.yml says why).
+        run: npm ci --ignore-scripts
 
       - name: Configure release keystore
         working-directory: web/src-tauri/gen/android
@@ -132,7 +134,7 @@ jobs:
         run: npm run tauri -- android build --apk
 
       - name: Publish APK to GitHub Release
-        uses: softprops/action-gh-release@v3
+        uses: softprops/action-gh-release@efb35369e0ad2afab669f228072c1b0d510eae64 # v3.0.3
         with:
           tag_name: ${{ github.event.inputs.tag || github.ref_name }}
           name: F2P Tracker Android ${{ github.event.inputs.tag || github.ref_name }}
