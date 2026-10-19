@@ -434,6 +434,13 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
     `requirements-dev.txt` (unhashed local tools) is installed on its own.
     Adding a package means adding it and its dependencies with hashes:
     `uv pip compile --universal --generate-hashes --python-version 3.12`.
+- **SonarCloud's scope is `.sonarcloud.properties`** (automatic analysis; only
+  scope keys are read, from the default branch). Code and tests both start at
+  the root and are split by patterns: a new test-helper folder goes into
+  `sonar.test.inclusions` AND `sonar.exclusions`, or it is analysed as code.
+  It leaves out the dataset, generated Android resources and the SQLite
+  migrations (the PL/SQL analyser reads them as Oracle). Suppressing a rule
+  for a file is done in the SonarCloud UI, not in this file or with NOSONAR.
 
 ## Frontend gotchas
 

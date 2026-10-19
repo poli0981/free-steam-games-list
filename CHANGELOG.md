@@ -4,6 +4,17 @@ All notable changes to this awesome noob repo will be documented here.
 
 ## [Unreleased]
 
+### 🧰 Tooling
+
+- **Desktop releases keep reaching the updater.** tauri-action v1 writes each
+  file's API address into `latest.json`, which the app's update check refuses,
+  so desktop 2.2.1 had to be fixed by hand before installed apps were offered
+  it. A new step of the release workflow now rewrites those addresses to the
+  release's own downloads, checking every signature on the way.
+- **SonarCloud reads tests as tests**, and no longer analyses the dataset,
+  the Android resources the Tauri CLI generated, or the SQLite migrations its
+  PL/SQL analyser misread (`.sonarcloud.properties`).
+
 ## [v4.3.3] – 2026-10-19 (The "Locksmith" Edition)
 
 The one open code-scanning alert is fixed, and what SonarCloud found on
