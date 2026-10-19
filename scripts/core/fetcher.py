@@ -219,15 +219,16 @@ def scrape_store_fields(client, appid: str, details: Optional[dict] = None) -> O
     if status in ("network_error", "not_found"):
         return None
     scraped = scrape_store_page(page) if status == "ok" else None
-    real_page = bool(scraped and (scraped["languages"] or scraped["tags"]))
-    if real_page and scraped["languages"] and scraped["tags"]:
+    if scraped is not None and not (scraped["languages"] or scraped["tags"]):
+        scraped = None  # a page with neither tells nothing: all of it comes from the API
+    if scraped is not None and scraped["languages"] and scraped["tags"]:
         return scraped
 
     item = (client.fetch_store_items([appid]) or {}).get(str(appid))
     if item is None:
-        return scraped if real_page else None
+        return scraped
     api = parse_store_item(item, client.fetch_tag_names())
-    if not real_page:
+    if scraped is None:
         api["has_paid_dlc"] = _paid_dlc(client, appid, details)
         return api
     if not scraped["languages"] and api["languages"]:

@@ -366,8 +366,8 @@ def test_a_release_date_is_stored_in_the_one_shape():
 def test_names_are_compared_cleaned():
     game = _game(developer=["Wilma Wiiand"], publisher=["Gameforge 4D GmbH"])
     changed = rsd.apply_app_details(game, {
-        "developers": ["Wilma Wiiand​​", " "],
-        "publishers": ["Gameforge 4D GmbH‬"],
+        "developers": ["Wilma Wiiand\u200b\u200b", " "],
+        "publishers": ["Gameforge 4D GmbH\u202c"],
     })
     assert "developer" not in changed and "publisher" not in changed
 

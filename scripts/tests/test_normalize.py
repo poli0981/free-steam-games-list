@@ -82,17 +82,17 @@ def test_the_shape_is_a_fixed_point():
     ("Raffiné Studio\t", "Raffiné Studio"),
     ("Fire from the sky: Cagliari 1943\xa0VR", "Fire from the sky: Cagliari 1943 VR"),
     ("Stuffed  Wombat", "Stuffed Wombat"),
-    ("Gameforge 4D GmbH‬", "Gameforge 4D GmbH"),
-    ("​Triple Fantasy", "Triple Fantasy"),
-    ("Wilma Wiiand​​", "Wilma Wiiand"),
-    ("YAMAYURI ‌‌‍‍‍​‍‌‌GAMES", "YAMAYURI GAMES"),
+    ("Gameforge 4D GmbH\u202c", "Gameforge 4D GmbH"),
+    ("\u200bTriple Fantasy", "Triple Fantasy"),
+    ("Wilma Wiiand\u200b\u200b", "Wilma Wiiand"),
+    ("YAMAYURI \u200c\u200c\u200d\u200d\u200d\u200b\u200d\u200c\u200cGAMES", "YAMAYURI GAMES"),
     # Kept: real names in any script, an ideographic space, a single ZWNJ
     # (Persian spelling) and a single ZWJ (an emoji sequence).
     ("千鳥豚工作室", "千鳥豚工作室"),
-    ("鳥獣妖怪戯画　(Choju Yokai Giga)", "鳥獣妖怪戯画　(Choju Yokai Giga)"),
-    ("می‌خواهم", "می‌خواهم"),
+    ("鳥獣妖怪戯画\u3000(Choju Yokai Giga)", "鳥獣妖怪戯画\u3000(Choju Yokai Giga)"),
+    ("می\u200cخواهم", "می\u200cخواهم"),
     ("Pocket Rocket Studio 🚀", "Pocket Rocket Studio 🚀"),
-    ("👨‍🚀 Studio", "👨‍🚀 Studio"),
+    ("👨\u200d🚀 Studio", "👨\u200d🚀 Studio"),
 ])
 def test_names_lose_only_invisible_characters_and_stray_whitespace(raw, expected):
     assert clean_text(raw) == expected
@@ -100,7 +100,7 @@ def test_names_lose_only_invisible_characters_and_stray_whitespace(raw, expected
 
 
 def test_a_blurb_keeps_its_line_breaks():
-    assert clean_text("Let's start typing!\r\nDiscover​ more ", single_line=False) == \
+    assert clean_text("Let's start typing!\r\nDiscover\u200b more ", single_line=False) == \
         "Let's start typing!\r\nDiscover more"
 
 
@@ -166,8 +166,8 @@ def test_a_record_only_has_its_own_fields_touched():
 def _messy(appid: int) -> dict:
     return {
         "link": f"https://store.steampowered.com/app/{appid}/",
-        "name": "​Triple Fantasy ",
-        "developer": ["Wilma Wiiand​​"],
+        "name": "\u200bTriple Fantasy ",
+        "developer": ["Wilma Wiiand\u200b\u200b"],
         "publisher": [" "],
         "release_date": "28 апр. 2025 г.",
         "description": "an art &quot;game&quot;",

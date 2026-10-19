@@ -82,8 +82,8 @@ class SteamClient:
                               status_forcelist=[], allowed_methods=["GET", "HEAD"]),
             pool_connections=10, pool_maxsize=10,
         )
+        # https only: every endpoint this client calls is.
         s.mount("https://", adapter)
-        s.mount("http://", adapter)
         return s
 
     def _throttle_store(self):

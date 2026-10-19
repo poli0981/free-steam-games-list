@@ -133,18 +133,18 @@ def normalize_release_date(value):
 # controls. "Gameforge 4D GmbH" was stored with a stray U+202C after it, and
 # "Triple Fantasy" with a ZWSP in front.
 _INVISIBLE = dict.fromkeys(map(ord, (
-    "​﻿⁠"
-    "‪‫‬‭‮"
-    "⁦⁧⁨⁩"
+    "\u200b\ufeff\u2060"
+    "\u202a\u202b\u202c\u202d\u202e"
+    "\u2066\u2067\u2068\u2069"
 )))
 # Two or more zero-width characters in a row are a watermark, not writing: one
 # developer name carried 43 of them between "YAMAYURI " and "GAMES". A SINGLE
 # zero-width joiner is how emoji sequences are built, and a single zero-width
 # non-joiner is spelling in Persian and the Indic scripts, so those stay.
-_ZERO_WIDTH_RUN = re.compile("[​‌‍]{2,}")
+_ZERO_WIDTH_RUN = re.compile("[\u200b\u200c\u200d]{2,}")
 # Plain whitespace, tabs and NBSP ("Cagliari 1943\xa0VR", "ARTFX - GAME\t"), but
-# not the ideographic space: "鳥獣妖怪戯画　(Choju Yokai Giga)" spells it that way.
-_WHITESPACE = re.compile("[ \t\r\n\f\v ]+")
+# not the ideographic space: "鳥獣妖怪戯画\u3000(Choju Yokai Giga)" spells it that way.
+_WHITESPACE = re.compile("[ \t\r\n\f\v\xa0]+")
 
 
 def clean_text(value, single_line: bool = True):
