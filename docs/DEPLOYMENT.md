@@ -189,7 +189,9 @@ CodeQL (`codeql.yml`) and SonarCloud's automatic analysis both look at pull
 requests and `main`. Each posts a check on the pull request (`CodeQL`,
 `SonarCloud Code Analysis`) about the issues the change brings in; the full list
 for `main` lives in the repository's Security tab and on the SonarCloud
-dashboard.
+dashboard. `.sonarcloud.properties` at the root decides what SonarCloud reads as
+code, what as tests, and what not at all (the dataset, generated Android
+resources, the SQLite migrations); it takes effect from `main`.
 
 ### A red "Workers Builds" check on a PR branch is usually not yours
 
