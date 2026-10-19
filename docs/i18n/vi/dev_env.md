@@ -54,15 +54,17 @@ Platform prerequisites + ghi chú signing ở [`../../../web/src-tauri/TAURI.md`
 
 ### Python pipeline
 
+Chạy từ thư mục gốc của repo: các script đọc và ghi `data/` theo đường dẫn tương đối.
+
 ```bash
-cd scripts
-python -m pip install -r requirements.txt   # nếu có file requirements
-python ingest_new.py                         # xử lý scripts/temp_info.jsonl
-python update_data.py                        # daily full refresh
-python top_online.py                         # rebuild games/top-online.md
+python -m pip install --require-hashes --only-binary :all: -r requirements.txt
+python -m pip install --require-hashes --only-binary :all: -r requirements-test.txt   # pytest
+python scripts/ingest_new.py                 # xử lý scripts/temp_info.jsonl
+python scripts/update_data.py                # daily full refresh
+python scripts/top_online.py                 # rebuild games/top-online.md
 ```
 
-`python -m pytest scripts/tests` (chạy từ thư mục gốc) kiểm tra phần băm index; `python-tests.yml` chạy nó mỗi khi `scripts/` thay đổi. Phần còn lại của pipeline cố ý low-ceremony. Lint bằng `ruff` nếu có; còn lại dựa vào review.
+`requirements.txt` ghim mọi package kèm hash, nên pip từ chối mọi thứ khác; cài `requirements-dev.txt` (vulture, pip-audit, không có hash) bằng một lệnh riêng. `python -m pytest scripts/tests` kiểm tra các ràng buộc của pipeline; `python-tests.yml` chạy nó mỗi khi `scripts/` hoặc các file requirements thay đổi. Lint bằng `ruff` nếu có; còn lại dựa vào review.
 
 ### Git + GPG
 

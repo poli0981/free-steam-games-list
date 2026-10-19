@@ -183,6 +183,14 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
     `error`: Chromium's failed AES-GCM decrypt is a DOMException with an
     EMPTY message, and `if (error)` once resolved a damaged pack as a shard
     with no records (`worker-pool.test.ts`, `jsonl-parser.test.ts`).
+  - The worker refuses a message whose origin is non-empty and not its own
+    (`if (e.origin && e.origin !== self.location.origin)`), replying with an
+    error. The owner's messages arrive over the dedicated worker's implicit
+    port with origin `""`, so `e.origin &&` is load-bearing: without it every
+    message would be refused. The `!==` on `e.origin` is what CodeQL's
+    `js/missing-origin-check` recognises; dismissing that alert instead does
+    not last, because it reopens as a new alert whenever the handler moves
+    (#3 dismissed, #20 reopened, 2026-10-03).
   - Obfuscation and compression (~1.4 MB stored instead of ~9.5 MB of
     objects), never protection - the key is public, like the wire packs'.
 
@@ -402,6 +410,30 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
 - Workflows push with the built-in `GITHUB_TOKEN`; each declares
   `permissions: {contents: write}`. Do not reintroduce a PAT — a PAT expiring
   silently is what stalled the pipeline for a month in 2026.
+- **CI installs only what is pinned, and runs no dependency's install code.**
+  These jobs hold a write token, and the release jobs the signing keys.
+  - Third-party actions are pinned to a commit SHA with the version in a
+    comment (`@<sha> # v2.9.2`), which Dependabot's github-actions updates
+    keep current. `dtolnay/rust-toolchain` is pinned to a MASTER commit and
+    given `toolchain: stable`: its other branches are regenerated on top of
+    master, so a commit of `stable` can vanish. GitHub's own actions
+    (`actions/*`, `github/*`) and `poli0981/.github` stay on tags.
+  - Every `npm ci` is `npm ci --ignore-scripts`, and no workflow uses `npx`
+    (`npm run cf:check`, `npm test -- <file>`). Only fsevents, workerd and
+    wrangler's esbuild have install scripts, and none is needed: the last two
+    find their binary in their optional platform package anyway. A new
+    dependency whose install script IS needed breaks the build here - which
+    is the point; decide then, do not drop the flag.
+  - `requirements.txt` pins every package the pipeline installs, transitive
+    ones included, with the sha256 of every file on PyPI, and every install
+    is `pip install --require-hashes --only-binary :all: -r requirements.txt`
+    (bash/*.sh and four workflows). Hash mode is all-or-nothing per pip call:
+    `requirements-test.txt` (pytest, hashed the same way) goes in its own call
+    in `python-tests.yml`, which runs the pipeline's line first so a
+    Dependabot bump is proven before a data job meets it, and
+    `requirements-dev.txt` (unhashed local tools) is installed on its own.
+    Adding a package means adding it and its dependencies with hashes:
+    `uv pip compile --universal --generate-hashes --python-version 3.12`.
 
 ## Frontend gotchas
 
@@ -464,6 +496,14 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
   is under the clock again (the cure is a WebView update, or a native inset
   listener in `MainActivity`). `mobile-layout.test.ts` holds the shell and the
   strip's two colours.
+- **The Android app opts out of Auto Backup** (`android:allowBackup="false"`
+  in `gen/android/app/src/main/AndroidManifest.xml`, from 2.2.1). Unset, it
+  defaults to true, and Android copied the WebView's storage - consent,
+  settings, the cached catalogue - to the user's Google account, while
+  `docs/PRIVACY_POLICY.md` says none of it leaves the device. Fix the app,
+  not the policy: a policy edit reopens the consent gate for everyone.
+  Device-to-device transfer on Android 12+ still carries the data, which is
+  the user's own copy between their own phones.
 - **Every chart colour must be one zrender can parse, which is stricter than
   what a canvas paints.** zrender splits `hsl()` on commas: space-separated
   `hsl(38 94% 60%)` paints, but every hover state derived from it comes back

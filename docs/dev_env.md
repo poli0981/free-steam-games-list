@@ -54,15 +54,17 @@ Platform prerequisites + signing notes live in [`../web/src-tauri/TAURI.md`](../
 
 ### Python pipeline
 
+From the repo root: the scripts read and write `data/` by a relative path.
+
 ```bash
-cd scripts
-python -m pip install -r requirements.txt   # if a requirements file exists
-python ingest_new.py                         # process scripts/temp_info.jsonl
-python update_data.py                        # daily full refresh
-python top_online.py                         # rebuild games/top-online.md
+python -m pip install --require-hashes --only-binary :all: -r requirements.txt
+python -m pip install --require-hashes --only-binary :all: -r requirements-test.txt   # pytest
+python scripts/ingest_new.py                 # process scripts/temp_info.jsonl
+python scripts/update_data.py                # daily full refresh
+python scripts/top_online.py                 # rebuild games/top-online.md
 ```
 
-`python -m pytest scripts/tests` (from the repo root) covers the index hashing; `python-tests.yml` runs it on every change under `scripts/`. The rest of the pipeline is intentionally low-ceremony. Lint with `ruff` if you have it; otherwise rely on review.
+`requirements.txt` pins every package with its hashes, so pip refuses anything else; install the unhashed `requirements-dev.txt` (vulture, pip-audit) in a separate call. `python -m pytest scripts/tests` covers the pipeline's contracts; `python-tests.yml` runs it on every change under `scripts/` or to the requirements files. Lint with `ruff` if you have it; otherwise rely on review.
 
 ### Git + GPG
 
