@@ -21,7 +21,7 @@ function activeLocale(): string {
 
 export function formatNumber(n: number | string | null | undefined): string {
   if (n === null || n === undefined || n === "" || n === "N/A") return "—";
-  const num = typeof n === "string" ? parseInt(n.replace(/,/g, ""), 10) : n;
+  const num = typeof n === "string" ? Number.parseInt(n.replace(/,/g, ""), 10) : n;
   if (Number.isNaN(num)) return String(n);
   // Was hardcoded "en-US", so a Vietnamese reader saw "1,234,567" where their
   // locale groups as "1.234.567".
@@ -38,19 +38,22 @@ export function parseIntSafe(val: unknown): number {
   if (typeof val === "number") return val;
   if (typeof val !== "string") return 0;
   const cleaned = val.replace(/,/g, "").trim();
-  const n = parseInt(cleaned, 10);
+  const n = Number.parseInt(cleaned, 10);
   return Number.isNaN(n) ? 0 : n;
 }
 
 export function parseReviewPercent(reviews: string | undefined | null): number | null {
   if (!reviews || reviews === "N/A") return null;
-  const m = reviews.match(/(\d+)\s*%/);
-  return m ? parseInt(m[1], 10) : null;
+  // Up to three digits, from the start of a run: an open-ended (\d+) was
+  // retried at every digit of a long number (SonarCloud typescript:S8786).
+  const m = reviews.match(/(?:^|\D)(\d{1,3})\s*%/);
+  return m ? Number.parseInt(m[1], 10) : null;
 }
 
 export function reviewLabel(reviews: string | undefined | null): string | null {
   if (!reviews || reviews === "N/A") return null;
-  const m = reviews.match(/\(([^)]+)\)/);
+  // [^()]: an unclosed "(" no longer rescans the rest at every later "(".
+  const m = reviews.match(/\(([^()]+)\)/);
   return m ? m[1].trim() : null;
 }
 
@@ -70,7 +73,7 @@ export function parseReleaseDate(s: string | undefined | null): number {
   if (Number.isFinite(t)) return t;
   // "2025" alone: try as year start.
   const yearOnly = /^\d{4}$/.exec(trimmed);
-  if (yearOnly) return Date.UTC(parseInt(yearOnly[0], 10), 0, 1);
+  if (yearOnly) return Date.UTC(Number.parseInt(yearOnly[0], 10), 0, 1);
   return -Infinity;
 }
 

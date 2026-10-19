@@ -92,16 +92,15 @@ def cmd_check(path: str = BLOCKLIST_JSONL) -> int:
     return 1 if problems else 0
 
 
-def cmd_list() -> int:
+def cmd_list() -> None:
     entries = load_blocklist()
     if not entries:
         print(f"{BLOCKLIST_JSONL}: nothing blocked.")
-        return 0
+        return
     for e in entries.values():
         note = f" - {e['note']}" if e.get("note") else ""
         print(f"{e['appid']:>10}  {e['blocked_at']}  {e['reason']:<13}  {e.get('name', '')}{note}")
     print(f"{len(entries)} blocked game(s).")
-    return 0
 
 
 def cmd_add(targets: list[str], reason: str, note: str, apply: bool) -> int:
@@ -179,7 +178,8 @@ def main(argv=None) -> int:
     if args.check:
         return cmd_check()
     if args.list:
-        return cmd_list()
+        cmd_list()
+        return 0
     if not args.targets:
         ap.print_help()
         return 2

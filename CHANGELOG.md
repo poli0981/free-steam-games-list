@@ -4,6 +4,69 @@ All notable changes to this awesome noob repo will be documented here.
 
 ## [Unreleased]
 
+## [v4.3.3] – 2026-10-19 (The "Locksmith" Edition)
+
+The one open code-scanning alert is fixed, and what SonarCloud found on
+`main` is fixed or accounted for: CI installs only what it has pinned and runs
+no dependency's install code, the Android app stops copying its data into
+Google's backup, and the parsers lose the regexes that could backtrack.
+Desktop and Android bumped `2.2.0` → `2.2.1`; repo public-facing version
+`4.3.2` → `4.3.3`.
+
+The apps also catch up with the website: the new Contact page, the reworded
+anti-cheat paragraphs of the Disclaimer and the Terms (so they show the
+consent gate once, with those paragraphs), and v4.3.2's anti-cheat grouping.
+The desktop app offers 2.2.1 through its updater once the release is
+published; on Android, install the new APK over the old one.
+
+### 🔐 Security
+
+- **Code scanning is clean again.** The worker that decodes the catalogue now
+  refuses a message from any origin but its own (CodeQL
+  `js/missing-origin-check`). Only the page that started it can reach it, so
+  nothing changes for anyone; the alert had been dismissed once and came back
+  as soon as the code around it moved.
+- **CI installs only what it has pinned.** The release workflows, which hold
+  the signing keys, pin every third-party action to a commit. Every `npm ci`
+  runs with `--ignore-scripts`, and no workflow uses `npx`. The Python
+  pipeline pins every package it installs, the dependencies' dependencies
+  included, with the hash of each file, and installs wheels only
+  (`--require-hashes --only-binary :all:`), so no package's setup script runs
+  and nothing unlisted is installed.
+- **The Android app no longer takes part in Android's Auto Backup.** Left
+  unset, Android copied the app's storage (your consent, your settings and
+  the cached catalogue) into your Google account's backup, while the Privacy
+  Policy says none of it leaves your device. From 2.2.1 it stays there; on a
+  new phone you accept the terms again.
+- The source no longer contains raw invisible or right-to-left control
+  characters: the pipeline's lists of characters to strip spell them as
+  escapes.
+
+### 🧹 Changed
+
+- Regexes that could backtrack quadratically on long input are linear now:
+  the store page's tags and "unsupported" language rows, the discovery
+  sweep's search rows, the review percentage and label, the chart colour
+  tokens, the legal pages' titles, the image route's capsule path and a few
+  more. Each new form was checked against the old one, on the dataset and on
+  random input.
+- Lists sorted for a build hash, the sitemap or a test R2 listing state the
+  code-unit order they always had; the admin stylesheet puts its `@import`s
+  first, as CSS requires (the built stylesheet is byte-for-byte the same);
+  `Number.parseInt` over the global, `[[ ]]` in the bash wrappers; the unused
+  `normalizeLink` is gone; the Steam client mounts its retrying adapter for
+  https only.
+- New tests pin the store page's tag and language parsing, the discovery
+  sweep's rows, the review summary parsing and the worker's origin check.
+
+### 📚 Docs
+
+- `CLAUDE.md`: the worker's origin check, the CI pinning rules (and how to add
+  a Python dependency), the Android backup decision. `docs/dev_env.md` and its
+  Vietnamese copy: run the pipeline from the repo root, with the hashed
+  installs; they said `cd scripts`, from where `data/` cannot be found.
+  `docs/DEPLOYMENT.md`: what CI checks, CodeQL and SonarCloud included.
+
 ## [v4.3.2] – 2026-10-16 (The "Pigeonhole" Edition)
 
 The anti-cheat charts and filters know the products Steam's declarations

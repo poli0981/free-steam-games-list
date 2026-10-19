@@ -25,7 +25,7 @@ function parseVer(v: string): number[] {
   return v
     .replace(/^android-v/i, "")
     .split(".")
-    .map((n) => parseInt(n, 10) || 0);
+    .map((n) => Number.parseInt(n, 10) || 0);
 }
 
 /** Numeric semver-ish compare: is `a` strictly newer than `b`? */

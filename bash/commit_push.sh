@@ -17,7 +17,7 @@ set -euo pipefail
 
 msg="$1"
 shift
-if [ "$#" -eq 0 ]; then
+if [[ "$#" -eq 0 ]]; then
   set -- .
 fi
 

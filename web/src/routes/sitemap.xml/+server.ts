@@ -1,5 +1,6 @@
 import { SITE_ORIGIN } from "$lib/site";
 import { seedAppids } from "virtual:game-seeds";
+import { byCodeUnit } from "../../../shared/sort";
 
 /**
  * The sitemap, derived from the router itself.
@@ -69,7 +70,7 @@ export function _paths(): string[] {
     if (path.includes("[")) continue;
     out.push(path);
   }
-  return out.sort();
+  return out.sort(byCodeUnit);
 }
 
 function xml(urls: { loc: string; freq: string; priority: string }[], lastmod: string) {

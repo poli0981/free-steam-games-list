@@ -33,13 +33,16 @@ import { theme as themePref } from "./prefs.svelte";
  * than producing a colour nothing can parse.
  */
 export function hslFromChannels(raw: string): string | null {
-  const m = /^\s*(-?\d+(?:\.\d+)?)(?:deg)?\s+(\d+(?:\.\d+)?)%\s+(\d+(?:\.\d+)?)%\s*(?:\/\s*(\d+(?:\.\d+)?%?))?\s*$/.exec(
-    raw,
+  // Trimmed first, so the pattern has no \s* at either end: optional spaces
+  // on both sides of the optional alpha backtracked on a long run of them
+  // (SonarCloud typescript:S8786).
+  const m = /^(-?\d+(?:\.\d+)?)(?:deg)?\s+(\d+(?:\.\d+)?)%\s+(\d+(?:\.\d+)?)%(?:\s*\/\s*(\d+(?:\.\d+)?%?))?$/.exec(
+    raw.trim(),
   );
   if (!m) return null;
   const [, h, s, l, a] = m;
   if (a === undefined) return `hsl(${h}, ${s}%, ${l}%)`;
-  const alpha = a.endsWith("%") ? String(parseFloat(a) / 100) : a;
+  const alpha = a.endsWith("%") ? String(Number.parseFloat(a) / 100) : a;
   return `hsla(${h}, ${s}%, ${l}%, ${alpha})`;
 }
 

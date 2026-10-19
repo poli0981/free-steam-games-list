@@ -40,8 +40,16 @@ jobs:
       # was tried, and the step still went red only at the very end — while
       # locally everyone kept a stale node_modules. A lockfile that cannot be
       # installed cleanly is a failure, not something to work around.
+      #
+      # --ignore-scripts everywhere this repo runs `npm ci`: a dependency's
+      # install script would otherwise run with this job's token (and, in the
+      # release workflows, the signing keys). Three packages have one, and none
+      # is needed: esbuild (wrangler's) and workerd only hard-link the binary
+      # from their @esbuild/* and @cloudflare/workerd-* optional packages, which
+      # they also find without it, and fsevents is macOS file watching, which
+      # no build uses. The root package.json has no lifecycle scripts.
       - name: Install
-        run: npm ci
+        run: npm ci --ignore-scripts
 
       # Covers BOTH tsconfigs. tsconfig.json only includes ["src",
       # "vite.config.ts"], so before tsconfig.worker.json existed the Worker
@@ -67,9 +75,10 @@ jobs:
 
       # Bundles the Worker and resolves every binding in wrangler.jsonc without
       # deploying or needing credentials. Catches a broken config here rather
-      # than in the Cloudflare dashboard after a push.
+      # than in the Cloudflare dashboard after a push. Through the npm script,
+      # not `npx`, which may fetch a package that is not in the lockfile.
       - name: Worker build check
-        run: npx wrangler deploy --dry-run
+        run: npm run cf:check
 
       # knip.json is warn-only, so this reports dead code without failing the
       # build. Flip the rules in knip.json to error when the backlog is clear.
@@ -96,7 +105,7 @@ jobs:
           cache-dependency-path: web/package-lock.json
 
       - name: Install
-        run: npm ci
+        run: npm ci --ignore-scripts
 
       - name: Build (Tauri configuration)
         env:

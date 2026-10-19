@@ -41,7 +41,6 @@ DEFAULT_STOP_AFTER_KNOWN = 2
 POST_BATCH = 100
 
 _RE_APPID = re.compile(r'data-ds-appid="([^"]+)"')
-_RE_ROW = re.compile(r'<a[^>]*data-ds-appid="([^"]+)"[^>]*>(.*?)</a>', re.S)
 _RE_TITLE = re.compile(r'<span class="title">(.*?)</span>', re.S)
 # NOT `col search_released`: the live markup is
 # `<div class="search_released responsive_secondrow">`. The `col ` prefix
@@ -106,6 +105,35 @@ def safe_stdout():
             pass
 
 
+def _row_anchors(results_html):
+    """(appid, inner HTML) of each search row: an `<a ...>` whose tag carries
+    data-ds-appid (the last one, if twice), up to the next `</a>`.
+
+    One forward pass. It reads exactly what
+    `<a[^>]*data-ds-appid="([^"]+)"[^>]*>(.*?)</a>` did, without that regex's
+    backtracking (SonarCloud python:S8786): a tag ends at its first `>`, and
+    the scan goes on after a row's `</a>`, or after the tag of an anchor that
+    is not a row.
+    """
+    pos = 0
+    while True:
+        start = results_html.find("<a", pos)
+        if start < 0:
+            return
+        close = results_html.find(">", start)
+        if close < 0:
+            return
+        appids = _RE_APPID.findall(results_html, start, close)
+        if not appids:
+            pos = close + 1
+            continue
+        end = results_html.find("</a>", close + 1)
+        if end < 0:
+            return
+        yield appids[-1], results_html[close + 1:end]
+        pos = end + len("</a>")
+
+
 def parse_search_rows(results_html):
     """[(appid, name, released_text)] from one search page.
 
@@ -115,7 +143,7 @@ def parse_search_rows(results_html):
     discovery only.
     """
     rows = []
-    for appid, inner in _RE_ROW.findall(results_html):
+    for appid, inner in _row_anchors(results_html):
         if "," in appid or not appid.isdigit():
             continue  # bundle/package id
         title_m = _RE_TITLE.search(inner)

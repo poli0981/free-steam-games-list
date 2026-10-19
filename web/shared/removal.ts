@@ -86,7 +86,7 @@ export function cleanText(value: string | null | undefined, limit: number): stri
     out += c < 0x20 || (c >= 0x7f && c < 0xa0) || ch === "\u2028" || ch === "\u2029" ? " " : ch;
   }
   // Python's str.split() whitespace, which is \s without U+FEFF.
-  const words = out.split(/[^\S﻿]+/).filter(Boolean);
+  const words = out.split(/[^\S\uFEFF]+/).filter(Boolean);
   return Array.from(words.join(" ")).slice(0, limit).join("");
 }
 

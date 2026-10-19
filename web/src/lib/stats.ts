@@ -10,6 +10,7 @@
  * "86% (Very Positive)"`, `metacritic: "N/A"` — so a raw comparison silently
  * sorts "9" above "1,000,000".
  */
+import { byCodeUnit } from "../../shared/sort";
 import type { GameRecord } from "./schema";
 import { parseIntSafe, parseReviewPercent, parseReleaseDate } from "./utils";
 
@@ -164,7 +165,7 @@ export function countByMonth(values: (string | null | undefined)[]): { month: st
     if (key) counts.set(key, (counts.get(key) ?? 0) + 1);
   }
   if (!counts.size) return [];
-  const keys = [...counts.keys()].sort();
+  const keys = [...counts.keys()].sort(byCodeUnit);
   let [year, month] = keys[0].split("-").map(Number);
   const [lastYear, lastMonth] = keys[keys.length - 1].split("-").map(Number);
   const out: { month: string; count: number }[] = [];

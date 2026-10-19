@@ -27,6 +27,7 @@ import { createHash } from "node:crypto";
 import { mkdirSync, writeFileSync } from "node:fs";
 import { dirname, extname } from "node:path";
 import type { Plugin } from "vite";
+import { byCodeUnit } from "../../shared/sort";
 
 const TEXT = new Map([
   [".js", "text/javascript; charset=utf-8"],
@@ -100,7 +101,7 @@ export function emitWorkerBundle(options: { target: string }): Plugin {
 
       const buildId = createHash("sha256")
         .update(shell)
-        .update(Object.keys(assets).sort().join("\n"))
+        .update(Object.keys(assets).sort(byCodeUnit).join("\n"))
         .digest("hex")
         .slice(0, 12);
 

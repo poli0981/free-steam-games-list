@@ -79,7 +79,9 @@ class Router {
   install(): () => void {
     // "/admin/" is the Vite dev server's base; production redirects it.
     if (location.pathname.length > 1 && location.pathname.endsWith("/")) {
-      history.replaceState(null, "", location.pathname.replace(/\/+$/, "") + location.search);
+      let path = location.pathname;
+      while (path.length > 1 && path.endsWith("/")) path = path.slice(0, -1);
+      history.replaceState(null, "", path + location.search);
       this.sync();
     }
     // A bookmark from before the queue moved to /admin/queue.

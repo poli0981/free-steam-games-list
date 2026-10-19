@@ -76,7 +76,7 @@ def cmd_list():
     docs = load_overrides()
     if not docs:
         print("no overrides")
-        return 0
+        return
     print(f"{len(docs)} override(s):")
     for appid, doc in sorted(docs.items()):
         live = doc.get("fields") or {}
@@ -85,7 +85,6 @@ def cmd_list():
         print(f"  {appid:>8}  {name[:44]:<44} {len(live)} active, {len(gone)} retired")
         for f, e in sorted(live.items()):
             print(f"           {f} = {e.get('value')!r}  (was {e.get('was')!r})")
-    return 0
 
 
 def cmd_check():
@@ -155,7 +154,8 @@ def main():
     safe_stdout()
 
     if args.list:
-        return cmd_list()
+        cmd_list()
+        return 0
     if args.check:
         return cmd_check()
     if not args.appid:

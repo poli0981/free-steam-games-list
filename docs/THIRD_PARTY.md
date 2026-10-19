@@ -26,7 +26,10 @@ Added in v3.2.7 to make the pre-publish checks below runnable.
 - **vulture** + **pip-audit** — [`../requirements-dev.txt`](../requirements-dev.txt); vulture config in [`../pyproject.toml`](../pyproject.toml) under `[tool.vulture]`.
 
 Install the Python dev tools with `pip install -r requirements-dev.txt` from the
-repo root. The web tooling arrives with `npm install` inside `web/`.
+repo root, in a pip call of its own: `requirements.txt` and
+`requirements-test.txt` (what CI installs, pytest included) carry hashes, and a
+pip call that reads a hashed file wants a hash for every package. The web
+tooling arrives with `npm install` inside `web/`.
 
 ## Pre-publish checks
 

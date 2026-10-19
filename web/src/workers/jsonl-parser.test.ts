@@ -11,7 +11,11 @@ const decodeShard = vi.hoisted(() => vi.fn());
 vi.mock("../lib/fetcher", () => ({ decodeShard }));
 
 let replies: unknown[];
-let fakeSelf: { onmessage: ((e: { data: unknown }) => Promise<void>) | null; postMessage: (m: unknown) => void };
+let fakeSelf: {
+  onmessage: ((e: { data: unknown; origin?: string }) => Promise<void>) | null;
+  postMessage: (m: unknown) => void;
+  location?: { origin: string };
+};
 
 beforeEach(async () => {
   replies = [];
@@ -45,6 +49,37 @@ describe("jsonl-parser worker", () => {
     expect(replies).toHaveLength(1);
     expect(replies[0]).toMatchObject({ id: 9 });
     expect((replies[0] as { error: string }).error).toMatch(/malformed/);
+    expect(decodeShard).not.toHaveBeenCalled();
+  });
+
+  // The owner's messages arrive with origin "". The fake self has no
+  // `location` here on purpose: a check that compared "" with
+  // self.location.origin would throw, or refuse every message.
+  it("processes the owner's message, whose origin is empty", async () => {
+    decodeShard.mockResolvedValue([{ name: "Dota 2" }]);
+    await fakeSelf.onmessage!({ data: { id: 10, bytes: new Uint8Array(4), packed: false }, origin: "" });
+    expect(replies).toEqual([{ id: 10, records: [{ name: "Dota 2" }] }]);
+  });
+
+  it("processes a message that names this worker's own origin", async () => {
+    fakeSelf.location = { origin: "https://free-steam-games.win" };
+    decodeShard.mockResolvedValue([]);
+    await fakeSelf.onmessage!({
+      data: { id: 11, bytes: new Uint8Array(4), packed: false },
+      origin: "https://free-steam-games.win",
+    });
+    expect(replies).toEqual([{ id: 11, records: [] }]);
+  });
+
+  it("refuses a message from another origin, naming it", async () => {
+    fakeSelf.location = { origin: "https://free-steam-games.win" };
+    await fakeSelf.onmessage!({
+      data: { id: 12, bytes: new Uint8Array(4), packed: false },
+      origin: "https://evil.example",
+    });
+    expect(replies).toHaveLength(1);
+    expect(replies[0]).toMatchObject({ id: 12 });
+    expect((replies[0] as { error: string }).error).toMatch(/another origin \(https:\/\/evil\.example\)/);
     expect(decodeShard).not.toHaveBeenCalled();
   });
 });

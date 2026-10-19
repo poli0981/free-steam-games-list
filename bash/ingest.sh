@@ -7,7 +7,7 @@
 # newer one evicts it, so a separate removal workflow and the ingest would keep
 # cancelling each other. Whichever run survives does both.
 set -euo pipefail
-pip install --quiet -r requirements.txt
+pip install --quiet --require-hashes --only-binary :all: -r requirements.txt
 python scripts/remove_games.py
 python scripts/ingest_new.py
 

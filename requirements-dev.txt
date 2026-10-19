@@ -1,5 +1,9 @@
-# Development-only tooling - not required to run the data pipeline.
+# Development-only tooling - not required to run the data pipeline, and not
+# installed in CI (python-tests.yml uses requirements-test.txt).
 # Install with:  pip install -r requirements-dev.txt
+# On its own: requirements.txt carries hashes, and a pip call that reads any
+# hashed file wants a hash for every package, which this file does not have.
 vulture==2.16
 pip-audit==2.10.1
+# Keep equal to the pin in requirements-test.txt.
 pytest==9.1.1

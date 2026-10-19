@@ -82,7 +82,8 @@ jobs:
             exit 1
           fi
 
-      - run: pip install --quiet -r requirements.txt
+      - run: |
+          pip install --quiet --require-hashes --only-binary :all: -r requirements.txt
 
       - name: Discover
         env:

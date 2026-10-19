@@ -171,13 +171,25 @@ Stop `wrangler dev` before running `npm ci`. On Windows the install deletes
 ## Checks
 
 `.github/workflows/web-ci.yml` runs on pull requests and on pushes to `main`
-touching `web/**`: `npm ci`, the typechecks (app, Worker and tests), `npm test`,
-the build, `scripts/verify-dist.mjs --web` over the prerendered HTML,
-`wrangler deploy --dry-run`, and `knip`. `python-tests.yml` runs the pipeline's
-pytest suite on changes under `scripts/`.
+touching `web/**`: `npm ci --ignore-scripts`, the typechecks (app, Worker and
+tests), `npm test`, the build, `scripts/verify-dist.mjs --web` over the
+prerendered HTML, `npm run cf:check` (`wrangler deploy --dry-run`), and
+`knip`. `python-tests.yml` runs the pipeline's pytest suite on changes under
+`scripts/` and the requirements files, installing them exactly as the data jobs
+do (`--require-hashes --only-binary :all:`).
 
 It uses a plain `npm ci`, never `npm ci || npm install`. That fallback is what
-hid a lockfile conflict which broke installs for a month.
+hid a lockfile conflict which broke installs for a month. `--ignore-scripts`
+keeps every dependency's install script from running with the job's token;
+none of the three packages that have one needs it (the comment in
+`web-ci.yml` says why), and no workflow runs `npx`, which can fetch a package
+the lockfile never named.
+
+CodeQL (`codeql.yml`) and SonarCloud's automatic analysis both look at pull
+requests and `main`. Each posts a check on the pull request (`CodeQL`,
+`SonarCloud Code Analysis`) about the issues the change brings in; the full list
+for `main` lives in the repository's Security tab and on the SonarCloud
+dashboard.
 
 ### A red "Workers Builds" check on a PR branch is usually not yours
 

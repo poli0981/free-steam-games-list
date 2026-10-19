@@ -4,6 +4,8 @@
  * those two use is implemented.
  */
 
+import { byCodeUnit } from "../../shared/sort";
+
 interface StoredObject {
   body: Uint8Array;
   httpMetadata?: R2HTTPMetadata;
@@ -66,7 +68,7 @@ export class FakeR2 {
     this.lists++;
     const prefix = options.prefix ?? "";
     const limit = options.limit ?? 1000;
-    const keys = [...this.objects.keys()].filter((k) => k.startsWith(prefix)).sort();
+    const keys = [...this.objects.keys()].filter((k) => k.startsWith(prefix)).sort(byCodeUnit);
     const start = options.cursor ? Number(options.cursor) : 0;
     const objects = keys.slice(start, start + limit).map((key) => ({ key }));
     return start + limit < keys.length

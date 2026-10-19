@@ -19,7 +19,8 @@ function b64url(bytes: ArrayBuffer | Uint8Array): string {
   const b = bytes instanceof Uint8Array ? bytes : new Uint8Array(bytes);
   let s = "";
   for (let i = 0; i < b.length; i++) s += String.fromCharCode(b[i]);
-  return btoa(s).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+  // base64 has "=" only as trailing padding, so dropping every one is exact.
+  return btoa(s).replaceAll("+", "-").replaceAll("/", "_").replaceAll("=", "");
 }
 
 /** DER length prefix for a given payload length. */

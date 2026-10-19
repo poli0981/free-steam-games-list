@@ -67,8 +67,10 @@ updates:
         update-types: [minor, patch]
 
   # ── Python pipeline ───────────────────────────────────────────────────────
-  # Only does useful work once requirements.txt uses exact `==` pins; with the
-  # current `>=x,<y` ranges Dependabot has nothing to raise.
+  # requirements.txt and requirements-test.txt pin every package, transitive
+  # ones included, with the sha256 of each file; an update must bring the new
+  # hashes too, and CI installs with --require-hashes, so a PR whose hashes
+  # are wrong fails python-tests instead of reaching a data job.
   - package-ecosystem: pip
     directory: /
     schedule:

@@ -22,7 +22,10 @@ _RE_TABLE_ROW = re.compile(r'(<tr[^>]*>)(.*?)</tr>', re.DOTALL | re.IGNORECASE)
 _RE_TABLE_CELL = re.compile(r'<td[^>]*>(.*?)</td>', re.DOTALL | re.IGNORECASE)
 _RE_HAS_CHECK = re.compile(r'<span[^>]*>[^<]*</span>')
 _RE_STRIP_HTML = re.compile(r'<[^>]+>')
-_RE_UNSUPPORTED = re.compile(r'class\s*=\s*"[^"]*unsupported[^"]*"', re.IGNORECASE)
+# Each class="..." value of a tag; _marked_unsupported() looks inside them.
+# One regex with "unsupported" between two [^"]* runs backtracked
+# quadratically on a long attribute (SonarCloud python:S8786).
+_RE_CLASS_VALUE = re.compile(r'class\s*=\s*"([^"]*)"', re.IGNORECASE)
 
 _RE_DLC_SECTION_START = re.compile(
     r'(?:id\s*=\s*"gameAreaDLCSection"|class\s*=\s*"game_area_dlc_section")',
@@ -39,7 +42,9 @@ _RE_DLC_PRICE_TEXT = re.compile(
 )
 _RE_HAS_DIGIT = re.compile(r'\d')
 
-_RE_APP_TAG = re.compile(r'class\s*=\s*"app_tag"[^>]*>\s*([^<]+?)\s*</a>')
+# The text is taken whole and trimmed by parse_tags(), which also drops an
+# empty one: `\s*([^<]+?)\s*` around it backtracked on long whitespace.
+_RE_APP_TAG = re.compile(r'class\s*=\s*"app_tag"[^>]*>([^<]*)</a>')
 
 # Steam's own page sometimes prints a language's localisation token where its
 # name belongs: TrackMania Nations Forever lists "#lang_slovakian". A token
@@ -48,6 +53,11 @@ _LANGUAGE_TOKENS = {"#lang_slovakian": "Slovak"}
 
 
 # ──── Language table ────
+
+def _marked_unsupported(tag: str) -> bool:
+    """Whether any class="..." of a tag names "unsupported", in any case."""
+    return any("unsupported" in m.group(1).lower() for m in _RE_CLASS_VALUE.finditer(tag))
+
 
 def parse_language_table(html: str) -> dict:
     """
@@ -76,7 +86,7 @@ def parse_language_table(html: str) -> dict:
             continue
 
         # Skip unsupported rows (class on <tr>)
-        if _RE_UNSUPPORTED.search(tr_tag):
+        if _marked_unsupported(tr_tag):
             continue
 
         # Skip rows with "not supported" text

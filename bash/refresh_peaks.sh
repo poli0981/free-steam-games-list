@@ -1,11 +1,11 @@
 #!/bin/bash
 set -euo pipefail
-pip install --quiet -r requirements.txt
+pip install --quiet --require-hashes --only-binary :all: -r requirements.txt
 # PEAKS_ALL is the manual run's "backfill" box: "true" asks SteamCharts about
 # every game (~4 h) instead of today's thirtieth. A scheduled run leaves it
 # empty, and an unticked box sends "false" - neither may pass --all.
 args=()
-if [ "${PEAKS_ALL:-}" = "true" ]; then
+if [[ "${PEAKS_ALL:-}" == "true" ]]; then
   args+=(--all)
 fi
 python scripts/refresh_peaks.py ${args[@]+"${args[@]}"}
