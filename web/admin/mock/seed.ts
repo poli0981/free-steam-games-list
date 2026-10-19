@@ -27,7 +27,7 @@ export function seed(sqlite: SqliteD1, repo: FakeRepo, records: Rec[], now: Date
   const iso = (msAgo: number) => new Date(now.getTime() - msAgo).toISOString();
   const appidOf = (r: Rec) => /\/app\/(\d+)/.exec(r.link)?.[1] ?? "0";
   const pct = (r: Rec) => {
-    const m = /(\d+)%/.exec(r.reviews ?? "");
+    const m = /(\d{1,3})%/.exec(r.reviews ?? "");
     return m ? Number(m[1]) : null;
   };
   const players = (r: Rec) => {

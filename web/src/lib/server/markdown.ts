@@ -134,7 +134,7 @@ export function renderRepoMarkdown(
   const raw = readFileSync(join(REPO_ROOT, pathInRepo), "utf8");
   const tree = processor.runSync(processor.parse(raw));
   rewriteLinks(tree, slugByPath);
-  const heading = /^#\s+(.+)$/m.exec(raw)?.[1]?.trim() ?? null;
+  const heading = /^#[ \t]+(\S.*)$/m.exec(raw)?.[1]?.trim() ?? null;
   if (heading) dropFirstH1(tree);
   const html = processor.stringify(tree as never);
   return { html, heading };

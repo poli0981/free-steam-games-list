@@ -13,16 +13,6 @@ export function extractAppid(link: string | undefined | null): string | null {
   return m ? m[1] : null;
 }
 
-export function normalizeLink(raw: string): string | null {
-  const trimmed = raw.trim().replace(/\/+$/, "");
-  if (!trimmed) return null;
-  if (/^\d+$/.test(trimmed)) {
-    return `https://store.steampowered.com/app/${trimmed}/`;
-  }
-  const appid = extractAppid(trimmed);
-  return appid ? `https://store.steampowered.com/app/${appid}/` : null;
-}
-
 export function isEmpty(val: unknown): boolean {
   if (val === null || val === undefined) return true;
   if (typeof val === "string") return EMPTY_STRINGS.has(val.trim());

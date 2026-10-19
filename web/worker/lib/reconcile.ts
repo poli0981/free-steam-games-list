@@ -93,7 +93,7 @@ function parseRemoved(text: string): Map<string, number> {
         appid = rec.link.match(/\/app\/(\d+)/)?.[1] ?? "";
       }
       if (!appid) continue;
-      const when = typeof rec.removed_at === "string" ? Date.parse(rec.removed_at) : NaN;
+      const when = typeof rec.removed_at === "string" ? Date.parse(rec.removed_at) : Number.NaN;
       out.set(appid, Number.isNaN(when) ? 0 : when);
     } catch {
       // One malformed line must not blind the whole reconcile.
@@ -255,7 +255,7 @@ async function runReconcile(
 
     // decided_at is nullable in the schema. A row without one cannot be aged,
     // and must not be treated as infinitely old.
-    const decidedMs = row.decided_at ? Date.parse(row.decided_at) : NaN;
+    const decidedMs = row.decided_at ? Date.parse(row.decided_at) : Number.NaN;
     const removedMs = removed.get(row.appid);
 
     // Only a removal recorded AFTER this approval describes this approval.

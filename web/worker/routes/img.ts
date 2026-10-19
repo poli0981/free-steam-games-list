@@ -233,7 +233,7 @@ async function original(
   const hashed = src.path.split("/").length === 3;
   const candidates =
     opts.thumb && !hashed && !src.path.endsWith("/capsule_184x69.jpg")
-      ? [src.path.replace(/[^/]+\.jpg$/, "capsule_184x69.jpg"), src.path]
+      ? [`${src.path.slice(0, src.path.lastIndexOf("/") + 1)}capsule_184x69.jpg`, src.path]
       : [src.path];
 
   let upstream: Response | undefined;

@@ -1,6 +1,7 @@
 /* The admin SPA's stylesheet: the public app's design system, scanned only
    over the admin's own files and the shared UI components it renders. */
 @import "tailwindcss" source(".");
-@source "../../src/lib/ui";
 @import "../../src/fonts.css";
 @import "../../src/styles/theme.css";
+/* After the @imports: CSS wants every @import before any other statement. */
+@source "../../src/lib/ui";
