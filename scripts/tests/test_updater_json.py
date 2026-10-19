@@ -1,4 +1,6 @@
 """How updater_json.py points a desktop release's latest.json at its downloads."""
+import json
+
 import pytest
 
 import updater_json
@@ -46,3 +48,16 @@ def test_a_second_run_changes_nothing():
 def test_anything_the_updater_feed_would_refuse_fails_loudly(doc, why):
     with pytest.raises(ValueError, match=why):
         updater_json.rewrite(doc, TAG, NAMES, SIGS)
+
+
+def test_main_rewrites_latest_json_in_the_working_directory(tmp_path, monkeypatch):
+    (tmp_path / "latest.json").write_text(json.dumps(_doc(**{
+        "linux-x86_64": {"signature": "sig-appimage", "url": API + "11"},
+    })), encoding="utf-8")
+    (tmp_path / "assets.json").write_text(json.dumps([{"id": k, "name": v} for k, v in NAMES.items()]), encoding="utf-8")
+    for name, sig in SIGS.items():
+        (tmp_path / f"{name}.sig").write_text(sig, encoding="utf-8")
+    monkeypatch.chdir(tmp_path)
+    assert updater_json.main([TAG]) == 0
+    out = json.loads((tmp_path / "latest.json").read_text(encoding="utf-8"))
+    assert out["platforms"]["linux-x86_64"]["url"] == DL + "F2P.Tracker_2.2.1_amd64.AppImage"

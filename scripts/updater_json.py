@@ -10,14 +10,15 @@ https://github.com/<repo>/releases/download/<tag>/<file> and answers 204 -
 never offered to an installed app. desktop-v2.2.1 was the first release built
 with v1 and had to be fixed by hand.
 
-release-desktop.yml runs this once every platform has added its entries:
+release-desktop.yml runs this once every platform has added its entries, in a
+directory holding the release's latest.json, its .sig files and assets.json
+(the release's assets as [{"id": ..., "name": ...}]):
 
-  python scripts/updater_json.py <latest.json> <assets.json> <sig dir> <tag> <out>
+  python scripts/updater_json.py <tag>      # rewrites ./latest.json
 
-assets.json is the release's assets as [{"id": ..., "name": ...}]; the sig dir
-holds its .sig files. Every entry's signature must be the content of the .sig
-of the file its new URL names. An entry that already points at this release's
-download is kept, so a second run changes nothing. Standard library only.
+Every entry's signature must be the content of the .sig of the file its new
+URL names. An entry that already points at this release's download is kept,
+so a second run changes nothing. Standard library only.
 """
 import json
 import re
@@ -66,12 +67,15 @@ def rewrite(doc: dict, tag: str, names_by_id: dict, signatures: dict) -> dict:
 
 
 def main(argv=None) -> int:
-    latest, assets, sig_dir, tag, out = argv if argv is not None else sys.argv[1:]
-    doc = json.loads(Path(latest).read_text(encoding="utf-8"))
-    names_by_id = {str(a["id"]): a["name"] for a in json.loads(Path(assets).read_text(encoding="utf-8"))}
-    signatures = {p.name.removesuffix(".sig"): p.read_text(encoding="utf-8") for p in Path(sig_dir).glob("*.sig")}
+    # No file path comes from the command line, only the tag: the files are
+    # the fixed names in the working directory (SonarCloud pythonsecurity:S8707).
+    (tag,) = argv if argv is not None else sys.argv[1:]
+    here = Path.cwd()
+    doc = json.loads((here / "latest.json").read_text(encoding="utf-8"))
+    names_by_id = {str(a["id"]): a["name"] for a in json.loads((here / "assets.json").read_text(encoding="utf-8"))}
+    signatures = {p.name.removesuffix(".sig"): p.read_text(encoding="utf-8") for p in here.glob("*.sig")}
     fixed = rewrite(doc, tag, names_by_id, signatures)
-    Path(out).write_text(json.dumps(fixed, indent=2) + "\n", encoding="utf-8", newline="\n")
+    (here / "latest.json").write_text(json.dumps(fixed, indent=2) + "\n", encoding="utf-8", newline="\n")
     for key, entry in fixed["platforms"].items():
         print(f"{key:24} {entry['url']}")
     return 0
