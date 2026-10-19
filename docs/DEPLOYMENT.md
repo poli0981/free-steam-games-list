@@ -185,10 +185,11 @@ none of the three packages that have one needs it (the comment in
 `web-ci.yml` says why), and no workflow runs `npx`, which can fetch a package
 the lockfile never named.
 
-CodeQL (`codeql.yml`) analyses pull requests and `main`. SonarCloud's automatic
-analysis looks at `main` only, so its findings for a change appear after the
-merge, on the SonarCloud dashboard and the `SonarCloud Code Analysis` check of
-the merge commit.
+CodeQL (`codeql.yml`) and SonarCloud's automatic analysis both look at pull
+requests and `main`. Each posts a check on the pull request (`CodeQL`,
+`SonarCloud Code Analysis`) about the issues the change brings in; the full list
+for `main` lives in the repository's Security tab and on the SonarCloud
+dashboard.
 
 ### A red "Workers Builds" check on a PR branch is usually not yours
 

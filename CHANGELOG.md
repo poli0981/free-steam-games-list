@@ -65,8 +65,7 @@ published; on Android, install the new APK over the old one.
   a Python dependency), the Android backup decision. `docs/dev_env.md` and its
   Vietnamese copy: run the pipeline from the repo root, with the hashed
   installs; they said `cd scripts`, from where `data/` cannot be found.
-  `docs/DEPLOYMENT.md`: what CI checks, and that SonarCloud analyses `main`
-  only.
+  `docs/DEPLOYMENT.md`: what CI checks, CodeQL and SonarCloud included.
 
 ## [v4.3.2] – 2026-10-16 (The "Pigeonhole" Edition)
 
