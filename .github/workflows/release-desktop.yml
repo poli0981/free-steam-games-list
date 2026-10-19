@@ -106,5 +106,35 @@ jobs:
             Compiled from commit `${{ github.sha }}`.
           releaseDraft: true
           prerelease: false
-          includeUpdaterJson: true
+          uploadUpdaterJson: true
           args: ${{ matrix.args }}
+
+  # tauri-action v1 writes each artefact's API URL into latest.json
+  # (api.github.com/repos/<repo>/releases/assets/<id>), and has no setting to
+  # change that. /api/updates/desktop (worker/routes/updates.ts) accepts only
+  # this release's download URLs and answers 204 - "no update" - to anything
+  # else, so desktop-v2.2.1, the first release built with v1, was offered to
+  # no installed app until its latest.json was fixed by hand. Once every
+  # platform has added its entries, scripts/updater_json.py rewrites them; it
+  # refuses an entry whose signature is not its file's .sig.
+  updater-json:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Point latest.json at the release downloads
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ github.event.inputs.tag || github.ref_name }}
+        run: |
+          set -euo pipefail
+          work="$RUNNER_TEMP/updater-json"
+          mkdir -p "$work"
+          gh release download "$TAG" --repo "$GITHUB_REPOSITORY" --dir "$work" \
+            --pattern latest.json --pattern '*.sig'
+          gh release view "$TAG" --repo "$GITHUB_REPOSITORY" --json assets \
+            --jq '[.assets[] | {id: (.apiUrl | split("/") | last), name}]' > "$work/assets.json"
+          python3 scripts/updater_json.py "$work/latest.json" "$work/assets.json" "$work" "$TAG" "$work/fixed.json"
+          mv "$work/fixed.json" "$work/latest.json"
+          gh release upload "$TAG" "$work/latest.json" --repo "$GITHUB_REPOSITORY" --clobber

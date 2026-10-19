@@ -818,6 +818,15 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
   "no update" — for anything unusable. Like `/api/activity` it is public and
   must never use the GitHub App token. A desktop release is offered only once
   its draft is published.
+  tauri-action v1 writes API asset URLs (`api.github.com/repos/…/releases/assets/<id>`)
+  into `latest.json`, which that check refuses, and has no setting to change
+  it: the `updater-json` job of `release-desktop.yml` (`scripts/updater_json.py`)
+  rewrites them to the release's download URLs once every platform is built,
+  refusing any entry whose signature is not its file's `.sig`. Without it a
+  desktop release is offered to nobody (desktop-v2.2.1, the first v1 build,
+  needed a hand fix). Between the tag push and publishing the feed answers 204
+  anyway: the new tag is already in `releases.atom`, its `latest.json` not yet
+  public.
 - **Legal consent is per-document content hashes, not one integer.**
   `build/legal-versions.ts` serves `virtual:legal-versions` (a hash per
   document, inlined) and `virtual:legal-sources` (the raw markdown, imported
