@@ -5,7 +5,12 @@
     <!-- AndroidTV support -->
     <uses-feature android:name="android.software.leanback" android:required="false" />
 
+    <!-- allowBackup="false": left unset it defaults to true, and Android's
+         Auto Backup would copy the WebView's storage (consent, settings, the
+         cached catalogue) to the user's Google account, while the Privacy
+         Policy says none of it leaves the device. -->
     <application
+        android:allowBackup="false"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/Theme.f2p_tracker"
