@@ -13,13 +13,12 @@ interface InMessage {
 }
 
 /**
- * CodeQL flags this as `js/missing-origin-check`. An `e.origin` check is not
- * the right fix here: this is a DEDICATED module worker (see lib/worker-pool.ts,
- * `new Worker(new URL(...), { type: "module" })`), so the only sender is the
- * document that constructed it — there is no cross-origin sender to filter, and
- * `MessageEvent.origin` is the empty string for dedicated workers. The real
- * hardening is validating the message shape, so a malformed post fails as a
- * rejected promise instead of an unhandled throw inside the worker.
+ * The only sender is the document that constructed this DEDICATED module
+ * worker (lib/worker-pool.ts, `new Worker(new URL(...), { type: "module" })`).
+ * Its messages arrive on the worker's implicit port, so their origin is "".
+ * The handler refuses any other origin (CodeQL js/missing-origin-check) and
+ * checks the shape, so a stray or malformed post fails as a rejected promise
+ * instead of an unhandled throw inside the worker.
  */
 function isInMessage(d: unknown): d is InMessage {
   if (typeof d !== "object" || d === null) return false;
@@ -32,10 +31,20 @@ function isInMessage(d: unknown): d is InMessage {
 }
 
 self.onmessage = async (e: MessageEvent<unknown>) => {
-  if (!isInMessage(e.data)) {
-    const id = (e.data as { id?: unknown } | null)?.id;
+  const sentId = (e.data as { id?: unknown } | null)?.id;
+  const replyId = typeof sentId === "number" ? sentId : -1;
+  // `e.origin &&` is load-bearing: the owner's messages carry "", which never
+  // equals self.location.origin, so without it every message would be refused.
+  if (e.origin && e.origin !== self.location.origin) {
     (self as unknown as Worker).postMessage({
-      id: typeof id === "number" ? id : -1,
+      id: replyId,
+      error: `jsonl-parser: message from another origin (${e.origin})`,
+    });
+    return;
+  }
+  if (!isInMessage(e.data)) {
+    (self as unknown as Worker).postMessage({
+      id: replyId,
       error: "jsonl-parser: malformed message (expected { id: number, bytes: ArrayBuffer | Uint8Array, packed: boolean })",
     });
     return;
