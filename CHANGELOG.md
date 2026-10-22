@@ -15,6 +15,17 @@ All notable changes to this awesome noob repo will be documented here.
   the Android resources the Tauri CLI generated, or the SQLite migrations its
   PL/SQL analyser misread (`.sonarcloud.properties`).
 
+### 🔐 Security
+
+- **certifi 2026.10.19** (GHSA-6q48-6c7w-9gw2), the CA bundle behind every
+  HTTPS request the pipeline makes. eMudhra's `emSign ECC Root CA - G3` had
+  intermediates whose private keys were compromised; certifi 2026.10.18 - the
+  version pinned here - had already dropped every emSign root, and 2026.10.19
+  puts back the three that are not affected (G1, C1, ECC C3) while G3 stays
+  out. So the pipeline was never trusting the bad root, but the advisory's
+  range covered 2026.10.18 and pip-audit flagged it; the lock now names the
+  fixed release, with its hashes.
+
 ## [v4.3.3] – 2026-10-19 (The "Locksmith" Edition)
 
 The one open code-scanning alert is fixed, and what SonarCloud found on
