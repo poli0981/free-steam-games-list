@@ -67,3 +67,8 @@ def test_appids_outside_anchors_are_still_recovered():
     assert discover_new.parse_search_rows('<div data-ds-appid="5"></div><div data-ds-appid="x"></div>') == [
         ("5", "", ""),
     ]
+
+
+def test_a_page_cut_off_inside_a_tag_keeps_the_rows_before_it():
+    html = '<a data-ds-appid="570"><span class="title">Dota 2</span></a><a data-ds-appid="730"'
+    assert discover_new.parse_search_rows(html) == [("570", "Dota 2", "")]
