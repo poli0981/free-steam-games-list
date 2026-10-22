@@ -64,8 +64,13 @@ function steps(text: string, action: string): number {
   return (text.match(new RegExp(`uses\\s*:\\s*actions/${action}@`, "g")) ?? []).length;
 }
 
-/** A quoted literal: unquoted, YAML reads 3.10 as 3.1. */
-const quoted = (version: string) => new RegExp(`^(['"])${version.replace(/\./g, "\\.")}\\1$`);
+/** What a pin says inside its quotes, or null when it is not quoted - unquoted,
+ *  YAML reads 3.10 as 3.1. Pins are compared as strings: no pattern is ever
+ *  built from a version (CodeQL js/incomplete-sanitization). */
+function unquote(pin: string): string | null {
+  const m = /^(['"])(.*)\1$/.exec(pin);
+  return m ? m[2] : null;
+}
 
 describe("Node", () => {
   const node = read(join(WEB, ".node-version")).trim();
@@ -76,7 +81,7 @@ describe("Node", () => {
 
   it("is what engines.node and the @types/node major follow", () => {
     expect(pkg.engines?.node).toBe(`>=${node}`);
-    expect(pkg.devDependencies["@types/node"]).toMatch(new RegExp(`^\\^${node}\\.`));
+    expect(/^\^(\d+)\./.exec(pkg.devDependencies["@types/node"])?.[1]).toBe(node);
   });
 
   it("is what every setup-node step installs", () => {
@@ -85,7 +90,7 @@ describe("Node", () => {
       const uses = steps(text, "setup-node");
       const found = pins(text, "node-version");
       expect(found.length, `${file}: one node-version per setup-node`).toBe(uses);
-      for (const pin of found) expect(pin, file).toMatch(quoted(node));
+      for (const pin of found) expect(unquote(pin), `${file}: ${pin}`).toBe(node);
       total += uses;
     }
     expect(total).toBeGreaterThanOrEqual(5);
@@ -109,7 +114,7 @@ describe("Python", () => {
       const uses = steps(text, "setup-python");
       const found = pins(text, "python-version");
       expect(found.length, `${file}: one python-version per setup-python`).toBe(uses);
-      for (const pin of found) expect(pin, file).toMatch(quoted(PYTHON_EXCEPTIONS[file] ?? python));
+      for (const pin of found) expect(unquote(pin), `${file}: ${pin}`).toBe(PYTHON_EXCEPTIONS[file] ?? python);
       total += uses;
     }
     expect(total).toBeGreaterThanOrEqual(18);
