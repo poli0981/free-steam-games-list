@@ -18,7 +18,7 @@
  * call a bare one. docs/plan/17-typescript-7.1.md says when TypeScript 6 goes
  * and how this block changes then.
  *
- * web-ci.yml runs on changes to .github/workflows/ and .sonarcloud.properties
+ * web-ci.yml runs on changes to .github/workflows/ and sonar-project.properties
  * as well as web/, so a pull request that edits only a pin still meets this.
  */
 import { describe, expect, it } from "vitest";
@@ -98,9 +98,9 @@ describe("Node", () => {
 });
 
 describe("Python", () => {
-  const python = /^sonar\.python\.version=(\S+)$/m.exec(read(join(REPO, ".sonarcloud.properties")))?.[1] ?? "";
+  const python = /^sonar\.python\.version=(\S+)$/m.exec(read(join(REPO, "sonar-project.properties")))?.[1] ?? "";
 
-  it("is one X.Y in .sonarcloud.properties", () => {
+  it("is one X.Y in sonar-project.properties", () => {
     expect(python).toMatch(/^3\.\d+$/);
   });
 

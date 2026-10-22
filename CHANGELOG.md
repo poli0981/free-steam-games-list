@@ -13,7 +13,11 @@ All notable changes to this awesome noob repo will be documented here.
   release's own downloads, checking every signature on the way.
 - **SonarCloud reads tests as tests**, and no longer analyses the dataset,
   the Android resources the Tauri CLI generated, or the SQLite migrations its
-  PL/SQL analyser misread (`.sonarcloud.properties`).
+  PL/SQL analyser misread.
+- **SonarCloud analyses in CI.** A workflow runs the scan on pull requests and
+  on `main` in place of SonarCloud's automatic analysis, with its settings in
+  `sonar-project.properties` (formerly `.sonarcloud.properties`). Commits that
+  only carry data are not scanned.
 - **TypeScript 7, Node 26 and Python 3.15.** The type-check runs on
   TypeScript 7, the native compiler: `tsc` for the Worker, the tests and the
   admin's Node code, and `svelte-check --tsgo` for the app. TypeScript 6 stays

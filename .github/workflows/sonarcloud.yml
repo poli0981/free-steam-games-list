@@ -1,0 +1,81 @@
+name: SonarCloud
+
+# CI-based analysis, which replaced SonarCloud's automatic analysis: the two
+# cannot both be on, and the scan fails while automatic analysis is enabled in
+# the project's Administration > Analysis Method. What is code, what is test
+# and what is not analysed at all is sonar-project.properties at the root.
+# SonarCloud's GitHub App still posts the "SonarCloud Code Analysis" check on
+# the pull request; this job only uploads the analysis.
+
+on:
+  push:
+    branches: [main]
+    # What the data jobs commit, all of it outside the analysis scope: a
+    # commit that touches nothing else has nothing new to analyse.
+    paths-ignore: ['data/**', 'games/**', 'scripts/*.jsonl', 'scripts/*.log']
+  pull_request:
+    types: [opened, synchronize, reopened]
+    paths-ignore: ['data/**', 'games/**', 'scripts/*.jsonl', 'scripts/*.log']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  # SonarCloud refuses an analysis older than the last one it has for a
+  # branch, so main's runs queue rather than overlap.
+  group: sonarcloud-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      # Pull requests from forks and from Dependabot get no repository
+      # secrets. Without the token the scan cannot upload anything, so the job
+      # says so and passes rather than failing every such pull request.
+      - name: Check for the token
+        id: token
+        env:
+          HAS_TOKEN: ${{ secrets.SONAR_TOKEN != '' }}
+        run: |
+          echo "present=$HAS_TOKEN" >> "$GITHUB_OUTPUT"
+          if [ "$HAS_TOKEN" != "true" ]; then
+            echo "::notice::SONAR_TOKEN is not available to this run; skipping the SonarCloud scan."
+          fi
+
+      # Full history: SonarCloud blames every line to tell new code from old.
+      - uses: actions/checkout@v6
+        if: steps.token.outputs.present == 'true'
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      # The TypeScript analyser builds a program from each tsconfig named in
+      # sonar-project.properties. web/tsconfig.json extends the one
+      # `svelte-kit sync` generates, and the types come from node_modules;
+      # without them it logs "Failed to parse tsconfig" and analyses web/src
+      # with no types. Both are gitignored, so neither is analysed itself.
+      - uses: actions/setup-node@v7
+        if: steps.token.outputs.present == 'true'
+        with:
+          node-version: '26'
+          cache: 'npm'
+          cache-dependency-path: web/package-lock.json
+
+      # --ignore-scripts, as everywhere this repo runs `npm ci` (web-ci.yml says
+      # why). The bin by path, not `npx`, which may fetch a package the
+      # lockfile never named.
+      - name: Prepare the TypeScript projects
+        if: steps.token.outputs.present == 'true'
+        working-directory: web
+        run: |
+          npm ci --ignore-scripts
+          node_modules/.bin/svelte-kit sync
+
+      - name: SonarCloud scan
+        if: steps.token.outputs.present == 'true'
+        uses: SonarSource/sonarqube-scan-action@d209202bc7d53ff1cc128f7f907dac145c9d6ae9 # v8.3.0
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
