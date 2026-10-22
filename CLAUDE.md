@@ -467,7 +467,11 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
   without it the analyser logged "Failed to parse tsconfig" and read `web/src`
   untyped. A new tsconfig joins that list. The job skips commits that touch only what
   the data jobs write, and passes without scanning when `SONAR_TOKEN` is not
-  available (forks, Dependabot). Suppressing a rule for a file is done in the
+  available (forks, Dependabot). No coverage report is uploaded, so
+  `sonar.coverage.exclusions=**/*` says so: without it every line counted as
+  uncovered and the default "Sonar way" gate (80% coverage on new code) failed
+  `main` (measured 2026-10-22, 0.0% on 109 new lines). Importing coverage
+  means removing that line in the same change. Suppressing a rule for a file is done in the
   SonarCloud UI, not in this file or with NOSONAR.
 
 ## Frontend gotchas
