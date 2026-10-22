@@ -13,7 +13,7 @@
     "build:mobile": "vite build",
     "analyze": "vite build --mode analyze",
     "preview": "vite preview",
-    "typecheck": "npm run build:admin && npm run check && npm run check:admin && tsc -p admin/tsconfig.node.json && tsc -p admin/tsconfig.test.json && tsc -p tsconfig.worker.json && tsc -p tsconfig.test.json",
+    "typecheck": "npm run build:admin && npm run check && npm run check:admin && node node_modules/@typescript/native/bin/tsc -p admin/tsconfig.node.json && node node_modules/@typescript/native/bin/tsc -p admin/tsconfig.test.json && node node_modules/@typescript/native/bin/tsc -p tsconfig.worker.json && node node_modules/@typescript/native/bin/tsc -p tsconfig.test.json",
     "knip": "knip",
     "test": "vitest run",
     "test:watch": "vitest",
@@ -23,10 +23,10 @@
     "tauri:android:init": "tauri android init",
     "tauri:android:dev": "tauri android dev",
     "tauri:android:build": "tauri android build --apk",
-    "typecheck:worker": "tsc -p tsconfig.worker.json",
+    "typecheck:worker": "node node_modules/@typescript/native/bin/tsc -p tsconfig.worker.json",
     "cf:types": "wrangler types",
     "cf:check": "npm run build:admin && wrangler deploy --dry-run",
-    "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+    "check": "svelte-kit sync && svelte-check --tsgo --tsconfig ./tsconfig.json",
     "check:admin": "svelte-check --tsconfig ./admin/tsconfig.json",
     "fonts": "python scripts/gen-fontface.py"
   },
@@ -56,7 +56,8 @@
     "@sveltejs/vite-plugin-svelte": "7.3.1",
     "@tailwindcss/vite": "^4.3.3",
     "@tauri-apps/cli": "^2.12.3",
-    "@types/node": "^22.20.5",
+    "@types/node": "^26.6.5",
+    "@typescript/native": "npm:typescript@~7.0.2",
     "@vite-pwa/sveltekit": "^1.1.0",
     "knip": "^6.41.0",
     "rehype-sanitize": "^6.0.0",
@@ -83,5 +84,8 @@
     "@sveltejs/kit@2.70.3": {
       "cookie": "^0.7.2"
     }
+  },
+  "engines": {
+    "node": ">=26"
   }
 }
