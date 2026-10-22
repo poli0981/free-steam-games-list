@@ -6,11 +6,11 @@
 #
 # The top level is requests and urllib3; the rest is what they need. Adding a
 # package means adding it AND its dependencies, each with its hashes:
-#   uv pip compile --universal --generate-hashes --python-version 3.12 <list>
+#   uv pip compile --universal --generate-hashes --python-version 3.15 <list>
 # prints exactly that. Dependabot (pip, weekly) bumps the pins and their hashes.
-certifi==2026.10.18 \
-    --hash=sha256:73191c47aaa79da394e8fee2dbc2ec827432cab56311122c9e47abf79e390f62 \
-    --hash=sha256:b9995d97b64d0431a5af837d8ca8cd6238104d1f319f04bd93ea43124d6c861e
+certifi==2026.10.19 \
+    --hash=sha256:035c1e85572b141bf1c3a3eff0e33a8eb74917522f2559075ff8d2fea780a1ae \
+    --hash=sha256:42d35340cc5b9ba78e818ddbff0c5b1c2b779de448a340fd1b989f5fa8670e1b
     # via requests
 charset-normalizer==3.5.2 \
     --hash=sha256:01077390b03f7988f11d700a2194e69b119741a86b1a638b1db88891e3eced8e \

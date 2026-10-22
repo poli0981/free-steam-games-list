@@ -44,10 +44,17 @@ updates:
         update-types: [version-update:semver-major]
       - dependency-name: tailwindcss
         update-types: [version-update:semver-major]
+      # `typescript` must stay 6: svelte-check and `svelte-kit sync` need the
+      # JavaScript API that TypeScript 7 does not have. TypeScript 7 is the
+      # `@typescript/native` alias (npm:typescript@~7.0.x), bumped by hand with
+      # it - Dependabot mishandles `npm:` aliases (dependabot-core #16488).
+      # See CLAUDE.md, docs/plan/16-toolchain-2026.md and, for the day 7.1
+      # lets TypeScript 6 go, docs/plan/17-typescript-7.1.md.
       - dependency-name: typescript
         update-types: [version-update:semver-major]
-      # The type definitions follow the Node the build runs on (24, in
-      # web-ci.yml and the release workflows), not the newest Node.
+      - dependency-name: '@typescript/native'
+      # The type definitions follow the Node the build runs on (web/.node-version,
+      # which every setup-node repeats), not the newest Node.
       - dependency-name: '@types/node'
         update-types: [version-update:semver-major]
 

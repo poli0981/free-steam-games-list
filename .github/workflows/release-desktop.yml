@@ -50,7 +50,7 @@ jobs:
 
       - uses: actions/setup-node@v7
         with:
-          node-version: '24'
+          node-version: '26'
           cache: 'npm'
           cache-dependency-path: web/package-lock.json
 
@@ -127,6 +127,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
+
+      # updater_json.py is stdlib-only, but it runs on the pipeline's Python
+      # like every other script, not on whatever the runner image ships.
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.15'
 
       - name: Point latest.json at the release downloads
         env:

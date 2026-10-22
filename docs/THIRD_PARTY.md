@@ -17,7 +17,7 @@ Added in v3.2.7 to make the pre-publish checks below runnable.
 | [knip](https://knip.dev) | Web app (`web/`) | Finds unused files, exports, types, enum members and dependencies across the SvelteKit app, the Worker and the admin build. | ISC |
 | [vulture](https://github.com/jendrikseipp/vulture) | Python pipeline (`scripts/`) | Finds unused functions, classes, variables, imports, and unreachable code. | MIT |
 | [pip-audit](https://github.com/pypa/pip-audit) | Python pipeline | Audits the pinned Python dependencies against the OSV / PyPI Advisory vulnerability databases. | Apache-2.0 |
-| [svelte-check](https://github.com/sveltejs/language-tools) | Web app (`web/`) | Type-checks `.svelte` files, which `tsc` cannot read. Runs twice in `npm run typecheck` — once for the app, once for the admin build. | MIT |
+| [svelte-check](https://github.com/sveltejs/language-tools) | Web app (`web/`) | Type-checks `.svelte` files, which `tsc` cannot read. Runs twice in `npm run typecheck` — once for the app, on TypeScript 7 (`--tsgo`), and once for the admin build, on TypeScript 6 (`--tsgo` cannot follow its imports from `../src`). | MIT |
 | [vitest](https://vitest.dev) | Web app (`web/`) | The test runner behind `npm test`. | MIT |
 
 ### Where they're declared

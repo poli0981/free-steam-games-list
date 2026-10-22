@@ -433,7 +433,25 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
     Dependabot bump is proven before a data job meets it, and
     `requirements-dev.txt` (unhashed local tools) is installed on its own.
     Adding a package means adding it and its dependencies with hashes:
-    `uv pip compile --universal --generate-hashes --python-version 3.12`.
+    `uv pip compile --universal --generate-hashes --python-version 3.15`.
+- **One version of each runtime, and a test that holds them together**
+  (`web/shared/toolchain.test.ts`; web-ci also runs on `.github/workflows/**`
+  and `.sonarcloud.properties` so a pull request that only moves a pin meets
+  it). `docs/plan/16-toolchain-2026.md` has the upgrade notes.
+  - Node is the major in `web/.node-version` (26). Every `setup-node` repeats
+    it as a quoted literal, never `node-version-file`: `release-android.yml`
+    checks out the tag it rebuilds, and older tags have no such file.
+    `engines.node` and the `@types/node` major follow it. Workers Builds
+    reads the dashboard variable `NODE_VERSION=26`, the one copy the test
+    cannot see (`docs/DEPLOYMENT.md`): change it with the file.
+  - Python is the `python-version` of every `setup-python` (3.15), repeated
+    by `sonar.python.version` and the `--python-version` above. `codeql.yml`
+    alone stays on the newest Python CodeQL lists (3.14), named in the test's
+    `PYTHON_EXCEPTIONS`. A version is always quoted: YAML reads 3.10 as 3.1.
+  - Python 3.15 makes `open()` default to UTF-8 everywhere (PEP 686), but every
+    text open in `scripts/` still names `encoding="utf-8"`: on Windows an
+    older Python writes the locale's code page, and cp1252 cannot encode the
+    leaderboards' emoji.
 - **SonarCloud's scope is `.sonarcloud.properties`** (automatic analysis; only
   scope keys are read, from the default branch). Code and tests both start at
   the root and are split by patterns: a new test-helper folder goes into
@@ -547,6 +565,22 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
   dependency (`EOVERRIDE`). A kit bump therefore silently drops the override
   and the alert comes back: re-key it, or delete it once kit asks for
   `cookie` >= 0.7. Never carry it onto kit 3, which needs `cookie` 2.
+- **TypeScript is two packages, on purpose.** TypeScript 7 (the Go compiler)
+  has no JavaScript API, and svelte-check and `svelte-kit sync` (route
+  `$types`) need one, so `typescript` stays 6 and 7 is the alias
+  `@typescript/native` (`npm:typescript@~7.0.x`). svelte-check `--tsgo` finds 7
+  by that name and runs its bin; the `tsc -p` steps call
+  `node node_modules/@typescript/native/bin/tsc` by path, because both
+  packages declare a `tsc` bin and `node_modules/.bin/tsc` is whichever one npm
+  linked last. `check:admin` stays on TypeScript 6: `--tsgo` cannot follow
+  `.svelte` imports from outside its tsconfig's folder (`web/admin` imports
+  `../src/lib/ui`), and a component it cannot map falls back to the ambient
+  `*.svelte` shim - unchecked props, and no error. Dependabot ignores
+  `typescript` majors and the alias (it mishandles `npm:` aliases): bump the
+  two by hand. `~7.0` because 7.1 changes the API svelte-check's experimental
+  mode uses. TypeScript 6 goes when svelte-check accepts 7 alone:
+  `docs/plan/17-typescript-7.1.md` lists the conditions, the steps and the
+  planted-error check that proves the switch.
 - **Real paths everywhere, including the packaged apps.** There is no
   HashRouter and no hash shim: `tauri::manager::get_asset()` falls back through
   `<path>.html`, `<path>/index.html`, then `index.html`, so the Tauri webview

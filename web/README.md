@@ -311,7 +311,7 @@ See [docs/DEPLOYMENT.md](../docs/DEPLOYMENT.md) and
 ## Checks
 
 ```bash
-npm run typecheck  # builds admin/, then svelte-check (app + admin) and tsc (Worker, tests)
+npm run typecheck  # builds admin/, then svelte-check (app on TS 7, admin on TS 6) and TS 7's tsc (Worker, tests)
 npm test           # vitest
 npm run knip       # dead code and dependencies
 npm run build      # site, then admin/

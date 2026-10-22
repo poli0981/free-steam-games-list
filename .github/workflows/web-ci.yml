@@ -5,12 +5,16 @@ name: Web CI
 # during the Cloudflare migration, nothing would validate the frontend at all.
 # Cloudflare Workers Builds deploys the site; this workflow only *checks* it.
 
+# Workflow and Sonar changes run it too: web/shared/pipeline.test.ts and
+# web/shared/toolchain.test.ts read .github/workflows/ (the data-write group, the
+# Node and Python pins) and .sonarcloud.properties, and a pull request that
+# touches only those files is exactly the one that can break them.
 on:
   pull_request:
-    paths: ['web/**', '.github/workflows/web-ci.yml']
+    paths: ['web/**', '.github/workflows/**', '.sonarcloud.properties']
   push:
     branches: [main]
-    paths: ['web/**', '.github/workflows/web-ci.yml']
+    paths: ['web/**', '.github/workflows/**', '.sonarcloud.properties']
   workflow_dispatch:
 
 permissions:
@@ -31,7 +35,7 @@ jobs:
 
       - uses: actions/setup-node@v7
         with:
-          node-version: '24'
+          node-version: '26'
           cache: 'npm'
           cache-dependency-path: web/package-lock.json
 
@@ -100,7 +104,7 @@ jobs:
 
       - uses: actions/setup-node@v7
         with:
-          node-version: '24'
+          node-version: '26'
           cache: 'npm'
           cache-dependency-path: web/package-lock.json
 

@@ -6,7 +6,7 @@ This file documents how to build and run the Tauri wrapper around the SvelteKit 
 
 | Tool       | Version             | Install                                                     |
 | ---------- | ------------------- | ----------------------------------------------------------- |
-| Node.js    | ≥ 22 (LTS)          | <https://nodejs.org/>                                       |
+| Node.js    | 26 (LTS), as in `web/.node-version` | <https://nodejs.org/>                       |
 | Rust       | stable (via rustup) | <https://rustup.rs/>                                        |
 | npm        | bundled with Node   | comes with Node                                             |
 | Tauri CLI  | 2.x                 | invoked via `npx tauri` or `npm run tauri ...`               |

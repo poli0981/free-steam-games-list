@@ -16,14 +16,15 @@ JetBrains lineup, paid version, channel **2026.x**. Any equivalent editor (VS Co
 
 | Tool        | Version             | Notes                                         |
 | ----------- | ------------------- | --------------------------------------------- |
-| Python      | 3.12                | `scripts/` pipeline + Steam client            |
-| Node.js     | 24 (CI), ≥ 22.5     | web build, tests (`node:sqlite`), Tauri build |
+| Python      | 3.15                | `scripts/` pipeline + Steam client            |
+| Node.js     | 26 (`web/.node-version`) | web build, tests (`node:sqlite`), Tauri build |
+| TypeScript  | 7 + 6               | 7 (`@typescript/native`) type-checks; 6 stays for svelte-check and `svelte-kit sync` |
 | Rust        | stable (via rustup) | Tauri runtime                                 |
 | npm         | bundled with Node   | `web/package-lock.json` is the source of truth |
 | Git         | recent              | GPG signing on (`commit.gpgsign=true`)         |
 | Tauri CLI   | 2.x                 | invoked via `npm run tauri ...`                |
 
-The CI workflows in [`.github/workflows/`](../.github/workflows) pin these versions explicitly. See [`release-desktop.yml`](../.github/workflows/release-desktop.yml) for the desktop build matrix and [`web-ci.yml`](../.github/workflows/web-ci.yml) for the web checks. The site itself is deployed by Cloudflare Workers Builds on a push to `main` — see [`DEPLOYMENT.md`](DEPLOYMENT.md).
+The CI workflows in [`.github/workflows/`](../.github/workflows) pin these versions explicitly, and `web/shared/toolchain.test.ts` fails when one of them drifts from the others (CodeQL's Python is the one named exception). See [`release-desktop.yml`](../.github/workflows/release-desktop.yml) for the desktop build matrix and [`web-ci.yml`](../.github/workflows/web-ci.yml) for the web checks. The site itself is deployed by Cloudflare Workers Builds on a push to `main` — see [`DEPLOYMENT.md`](DEPLOYMENT.md). Why TypeScript is two packages, and how to move each runtime next time: [`plan/16-toolchain-2026.md`](plan/16-toolchain-2026.md); the switch to TypeScript 7 alone, planned for 7.1: [`plan/17-typescript-7.1.md`](plan/17-typescript-7.1.md).
 
 ## Dev workflow
 

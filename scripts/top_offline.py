@@ -75,7 +75,7 @@ def main():
     tp = sum(_ppc(g.get("current_players", "0")) for g in offline)
     now = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
     os.makedirs(GAMES_DIR, exist_ok=True)
-    with open(f"{GAMES_DIR}/top-offline.md", "w") as f:
+    with open(f"{GAMES_DIR}/top-offline.md", "w", encoding="utf-8") as f:
         f.write(f"# 🎮 Top Offline – Single-Player Leaderboard\n\n")
         f.write(f"> {now} | {len(offline)} offline games | {tp:,} concurrent players\n\n")
         f.write("Free-to-play Steam games where `type_game` is set to anything other "

@@ -5,7 +5,8 @@
   // SvelteKit's $app/* or $lib aliases, or this build cannot resolve them.
   "compilerOptions": {
     "target": "ES2022",
-    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    // No "DOM.Iterable": since TypeScript 6 it is an empty file, merged into "DOM".
+    "lib": ["ES2022", "DOM"],
     "module": "ESNext",
     "moduleResolution": "Bundler",
     "types": ["svelte", "vite/client"],

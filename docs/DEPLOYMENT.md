@@ -22,6 +22,14 @@ push to main
                      └─ vite build -c admin/…        → web/worker/generated/admin-bundle.ts
 ```
 
+**The build runs on Node 26.** The Worker's dashboard sets the build variable
+`NODE_VERSION=26` (Settings → Build → Variables and secrets); Cloudflare's
+image would otherwise use its default, Node 24. `web/.node-version` says the
+same, and CI and `web/shared/toolchain.test.ts` follow that file, but
+Cloudflare does not document which directory it reads it from or which of the
+two wins, so keep the variable and change both together. The first lines of a
+build log show the Node actually used.
+
 `web/wrangler.jsonc` is the only deployment config. Several fields in it are
 load-bearing and easy to break:
 
@@ -171,8 +179,11 @@ Stop `wrangler dev` before running `npm ci`. On Windows the install deletes
 ## Checks
 
 `.github/workflows/web-ci.yml` runs on pull requests and on pushes to `main`
-touching `web/**`: `npm ci --ignore-scripts`, the typechecks (app, Worker and
-tests), `npm test`, the build, `scripts/verify-dist.mjs --web` over the
+touching `web/**`, `.github/workflows/**` or `.sonarcloud.properties`:
+`npm ci --ignore-scripts`, the typechecks (app, Worker and tests, on
+TypeScript 7; the admin's svelte-check on TypeScript 6), `npm test` (which
+includes the toolchain-pin and data-write-group checks over the workflows),
+the build, `scripts/verify-dist.mjs --web` over the
 prerendered HTML, `npm run cf:check` (`wrangler deploy --dry-run`), and
 `knip`. `python-tests.yml` runs the pipeline's pytest suite on changes under
 `scripts/` and the requirements files, installing them exactly as the data jobs
