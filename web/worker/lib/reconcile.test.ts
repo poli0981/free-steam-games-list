@@ -100,6 +100,43 @@ describe("reconcileApproved", () => {
     expect(out.published).toBe(1);
   });
 
+  it("fails an approval the pipeline rejected after it was made", async () => {
+    const env = makeEnv();
+    insertRow(env, { id: "a", appid: "800", status: "approved", decided_at: "2026-09-17T10:00:00Z" });
+    insertRow(env, { id: "b", appid: "801", status: "approved", decided_at: "2026-09-17T10:00:00Z" });
+    const removed = [
+      JSON.stringify({ appid: "800", removed_at: "2026-09-17T11:00:00Z" }),
+      // No appid field: read from the link, as dedup_removed() does.
+      JSON.stringify({ link: "https://store.steampowered.com/app/801/", removed_at: "2026-09-17T11:00:00Z" }),
+    ].join("\n");
+    const out = await reconcileApproved(env, fakeDeps({ raw: { ...dataset(["1"]), "scripts/removed_games.jsonl": removed } }));
+    expect(out.removed).toBe(2);
+    expect(rowStatus(env, "a")).toBe("failed");
+    expect(rowStatus(env, "b")).toBe("failed");
+    // Failed, not decided: one bad day must not hide the game from every
+    // future discovery sweep.
+    expect(decisionOf(env, "800")).toBeUndefined();
+  });
+
+  it("keeps an approval whose game was removed only before it", async () => {
+    const env = makeEnv();
+    insertRow(env, { id: "old", appid: "810", status: "approved", decided_at: "2026-09-17T10:00:00Z" });
+    insertRow(env, { id: "undated", appid: "811", status: "approved", decided_at: "2026-09-17T10:00:00Z" });
+    const removed = [
+      JSON.stringify({ appid: "810", removed_at: "2026-03-01T00:00:00Z" }),
+      // No timestamp reads as the oldest removal there is.
+      JSON.stringify({ appid: "811" }),
+      // Neither an appid nor a link, and not JSON at all: skipped, and the
+      // rest of the file still counts.
+      JSON.stringify({ name: "Some Game", removed_at: "2026-09-17T11:00:00Z" }),
+      "not json",
+    ].join("\n");
+    const out = await reconcileApproved(env, fakeDeps({ raw: { ...dataset(["1"]), "scripts/removed_games.jsonl": removed } }));
+    expect(out.removed).toBe(0);
+    expect(rowStatus(env, "old")).toBe("approved");
+    expect(rowStatus(env, "undated")).toBe("approved");
+  });
+
   it("ages out an approval nothing ever observed", async () => {
     const env = makeEnv();
     insertRow(env, { id: "a", appid: "700", status: "approved", decided_at: "2026-09-16T00:00:00Z" });
