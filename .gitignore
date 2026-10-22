@@ -120,6 +120,7 @@ pip-delete-this-directory.txt
 .coverage.*
 htmlcov/
 *.cover
+coverage.xml
 
 # Jupyter Notebook
 .ipynb_checkpoints

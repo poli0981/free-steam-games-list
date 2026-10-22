@@ -17,8 +17,9 @@ All notable changes to this awesome noob repo will be documented here.
 - **SonarCloud analyses in CI.** A workflow runs the scan on pull requests and
   on `main` in place of SonarCloud's automatic analysis, with its settings in
   `sonar-project.properties` (formerly `.sonarcloud.properties`). Commits that
-  only carry data are not scanned. Coverage is not measured, and the
-  settings say so, so the quality gate no longer reads that as 0%.
+  only carry data are not scanned. It runs both test suites with coverage
+  first (pytest-cov for the pipeline, `npm run test:coverage` for the web
+  app), so SonarCloud shows what the tests reach instead of reading 0%.
 - **TypeScript 7, Node 26 and Python 3.15.** The type-check runs on
   TypeScript 7, the native compiler: `tsc` for the Worker, the tests and the
   admin's Node code, and `svelte-check --tsgo` for the app. TypeScript 6 stays

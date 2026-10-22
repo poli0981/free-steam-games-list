@@ -5,3 +5,10 @@ paths = ["scripts"]
 # pytest collects test_* functions and fixtures by name; vulture cannot see that.
 exclude = ["scripts/tests/"]
 min_confidence = 80
+
+# pytest --cov (sonarcloud.yml): the pipeline's code, not the tests that drive
+# it, with paths relative to the repository root, where the scan reads them.
+[tool.coverage.run]
+source = ["scripts"]
+omit = ["scripts/tests/*"]
+relative_files = true
