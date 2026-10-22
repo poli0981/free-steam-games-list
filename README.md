@@ -244,7 +244,7 @@ Unemployed, introvert max level, dropped out uni year 3, mooching off family. Ne
 - [CHANGELOG](CHANGELOG.md) — what changed in each version.
 - [CONTRIBUTING](CONTRIBUTING.md) — issue templates, suggesting a game, manual fork.
 - [PC spec](docs/pc_spec.md) ([VI](docs/i18n/vi/pc_spec.md)) — maintainer's dev hardware + test devices.
-- [Dev environment](docs/dev_env.md) ([VI](docs/i18n/vi/dev_env.md)) — IDE, toolchains (Python 3.12 / Node 24 / Rust stable / Tauri 2), workflow.
+- [Dev environment](docs/dev_env.md) ([VI](docs/i18n/vi/dev_env.md)) — IDE, toolchains (Python 3.15 / Node 26 / TypeScript 7 / Rust stable / Tauri 2), workflow.
 - [Tauri build](web/src-tauri/TAURI.md) — desktop build prerequisites + signing + auto-update.
 - [DISCLAIMER](docs/DISCLAIMER.md) — accuracy caveats, no-warranty, the broke-maintainer note.
 - [Terms of Use](docs/ToS.md) — usage agreement, contributions, governing law.

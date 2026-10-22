@@ -32,7 +32,7 @@ For people forking the repo or trying to reproduce a build:
 | --------------- | ------------------------------------------------------------ |
 | GitHub          | [@poli0981](https://github.com/poli0981)                     |
 | IDE             | JetBrains 2026.x — paid lineup (PyCharm, WebStorm, RustRover) |
-| Toolchains      | Python 3.12 · Node.js ≥ 22 · Rust stable · Tauri 2           |
+| Toolchains      | Python 3.15 · Node.js 26 · TypeScript 7 · Rust stable · Tauri 2 |
 | Git             | GPG signing on (`commit.gpgsign=true`)                        |
 | Hardware spec   | [`docs/pc_spec.md`](docs/pc_spec.md) (EN) · [`docs/i18n/vi/pc_spec.md`](docs/i18n/vi/pc_spec.md) (VI) |
 | Dev environment | [`docs/dev_env.md`](docs/dev_env.md) (EN) · [`docs/i18n/vi/dev_env.md`](docs/i18n/vi/dev_env.md) (VI) |

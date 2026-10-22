@@ -14,6 +14,20 @@ All notable changes to this awesome noob repo will be documented here.
 - **SonarCloud reads tests as tests**, and no longer analyses the dataset,
   the Android resources the Tauri CLI generated, or the SQLite migrations its
   PL/SQL analyser misread (`.sonarcloud.properties`).
+- **TypeScript 7, Node 26 and Python 3.15.** The type-check runs on
+  TypeScript 7, the native compiler: `tsc` for the Worker, the tests and the
+  admin's Node code, and `svelte-check --tsgo` for the app. TypeScript 6 stays
+  installed beside it, because svelte-check and SvelteKit's route types still
+  need the JavaScript API that 7.0 does not have (the admin's svelte-check
+  stays on it too). CI, the release builds and Cloudflare's build run Node 26,
+  the LTS from 28 October; the pipeline, its tests and every data job run
+  Python 3.15, which writes the shards byte for byte as 3.12 did - no
+  re-download for anyone. The leaderboards and the dead-link log name their
+  encoding, so they no longer crash on Windows under an older Python. A new
+  test fails when one of the version pins drifts from the others, and Web CI
+  now runs on workflow-only changes so it sees them. The full assessment is in
+  `docs/plan/16-toolchain-2026.md`; `docs/plan/17-typescript-7.1.md` prepares
+  the move to TypeScript 7 alone once 7.1 is out.
 
 ### 🔐 Security
 

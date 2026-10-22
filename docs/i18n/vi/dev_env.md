@@ -16,14 +16,15 @@ Lineup JetBrains, bản trả phí, channel **2026.x**. Editor khác (VS Code, N
 
 | Tool       | Version             | Ghi chú                                          |
 | ---------- | ------------------- | ------------------------------------------------ |
-| Python     | 3.12                | `scripts/` pipeline + Steam client               |
-| Node.js    | ≥ 22 (LTS)          | web build, pipeline build Tauri                  |
+| Python     | 3.15                | `scripts/` pipeline + Steam client               |
+| Node.js    | 26 (`web/.node-version`) | web build, test (`node:sqlite`), build Tauri |
+| TypeScript | 7 + 6               | 7 (`@typescript/native`) type-check; 6 giữ lại cho svelte-check và `svelte-kit sync` |
 | Rust       | stable (via rustup) | Tauri runtime                                    |
 | npm        | đi kèm Node         | `web/package-lock.json` là source of truth       |
 | Git        | mới                 | GPG signing on (`commit.gpgsign=true`)            |
 | Tauri CLI  | 2.x                 | gọi qua `npm run tauri ...`                       |
 
-CI workflow trong [`.github/workflows/`](../../../.github/workflows) đã pin các version này. Xem [`release-desktop.yml`](../../../.github/workflows/release-desktop.yml) cho matrix build desktop và [`web-ci.yml`](../../../.github/workflows/web-ci.yml) cho các bước kiểm tra web. Bản thân trang web được Cloudflare Workers Builds deploy mỗi khi push lên `main` — xem [`DEPLOYMENT.md`](../../DEPLOYMENT.md).
+CI workflow trong [`.github/workflows/`](../../../.github/workflows) đã pin các version này, và `web/shared/toolchain.test.ts` sẽ fail khi một chỗ lệch khỏi các chỗ còn lại (Python của CodeQL là ngoại lệ duy nhất, được khai tên). Xem [`release-desktop.yml`](../../../.github/workflows/release-desktop.yml) cho matrix build desktop và [`web-ci.yml`](../../../.github/workflows/web-ci.yml) cho các bước kiểm tra web. Bản thân trang web được Cloudflare Workers Builds deploy mỗi khi push lên `main` — xem [`DEPLOYMENT.md`](../../DEPLOYMENT.md). Vì sao TypeScript là hai gói, và cách nâng từng runtime lần sau: [`plan/16-toolchain-2026.md`](../../plan/16-toolchain-2026.md); kế hoạch chuyển hẳn sang TypeScript 7 khi có bản 7.1: [`plan/17-typescript-7.1.md`](../../plan/17-typescript-7.1.md).
 
 ## Workflow dev
 

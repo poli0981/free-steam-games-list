@@ -48,7 +48,7 @@
   const DEPS = [
     { name: "Svelte 5", role: "about.deps.svelte", href: "https://svelte.dev/", licence: "MIT" },
     { name: "SvelteKit 2", role: "about.deps.sveltekit", href: "https://svelte.dev/docs/kit", licence: "MIT" },
-    { name: "TypeScript 6", role: "about.deps.typescript", href: "https://www.typescriptlang.org/", licence: "Apache-2.0" },
+    { name: "TypeScript 7 + 6", role: "about.deps.typescript", href: "https://www.typescriptlang.org/", licence: "Apache-2.0" },
     { name: "Vite 8 / Rolldown", role: "about.deps.vite", href: "https://vitejs.dev/", licence: "MIT" },
     { name: "Tailwind CSS 4", role: "about.deps.tailwind", href: "https://tailwindcss.com/", licence: "MIT" },
     { name: "Bits UI", role: "about.deps.bitsUi", href: "https://bits-ui.com/", licence: "MIT" },

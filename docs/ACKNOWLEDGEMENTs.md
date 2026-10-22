@@ -52,7 +52,7 @@ links and licences; this is the whole list, grouped by what it does.
 
 **Framework & build**
 - [Svelte 5](https://svelte.dev/) + [SvelteKit 2](https://svelte.dev/docs/kit) — UI runtime and app framework, with `adapter-static` (all MIT).
-- [TypeScript 6](https://www.typescriptlang.org/) — type system (Apache-2.0).
+- [TypeScript 7](https://www.typescriptlang.org/) — type system (Apache-2.0); the native compiler type-checks the code, and TypeScript 6 stays alongside it for the Svelte tooling, which needs its JavaScript API.
 - [Vite 8](https://vitejs.dev/), powered by the [Rolldown](https://rolldown.rs/) bundler, and `@sveltejs/vite-plugin-svelte` (MIT).
 - [Tailwind CSS 4](https://tailwindcss.com/) via `@tailwindcss/vite` (MIT). Tailwind 4 is a Vite plugin, so there is no PostCSS step and no `tailwind.config.ts`.
 
