@@ -210,9 +210,19 @@ token that may analyse the project). Its automatic analysis must stay off
 (project Administration > Analysis Method): with both on, every CI scan fails.
 Commits that touch only what the data jobs write (`data/`, `games/`, the
 `.jsonl` queues and logs under `scripts/`) are not scanned. A pull request from
-a fork or from Dependabot gets no repository secrets, so its scan job passes
-without scanning; giving Dependabot its own `SONAR_TOKEN` (Settings > Secrets >
+a fork or from Dependabot gets no repository secrets, so its scan job is
+skipped; giving Dependabot its own `SONAR_TOKEN` (Settings > Secrets >
 Dependabot) would have its pull requests analysed too.
+
+Before the scan the job runs both test suites with coverage: pytest with
+`--cov` (configured in `pyproject.toml`, written to `coverage.xml`) and
+`npm run test:coverage` in `web/` (configured in `vite.config.ts`, written to
+`web/coverage/lcov.info`). SonarCloud's default "Sonar way" quality gate asks
+for 80% coverage on new code (it ignores that condition below 20 new lines),
+so a pull request that adds code its tests do not reach fails that check. To
+see the figure locally, run
+`npm run test:coverage` in `web/`, or
+`python -m pytest scripts/tests --cov` after installing `requirements-test.txt`.
 
 ### A red "Workers Builds" check on a PR branch is usually not yours
 

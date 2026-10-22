@@ -427,9 +427,10 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
   - `requirements.txt` pins every package the pipeline installs, transitive
     ones included, with the sha256 of every file on PyPI, and every install
     is `pip install --require-hashes --only-binary :all: -r requirements.txt`
-    (bash/*.sh and four workflows). Hash mode is all-or-nothing per pip call:
-    `requirements-test.txt` (pytest, hashed the same way) goes in its own call
-    in `python-tests.yml`, which runs the pipeline's line first so a
+    (bash/*.sh and the workflows that run Python). Hash mode is all-or-nothing
+    per pip call: `requirements-test.txt` (pytest and pytest-cov, hashed the
+    same way) goes in its own call in `python-tests.yml` and
+    `sonarcloud.yml`, which run the pipeline's line first so a
     Dependabot bump is proven before a data job meets it, and
     `requirements-dev.txt` (unhashed local tools) is installed on its own.
     Adding a package means adding it and its dependencies with hashes:
@@ -463,16 +464,23 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
   analyser reads them as Oracle). `sonar.typescript.tsconfigPaths` names all
   six tsconfigs in `web/` (auto-detection finds only files named exactly
   `tsconfig.json`), and the job runs `npm ci --ignore-scripts` and
-  `svelte-kit sync` first: `web/tsconfig.json` extends the generated one, and
-  without it the analyser logged "Failed to parse tsconfig" and read `web/src`
-  untyped. A new tsconfig joins that list. The job skips commits that touch only what
-  the data jobs write, and passes without scanning when `SONAR_TOKEN` is not
-  available (forks, Dependabot). No coverage report is uploaded, so
-  `sonar.coverage.exclusions=**/*` says so: without it every line counted as
-  uncovered and the default "Sonar way" gate (80% coverage on new code) failed
-  `main` (measured 2026-10-22, 0.0% on 109 new lines). Importing coverage
-  means removing that line in the same change. Suppressing a rule for a file is done in the
-  SonarCloud UI, not in this file or with NOSONAR.
+  `npm run build:admin` (which syncs SvelteKit) first: `web/tsconfig.json`
+  extends the generated one, and without it the analyser logged "Failed to
+  parse tsconfig" and read `web/src` untyped. A new tsconfig joins that list.
+  The job skips commits that touch only what the data jobs write, and its
+  `scan` job is skipped when `SONAR_TOKEN` is not available (forks,
+  Dependabot).
+  **Coverage is measured there, not in the test workflows.** The job runs
+  pytest with `--cov` (`[tool.coverage.run]` in `pyproject.toml`: `scripts/`
+  without its tests, relative paths, `coverage.xml` at the root) and
+  `npm run test:coverage` (`test.coverage` in `web/vite.config.ts`: lcov with
+  `projectRoot: ".."`, so the paths start `web/`). Both reports are named in
+  `sonar-project.properties`; a path that does not resolve from the
+  repository root is silently uncovered. Coverage is off for a plain
+  `npm test`. The default "Sonar way" gate wants 80% on new code, and SonarCloud
+  counts every executable line a report does not name as uncovered: without
+  the reports `main` read 0.0% and failed it (2026-10-22). Suppressing a rule
+  for a file is done in the SonarCloud UI, not in this file or with NOSONAR.
 
 ## Frontend gotchas
 
