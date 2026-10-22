@@ -1,0 +1,59 @@
+name: SonarCloud
+
+# CI-based analysis, which replaced SonarCloud's automatic analysis: the two
+# cannot both be on, and the scan fails while automatic analysis is enabled in
+# the project's Administration > Analysis Method. What is code, what is test
+# and what is not analysed at all is sonar-project.properties at the root.
+# SonarCloud's GitHub App still posts the "SonarCloud Code Analysis" check on
+# the pull request; this job only uploads the analysis.
+
+on:
+  push:
+    branches: [main]
+    # What the data jobs commit, all of it outside the analysis scope: a
+    # commit that touches nothing else has nothing new to analyse.
+    paths-ignore: ['data/**', 'games/**', 'scripts/*.jsonl', 'scripts/*.log']
+  pull_request:
+    types: [opened, synchronize, reopened]
+    paths-ignore: ['data/**', 'games/**', 'scripts/*.jsonl', 'scripts/*.log']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  # SonarCloud refuses an analysis older than the last one it has for a
+  # branch, so main's runs queue rather than overlap.
+  group: sonarcloud-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      # Pull requests from forks and from Dependabot get no repository
+      # secrets. Without the token the scan cannot upload anything, so the job
+      # says so and passes rather than failing every such pull request.
+      - name: Check for the token
+        id: token
+        env:
+          HAS_TOKEN: ${{ secrets.SONAR_TOKEN != '' }}
+        run: |
+          echo "present=$HAS_TOKEN" >> "$GITHUB_OUTPUT"
+          if [ "$HAS_TOKEN" != "true" ]; then
+            echo "::notice::SONAR_TOKEN is not available to this run; skipping the SonarCloud scan."
+          fi
+
+      # Full history: SonarCloud blames every line to tell new code from old.
+      - uses: actions/checkout@v6
+        if: steps.token.outputs.present == 'true'
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: SonarCloud scan
+        if: steps.token.outputs.present == 'true'
+        uses: SonarSource/sonarqube-scan-action@d209202bc7d53ff1cc128f7f907dac145c9d6ae9 # v8.3.0
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}

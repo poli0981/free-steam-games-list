@@ -24,7 +24,7 @@ replace TypeScript 6, which stays installed beside it.
 | Python (CodeQL) | 3.14 | `codeql.yml` | — | named in the test's `PYTHON_EXCEPTIONS` |
 | TypeScript | 7.0.x and 6.0.x | `web/package.json`: `@typescript/native` (`npm:typescript@~7.0.2`) and `typescript` (`^6.0.3`) | `.github/dependabot.yml` ignores | `web/shared/toolchain.test.ts` |
 
-Web CI now also runs on `.github/workflows/**` and `.sonarcloud.properties`, so
+Web CI now also runs on `.github/workflows/**` and `sonar-project.properties`, so
 a pull request that moves only a pin still meets the test. The test was proven
 by breaking one pin at a time - one workflow's Python, `web/.node-version`
 alone, a `setup-node` switched to `node-version-file` - and each failed it with

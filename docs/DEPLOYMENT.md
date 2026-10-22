@@ -179,7 +179,7 @@ Stop `wrangler dev` before running `npm ci`. On Windows the install deletes
 ## Checks
 
 `.github/workflows/web-ci.yml` runs on pull requests and on pushes to `main`
-touching `web/**`, `.github/workflows/**` or `.sonarcloud.properties`:
+touching `web/**`, `.github/workflows/**` or `sonar-project.properties`:
 `npm ci --ignore-scripts`, the typechecks (app, Worker and tests, on
 TypeScript 7; the admin's svelte-check on TypeScript 6), `npm test` (which
 includes the toolchain-pin and data-write-group checks over the workflows),
@@ -196,13 +196,23 @@ none of the three packages that have one needs it (the comment in
 `web-ci.yml` says why), and no workflow runs `npx`, which can fetch a package
 the lockfile never named.
 
-CodeQL (`codeql.yml`) and SonarCloud's automatic analysis both look at pull
+CodeQL (`codeql.yml`) and SonarCloud (`sonarcloud.yml`) both look at pull
 requests and `main`. Each posts a check on the pull request (`CodeQL`,
 `SonarCloud Code Analysis`) about the issues the change brings in; the full list
 for `main` lives in the repository's Security tab and on the SonarCloud
-dashboard. `.sonarcloud.properties` at the root decides what SonarCloud reads as
-code, what as tests, and what not at all (the dataset, generated Android
-resources, the SQLite migrations); it takes effect from `main`.
+dashboard. `sonar-project.properties` at the root names the project and decides
+what SonarCloud reads as code, what as tests, and what not at all (the dataset,
+generated Android resources, the SQLite migrations); the scanner reads it from
+the commit it analyses.
+
+SonarCloud runs in CI, with the repository secret `SONAR_TOKEN` (a SonarCloud
+token that may analyse the project). Its automatic analysis must stay off
+(project Administration > Analysis Method): with both on, every CI scan fails.
+Commits that touch only what the data jobs write (`data/`, `games/`, the
+`.jsonl` queues and logs under `scripts/`) are not scanned. A pull request from
+a fork or from Dependabot gets no repository secrets, so its scan job passes
+without scanning; giving Dependabot its own `SONAR_TOKEN` (Settings > Secrets >
+Dependabot) would have its pull requests analysed too.
 
 ### A red "Workers Builds" check on a PR branch is usually not yours
 

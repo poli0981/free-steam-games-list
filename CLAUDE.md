@@ -436,7 +436,7 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
     `uv pip compile --universal --generate-hashes --python-version 3.15`.
 - **One version of each runtime, and a test that holds them together**
   (`web/shared/toolchain.test.ts`; web-ci also runs on `.github/workflows/**`
-  and `.sonarcloud.properties` so a pull request that only moves a pin meets
+  and `sonar-project.properties` so a pull request that only moves a pin meets
   it). `docs/plan/16-toolchain-2026.md` has the upgrade notes.
   - Node is the major in `web/.node-version` (26). Every `setup-node` repeats
     it as a quoted literal, never `node-version-file`: `release-android.yml`
@@ -452,13 +452,18 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
     text open in `scripts/` still names `encoding="utf-8"`: on Windows an
     older Python writes the locale's code page, and cp1252 cannot encode the
     leaderboards' emoji.
-- **SonarCloud's scope is `.sonarcloud.properties`** (automatic analysis; only
-  scope keys are read, from the default branch). Code and tests both start at
-  the root and are split by patterns: a new test-helper folder goes into
-  `sonar.test.inclusions` AND `sonar.exclusions`, or it is analysed as code.
-  It leaves out the dataset, generated Android resources and the SQLite
-  migrations (the PL/SQL analyser reads them as Oracle). Suppressing a rule
-  for a file is done in the SonarCloud UI, not in this file or with NOSONAR.
+- **SonarCloud analyses in CI (`sonarcloud.yml`), and its scope is
+  `sonar-project.properties`.** Automatic analysis is OFF in the project's
+  Administration > Analysis Method and must stay off: while it is on, every CI
+  scan fails. The scanner reads the file from the commit it analyses. Code and
+  tests both start at the root and are split by patterns: a new test-helper
+  folder goes into `sonar.test.inclusions` AND `sonar.exclusions`, or it is
+  analysed as code (and a file both include fails the scan). It leaves out the
+  dataset, generated Android resources and the SQLite migrations (the PL/SQL
+  analyser reads them as Oracle). The job skips commits that touch only what
+  the data jobs write, and passes without scanning when `SONAR_TOKEN` is not
+  available (forks, Dependabot). Suppressing a rule for a file is done in the
+  SonarCloud UI, not in this file or with NOSONAR.
 
 ## Frontend gotchas
 

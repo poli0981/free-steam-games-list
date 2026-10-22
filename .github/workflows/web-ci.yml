@@ -7,14 +7,14 @@ name: Web CI
 
 # Workflow and Sonar changes run it too: web/shared/pipeline.test.ts and
 # web/shared/toolchain.test.ts read .github/workflows/ (the data-write group, the
-# Node and Python pins) and .sonarcloud.properties, and a pull request that
+# Node and Python pins) and sonar-project.properties, and a pull request that
 # touches only those files is exactly the one that can break them.
 on:
   pull_request:
-    paths: ['web/**', '.github/workflows/**', '.sonarcloud.properties']
+    paths: ['web/**', '.github/workflows/**', 'sonar-project.properties']
   push:
     branches: [main]
-    paths: ['web/**', '.github/workflows/**', '.sonarcloud.properties']
+    paths: ['web/**', '.github/workflows/**', 'sonar-project.properties']
   workflow_dispatch:
 
 permissions:
