@@ -460,7 +460,12 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
   folder goes into `sonar.test.inclusions` AND `sonar.exclusions`, or it is
   analysed as code (and a file both include fails the scan). It leaves out the
   dataset, generated Android resources and the SQLite migrations (the PL/SQL
-  analyser reads them as Oracle). The job skips commits that touch only what
+  analyser reads them as Oracle). `sonar.typescript.tsconfigPaths` names all
+  six tsconfigs in `web/` (auto-detection finds only files named exactly
+  `tsconfig.json`), and the job runs `npm ci --ignore-scripts` and
+  `svelte-kit sync` first: `web/tsconfig.json` extends the generated one, and
+  without it the analyser logged "Failed to parse tsconfig" and read `web/src`
+  untyped. A new tsconfig joins that list. The job skips commits that touch only what
   the data jobs write, and passes without scanning when `SONAR_TOKEN` is not
   available (forks, Dependabot). Suppressing a rule for a file is done in the
   SonarCloud UI, not in this file or with NOSONAR.

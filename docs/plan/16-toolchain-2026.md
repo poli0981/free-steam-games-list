@@ -222,7 +222,9 @@ CI: sixteen `setup-python` steps moved from `'3.12'` to `'3.15'`; the
 now sets up 3.15 like the rest. `codeql.yml` alone uses 3.14: CodeQL's
 supported-languages page lists Python up to 3.14 and its extractor runs on
 that interpreter. The pipeline uses no 3.15-only syntax, so nothing goes
-unparsed. `sonar.python.version` is 3.15; sonar-python knows 3.15.
+unparsed. `sonar.python.version` is 3.15. SonarCloud's sonar-python does not
+list 3.15 yet: the CI scan (2026-10-22) warns and analyses as 3.14, which
+changes nothing for this code.
 
 ## Next time
 
