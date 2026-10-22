@@ -35,7 +35,7 @@ jobs :
         with : { ref : main }
       -
         uses : actions/setup-python@v6
-        with : { python-version : '3.12' }
+        with : { python-version : '3.15' }
       -
         run : chmod +x ./bash/ingest.sh && ./bash/ingest.sh
         env : { STEAM_API_KEY : '${{ secrets.STEAM_API_KEY }}' }

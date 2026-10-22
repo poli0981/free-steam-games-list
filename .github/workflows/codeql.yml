@@ -75,11 +75,16 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      # The one workflow not on the pipeline's Python (3.15, every other
+      # setup-python): CodeQL's supported-languages page lists Python up to
+      # 3.14, and its extractor runs on this interpreter. The pipeline uses no
+      # 3.15-only syntax, so nothing goes unparsed. web/shared/toolchain.test.ts
+      # names this exception; move it when CodeQL lists 3.15.
       - name: Setup Python
         if: matrix.language == 'python'
         uses: actions/setup-python@v6
         with:
-          python-version: '3.12'
+          python-version: '3.14'
 
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v4

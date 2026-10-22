@@ -56,7 +56,7 @@ def main():
     tp = sum(_ppc(g.get("current_players","0")) for g in online)
     now = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
     os.makedirs(GAMES_DIR, exist_ok=True)
-    with open(f"{GAMES_DIR}/top-online.md", "w") as f:
+    with open(f"{GAMES_DIR}/top-online.md", "w", encoding="utf-8") as f:
         f.write(f"# 🎮 Top Online – Live Leaderboard\n\n> {now} | {len(online)} games | {tp:,} players\n\n")
         f.write("| # | Game | Players | Trend | Tier | Rating | Genre | AC | Peak | Link |\n")
         f.write("|---|------|---------|-------|------|--------|-------|----|------|------|\n")

@@ -34,7 +34,7 @@ def main():
     save_main(games)
     if dead:
         ts = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
-        with open(DEAD_LINKS_LOG, "a") as f:
+        with open(DEAD_LINKS_LOG, "a", encoding="utf-8") as f:
             f.write(f"\n── {ts} ──\n")
             for d in dead: f.write(f"  [{d['code']}] {d['name']} ({d['appid']})\n")
         print(f"\n💀 {len(dead)} dead")

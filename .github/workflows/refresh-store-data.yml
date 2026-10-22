@@ -49,7 +49,7 @@ jobs:
       - uses: actions/checkout@v6
         with: {ref: main}
       - uses: actions/setup-python@v6
-        with: {python-version: '3.12'}
+        with: {python-version: '3.15'}
       - run: chmod +x ./bash/refresh_store.sh && ./bash/refresh_store.sh
         env:
           REFRESH_ONLY: ${{ inputs.only }}

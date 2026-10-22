@@ -38,7 +38,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-python@v6
-        with: {python-version: '3.12'}
+        with: {python-version: '3.15'}
       - run: chmod +x ./bash/refresh_peaks.sh && ./bash/refresh_peaks.sh
         env:
           PEAKS_ALL: ${{ inputs.backfill }}

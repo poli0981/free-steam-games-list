@@ -405,7 +405,7 @@ def load_temp() -> list[dict]:
 
 def clear_temp():
     if os.path.isfile(TEMP_JSONL):
-        with open(TEMP_JSONL, "w") as f:
+        with open(TEMP_JSONL, "w", encoding="utf-8") as f:
             f.write("")
         print(f"  ✓ Cleared {TEMP_JSONL}")
 

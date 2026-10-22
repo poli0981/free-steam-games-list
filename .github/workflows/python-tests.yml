@@ -28,7 +28,7 @@ jobs:
       - uses: actions/checkout@v6
       - uses: actions/setup-python@v6
         with:
-          python-version: '3.12'
+          python-version: '3.15'
       # The data pipeline's own install line, exactly as bash/*.sh run it, so a
       # Dependabot bump of requirements.txt is proven here before a data job
       # meets it. Hash mode is all-or-nothing per pip call, hence the second
