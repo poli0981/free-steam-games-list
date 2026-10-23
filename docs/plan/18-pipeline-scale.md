@@ -145,6 +145,18 @@ Rules worth keeping (CLAUDE.md has them in full):
 `queue: max`, `cancel-in-progress: false`, `ref: main` on every checkout, a
 `timeout-minutes`, or a budget less than 20 minutes below it.
 
+## Found after the merge: appreviews redirects
+
+The first run of the new Update Reviews on `main` (2026-10-23, 2 m 31 s, 4,540
+games changed - exactly the ones whose `last_updated` moved) asked `appreviews`
+about the 12 games GetItems counted at 0, and all 12 failed. From this machine
+and from GitHub's runners alike, `store.steampowered.com/appreviews/<id>?json=1`
+now answers 302 to the store front, whatever the headers; it answered on
+10-17. The 38 games the ingest added on 10-23 were the first to get "N/A".
+So the ingest falls back to the GetItems summary, and a game never read
+("N/A") with a count of 0 becomes "No reviews"; a stored percentage is still
+kept until a second source confirms the 0.
+
 ## Load, before and after
 
 | | Before | After |

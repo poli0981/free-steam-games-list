@@ -27,7 +27,13 @@ build. Repo public-facing version `4.3.3` → `4.4.0`.
   days and five and a half hours. The percentage is now Steam's own, which
   rounds down: about 4,000 games show one point less once (Counter-Strike 2
   "85%" instead of "86%"), exactly as on their store pages. A summary that
-  says 0 reviews is double-checked game by game before it replaces anything.
+  says 0 reviews is double-checked game by game before it replaces a
+  percentage.
+- **New games get their reviews again.** Steam's per-game reviews endpoint
+  has answered with a redirect to the store front since 2026-10-23, so the 38
+  games added that day were listed with "N/A". A new game now takes its
+  summary from the store API when that endpoint gives none, and a game never
+  read becomes "No reviews" until Steam counts its first one.
 - **The daily purge needs two answers to remove a game.** Steam's store API
   screens every game in a few minutes, and a game is removed only when
   appdetails agrees; "unavailable" is asked twice, five minutes apart. A run

@@ -28,16 +28,28 @@ def _page(name="Anti-Cheat Expert (ACE)", heading="Uses Kernel Level Anti-Cheat"
 
 
 class FakeClient:
-    def __init__(self, page=None, status=None, items=None):
+    """`reviews` is appreviews' query_summary (None: it redirected), and
+    `review_items` GetItems' answer to include_reviews (None: the batch failed)."""
+
+    def __init__(self, page=None, status=None, items=None, reviews=None, review_items=None):
         self.page = page
         self.status = status or ("ok" if page is not None else "network_error")
         self.items = items
+        self.reviews, self.review_items = reviews, review_items
+        self.asked_items = 0
 
     def fetch_app_details(self, appid):
         return dict(DETAILS)
 
     def fetch_reviews(self, appid):
-        return None
+        return self.reviews
+
+    def fetch_items(self, appids, data_request, give_up_after=10):
+        assert data_request == {"include_reviews": True}
+        self.asked_items += 1
+        if self.review_items is None:
+            return {}, set(appids)
+        return {a: self.review_items[a] for a in appids if a in self.review_items}, set()
 
     def fetch_store_page_full(self, appid):
         return (self.status, self.page if self.status == "ok" else None)
@@ -81,6 +93,29 @@ def test_fetch_full_never_replaces_another_product():
     game.update(anti_cheat="EAC", anti_cheat_note="EAC", is_kernel_ac=False)
     _fetch(game)
     assert (game["anti_cheat"], game["anti_cheat_note"], game["is_kernel_ac"]) == ("EAC", "EAC", False)
+
+
+def _reviews_item(count, pct=0, label=""):
+    return {"2507950": {"id": 2507950, "success": 1, "reviews": {"summary_filtered": {
+        "review_count": count, "percent_positive": pct, "review_score_label": label}}}}
+
+
+def test_reviews_come_from_appreviews_when_it_answers():
+    client = FakeClient(page=_page(), reviews={"total_reviews": 3, "total_positive": 2,
+                                                "review_score_desc": "3 user reviews"})
+    assert _fetch(client=client)["reviews"] == "66% (3 user reviews)"
+    assert client.asked_items == 0
+
+
+def test_reviews_come_from_the_store_api_when_appreviews_does_not_answer():
+    # Since 2026-10-23 appreviews answers with a redirect to the store front.
+    client = FakeClient(page=_page(), review_items=_reviews_item(52341, 80, "Very Positive"))
+    assert _fetch(client=client)["reviews"] == "80% (Very Positive)"
+    assert _fetch(client=FakeClient(page=_page(), review_items=_reviews_item(0)))["reviews"] == "No reviews"
+
+
+def test_reviews_stay_unknown_when_neither_answers():
+    assert _fetch(client=FakeClient(page=_page()))["reviews"] == "N/A"
 
 
 def test_apply_details_writes_no_anti_cheat():

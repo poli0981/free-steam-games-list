@@ -13,11 +13,13 @@ The rules:
   - A summary with reviews is written "85% (Very Positive)": Steam's floored
     percentage and its label, the vocabulary appreviews has ("3 user
     reviews", "Mixed").
-  - A count of 0 is never written on GetItems' word alone: its summary has
-    said 0 for a game with thousands of reviews. A game stored as "No
-    reviews" stays so; one stored with a percentage, "N/A" or nothing is asked
-    on appreviews instead (at most ASK_CAP a run, in an order that changes
-    daily), and that answer is written, "No reviews" included.
+  - A count of 0 never replaces a percentage on GetItems' word alone: its
+    summary has said 0 for a game with thousands of reviews. Such a game is
+    asked on appreviews instead (at most ASK_CAP a run, in an order that
+    changes daily), and keeps its percentage when appreviews gives no answer
+    - which, since 2026-10-23, it does not: it redirects to the store front.
+    A game stored as "N/A" or nothing, never read, gets "No reviews": the
+    first count GetItems has replaces it.
   - No item, no usable summary, a failed batch or a failed appreviews request
     leaves the stored value alone. When GetItems answers for no game at all,
     nothing is written.
@@ -36,6 +38,7 @@ Usage (from the repository root):
 """
 import argparse
 import os
+import re
 import sys
 import zlib
 from collections import Counter
@@ -56,6 +59,7 @@ ASK_CAP = 300
 HEARTBEAT_DAYS = 14
 HEARTBEAT_JITTER_DAYS = 7
 NO_REVIEWS = "No reviews"
+PERCENTAGE = re.compile(r"\d{1,3}%")
 
 # What decide() says to do with one game.
 SET = "set"          # write this value
@@ -72,7 +76,10 @@ def decide(stored: str, item: Optional[dict]) -> tuple[str, Optional[str]]:
     count, pct, label = found
     if count > 0:
         return SET, reviews_text(count, pct, label)
-    return (KEEP, None) if stored == NO_REVIEWS else (ASK, None)
+    if stored == NO_REVIEWS:
+        return KEEP, None
+    # A percentage is checked before a 0 replaces it; "N/A" was never known.
+    return (ASK, None) if PERCENTAGE.match(stored or "") else (SET, NO_REVIEWS)
 
 
 def heartbeat_due(game: dict, now: datetime) -> bool:
