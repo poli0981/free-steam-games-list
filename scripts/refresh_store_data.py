@@ -339,9 +339,10 @@ def main(argv: Optional[list[str]] = None) -> None:
     summary = ", ".join(f"{f} {n}" for f, n in fields.most_common()) or "nothing"
     print(f"\n{touched} of {done} games changed: {summary}")
     if not_free:
-        print(f"::warning::appdetails no longer calls {len(not_free)} game(s) free while Steam's "
-              f"store API still does, so purge keeps them: {'; '.join(not_free[:20])}"
-              f"{' …' if len(not_free) > 20 else ''}. Remove one in /admin if it is so.")
+        print(f"::warning::appdetails no longer calls {len(not_free)} game(s) free: "
+              f"{'; '.join(not_free[:20])}{' …' if len(not_free) > 20 else ''}. The daily purge "
+              f"removes one only when Steam's store API says so too; if it does not, remove it "
+              f"in /admin.")
     if args.dry_run:
         print("Dry run: nothing written.")
         return
