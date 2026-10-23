@@ -19,13 +19,17 @@ permissions:
   contents: write
   actions: write
 
+# queue: max - a run that finds another data job running waits its turn
+# (first in, first out) instead of evicting the run already waiting.
 concurrency:
   group: data-write
   cancel-in-progress: false
+  queue: max
 
 jobs:
   mark:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
         # The tip of main when the job starts, not when it was queued: a run

@@ -71,8 +71,8 @@
     <div>
       <h1 class="text-2xl font-semibold tracking-tight">Pipeline</h1>
       <p class="max-w-3xl text-sm text-muted-foreground">
-        The data workflows on GitHub Actions. Those marked data-write take turns: one runs, at most one waits, and a newer
-        one cancels the waiting run.
+        The data workflows on GitHub Actions. Those marked data-write take turns: one runs and the others wait in a queue,
+        first in, first out.
       </p>
     </div>
     <Button variant="outline" size="sm" onclick={() => load(true)} disabled={loading}>
