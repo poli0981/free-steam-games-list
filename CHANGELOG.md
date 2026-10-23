@@ -4,6 +4,43 @@ All notable changes to this awesome noob repo will be documented here.
 
 ## [Unreleased]
 
+### 🧰 Pipeline
+
+- **The data jobs scale with the catalogue again.** With almost 10,000 games
+  and a few hundred more every day, three jobs that asked Steam about one
+  game at a time had reached GitHub's six-hour limit: on 2026-10-23 Update
+  Reviews was stopped at exactly six hours with nothing saved. The full
+  assessment, with every measurement, is `docs/plan/18-pipeline-scale.md`.
+- **Reviews come from Steam's store API, for every game, every day.** Fifty
+  games a request, about two minutes for the catalogue, instead of every two
+  days and five and a half hours. The percentage is now Steam's own, which
+  rounds down: about 4,000 games show one point less once (Counter-Strike 2
+  "85%" instead of "86%"), exactly as on their store pages. A summary that
+  says 0 reviews is double-checked game by game before it replaces anything.
+- **The daily purge needs two answers to remove a game.** Steam's store API
+  screens every game in a few minutes, and a game is removed only when
+  appdetails agrees; "unavailable" is asked twice, five minutes apart. A run
+  that would remove more than 100 games, or flags more than 500, stops before
+  writing anything. It also lists earlier removals that Steam has since
+  undone. It runs daily now, instead of a five-hour sweep on Mondays.
+- **Check Dead Links is retired.** In its whole life it never found a dead
+  link: Steam sends a delisted game's page to the store front, which answers
+  200. The purge's screen sees delisted games (`unlisted`) instead.
+- **No run is cancelled for waiting.** The data jobs share one queue that
+  used to hold a single waiting run: a third job cancelled it, and Update
+  Reviews lost five of ten runs that way. The queue now holds them all, first
+  in, first out, and every job checks out the latest `main` when it starts -
+  Auto Update JSON failed four days in ten from working on the data as it was
+  when the run was queued.
+- **Every long job stops in time to save.** Each workflow gives its job a time
+  budget below its timeout: past it the job saves and commits what it did
+  instead of being stopped with nothing, and it warns before the budget gets
+  tight. The leaderboards skip the pauses meant for store pages (Top Online
+  ~27 minutes instead of 48). The store-data and all-time-peak rotations
+  stretch their cycle as the catalogue grows instead of their daily runs.
+- **Force Re-fetch runs in parts** (`1/8` … `8/8`, queued one after another),
+  and a game whose fetch fails keeps its old data.
+
 ### 🧰 Tooling
 
 - **Desktop releases keep reaching the updater.** tauri-action v1 writes each
