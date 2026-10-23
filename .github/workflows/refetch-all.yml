@@ -1,15 +1,24 @@
 name : Force Re-fetch All (v2.1 Schema)
 
-# ⚠ MANUAL ONLY – this re-fetches ALL games from Steam.
-# Takes a long time for large datasets (300+ games ≈ 15-30 min).
-# Creates a backup at data.jsonl.bak before starting.
+# ⚠ MANUAL ONLY – this re-fetches games from Steam from scratch, about six
+# seconds a game: far longer than one job may run once the catalogue is in
+# the thousands. Run it in PARTS: part "1/8" takes an eighth of the games
+# (crc32 slices, scripts/refetch_all.py), and the runs for 1/8 ... 8/8 can be
+# started together - the data-write group queues them (queue: max). A part cut
+# short by its budget keeps what it did; starting it again carries on with the
+# games it did not reach. Creates a backup at data.bak before starting.
 
 on :
   workflow_dispatch :
     inputs :
       confirm :
-        description : 'Type "yes" to confirm force re-fetch of ALL games'
+        description : 'Type "yes" to confirm force re-fetch'
         required : true
+        type : string
+      part :
+        description : 'Which part, K/N (1/8 ... 8/8 for the whole catalogue)'
+        required : true
+        default : '1/8'
         type : string
 
 permissions :
@@ -18,16 +27,21 @@ permissions :
 concurrency :
   group : data-write
   cancel-in-progress : false
+  queue : max
 
 jobs :
   refetch :
     if : ${{ github.event.inputs.confirm == 'yes' }}
     runs-on : ubuntu-latest
-    timeout-minutes : 120
+    timeout-minutes : 350
     steps :
       -
         name : Checkout repo
         uses : actions/checkout@v6
+        # main as it is when the job STARTS: a part that waited its turn must
+        # work on what the part before it committed.
+        with :
+          ref : main
 
       -
         name : Setup Python
@@ -36,9 +50,11 @@ jobs :
           python-version : '3.15'
 
       -
-        name : Force re-fetch all games
+        name : Force re-fetch one part
         env :
           STEAM_API_KEY : ${{ secrets.STEAM_API_KEY }}
+          REFETCH_PART : ${{ inputs.part }}
+          JOB_BUDGET_MINUTES : '320'
         run : |
           chmod +x ./bash/refetch_all.sh
           ./bash/refetch_all.sh

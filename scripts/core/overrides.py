@@ -97,7 +97,7 @@ def preserve_machine_notes(current: str, human: str) -> str:
     """Re-attach machine-appended markers that the human value would drop.
 
     `notes` is a hybrid field: the pipeline appends its own segments to it —
-    check_dead_links adds "Delisted", mark_dead_games adds "Dead game",
+    the retired dead-link check added "Delisted", mark_dead_games adds "Dead game",
     fetcher adds "No longer free!". Those appends are one-way. mark_dead_games
     only calls append_note_idempotent() when `is_dead` is still False, so once
     a game is marked, a stripped marker is NEVER re-appended. A plain

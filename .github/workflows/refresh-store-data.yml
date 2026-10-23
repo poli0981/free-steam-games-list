@@ -5,22 +5,23 @@ name: Refresh Store Data
 # store page, every game once a week; name, header image, description,
 # developer/publisher, release date, platforms, Metacritic and DRM notes from
 # appdetails, every game once a month. Each daily run takes one slice of each
-# rotation - roughly 630 store pages and 150 appdetails calls, ~40 minutes.
+# rotation - about 1,400 store pages and 330 appdetails calls at 9,800 games,
+# an hour. Past 2,000 pages or 500 appdetails a day a cycle doubles instead of
+# the run growing, so it stays under an hour and a half.
 # scripts/refresh_store_data.py explains the rotation and the rules (never
 # blanks a value, never touches MANUAL_FIELDS).
 #
 # Then the anti-cheat sweep, committed separately: every game's anti-cheat as
-# its developer declares it on Steam, about 160 GetItems requests plus a store
+# its developer declares it on Steam, about 200 GetItems requests plus a store
 # page for each disclosure Steam does not name there (~70), a few minutes.
 # scripts/refresh_anticheat.py has its rules: Steam wins, an override wins
 # over Steam, and no disclosure never clears a value. `only: anticheat` runs
 # just the sweep.
 #
-# 16:00 UTC is the quiet part of this repository's day. Scheduled runs here
-# start two to five hours late, the morning data jobs (reviews, dead links,
-# purge) run for two to four hours, and the data-write group keeps only ONE
-# pending run: a second one queueing behind a running job cancels the first.
-# Nothing else long is due this late; the Daily Snapshot (23:00) comes after.
+# 16:00 UTC is the quiet part of this repository's day: scheduled runs here
+# start up to an hour late, and the morning jobs are done by then. A data job
+# that is still running only delays this one - the data-write group queues
+# runs (queue: max) instead of evicting the one waiting.
 
 on:
   schedule: [{cron: '0 16 * * *'}]
@@ -38,11 +39,12 @@ permissions: {contents: write}
 concurrency:
   group: data-write
   cancel-in-progress: false
+  queue: max
 
 jobs:
   refresh:
     runs-on: ubuntu-latest
-    timeout-minutes: 120
+    timeout-minutes: 150
     steps:
       # main, not the triggering commit: a run that waited its turn in
       # data-write must work on the data as it is now, not as it was queued.
@@ -53,3 +55,6 @@ jobs:
       - run: chmod +x ./bash/refresh_store.sh && ./bash/refresh_store.sh
         env:
           REFRESH_ONLY: ${{ inputs.only }}
+          # The store refresh's budget (core/budget.py); the anti-cheat sweep
+          # after it takes a few minutes and has none.
+          JOB_BUDGET_MINUTES: '100'

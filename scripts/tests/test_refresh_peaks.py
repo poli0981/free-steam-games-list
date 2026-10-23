@@ -239,3 +239,50 @@ def test_refetch_all_never_clears_it():
     # The other player fields are cleared and fetched again; this one cannot be.
     assert "all_time_peak" not in refetch_all.CLEARABLE
     assert "all_time_peak" not in refetch_all.CONDITIONAL
+
+
+def test_the_budget_stops_the_steamcharts_part_and_keeps_what_was_raised(monkeypatch):
+    from core import budget
+
+    clock = [0.0]
+    monkeypatch.setattr(budget.time, "monotonic", lambda: clock[0])
+    deadline = budget.Deadline(1)
+    games = [_game(str(i)) for i in range(1, 6)]
+
+    class Slow(_Client):
+        def fetch(self, appid):
+            clock[0] += 25
+            return super().fetch(appid)
+
+    client = Slow({str(i): Result("ok", 100 * i) for i in range(1, 6)})
+    lines: list[str] = []
+    tally = rp.raise_from_steamcharts(games, client, log=lines.append, deadline=deadline)
+    assert client.asked == ["1", "2", "3"]
+    assert tally["raised"] == 3 and tally["skipped"] == 2
+    assert any(line.startswith("::warning::") for line in lines)
+
+
+def test_a_larger_catalogue_is_asked_less_often_never_more():
+    assert rp.cycle_for(9847, rp.PEAK_CYCLE_DAYS, rp.PEAK_DAILY) == 30
+    assert rp.cycle_for(20000, rp.PEAK_CYCLE_DAYS, rp.PEAK_DAILY) == 60
+
+
+def test_a_run_asks_today_s_slice_and_saves(tmp_path, monkeypatch, capsys):
+    import os
+
+    from core import budget, data_store, rotation
+
+    monkeypatch.chdir(tmp_path)
+    os.makedirs("data")
+    monkeypatch.delenv(budget.ENV, raising=False)
+    games = [_game(str(10 * i), current_players="0", peak_today="0") for i in range(1, 41)]
+    data_store.save_main(games, apply_human_overrides=False)
+    day = rotation.slice_of("10", rp.PEAK_CYCLE_DAYS) + 30 * 700
+    client = _Client({str(10 * i): Result("ok", 1000 + i) for i in range(1, 41)})
+    monkeypatch.setattr(rp, "SteamChartsClient", lambda: client)
+    rp.main(["--day", str(day)])
+    assert "10" in client.asked
+    assert all(rotation.slice_of(a, 30) == day % 30 for a in client.asked)
+    after = {data_store.extract_appid(g["link"]): g for g in data_store.load_main()}
+    assert after["10"]["all_time_peak"] == "1,001"
+    assert f"slice {day % 30}/30" in capsys.readouterr().out

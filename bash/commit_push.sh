@@ -1,13 +1,12 @@
 #!/bin/bash
 # Commit what a data job changed, and push it even if main moved meanwhile.
 #
-# A data job can run for hours (update-reviews, check-dead-links,
-# purge-unhealthy), and `concurrency: data-write` serialises only the
-# WORKFLOWS. main still moves underneath one: a merged pull request, an /admin
-# approval, removal or override the Worker commits. A plain `git push` is then
-# rejected ("fetch first")
-# and the whole run is thrown away - purge-unhealthy lost four hours of work
-# that way on 2026-09-21.
+# A data job can run for an hour or more (refresh-store-data, the
+# leaderboards), and `concurrency: data-write` serialises only the WORKFLOWS.
+# main still moves underneath one: a merged pull request, an /admin approval,
+# removal or override the Worker commits. A plain `git push` is then rejected
+# ("fetch first") and the whole run is thrown away - purge-unhealthy lost four
+# hours of work that way on 2026-09-21.
 #
 # None of those other writers touch the shards, so rebasing onto them and
 # pushing again is safe. A genuine conflict still fails the job, loudly.

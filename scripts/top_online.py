@@ -3,6 +3,7 @@
 import sys, os
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from datetime import datetime, timezone
+from core.budget import Deadline
 from core.constants import STEAM_API_KEY, GAMES_DIR, TOP_ONLINE_LIMIT
 from core.data_store import load_main, save_main, extract_appid
 from core.fetcher import update_players_only
@@ -39,6 +40,7 @@ def _stars(r):
 
 def main():
     if not STEAM_API_KEY: print("No key."); sys.exit(1)
+    deadline = Deadline.from_env()
     games = load_main()
     online = [g for g in games if g.get("type_game","").lower()=="online"
               and g.get("status","active")=="active"]
@@ -48,7 +50,7 @@ def main():
     for g in online:
         aid = extract_appid(g.get("link",""))
         if aid: prev[aid] = _ppc(g.get("current_players","0"))
-    update_players_only(games)
+    update_players_only(games, deadline=deadline)
     # Re-filter after update (status may have changed)
     online = [g for g in games if g.get("type_game","").lower()=="online"
               and g.get("status","active")=="active"]

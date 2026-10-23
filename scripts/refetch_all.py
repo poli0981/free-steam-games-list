@@ -1,15 +1,33 @@
 #!/usr/bin/env python3
 """
 Force re-fetch ALL games. MANUAL ONLY.
-Backup → migrate → clear fetchable → re-fetch → save.
+Backup → migrate → re-fetch each game from scratch → save.
+
+At about six seconds a game the whole catalogue takes far longer than a job
+may run, so it is done in parts: --part K/N takes the games whose
+crc32(appid) % N is K-1 (core/rotation.py), and the workflow's runs queue
+one behind another. Each game is cleared and fetched on a copy that replaces
+it only once appdetails has answered, so a failed request - or the job
+budget running out (core/budget.py) - leaves every other game exactly as it
+was. The oldest last_updated goes first: running a part that was cut short
+again carries on where it stopped.
 """
-import sys, os, shutil
+import argparse
+import copy
+import os
+import re
+import shutil
+import sys
+from collections import Counter
+
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
+from core.budget import Deadline
 from core.constants import DATA_DIR, STEAM_API_KEY
-from core.data_store import load_main, save_main, migrate_record, now_iso
+from core.data_store import extract_appid, load_main, save_main, migrate_record
 from core.fetcher import fetch_full, process_batch
 from core.overrides import OverrideGuard
+from core.rotation import slice_of
 from core.steam_client import get_client
 
 CLEARABLE = {
@@ -49,13 +67,51 @@ def clear_fetchable(game):
     game["metacritic"] = "N/A"
 
 
-def main():
+def parse_part(text: str) -> tuple[int, int]:
+    """'K/N' -> (K, N) with 1 <= K <= N."""
+    m = re.fullmatch(r"\s*(\d+)\s*/\s*(\d+)\s*", text or "")
+    if not m or not 1 <= int(m.group(1)) <= int(m.group(2)):
+        raise argparse.ArgumentTypeError(f"expected K/N with 1 <= K <= N, got {text!r}")
+    return int(m.group(1)), int(m.group(2))
+
+
+def in_part(game: dict, part: tuple[int, int]) -> bool:
+    appid = extract_appid(game.get("link", ""))
+    return bool(appid) and slice_of(appid, part[1]) == part[0] - 1
+
+
+def refetch_one(game: dict, client, guard) -> bool:
+    """Re-fetch one game from scratch, in place, or leave it exactly as it was
+    when appdetails does not answer. Returns whether it was re-fetched."""
+    appid = extract_appid(game.get("link", ""))
+    if not appid:
+        return False
+    status, details = client.fetch_app_details_full(appid)
+    if status != "ok" or not details:
+        return False
+    fresh = copy.deepcopy(game)
+    clear_fetchable(fresh)
+    fetch_full(fresh, client=client, prefetched_details=details, guard=guard)
+    game.clear()
+    game.update(fresh)
+    return True
+
+
+def main(argv=None):
+    ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0].strip())
+    ap.add_argument("--part", type=parse_part, default=(1, 1),
+                    help="K/N: re-fetch only the K-th of N parts of the catalogue (default 1/1)")
+    args = ap.parse_args(argv)
+
+    deadline = Deadline.from_env()
     games = load_main()
     if not games:
         print("Empty.")
         return
-    total = len(games)
-    print(f"Force re-fetch: {total} games\n")
+    targets = [g for g in games if in_part(g, args.part)]
+    # Oldest first: a part cut short carries on where it stopped next time.
+    targets.sort(key=lambda g: g.get("last_updated") or "")
+    print(f"Force re-fetch: part {args.part[0]}/{args.part[1]}, {len(targets)} of {len(games)} games\n")
 
     backup_dir = DATA_DIR + ".bak"
     if os.path.isdir(backup_dir):
@@ -63,30 +119,21 @@ def main():
     shutil.copytree(DATA_DIR, backup_dir)
     print(f"Backup -> {backup_dir}")
 
-    # Migrate + clear
     for g in games:
         migrate_record(g)
-        clear_fetchable(g)
-
-    print(f"Cleared fetchable fields. Re-fetching...\n")
     if not STEAM_API_KEY:
         print("⚠ No STEAM_API_KEY – players skipped")
 
     client = get_client()
     guard = OverrideGuard.load()
-    process_batch(games, lambda g: fetch_full(g, client=client, guard=guard), "Re-fetching")
-
-    stamp = now_iso()
-    for g in games:
-        g["last_updated"] = stamp
+    tally: Counter = Counter()
+    process_batch(targets, lambda g: tally.update([refetch_one(g, client, guard)]),
+                  "Re-fetching", deadline=deadline)
     save_main(games)
 
-    # Stats
-    has = lambda k: sum(1 for g in games if g.get(k) and g[k] not in ("", "N/A", [], False))
     print(f"\n{'═'*50}")
-    print(f"Done {total} games. Backup: {backup_dir}")
-    print(f"  name: {has('name')} | dev: {has('developer')} | pub: {has('publisher')}")
-    print(f"  plat: {has('platforms')} | lang: {has('languages')} | tags: {has('tags')}")
+    print(f"Re-fetched {tally[True]} of {len(targets)} ({tally[False]} left as they were: "
+          f"appdetails did not answer). Backup: {backup_dir}")
 
 
 if __name__ == "__main__":

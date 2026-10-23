@@ -44,6 +44,12 @@ class HealthResult:
     def reason(self): return REASON_LABELS.get(self.status, self.status)
 
 
+def free_per_appdetails(data: dict) -> bool:
+    """Whether appdetails calls a game free: is_free, or a price that starts at 0."""
+    price = data.get("price_overview") or {}
+    return bool(data.get("is_free", False)) or (bool(price) and price.get("initial", 1) == 0)
+
+
 def check_game_health(link: str, name: str = "",
                       client: Optional[SteamClient] = None) -> HealthResult:
     """
@@ -70,11 +76,7 @@ def check_game_health(link: str, name: str = "",
         # Reject unreleased games – an F2P tracker only lists playable titles.
         if data.get("release_date", {}).get("coming_soon", False):
             return HealthResult(COMING_SOON, appid, resolved, link)
-        is_free = data.get("is_free", False)
-        price = data.get("price_overview", {})
-        if price:
-            is_free = is_free or price.get("initial", 1) == 0
-        if not is_free:
+        if not free_per_appdetails(data):
             return HealthResult(NOT_FREE, appid, resolved, link)
         # Healthy – return data so caller can reuse it
         return HealthResult(OK, appid, resolved, link, data=data)

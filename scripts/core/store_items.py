@@ -16,6 +16,10 @@ Checked against stored HTML scrapes of 40 random games: 37 identical tag lists
 (the other three had drifted since they were scraped), 40 identical language
 lists, no unknown tag id. Tag ids are named by IStoreService/GetTagList.
 
+The daily sweeps read the same items for the whole catalogue, a hundred-odd
+requests where a request per game took hours: review_summary() for
+update_reviews.py, screen_item() for purge_unhealthy.py.
+
 Everything here is pure; steam_client.py makes the requests.
 """
 from typing import Iterable, Optional
@@ -118,6 +122,62 @@ def parse_store_item(item: dict, tag_names: dict[int, str]) -> dict:
         "has_paid_dlc": None,
         "anti_cheat": from_store_item(item),
     }
+
+
+def review_summary(item: Optional[dict]) -> Optional[tuple[int, int, str]]:
+    """(review_count, percent_positive, label) from an item asked for with
+    include_reviews - Steam's own summary, the one its store shows - or None
+    when the item says nothing usable: no item, no summary, a count without a
+    percentage. A count of 0 comes back as (0, 0, ""), and is NOT to be
+    trusted on its own: the summary has said 0 for a game with thousands of
+    reviews (845070, 2026-10-23), and lags behind a new game's first ones.
+
+    percent_positive is floored, as on the store, where round() would round
+    up (85 for Counter-Strike 2, which round() had made 86).
+    """
+    summary = ((item or {}).get("reviews") or {}).get("summary_filtered")
+    if not isinstance(summary, dict):
+        return None
+    count = _int(summary.get("review_count"))
+    if count < 0:
+        return None
+    if count == 0:
+        return (0, 0, "")
+    pct = _int(summary.get("percent_positive"))
+    if not 0 <= pct <= 100:
+        return None
+    return (count, pct, str(summary.get("review_score_label") or "").strip())
+
+
+# Why Steam's store says a game may no longer belong in the catalogue
+# (screen_item), for purge_unhealthy.py to confirm with appdetails.
+UNKNOWN = "unknown"          # Steam does not know the app (success 15)
+HIDDEN = "hidden"            # visible: false
+UNLISTED = "unlisted"        # taken off the store
+COMING_SOON = "coming_soon"  # not released (any more, or yet)
+NOT_FREE = "not_free"        # no is_free flag
+
+
+def screen_item(item: Optional[dict]) -> Optional[str]:
+    """Why an item asked for with include_release flags its game, or None
+    for a game that is on the store, released and free. `item` None means
+    Steam answered the batch without it: an app it does not know.
+
+    Only a flag, never a verdict: purge_unhealthy.py removes a game only
+    when appdetails agrees. `type` is not read - a free mod is in the
+    catalogue on purpose (Black Reliquary); that check belongs to ingest.
+    """
+    if item is None:
+        return UNKNOWN
+    if item.get("visible") is False:
+        return HIDDEN
+    if item.get("unlisted"):
+        return UNLISTED
+    if (item.get("release") or {}).get("is_coming_soon"):
+        return COMING_SOON
+    if not item.get("is_free"):
+        return NOT_FREE
+    return None
 
 
 def paid_dlc_from_items(items: Iterable[dict]) -> Optional[bool]:
