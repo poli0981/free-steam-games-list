@@ -10,9 +10,10 @@ The data pipeline grows with the catalogue again. With almost 10,000 games
 and a few hundred more every day, the jobs that asked Steam about one game at
 a time had run out of time; they now read Steam's store API fifty games a
 request, wait their turn instead of cancelling each other, and stop in time to
-save. Only the pipeline, its workflows and the admin's wording changed: the
-desktop and Android apps stay at `2.2.1`, with no new build. Repo
-public-facing version `4.3.3` → `4.4.0`.
+save. The release also carries the tooling merged since v4.3.3 - TypeScript
+7, Node 26 and Python 3.15, SonarCloud in CI, the desktop updater fix - and a
+certifi bump. The desktop and Android apps stay at `2.2.1`, with no new
+build. Repo public-facing version `4.3.3` → `4.4.0`.
 
 ### 🧰 Pipeline
 
