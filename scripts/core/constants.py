@@ -7,7 +7,6 @@ import os
 DATA_DIR       = "data"
 LEGACY_JSONL   = "scripts/data.jsonl"      # fallback pre-migration
 TEMP_JSONL     = "scripts/temp_info.jsonl"
-DEAD_LINKS_LOG = "scripts/dead_links.log"
 REMOVED_JSONL  = "scripts/removed_games.jsonl"
 GAMES_DIR      = "games"
 OVERRIDES_DIR  = "data/overrides"   # one <appid>.json per human-edited game

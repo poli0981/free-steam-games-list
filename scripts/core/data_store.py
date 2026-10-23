@@ -442,7 +442,7 @@ _SKELETON_TEMPLATE = {
 def append_note_idempotent(game: dict, marker: str, full_note: str) -> bool:
     """Append `full_note` to game['notes'] only if `marker` isn't already present.
 
-    Used by check_dead_links and mark_dead_games to avoid duplicating system
+    Used by mark_dead_games to avoid duplicating system
     notes when a workflow re-runs over an already-marked game. Returns True
     when the note was actually changed.
     """

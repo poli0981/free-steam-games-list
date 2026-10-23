@@ -3,9 +3,9 @@
  * the GitHub API), so renaming a workflow does not break the page.
  *
  * `dataWrite` marks the workflows in `concurrency: {group: data-write}`.
- * Auto-approve commits only while none of them is running or waiting: the
- * group keeps ONE pending run, and the ingest an approval starts would evict a
- * job already waiting (pipeline.test.ts holds this list to the YAML).
+ * Auto-approve commits only while none of them is running or waiting, so the
+ * ingest an approval starts can begin at once (pipeline.test.ts holds this
+ * list to the YAML, and every one of them to `queue: max`).
  *
  * Pure: no DOM, no Env, no I/O.
  */
@@ -24,7 +24,6 @@ export const DATA_WORKFLOWS: DataWorkflow[] = [
   { file: ".github/workflows/update-reviews.yml", label: "Update reviews", dataWrite: true },
   { file: ".github/workflows/top-online.yml", label: "Top online", dataWrite: true },
   { file: ".github/workflows/top-offline.yml", label: "Top offline", dataWrite: true },
-  { file: ".github/workflows/check-dead-links.yml", label: "Check dead links", dataWrite: true },
   { file: ".github/workflows/mark-dead-games.yml", label: "Mark dead games", dataWrite: true },
   { file: ".github/workflows/purge-unhealthy.yml", label: "Purge unhealthy games", dataWrite: true },
   { file: ".github/workflows/snapshot-daily.yml", label: "Daily snapshot", dataWrite: true },
