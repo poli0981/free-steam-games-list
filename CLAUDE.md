@@ -312,11 +312,16 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
   GitHub's six-hour limit with nothing saved. Rules: the percentage is Steam's,
   FLOORED (`reviews_from_summary()` floors appreviews in integers too, so an
   ingest and the refresh agree; until v4.4.0 it was rounded, one point higher
-  on ~40% of games); a GetItems count of 0 is never written - its summary has
-  said 0 for a game with thousands (845070) - so a stored percentage or "N/A"
-  is asked on appreviews (`ASK_CAP` 300 a run, daily order) and only that
-  answer is written; no item, no usable summary or a failed batch keeps the
-  value. A record's `last_updated` moves on a change and on a HEARTBEAT: a
+  on ~40% of games); a GetItems count of 0 never replaces a percentage - its
+  summary has said 0 for a game with thousands (845070) - so such a game is
+  asked on appreviews (`ASK_CAP` 300 a run, daily order) and keeps its value
+  when that gives no answer; "N/A" (never read) with a count of 0 becomes
+  "No reviews"; no item, no usable summary or a failed batch keeps the value.
+  **appreviews has answered with a 302 to the store front since 2026-10-23**
+  (from here and from GitHub's runners; it worked on 10-17), so `fetch_full()`
+  falls back to the same GetItems summary (`reviews_from_store_api()`) and an
+  ingest no longer leaves "N/A". A record's `last_updated` moves on a change
+  and on a HEARTBEAT: a
   game read whose stamp is 14-20 days old (crc32 jitter) is stamped again.
   The site calls a record older than 30 days stale (`web/src/lib/validation.ts`,
   `/health`), and this job used to stamp every game on every run; the

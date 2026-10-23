@@ -24,7 +24,7 @@ from .overrides import OverrideGuard
 from .peaks import raise_peak
 from .rotation import daily_order, day_number
 from .scraper import scrape_store_page
-from .store_items import paid_dlc_from_items, parse_store_item
+from .store_items import paid_dlc_from_items, parse_store_item, review_summary
 
 
 # Steam category descriptions that imply online multiplayer. Bias toward
@@ -165,6 +165,16 @@ def apply_reviews(game: dict, summary: dict) -> dict:
     return game
 
 
+def reviews_from_store_api(client, appid: str) -> Optional[str]:
+    """A game's review summary from IStoreBrowseService/GetItems, as stored
+    ("No reviews" for a count of 0), or None when it could not be read - the
+    ingest's answer when appreviews gives none. The daily refresh
+    (update_reviews.py) reads the same summary, so the two agree."""
+    items, failed = client.fetch_items([appid], {"include_reviews": True})
+    found = None if appid in failed else review_summary(items.get(appid))
+    return None if found is None else reviews_text(*found)
+
+
 def apply_players(game: dict, count: int) -> dict:
     game["current_players"] = f"{count:,}"
     # A sample of 0 says nothing about a peak; anything else may beat it.
@@ -281,10 +291,15 @@ def fetch_full(game: dict, client=None, fetch_players=True,
     if data:
         apply_details(game, data)
 
-    # 2) Reviews
+    # 2) Reviews: appreviews, else Steam's store API - appreviews has answered
+    #    with a redirect to the store front since 2026-10-23.
     summary = c.fetch_reviews(appid)
     if summary:
         apply_reviews(game, summary)
+    else:
+        value = reviews_from_store_api(c, appid)
+        if value is not None:
+            game["reviews"] = value
 
     # 3) Players
     if fetch_players and STEAM_API_KEY:

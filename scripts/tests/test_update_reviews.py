@@ -104,8 +104,9 @@ def test_appreviews_is_floored_in_integers(pos, total, expected):
     ("N/A", _item("1", 12, 50, ""), (ur.SET, "50%")),
     ("No reviews", _item("1", 0, 0, "No user reviews"), (ur.KEEP, None)),
     ("93% (Very Positive)", _item("1", 0, 0, "No user reviews"), (ur.ASK, None)),
-    ("N/A", _item("1", 0, 0, "No user reviews"), (ur.ASK, None)),
-    ("", _item("1", 0), (ur.ASK, None)),
+    ("100% (3 user reviews)", _item("1", 0, 0, "No user reviews"), (ur.ASK, None)),
+    ("N/A", _item("1", 0, 0, "No user reviews"), (ur.SET, "No reviews")),   # never read: no question
+    ("", _item("1", 0), (ur.SET, "No reviews")),
     ("50% (Mixed)", None, (ur.UNKNOWN, None)),
     ("50% (Mixed)", _item("1"), (ur.UNKNOWN, None)),                  # no summary
     ("50% (Mixed)", _item("1", 40, None, "Mixed"), (ur.UNKNOWN, None)),  # count without a share
@@ -156,7 +157,7 @@ def test_a_second_run_writes_the_same_bytes(repo):
     first = _bytes()
     out = repo(None, client)
     assert _bytes() == first
-    assert out["570"]["reviews"] == "75% (4 user reviews)"
+    assert out["570"]["reviews"] == "No reviews" and client.asked == []
 
 
 def test_a_zero_is_checked_on_appreviews_before_a_percentage_goes(repo):
@@ -201,7 +202,7 @@ def test_appreviews_is_capped_and_stops_at_the_deadline(repo, monkeypatch):
     summary = {"total_reviews": 1, "total_positive": 1, "review_score_desc": "1 user reviews"}
     client = FakeClient(items=zero, appreviews={a: summary for a in zero})
     monkeypatch.setattr(ur, "ASK_CAP", 2)
-    out = repo([_rec(a, "N/A") for a in zero], client)
+    out = repo([_rec(a, "50% (Mixed)") for a in zero], client)
     assert len(client.asked) == 2
     assert sum(g["reviews"] == "100% (1 user reviews)" for g in out.values()) == 2
 
