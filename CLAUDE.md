@@ -222,7 +222,13 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
   (tags, languages, `language_details`, `has_paid_dlc`) every 7 days,
   appdetails (name, header image, description, developer/publisher, release
   date, platforms, Metacritic, DRM notes) every 30. Never `appid % cycle`:
-  appids are mostly multiples of 10, which leaves most slices empty. It
+  appids are mostly multiples of 10, which leaves most slices empty. A cycle
+  grows with the catalogue instead of the run (`rotation.cycle_for()`: past
+  `PAGE_DAILY` 2,000 pages or `DETAILS_DAILY` 500 appdetails a day it becomes
+  14, 21, ... or 60, 90, ...) and is always a MULTIPLE of its base, so a game
+  keeps its weekday and its day of the month and visits only ever thin out.
+  The slice is visited in `rotation.daily_order()`, so a run that meets its
+  time budget leaves a different tail each day. It
   replaces values only with NON-EMPTY ones, never writes `MANUAL_FIELDS` or
   `notes`, trusts `has_paid_dlc` only from a real store page (an age gate has
   no language table or tags) or a gated game's DLC prices, compares every
@@ -231,6 +237,9 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
   counting as news), and bumps `last_updated` only on a real change. A game
   with empty tags, languages or `language_details` is in the page group EVERY
   day, first, capped at `MISSING_DAILY_CAP`; `--missing-only` runs just those.
+  A game whose appdetails no longer call it free is LISTED in a `::warning::`,
+  never written: purge removes a game only when the store API flags it too,
+  and this is where the opposite case shows.
   A new field added to it must obey the same rules;
   `scripts/tests/test_refresh_store_data.py` holds them.
 - **A store page behind Steam's age gate is never parsed.** An 'Adult Only'
@@ -252,7 +261,8 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
   with `l=english`: without it, a runner was once answered in Russian.
 - **`all_time_peak` only ever goes UP, and `refresh_peaks.py` is what raises
   it** (daily 19:30 UTC, "Refresh All-Time Peaks"). A `crc32(appid) % 30`
-  slice (`core/rotation.py`, shared with `refresh_store_data.py`) reads
+  slice (`core/rotation.py`, shared with `refresh_store_data.py`; 60, 90, ...
+  past `PEAK_DAILY` 400 pages a day, never shorter) reads
   SteamCharts' recorded all-time peak - the only source older than our own
   sampling: SteamDB forbids scraping and Valve's APIs know only today. Every
   run also raises it from our samples (`peak_today`, which despite its name is
@@ -260,8 +270,9 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
   `apply_players()` raises it on every sample, never from a 0. SteamCharts has
   no API, terms or robots.txt, so: one page per game a month, 2-3 s apart, a
   User-Agent that names the project; 500 is an app it does not track (most of
-  the long tail), 404 one it has never seen; a 403, 429 or challenge page
-  stops the run with a warning, not a failure. `refetch_all.py` must never
+  the long tail), 404 one it has never seen; a 403, 429 or challenge page,
+  or the job's time budget, stops the run with a warning, not a failure.
+  `refetch_all.py` must never
   clear the field - it cannot be fetched again - and nothing may lower it.
   The backfill is a manual run with `backfill` ticked (~4 h, start it in the
   evening UTC). DISCLAIMER section 6 names the source, so rewording it reopens
@@ -293,6 +304,47 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
   name and the new key are the same family, and a known label stays as it was
   written (so "Easy Anti-Cheat" and "EAC" both occur; the site groups them).
   `scripts/tests/test_anticheat.py` and `test_refresh_anticheat.py` hold it.
+- **Reviews are Steam's own summary, read for EVERY game daily**
+  (`update_reviews.py`, "Update Reviews" 06:00): `GetItems` with
+  `include_reviews`, fifty games a request (`SteamClient.fetch_items()`, the
+  sweep the anti-cheat and purge jobs share), ~2 minutes. It asked
+  `appreviews` one game at a time until v4.4.0 and, at 9,800 games, ran into
+  GitHub's six-hour limit with nothing saved. Rules: the percentage is Steam's,
+  FLOORED (`reviews_from_summary()` floors appreviews in integers too, so an
+  ingest and the refresh agree; until v4.4.0 it was rounded, one point higher
+  on ~40% of games); a GetItems count of 0 never replaces a percentage - its
+  summary has said 0 for a game with thousands (845070) - so such a game is
+  asked on appreviews (`ASK_CAP` 300 a run, daily order) and keeps its value
+  when that gives no answer; "N/A" (never read) with a count of 0 becomes
+  "No reviews"; no item, no usable summary or a failed batch keeps the value.
+  **appreviews has answered with a 302 to the store front since 2026-10-23**
+  (from here and from GitHub's runners; it worked on 10-17), so `fetch_full()`
+  falls back to the same GetItems summary (`reviews_from_store_api()`) and an
+  ingest no longer leaves "N/A". A record's `last_updated` moves on a change
+  and on a HEARTBEAT: a
+  game read whose stamp is 14-20 days old (crc32 jitter) is stamped again.
+  The site calls a record older than 30 days stale (`web/src/lib/validation.ts`,
+  `/health`), and this job used to stamp every game on every run; the
+  heartbeat keeps "the pipeline confirmed this lately" true without rewriting
+  every record daily. `scripts/tests/test_update_reviews.py` holds it.
+- **A game is purged only when two of Steam's answers agree**
+  (`purge_unhealthy.py`, "Purge Unhealthy Games" daily 07:00). GetItems
+  screens the whole catalogue (`store_items.screen_item()`: unknown to Steam,
+  `visible` false, `unlisted`, `release.is_coming_soon`, no `is_free`; never
+  `type` - a free mod is listed on purpose), and `check_game_health()`
+  (appdetails) must confirm each flag. An `unavailable`/404 answer is asked
+  again `RECHECK_AFTER` (5 min) later: appdetails answered `success:false` for
+  14 live games in two bursts on 2026-09-27. A failed batch or a network error
+  is never "gone"; blocklisted games are not asked about. More than 500 flags
+  or 100 confirmed removals exits non-zero BEFORE anything is written
+  (`--max-candidates`, `--max-removals` to override). Removals are logged to
+  `removed_games.jsonl` exactly as before - `reconcile.ts` reads them. A
+  `::notice::` names earlier removals GetItems now sees free, listed and
+  released (re-queue the link to bring one back: a purged game keeps its D1
+  decision and discovery never proposes it again). Check Dead Links is gone:
+  HEAD on a delisted app's page ends on the store front with 200, so in its
+  whole life it never found a dead link, and it took 5.5 hours.
+  `scripts/tests/test_purge_unhealthy.py` holds it.
 - `ingest_new.py` only reads `scripts/temp_info.jsonl`, and a line is a store
   LINK and nothing else: every other key is ignored and the game is built from
   Steam (`merge_extension_data()` went with the archived browser extension;
@@ -305,14 +357,15 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
   appdetails calls other than `type: "game"` (`status_code: not_a_game` in
   `removed_games.jsonl`) - the check that makes auto-approve safe, and why a
   queued link cannot add a free DLC, demo or tool. The check lives in ingest
-  only: in `health_checker` it would make Purge delete old records every week.
+  only: in `health_checker` it would make Purge delete old records every day.
 - **`ingest-new.yml` is also the removal job.** `bash/ingest.sh` runs
   `remove_games.py` (applies `data/blocklist.jsonl`) and then
   `ingest_new.py`, and commits once ("Apply removals" when `temp_info` did not
-  change). A separate removal workflow would keep evicting the ingest from
-  `data-write`'s single pending slot, and the ingest it. The workflow checks
-  out `ref: main`, not the triggering SHA: a run that waited its turn would
-  otherwise work on the data as it was when it was queued.
+  change), so one commit to either file starts one run that settles both.
+  The workflow checks out `ref: main`, not the triggering SHA, like every
+  data-write workflow: a run that waited its turn would otherwise work on the
+  data as it was when it was queued. It has no time budget: `clear_temp()`
+  empties the whole queue file, so a game it had not reached would be lost.
 - New games ARE discovered automatically now, by `scripts/discover_new.py`
   into the D1 review queue — but discovery only PROPOSES. Publication is
   decided in `/admin`: by a reviewer, batch by batch, or by the auto-approve
@@ -329,8 +382,10 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
   page previews is the SQL that runs). The empty-file gate is checked again
   inside the commit (`requireEmptyQueue`), so a batch never lands mid-ingest;
   "no row is approved" would have stalled it for the 12 hours a skipped row
-  stays approved. The idle gate exists because a push while a data job waits
-  EVICTS that job. `shared/pipeline.ts` lists every `data-write` workflow by
+  stays approved. The idle gate dates from when a push while a data job waited
+  EVICTED that job; with `queue: max` the ingest would only queue behind it,
+  and the gate stays so a batch lands when its ingest can start at once.
+  `shared/pipeline.ts` lists every `data-write` workflow by
   file, and `pipeline.test.ts` fails when a workflow joins the group without
   joining the list. Settings, limits and their validation are
   `shared/automation.ts`, imported by the Worker and the page. A scheduled
@@ -393,16 +448,40 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
   (wrangler.jsonc, 180). `docs/PRIVACY_POLICY.md` states the number: change
   both together. `ingest_queue` and `ingest_decisions` are never pruned — the
   decisions are what keep a rejected game out of the discovery sweep.
-- Every workflow that writes to `data/` shares `concurrency: {group: data-write}`.
-  A new data-writing workflow without it will race jobs that run ~2 hours.
-  The group holds ONE pending run - a second queueing run cancels the first -
-  and scheduled runs here start 2-5 hours after their cron, so a new schedule
-  goes where nothing long is running (the long jobs - reviews, dead links,
-  purge - start mid-morning UTC and run 2-4 hours; Refresh Store Data is at
-  16:00 for that reason).
+- **Every workflow that writes to `data/` shares `concurrency: {group:
+  data-write, cancel-in-progress: false, queue: max}`, checks out `ref: main`,
+  and declares `timeout-minutes`.** `pipeline.test.ts` fails on a data-write
+  workflow without any of them. A new data-writing workflow outside the group
+  would race the others.
+  - `queue: max` (GitHub, 2026-05-07) keeps up to 100 runs waiting, first in,
+    first out. The default keeps ONE: a run queueing behind a running job
+    cancelled the one already waiting - Update Reviews lost five of ten runs
+    that way in October 2026. Mixing the two settings in one group is
+    undocumented, so every member has `queue: max`.
+  - `ref: main`: a run's commit is fixed when the run is CREATED. A scheduled
+    run that waited behind another data job wrote shards from before that
+    job's commit, and `commit_push.sh`'s rebase then conflicted on
+    `data/index.json` - Auto Update JSON failed four days in ten that way.
+  - Scheduled runs start up to an hour after their cron (2-5 hours in
+    September). Waiting costs nothing now, but a long new job still goes where
+    nothing long runs (Refresh Store Data is at 16:00 for that reason).
+- **Every long loop has a time budget** (`scripts/core/budget.py`). The
+  workflow sets `JOB_BUDGET_MINUTES` at least 20 below its `timeout-minutes`
+  (`pipeline.test.ts` checks); past it a loop starts no further game, the
+  script saves what it did and the job commits it, and a loop that used more
+  than three quarters says so in a `::warning::`. Loops visit their games in
+  `rotation.daily_order()`, so a cut falls elsewhere the next day. A job
+  stopped at its timeout commits nothing and concludes `cancelled`, which
+  `notify-ci-failure.yml` (a reusable workflow in `poli0981/.github`) does not
+  report: the budget is what keeps a growing catalogue from failing silently.
+  `process_batch(pause=False)` for the keyed Web API (player counts); the
+  15-30 s rest between batches stays for store pages and appdetails. Never a
+  budget for `ingest_new.py`. `refetch_all.py` runs in parts (`--part K/N`)
+  and clears each game on a copy that replaces it only once appdetails has
+  answered, so a cut part leaves every other game as it was.
 - **Every data job commits through `bash/commit_push.sh`.** The group
   serialises workflows, not `main`: a merged PR or an /admin commit can land
-  during a four-hour job, and a bare `git push` is then rejected and the run
+  during a long job, and a bare `git push` is then rejected and the run
   thrown away (purge-unhealthy, 2026-09-21). The helper rebases onto
   `origin/main` and retries; none of those writers touch the shards, so the
   rebase is clean. A new wrapper must use it, once per commit (Refresh Store
@@ -427,16 +506,17 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
   - `requirements.txt` pins every package the pipeline installs, transitive
     ones included, with the sha256 of every file on PyPI, and every install
     is `pip install --require-hashes --only-binary :all: -r requirements.txt`
-    (bash/*.sh and four workflows). Hash mode is all-or-nothing per pip call:
-    `requirements-test.txt` (pytest, hashed the same way) goes in its own call
-    in `python-tests.yml`, which runs the pipeline's line first so a
+    (bash/*.sh and the workflows that run Python). Hash mode is all-or-nothing
+    per pip call: `requirements-test.txt` (pytest and pytest-cov, hashed the
+    same way) goes in its own call in `python-tests.yml` and
+    `sonarcloud.yml`, which run the pipeline's line first so a
     Dependabot bump is proven before a data job meets it, and
     `requirements-dev.txt` (unhashed local tools) is installed on its own.
     Adding a package means adding it and its dependencies with hashes:
     `uv pip compile --universal --generate-hashes --python-version 3.15`.
 - **One version of each runtime, and a test that holds them together**
   (`web/shared/toolchain.test.ts`; web-ci also runs on `.github/workflows/**`
-  and `.sonarcloud.properties` so a pull request that only moves a pin meets
+  and `sonar-project.properties` so a pull request that only moves a pin meets
   it). `docs/plan/16-toolchain-2026.md` has the upgrade notes.
   - Node is the major in `web/.node-version` (26). Every `setup-node` repeats
     it as a quoted literal, never `node-version-file`: `release-android.yml`
@@ -452,12 +532,33 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
     text open in `scripts/` still names `encoding="utf-8"`: on Windows an
     older Python writes the locale's code page, and cp1252 cannot encode the
     leaderboards' emoji.
-- **SonarCloud's scope is `.sonarcloud.properties`** (automatic analysis; only
-  scope keys are read, from the default branch). Code and tests both start at
-  the root and are split by patterns: a new test-helper folder goes into
-  `sonar.test.inclusions` AND `sonar.exclusions`, or it is analysed as code.
-  It leaves out the dataset, generated Android resources and the SQLite
-  migrations (the PL/SQL analyser reads them as Oracle). Suppressing a rule
+- **SonarCloud analyses in CI (`sonarcloud.yml`), and its scope is
+  `sonar-project.properties`.** Automatic analysis is OFF in the project's
+  Administration > Analysis Method and must stay off: while it is on, every CI
+  scan fails. The scanner reads the file from the commit it analyses. Code and
+  tests both start at the root and are split by patterns: a new test-helper
+  folder goes into `sonar.test.inclusions` AND `sonar.exclusions`, or it is
+  analysed as code (and a file both include fails the scan). It leaves out the
+  dataset, generated Android resources and the SQLite migrations (the PL/SQL
+  analyser reads them as Oracle). `sonar.typescript.tsconfigPaths` names all
+  six tsconfigs in `web/` (auto-detection finds only files named exactly
+  `tsconfig.json`), and the job runs `npm ci --ignore-scripts` and
+  `npm run build:admin` (which syncs SvelteKit) first: `web/tsconfig.json`
+  extends the generated one, and without it the analyser logged "Failed to
+  parse tsconfig" and read `web/src` untyped. A new tsconfig joins that list.
+  The job skips commits that touch only what the data jobs write, and its
+  `scan` job is skipped when `SONAR_TOKEN` is not available (forks,
+  Dependabot).
+  **Coverage is measured there, not in the test workflows.** The job runs
+  pytest with `--cov` (`[tool.coverage.run]` in `pyproject.toml`: `scripts/`
+  without its tests, relative paths, `coverage.xml` at the root) and
+  `npm run test:coverage` (`test.coverage` in `web/vite.config.ts`: lcov with
+  `projectRoot: ".."`, so the paths start `web/`). Both reports are named in
+  `sonar-project.properties`; a path that does not resolve from the
+  repository root is silently uncovered. Coverage is off for a plain
+  `npm test`. The default "Sonar way" gate wants 80% on new code, and SonarCloud
+  counts every executable line a report does not name as uncovered: without
+  the reports `main` read 0.0% and failed it (2026-10-22). Suppressing a rule
   for a file is done in the SonarCloud UI, not in this file or with NOSONAR.
 
 ## Frontend gotchas

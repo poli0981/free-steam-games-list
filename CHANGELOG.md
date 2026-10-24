@@ -4,6 +4,60 @@ All notable changes to this awesome noob repo will be documented here.
 
 ## [Unreleased]
 
+## [v4.4.0] – 2026-10-23 (The "Headroom" Edition)
+
+The data pipeline grows with the catalogue again. With almost 10,000 games
+and a few hundred more every day, the jobs that asked Steam about one game at
+a time had run out of time; they now read Steam's store API fifty games a
+request, wait their turn instead of cancelling each other, and stop in time to
+save. The release also carries the tooling merged since v4.3.3 - TypeScript
+7, Node 26 and Python 3.15, SonarCloud in CI, the desktop updater fix - and a
+certifi bump. The desktop and Android apps stay at `2.2.1`, with no new
+build. Repo public-facing version `4.3.3` → `4.4.0`.
+
+### 🧰 Pipeline
+
+- **The data jobs scale with the catalogue again.** With almost 10,000 games
+  and a few hundred more every day, three jobs that asked Steam about one
+  game at a time had reached GitHub's six-hour limit: on 2026-10-23 Update
+  Reviews was stopped at exactly six hours with nothing saved. The full
+  assessment, with every measurement, is `docs/plan/18-pipeline-scale.md`.
+- **Reviews come from Steam's store API, for every game, every day.** Fifty
+  games a request, about two minutes for the catalogue, instead of every two
+  days and five and a half hours. The percentage is now Steam's own, which
+  rounds down: about 4,000 games show one point less once (Counter-Strike 2
+  "85%" instead of "86%"), exactly as on their store pages. A summary that
+  says 0 reviews is double-checked game by game before it replaces a
+  percentage.
+- **New games get their reviews again.** Steam's per-game reviews endpoint
+  has answered with a redirect to the store front since 2026-10-23, so the 38
+  games added that day were listed with "N/A". A new game now takes its
+  summary from the store API when that endpoint gives none, and a game never
+  read becomes "No reviews" until Steam counts its first one.
+- **The daily purge needs two answers to remove a game.** Steam's store API
+  screens every game in a few minutes, and a game is removed only when
+  appdetails agrees; "unavailable" is asked twice, five minutes apart. A run
+  that would remove more than 100 games, or flags more than 500, stops before
+  writing anything. It also lists earlier removals that Steam has since
+  undone. It runs daily now, instead of a five-hour sweep on Mondays.
+- **Check Dead Links is retired.** In its whole life it never found a dead
+  link: Steam sends a delisted game's page to the store front, which answers
+  200. The purge's screen sees delisted games (`unlisted`) instead.
+- **No run is cancelled for waiting.** The data jobs share one queue that
+  used to hold a single waiting run: a third job cancelled it, and Update
+  Reviews lost five of ten runs that way. The queue now holds them all, first
+  in, first out, and every job checks out the latest `main` when it starts -
+  Auto Update JSON failed four days in ten from working on the data as it was
+  when the run was queued.
+- **Every long job stops in time to save.** Each workflow gives its job a time
+  budget below its timeout: past it the job saves and commits what it did
+  instead of being stopped with nothing, and it warns before the budget gets
+  tight. The leaderboards skip the pauses meant for store pages (Top Online
+  ~27 minutes instead of 48). The store-data and all-time-peak rotations
+  stretch their cycle as the catalogue grows instead of their daily runs.
+- **Force Re-fetch runs in parts** (`1/8` … `8/8`, queued one after another),
+  and a game whose fetch fails keeps its old data.
+
 ### 🧰 Tooling
 
 - **Desktop releases keep reaching the updater.** tauri-action v1 writes each
@@ -13,7 +67,13 @@ All notable changes to this awesome noob repo will be documented here.
   release's own downloads, checking every signature on the way.
 - **SonarCloud reads tests as tests**, and no longer analyses the dataset,
   the Android resources the Tauri CLI generated, or the SQLite migrations its
-  PL/SQL analyser misread (`.sonarcloud.properties`).
+  PL/SQL analyser misread.
+- **SonarCloud analyses in CI.** A workflow runs the scan on pull requests and
+  on `main` in place of SonarCloud's automatic analysis, with its settings in
+  `sonar-project.properties` (formerly `.sonarcloud.properties`). Commits that
+  only carry data are not scanned. It runs both test suites with coverage
+  first (pytest-cov for the pipeline, `npm run test:coverage` for the web
+  app), so SonarCloud shows what the tests reach instead of reading 0%.
 - **TypeScript 7, Node 26 and Python 3.15.** The type-check runs on
   TypeScript 7, the native compiler: `tsc` for the Worker, the tests and the
   admin's Node code, and `svelte-check --tsgo` for the app. TypeScript 6 stays

@@ -12,6 +12,7 @@ import time
 from typing import Optional
 
 from .anticheat import apply_anti_cheat, from_categories
+from .budget import Deadline, report
 from .constants import (
     STEAM_API_KEY, SKIP_GENRE_TAGS,
     BATCH_SIZE, BATCH_PAUSE_MIN, BATCH_PAUSE_MAX,
@@ -21,8 +22,9 @@ from .data_store import extract_appid, now_iso, is_info_complete, is_empty
 from .normalize import decode_entities, normalize_release_date
 from .overrides import OverrideGuard
 from .peaks import raise_peak
+from .rotation import daily_order, day_number
 from .scraper import scrape_store_page
-from .store_items import paid_dlc_from_items, parse_store_item
+from .store_items import paid_dlc_from_items, parse_store_item, review_summary
 
 
 # Steam category descriptions that imply online multiplayer. Bias toward
@@ -139,16 +141,38 @@ def apply_details(game: dict, data: dict) -> dict:
     return game
 
 
+def reviews_text(total: int, pct: int, label: str) -> str:
+    """The stored shape of a review summary: "85% (Very Positive)"."""
+    if total <= 0:
+        return "No reviews"
+    return f"{pct}% ({label})" if label else f"{pct}%"
+
+
+def reviews_from_summary(summary: dict) -> str:
+    """appreviews' query_summary as stored. The percentage is FLOORED, as
+    Steam floors its own (GetItems answered 85 for Counter-Strike 2 where
+    round() had given 86), so the daily refresh from GetItems
+    (update_reviews.py) and a game's first fetch here agree. In integers:
+    in floating point 29/100*100 is 28.999... and floors to 28."""
+    total = int(summary.get("total_reviews") or 0)
+    pos = int(summary.get("total_positive") or 0)
+    pct = pos * 100 // total if total > 0 else 0
+    return reviews_text(total, pct, summary.get("review_score_desc", ""))
+
+
 def apply_reviews(game: dict, summary: dict) -> dict:
-    total = summary.get("total_reviews", 0)
-    pos = summary.get("total_positive", 0)
-    if total > 0:
-        pct = round((pos / total) * 100)
-        label = summary.get("review_score_desc", "")
-        game["reviews"] = f"{pct}% ({label})" if label else f"{pct}%"
-    else:
-        game["reviews"] = "No reviews"
+    game["reviews"] = reviews_from_summary(summary)
     return game
+
+
+def reviews_from_store_api(client, appid: str) -> Optional[str]:
+    """A game's review summary from IStoreBrowseService/GetItems, as stored
+    ("No reviews" for a count of 0), or None when it could not be read - the
+    ingest's answer when appreviews gives none. The daily refresh
+    (update_reviews.py) reads the same summary, so the two agree."""
+    items, failed = client.fetch_items([appid], {"include_reviews": True})
+    found = None if appid in failed else review_summary(items.get(appid))
+    return None if found is None else reviews_text(*found)
 
 
 def apply_players(game: dict, count: int) -> dict:
@@ -267,10 +291,15 @@ def fetch_full(game: dict, client=None, fetch_players=True,
     if data:
         apply_details(game, data)
 
-    # 2) Reviews
+    # 2) Reviews: appreviews, else Steam's store API - appreviews has answered
+    #    with a redirect to the store front since 2026-10-23.
     summary = c.fetch_reviews(appid)
     if summary:
         apply_reviews(game, summary)
+    else:
+        value = reviews_from_store_api(c, appid)
+        if value is not None:
+            game["reviews"] = value
 
     # 3) Players
     if fetch_players and STEAM_API_KEY:
@@ -307,26 +336,44 @@ def fetch_full(game: dict, client=None, fetch_players=True,
 
 # ──────────── Batch processor ────────────
 
-def process_batch(games: list[dict], fn, desc="Processing"):
-    """Run fn on each game with batch pauses."""
+def process_batch(games: list[dict], fn, desc="Processing", pause: bool = True,
+                  deadline: Optional[Deadline] = None) -> int:
+    """Run fn on each game, BATCH_SIZE at a time. Returns how many it ran on.
+
+    pause: the 15-30 s rest between batches that keeps the store-page and
+           appdetails loops polite. The keyed Web API (player counts) has no
+           need of it: it was half the time top-online took.
+    deadline: a core.budget.Deadline. Once it has passed no further game is
+           started - the one in hand finishes - and the caller saves what was
+           done (core/budget.py). Never pass one where an unvisited game
+           would be lost, as in ingest_new.py, which empties its whole queue.
+    """
     total = len(games)
+    done = 0
     for bs in range(0, total, BATCH_SIZE):
+        if deadline is not None and deadline.expired():
+            break
         be = min(bs + BATCH_SIZE, total)
         batch_num = bs // BATCH_SIZE + 1
         total_batches = (total + BATCH_SIZE - 1) // BATCH_SIZE
         print(f"\n── Batch {batch_num}/{total_batches} ({be - bs} games) ──")
         for i in range(bs, be):
+            if deadline is not None and deadline.expired():
+                break
             name = games[i].get("name") or games[i].get("link", "?")
             print(f"  [{i+1}/{total}] {desc}: {name[:50]}...", end=" ")
             fn(games[i])
+            done += 1
             print("✓")
-        if be < total:
-            pause = random.uniform(BATCH_PAUSE_MIN, BATCH_PAUSE_MAX)
-            print(f"  ⏳ {pause:.0f}s...")
-            time.sleep(pause)
+        if pause and done == be and be < total:
+            wait = random.uniform(BATCH_PAUSE_MIN, BATCH_PAUSE_MAX)
+            print(f"  ⏳ {wait:.0f}s...")
+            time.sleep(wait)
+    report(desc, done, total, deadline)
+    return done
 
 
-def update_all_full(games, force=False):
+def update_all_full(games, force=False, deadline: Optional[Deadline] = None):
     client = get_client()
     to_fetch = games if force else [g for g in games if not is_info_complete(g)]
     print(f"Full update: {len(to_fetch)} to fetch, {len(games)-len(to_fetch)} skipped")
@@ -334,22 +381,12 @@ def update_all_full(games, force=False):
         print("All up to date!")
         return
     guard = OverrideGuard.load()
-    process_batch(to_fetch, lambda g: fetch_full(g, client=client, guard=guard), "Fetching")
+    process_batch(daily_order(to_fetch, day_number()),
+                  lambda g: fetch_full(g, client=client, guard=guard), "Fetching", deadline=deadline)
 
 
-def update_reviews_only(games):
-    client = get_client()
-    print(f"Reviews update: {len(games)} games")
-    def fn(g):
-        appid = extract_appid(g.get("link", ""))
-        if not appid: return
-        s = client.fetch_reviews(appid)
-        if s: apply_reviews(g, s)
-        g["last_updated"] = now_iso()
-    process_batch(games, fn, "Reviews")
-
-
-def update_players_only(games, type_filter: str = "online"):
+def update_players_only(games, type_filter: str = "online",
+                        deadline: Optional[Deadline] = None, day: Optional[int] = None):
     """Refresh `current_players` + `peak_today` for the games matching
     `type_filter`. Default 'online' preserves the historical behaviour
     used by top_online.py.
@@ -360,6 +397,10 @@ def update_players_only(games, type_filter: str = "online"):
                     (single-player, story, etc). Empty type_game is
                     excluded — those are unclassified, not offline.
       - "all"     → every game with a non-empty type_game.
+
+    The keyed Web API is asked without process_batch's pauses, in an order
+    that changes daily, so a run that meets its deadline leaves a different
+    tail unsampled each time.
     """
     if not STEAM_API_KEY:
         print("No STEAM_API_KEY.")
@@ -380,4 +421,5 @@ def update_players_only(games, type_filter: str = "online"):
         if not appid: return
         count = client.fetch_player_count(appid, STEAM_API_KEY)
         if count is not None: apply_players(g, count)
-    process_batch(target, fn, "Players")
+    target = daily_order(target, day_number() if day is None else day)
+    process_batch(target, fn, "Players", pause=False, deadline=deadline)

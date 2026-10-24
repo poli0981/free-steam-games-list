@@ -1,3 +1,4 @@
+/// <reference types="vitest/config" />
 import { defineConfig, type Plugin } from "vite";
 import { sveltekit } from "@sveltejs/kit/vite";
 import { SvelteKitPWA } from "@vite-pwa/sveltekit";
@@ -214,6 +215,18 @@ export default defineConfig(({ mode }) => ({
     proxy: {
       "/api": { target: "https://free-steam-games.win", changeOrigin: true },
       "/img": { target: "https://free-steam-games.win", changeOrigin: true },
+    },
+  },
+  test: {
+    // Off unless asked for (`npm run test:coverage`): sonarcloud.yml sends the
+    // report to SonarCloud. Files no test loads are listed at 0%, as SonarCloud
+    // counts them anyway. projectRoot "..": the paths in lcov.info are read
+    // from the repository root, where the scan runs - web/src/..., not src/....
+    coverage: {
+      provider: "v8",
+      include: ["{src,worker,shared,build,scripts,admin/src,admin/build}/**/*.{ts,js,mjs}"],
+      exclude: ["**/*.test.ts", "**/*.d.ts", "src/lib/testing/**", "worker/testing/**", "worker/generated/**"],
+      reporter: [["lcovonly", { projectRoot: ".." }], "text-summary"],
     },
   },
   build: {

@@ -4,15 +4,22 @@ on:
   workflow_dispatch:
 permissions: {contents: write}
 # Shares the data-write group with every other workflow that commits to
-# data/ — without it this can push mid-run against a 2-hour job.
+# data/ — without it this can push mid-run against a long job. queue: max -
+# a run that finds another data job running waits its turn (first in, first
+# out) instead of evicting the run already waiting.
 concurrency:
   group: data-write
   cancel-in-progress: false
+  queue: max
 jobs:
   snapshot:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
+      # main as it is when the job STARTS, so the snapshot holds what the
+      # jobs before it committed.
       - uses: actions/checkout@v4
+        with: {ref: main}
       - uses: actions/setup-python@v5
         with: {python-version: '3.15'}
       - run: chmod +x ./bash/snapshot.sh && ./bash/snapshot.sh

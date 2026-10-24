@@ -391,3 +391,62 @@ def test_a_blurb_that_now_fits_further_is_written_but_is_not_news():
 def test_a_rewritten_blurb_is_a_change():
     game = _game(description="Old words, cut short…")
     assert "description" in rsd.apply_app_details(game, {"short_description": "New words entirely."})
+
+
+# ──────────── A growing catalogue ────────────
+
+def test_the_page_cycle_grows_with_the_catalogue_and_keeps_its_weekday():
+    assert rsd.cycle_for(9847, rsd.PAGE_CYCLE_DAYS, rsd.PAGE_DAILY) == 7
+    games = [_game(str(10 * i)) for i in range(1, 12001)]
+    assert rsd.cycle_for(len(games), rsd.PAGE_CYCLE_DAYS, 1000) == 14
+    for day in range(20000, 20014):
+        plan = rsd.build_plan(games, day, want_details=False, page_cycle=14)
+        assert len(plan) < 1000
+        assert all(slice_of(rsd.extract_appid(g["link"]), 7) == day % 7 for g, _, _ in plan)
+
+
+def test_the_slice_comes_in_an_order_that_changes_daily():
+    games = [_game(str(10 * i)) for i in range(1, 701)]
+    first = [g["link"] for g, _, _ in rsd.build_plan(games, 20006, want_details=False)]
+    again = [g["link"] for g, _, _ in rsd.build_plan(list(reversed(games)), 20006, want_details=False)]
+    week_later = [g["link"] for g, _, _ in rsd.build_plan(games, 20013, want_details=False)]
+    assert first == again
+    assert sorted(first) == sorted(week_later) and first != week_later
+
+
+def test_a_game_appdetails_no_longer_call_free_is_listed_not_written():
+    game = _game()
+    before = dict(game)
+    listed: list[str] = []
+    details = {"name": "Counter-Strike 2", "is_free": False,
+               "price_overview": {"initial": 1499, "final": 1499}}
+    rsd.refresh_game(game, FakeClient(details=details), page=False, details=True, not_free=listed)
+    assert listed == ["730 Counter-Strike 2"]
+    assert game["notes"] == before["notes"]
+    listed.clear()
+    rsd.refresh_game(_game(), FakeClient(details={"name": "x", "is_free": True}), page=False, details=True,
+                     not_free=listed)
+    assert listed == []
+
+
+def test_a_run_refreshes_today_s_slice_and_lists_what_appdetails_calls_paid(tmp_path, monkeypatch, capsys):
+    import os
+
+    from core import budget, data_store
+
+    monkeypatch.chdir(tmp_path)
+    os.makedirs("data")
+    monkeypatch.delenv(budget.ENV, raising=False)
+    monkeypatch.setattr("core.fetcher.time.sleep", lambda s: None)
+    games = [_game(str(10 * i), name=f"Game {i}") for i in range(1, 61)]
+    data_store.save_main(games, apply_human_overrides=False)
+    client = FakeClient(details={"name": "Renamed", "is_free": False, "price_overview": {"initial": 999}})
+    monkeypatch.setattr(rsd, "get_client", lambda: client)
+    rsd.main(["--only", "details", "--day", "20030"])
+    out = capsys.readouterr().out
+    asked = [c.split(":")[1] for c in client.calls]
+    assert asked and all(rsd.due(_game(a), 30, 20030) for a in asked)
+    assert "slice 20/30" in out
+    assert "::warning::appdetails no longer calls" in out
+    after = {data_store.extract_appid(g["link"]): g for g in data_store.load_main()}
+    assert all(after[a]["name"] == "Renamed" for a in asked)

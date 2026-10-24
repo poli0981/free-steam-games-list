@@ -24,7 +24,7 @@ replace TypeScript 6, which stays installed beside it.
 | Python (CodeQL) | 3.14 | `codeql.yml` | — | named in the test's `PYTHON_EXCEPTIONS` |
 | TypeScript | 7.0.x and 6.0.x | `web/package.json`: `@typescript/native` (`npm:typescript@~7.0.2`) and `typescript` (`^6.0.3`) | `.github/dependabot.yml` ignores | `web/shared/toolchain.test.ts` |
 
-Web CI now also runs on `.github/workflows/**` and `.sonarcloud.properties`, so
+Web CI now also runs on `.github/workflows/**` and `sonar-project.properties`, so
 a pull request that moves only a pin still meets the test. The test was proven
 by breaking one pin at a time - one workflow's Python, `web/.node-version`
 alone, a `setup-node` switched to `node-version-file` - and each failed it with
@@ -222,7 +222,9 @@ CI: sixteen `setup-python` steps moved from `'3.12'` to `'3.15'`; the
 now sets up 3.15 like the rest. `codeql.yml` alone uses 3.14: CodeQL's
 supported-languages page lists Python up to 3.14 and its extractor runs on
 that interpreter. The pipeline uses no 3.15-only syntax, so nothing goes
-unparsed. `sonar.python.version` is 3.15; sonar-python knows 3.15.
+unparsed. `sonar.python.version` is 3.15. SonarCloud's sonar-python does not
+list 3.15 yet: the CI scan (2026-10-22) warns and analyses as 3.14, which
+changes nothing for this code.
 
 ## Next time
 

@@ -5,26 +5,31 @@ on :
   # fires the ingest on a detached HEAD, and dies with exit 128 on push.
   #
   # data/blocklist.jsonl is here too: this job also applies removals
-  # (bash/ingest.sh runs scripts/remove_games.py first). A separate removal
-  # workflow would share `data-write` with this one, and each would evict the
-  # other's pending run.
+  # (bash/ingest.sh runs scripts/remove_games.py first), so one run does both.
   push : { branches : [ main ], paths : [ 'scripts/temp_info.jsonl', 'data/blocklist.jsonl' ] }
-  # Orphan recovery, not a poll. `data-write` keeps at most ONE run pending and
-  # cancels the older one, so a push here that queues behind a ~115-minute data
-  # job is silently evicted the moment any OTHER data-write workflow queues --
-  # and nothing retries it, leaving approved games sitting in temp_info.jsonl
-  # until the next unrelated push. Re-running on a clear file is free:
-  # ingest_new.py returns immediately and `git diff --staged --quiet` skips the
-  # commit, so this is idempotent by construction.
+  # A safety net, not a poll. Before data-write queued its runs (queue: max),
+  # a push here that waited behind a long data job was evicted the moment any
+  # other data-write workflow queued, and approved games sat in
+  # temp_info.jsonl until the next unrelated push. Nothing is evicted now, but
+  # a failed run still leaves its links queued. Re-running on a clear file is
+  # free: ingest_new.py returns immediately and `git diff --staged --quiet`
+  # skips the commit, so this is idempotent by construction.
   schedule : [ { cron : '0 */3 * * *' } ]
   workflow_dispatch :
 permissions : { contents : write }
+# queue: max - a run that finds another data job running waits its turn
+# (first in, first out) instead of evicting the run already waiting.
 concurrency :
   group : data-write
   cancel-in-progress : false
+  queue : max
 jobs :
   ingest :
     runs-on : ubuntu-latest
+    # About seven seconds a game, and an /admin batch holds at most 100. No
+    # time budget: ingest_new.py empties the whole queue file when it is done,
+    # so a game it had not reached would be lost.
+    timeout-minutes : 120
     steps :
       -
         uses : actions/checkout@v6

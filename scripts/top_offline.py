@@ -12,6 +12,7 @@ Output: games/top-offline.md (10 columns, same shape as top-online.md).
 import sys, os
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from datetime import datetime, timezone
+from core.budget import Deadline
 from core.constants import STEAM_API_KEY, GAMES_DIR, TOP_OFFLINE_LIMIT
 from core.data_store import load_main, save_main, extract_appid
 from core.fetcher import update_players_only
@@ -58,6 +59,7 @@ def main():
     if not STEAM_API_KEY:
         print("No Steam API key (set STEAM_API_KEY).")
         sys.exit(1)
+    deadline = Deadline.from_env()
     games = load_main()
     offline = [g for g in games if _is_offline(g) and g.get("status", "active") == "active"]
     if not offline:
@@ -68,7 +70,7 @@ def main():
     for g in offline:
         aid = extract_appid(g.get("link", ""))
         if aid: prev[aid] = _ppc(g.get("current_players", "0"))
-    update_players_only(games, type_filter="offline")
+    update_players_only(games, type_filter="offline", deadline=deadline)
     # Re-filter after update (status may have changed).
     offline = [g for g in games if _is_offline(g) and g.get("status", "active") == "active"]
     offline.sort(key=lambda g: _ppc(g.get("current_players", "0")), reverse=True)

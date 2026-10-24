@@ -18,8 +18,13 @@ Two groups, each on its own rotation, a slice of the catalogue per daily run:
             developer, publisher, release_date, platforms,
             metacritic, drm_notes                               every 30 days
 
-That is ~630 store pages and ~150 appdetails calls a day - about 40 minutes
-at the client's throttle - instead of 8,800 requests in one run.
+That was ~1,400 store pages and ~330 appdetails calls a day at 9,800 games,
+about an hour at the client's throttle. The cycles grow with the catalogue
+(core/rotation.cycle_for): past PAGE_DAILY pages or DETAILS_DAILY appdetails
+a day, a cycle doubles (triples, ...) instead of the run growing, and a game
+keeps its weekday and its day of the month. A run that still meets its time
+budget (core/budget.py) saves what it did; the slice is visited in an order
+that changes daily, so the cut falls elsewhere next time.
 
 A game's slice is crc32(appid) % cycle, NOT appid % cycle: Steam appids are
 overwhelmingly multiples of 10, so `% 30` would leave 27 of the 30 monthly
@@ -37,7 +42,10 @@ The rules, because these fields were fill-if-empty until now:
     gate, a delisted app or a changed page layout leaves the stored value alone.
   - MANUAL_FIELDS are never written (genre, type_game, anti_cheat, safe, ...),
     and neither is `notes`: health checks and "no longer free" belong to
-    check_dead_links.py, purge_unhealthy.py and mark_dead_games.py.
+    purge_unhealthy.py and mark_dead_games.py. A game appdetails no longer
+    calls free is only listed, in a ::warning:: - purge removes a game only
+    when Steam's store API flags it too, and this is where the opposite case
+    shows.
   - has_paid_dlc is read only from a real store page - one with a language
     table or tags - or, for a gated game, from the prices of its DLC. An
     age-gate page has no DLC section and would read as False; when neither
@@ -60,26 +68,31 @@ Usage (from the repository root):
 import argparse
 import os
 import sys
-import zlib
 from collections import Counter
 from typing import Optional
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
+from core.budget import Deadline
 from core.data_store import (
     ELLIPSIS, extract_appid, is_empty, load_main, migrate_record, now_iso, save_main,
     truncate_description,
 )
 from core.fetcher import process_batch, scrape_store_fields
+from core.health_checker import free_per_appdetails
 from core.normalize import (
     clean_list, clean_text, decode_entities, normalize_records, normalize_release_date,
 )
 # The rotation (crc32 slices) is shared with refresh_peaks.py.
-from core.rotation import day_number, due
+from core.rotation import cycle_for, daily_order, day_number, due
 from core.steam_client import get_client
 
 PAGE_CYCLE_DAYS = 7
 DETAILS_CYCLE_DAYS = 30
+# The most a day's slice may hold before its cycle grows (rotation.cycle_for):
+# with the repairs, about an hour and a half at the client's throttle.
+PAGE_DAILY = 2000
+DETAILS_DAILY = 500
 # Games with empty store fields taken a day on top of the rotation. 25 on
 # 2026-10-10; the cap is for the day something breaks for every game at once,
 # so a two-hour job cannot turn into a whole-catalogue crawl.
@@ -205,8 +218,10 @@ def apply_app_details(game: dict, data: dict) -> list[str]:
     return changed
 
 
-def refresh_game(game: dict, client, page: bool, details: bool) -> list[str]:
-    """Refresh one game in place. Returns the fields that changed."""
+def refresh_game(game: dict, client, page: bool, details: bool,
+                 not_free: Optional[list] = None) -> list[str]:
+    """Refresh one game in place. Returns the fields that changed. A game
+    whose appdetails no longer call it free is added to `not_free`."""
     appid = extract_appid(game.get("link", ""))
     if not appid:
         return []
@@ -216,6 +231,8 @@ def refresh_game(game: dict, client, page: bool, details: bool) -> list[str]:
         data = client.fetch_app_details(appid)
         if data:
             changed += apply_app_details(game, data)
+            if not_free is not None and not free_per_appdetails(data):
+                not_free.append(f"{appid} {game.get('name', '')[:40]}")
     if page:
         # The appdetails just fetched spare the DLC check a second request.
         scraped = scrape_store_fields(client, appid, details=data)
@@ -233,29 +250,31 @@ def missing_store_fields(game: dict) -> bool:
 
 
 def build_plan(games: list[dict], day: int, want_page: bool = True,
-               want_details: bool = True, missing_only: bool = False) -> list[tuple]:
+               want_details: bool = True, missing_only: bool = False,
+               page_cycle: int = PAGE_CYCLE_DAYS,
+               details_cycle: int = DETAILS_CYCLE_DAYS) -> list[tuple]:
     """[(game, page, details)] for one day: the games with empty store fields
     first (page group, every day), then the day's rotation slices.
 
-    The repairs are capped at MISSING_DAILY_CAP and ordered by a hash that
-    changes daily, so a residue Steam never fills cannot hold the same places
-    forever. missing_only keeps just the repairs, store page only.
+    Both parts come in an order that changes daily (rotation.daily_order):
+    the repairs are capped at MISSING_DAILY_CAP, so a residue Steam never
+    fills cannot hold the same places forever, and a run that meets its time
+    budget leaves a different part of the slice for the next one.
+    missing_only keeps just the repairs, store page only.
     """
     repairs: list[dict] = []
     if want_page:
-        repairs = [g for g in games if missing_store_fields(g)]
-        repairs.sort(key=lambda g: zlib.crc32(f"{day}:{extract_appid(g.get('link', ''))}".encode()))
-        repairs = repairs[:MISSING_DAILY_CAP]
+        repairs = daily_order([g for g in games if missing_store_fields(g)], day)[:MISSING_DAILY_CAP]
     if missing_only:
         return [(g, True, False) for g in repairs]
 
-    plan = [(g, True, want_details and due(g, DETAILS_CYCLE_DAYS, day)) for g in repairs]
+    plan = [(g, True, want_details and due(g, details_cycle, day)) for g in repairs]
     taken = {id(g) for g in repairs}
-    for g in games:
+    for g in daily_order(games, day):
         if id(g) in taken:
             continue
-        page = want_page and due(g, PAGE_CYCLE_DAYS, day)
-        details = want_details and due(g, DETAILS_CYCLE_DAYS, day)
+        page = want_page and due(g, page_cycle, day)
+        details = want_details and due(g, details_cycle, day)
         if page or details:
             plan.append((g, page, details))
     return plan
@@ -273,6 +292,7 @@ def main(argv: Optional[list[str]] = None) -> None:
     ap.add_argument("--dry-run", action="store_true", help="fetch and report, write nothing")
     args = ap.parse_args(argv)
 
+    deadline = Deadline.from_env()
     day = day_number() if args.day is None else args.day
     games = load_main()
     for g in games:
@@ -284,7 +304,10 @@ def main(argv: Optional[list[str]] = None) -> None:
 
     want_page = args.only in (None, "page")
     want_details = args.only in (None, "details")
-    plan = build_plan(games, day, want_page, want_details, missing_only=args.missing_only)
+    page_cycle = cycle_for(len(games), PAGE_CYCLE_DAYS, PAGE_DAILY)
+    details_cycle = cycle_for(len(games), DETAILS_CYCLE_DAYS, DETAILS_DAILY)
+    plan = build_plan(games, day, want_page, want_details, missing_only=args.missing_only,
+                      page_cycle=page_cycle, details_cycle=details_cycle)
     if args.limit is not None:
         plan = plan[: args.limit]
 
@@ -292,28 +315,34 @@ def main(argv: Optional[list[str]] = None) -> None:
     n_details = sum(1 for _, _, d in plan if d)
     n_missing = sum(1 for g, p, _ in plan if p and missing_store_fields(g))
     print(f"{len(games)} games; day {day}: store page for {n_page} "
-          f"(slice {day % PAGE_CYCLE_DAYS}/{PAGE_CYCLE_DAYS}, {n_missing} with empty store fields), "
-          f"appdetails for {n_details} (slice {day % DETAILS_CYCLE_DAYS}/{DETAILS_CYCLE_DAYS})")
+          f"(slice {day % page_cycle}/{page_cycle}, {n_missing} with empty store fields), "
+          f"appdetails for {n_details} (slice {day % details_cycle}/{details_cycle})")
     if not plan:
         return
 
     client = get_client()
     flags = {id(g): (page, details) for g, page, details in plan}
     fields: Counter = Counter()
+    not_free: list[str] = []
     touched = 0
 
     def refresh(game: dict) -> None:
         nonlocal touched
         page, details = flags[id(game)]
-        changed = refresh_game(game, client, page=page, details=details)
+        changed = refresh_game(game, client, page=page, details=details, not_free=not_free)
         if changed:
             touched += 1
             fields.update(changed)
 
-    process_batch([g for g, _, _ in plan], refresh, "Refreshing")
+    done = process_batch([g for g, _, _ in plan], refresh, "Refreshing", deadline=deadline)
 
     summary = ", ".join(f"{f} {n}" for f, n in fields.most_common()) or "nothing"
-    print(f"\n{touched} of {len(plan)} games changed: {summary}")
+    print(f"\n{touched} of {done} games changed: {summary}")
+    if not_free:
+        print(f"::warning::appdetails no longer calls {len(not_free)} game(s) free: "
+              f"{'; '.join(not_free[:20])}{' …' if len(not_free) > 20 else ''}. The daily purge "
+              f"removes one only when Steam's store API says so too; if it does not, remove it "
+              f"in /admin.")
     if args.dry_run:
         print("Dry run: nothing written.")
         return

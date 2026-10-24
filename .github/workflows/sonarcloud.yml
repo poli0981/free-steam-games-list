@@ -1,0 +1,106 @@
+name: SonarCloud
+
+# CI-based analysis, which replaced SonarCloud's automatic analysis: the two
+# cannot both be on, and the scan fails while automatic analysis is enabled in
+# the project's Administration > Analysis Method. What is code, what is test
+# and what is not analysed at all is sonar-project.properties at the root.
+# SonarCloud's GitHub App still posts the "SonarCloud Code Analysis" check on
+# the pull request; this job runs both test suites for their coverage and
+# uploads the analysis.
+
+on:
+  push:
+    branches: [main]
+    # What the data jobs commit, all of it outside the analysis scope: a
+    # commit that touches nothing else has nothing new to analyse.
+    paths-ignore: ['data/**', 'games/**', 'scripts/*.jsonl', 'scripts/*.log']
+  pull_request:
+    types: [opened, synchronize, reopened]
+    paths-ignore: ['data/**', 'games/**', 'scripts/*.jsonl', 'scripts/*.log']
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  # SonarCloud refuses an analysis older than the last one it has for a
+  # branch, so main's runs queue rather than overlap.
+  group: sonarcloud-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  # Pull requests from forks and from Dependabot get no repository secrets.
+  # Without the token the scan cannot upload anything, so the scan job is
+  # skipped rather than failing every such pull request.
+  token:
+    runs-on: ubuntu-latest
+    outputs:
+      present: ${{ steps.check.outputs.present }}
+    steps:
+      - name: Check for the token
+        id: check
+        env:
+          HAS_TOKEN: ${{ secrets.SONAR_TOKEN != '' }}
+        run: |
+          echo "present=$HAS_TOKEN" >> "$GITHUB_OUTPUT"
+          if [ "$HAS_TOKEN" != "true" ]; then
+            echo "::notice::SONAR_TOKEN is not available to this run; skipping the SonarCloud scan."
+          fi
+
+  scan:
+    needs: token
+    if: needs.token.outputs.present == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    steps:
+      # Full history: SonarCloud blames every line to tell new code from old.
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      # Python coverage: coverage.xml at the root (pyproject.toml's
+      # [tool.coverage.run] says what is measured). The pipeline's install line
+      # and then the test tools, each in its own pip call, as python-tests.yml.
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.15'
+
+      - name: Install the pipeline and the test tools
+        run: |
+          pip install --quiet --require-hashes --only-binary :all: -r requirements.txt
+          pip install --quiet --require-hashes --only-binary :all: -r requirements-test.txt
+
+      - name: pytest with coverage
+        run: python -m pytest scripts/tests -q --cov --cov-report=xml
+
+      # TypeScript coverage: web/coverage/lcov.info (vite.config.ts's
+      # test.coverage). build:admin runs `svelte-kit sync` - web/tsconfig.json
+      # extends the tsconfig it generates, and without it the analyser logs
+      # "Failed to parse tsconfig" and reads web/src with no types - and writes
+      # the admin bundle worker/index.ts imports, which the Worker's tests load.
+      # node_modules, .svelte-kit and the bundle are gitignored, so none of
+      # them is analysed itself.
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '26'
+          cache: 'npm'
+          cache-dependency-path: web/package-lock.json
+
+      # --ignore-scripts, as everywhere this repo runs `npm ci` (web-ci.yml
+      # says why).
+      - name: Install web/
+        working-directory: web
+        run: npm ci --ignore-scripts
+
+      - name: vitest with coverage
+        working-directory: web
+        run: |
+          npm run build:admin
+          npm run test:coverage
+
+      - name: SonarCloud scan
+        uses: SonarSource/sonarqube-scan-action@d209202bc7d53ff1cc128f7f907dac145c9d6ae9 # v8.3.0
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}

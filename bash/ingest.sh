@@ -3,9 +3,10 @@
 #
 # remove_games.py applies data/blocklist.jsonl (games the maintainer removed in
 # /admin or with delete_game.py) before ingest_new.py adds the queued links.
-# One workflow does both on purpose: `data-write` keeps ONE pending run and a
-# newer one evicts it, so a separate removal workflow and the ingest would keep
-# cancelling each other. Whichever run survives does both.
+# One workflow does both: a commit to either file starts one run that settles
+# the two, in that order. (It was also the only way to do it while
+# `data-write` kept a single pending run and a separate removal workflow and
+# the ingest kept evicting each other; the group queues them now.)
 set -euo pipefail
 pip install --quiet --require-hashes --only-binary :all: -r requirements.txt
 python scripts/remove_games.py

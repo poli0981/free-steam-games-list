@@ -17,9 +17,10 @@
  *     ingested. Checked again atomically inside the commit
  *     (requireEmptyQueue). Not "no row is approved": a network-skipped row
  *     stays approved for 12 hours and would stall everything that long;
- *   - no data-write workflow is running or waiting (GitHub Actions). That
- *     group keeps ONE pending run, and the ingest this commit starts would
- *     evict a job already waiting its turn;
+ *   - no data-write workflow is running or waiting (GitHub Actions). The
+ *     group queues its runs (queue: max), so the ingest this commit starts
+ *     would no longer evict a job waiting its turn - it would wait behind it.
+ *     The gate stays so that a batch lands when the ingest can start at once;
  *   - something is eligible: pending, free, app_type game, health ok, old
  *     enough, from an allowed source, never decided, its game not committed,
  *     not in data/blocklist.jsonl.
