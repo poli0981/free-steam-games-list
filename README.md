@@ -5,7 +5,7 @@
 [![Web App](https://img.shields.io/badge/Web%20App-Live-2563eb?style=flat&logo=svelte)](https://free-steam-games.win/)
 [![Desktop](https://img.shields.io/badge/Desktop-Tauri%202-FFC131?style=flat&logo=tauri)](https://github.com/poli0981/free-steam-games-list/releases)
 [![Android](https://img.shields.io/badge/Android-11%2B%20APK-3DDC84?style=flat&logo=android)](https://github.com/poli0981/free-steam-games-list/releases)
-[![Health Check](https://img.shields.io/badge/Health%20Check-Weekly-orange?style=flat&logo=github-actions)](.github/workflows/purge-unhealthy.yml)
+[![Health Check](https://img.shields.io/badge/Health%20Check-Daily-orange?style=flat&logo=github-actions)](.github/workflows/purge-unhealthy.yml)
 ![Visitors](https://visitor-badge.laobi.icu/badge?page_id=poli0981.free-steam-games-list)
 [![Sponsor](https://img.shields.io/badge/Sponsor-Buy%20me%20a%20coffee-ff5f5f?style=flat&logo=buy-me-a-coffee)](.github/FUNDING.yml)
 
@@ -89,8 +89,8 @@ The Python pipeline that powered v2 is untouched and runs daily as before:
 
 - Schema v2.2 (23 + manual fields per record), CC BY 4.0 (see [LICENSE-DATA](LICENSE-DATA)), sharded data in `data/data_*.jsonl` (cap 800 records/shard) plus a `data/index.json` manifest with a SHA-256 per shard.
 - HTML scraper for accurate language tables, DLC pricing, user tags and the developer's anti-cheat disclosure — single GET per game.
-- Health-checked: dead-link sweep every 5 days, full purge every Monday.
-- Reviews-only refresh every 2 days; full refresh daily.
+- Health-checked daily: Steam's store API screens every game, and a game is removed only when appdetails agrees.
+- Reviews refreshed daily from Steam's own summaries; full refresh daily. Every data job queues for its turn and has a time budget, so a growing catalogue slows a refresh down instead of breaking it ([plan](docs/plan/18-pipeline-scale.md)).
 
 </details>
 
@@ -151,7 +151,8 @@ scripts/
 │   ├── anticheat.py        # Steam's anti-cheat disclosure and the rule that applies it
 │   ├── steamcharts.py      # SteamCharts all-time peak reader (polite, stops on refusal)
 │   ├── peaks.py            # all_time_peak: only ever raised
-│   ├── rotation.py         # crc32 daily slices shared by the refresh jobs
+│   ├── rotation.py         # crc32 daily slices shared by the refresh jobs, growing with the catalogue
+│   ├── budget.py           # A job's time budget: stop in time to save, warn before it runs out
 │   └── health_checker.py   # Game status detection with cached API data
 ├── discover_new.py         # Propose new games into the /admin review queue
 ├── ingest_new.py           # Add queued games (health check + fetch from Steam)
@@ -160,13 +161,12 @@ scripts/
 ├── refresh_store_data.py   # Daily rotation: tags/languages weekly, store details monthly
 ├── refresh_anticheat.py    # Daily: every game's anti-cheat, as its developer declares it on Steam
 ├── refresh_peaks.py        # Daily rotation: all-time peak from SteamCharts, monthly per game
-├── update_reviews.py       # Reviews-only (every 2 days)
+├── update_reviews.py       # Daily: every game's review summary from Steam, ~2 minutes
 ├── mark_dead_games.py      # Flag online games with no players
-├── check_dead_links.py     # HEAD-request 404/410 scanner
-├── purge_unhealthy.py      # Remove delisted/not-free/invalid
+├── purge_unhealthy.py      # Daily: remove delisted/not-free/unreleased (store API screen + appdetails)
 ├── top_online.py / top_offline.py  # Leaderboards
 ├── edit_game.py            # Overrides from the command line
-├── refetch_all.py          # Force re-fetch ALL (manual only)
+├── refetch_all.py          # Force re-fetch, in parts (manual only)
 └── delete_game.py          # Remove games (blocklist) from the command line
 ```
 
@@ -181,14 +181,13 @@ scripts/
 | Ingest New            | On `scripts/temp_info.jsonl` or `data/blocklist.jsonl` push, and every 3 h | Apply removals, then add approved games |
 | Top Online            | Sun/Wed/Fri 03:00 UTC            | Live player leaderboard                                   |
 | Top Offline           | 1st + 15th of month 05:00 UTC    | Leaderboard for single-player F2P concurrents             |
-| Update Reviews        | Every 2 days 06:00 UTC           | Reviews-only refresh                                      |
+| Update Reviews        | Daily 06:00 UTC                  | Every game's review summary from Steam's store API        |
 | Refresh Store Data    | Daily 16:00 UTC                  | Rotating re-fetch: tags, languages, DLC flag weekly; name, image, description, developer/publisher, release date, platforms, Metacritic, DRM monthly. Then every game's anti-cheat from Steam's disclosure (committed separately; manual run with `only: anticheat` does just that) |
 | Refresh All-Time Peaks | Daily 19:30 UTC                 | `all_time_peak` from SteamCharts, every game once a month, plus our own samples; manual run with `backfill` asks about every game |
-| Check Dead Links      | Every 5 days 04:00 UTC           | HEAD-request 404/410 scanner                              |
-| Purge Unhealthy       | Weekly Mon 05:00 UTC             | Full health scan + removal                                |
+| Purge Unhealthy       | Daily 07:00 UTC                  | Store API screen of every game; removal once appdetails agrees |
 | Mark Dead Games       | Mon + Thu 04:30 UTC              | Online + >1y + 0 players ≥14d → `is_dead=true` + 💀 note |
 | Daily Snapshot        | Daily 23:00 UTC                  | Per-game players and reviews into `data/snapshots/`       |
-| Force Re-fetch        | Manual only                      | Re-fetch ALL games                                        |
+| Force Re-fetch        | Manual only                      | Re-fetch games from scratch, one part (`1/8` … `8/8`) a run |
 | Web CI / Python Tests | On `web/**` / `scripts/**` change | Type check, tests, build and output checks               |
 | Release Desktop / Android | On `desktop-v*` / `android-v*` tag | Build the apps into a draft release                  |
 | Announce Discussion   | On release `published`           | Auto-create a GitHub Discussion in `Announcements`        |

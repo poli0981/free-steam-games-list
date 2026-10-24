@@ -259,12 +259,16 @@ class SteamClient:
                 out[str(item["id"])] = item
         return out
 
-    def fetch_anticheat_items(self, appids, give_up_after: int = 10) -> tuple[dict[str, dict], set[str]]:
-        """GetItems asking only for extra_details - each game's anti-cheat
-        disclosure - for a whole catalogue: ({appid: item}, ids not answered).
+    def fetch_items(self, appids, data_request: dict,
+                    give_up_after: int = 10) -> tuple[dict[str, dict], set[str]]:
+        """GetItems for a whole catalogue, a batch at a time: ({appid: item},
+        ids not answered). This is how the daily sweeps read every game in a
+        hundred-odd requests instead of one request per game.
 
         Unlike fetch_store_items() a failed batch costs only its own ids, which
-        the caller must treat as unknown, never as "no disclosure". After
+        the caller must treat as unknown - never as "no reviews", "no
+        disclosure" or "gone from the store". An id that IS answered for but is
+        missing from `items` is one Steam does not know (success 15). After
         `give_up_after` failed batches in a row the rest is not asked at all.
         """
         ids = [str(a) for a in appids if str(a).isdigit()]
@@ -276,7 +280,7 @@ class SteamClient:
             if in_a_row >= give_up_after:
                 failed.update(chunk)
                 continue
-            items = self._store_items_batch(chunk, {"include_extra_details": True})
+            items = self._store_items_batch(chunk, data_request)
             if items is None:
                 failed.update(chunk)
                 in_a_row += 1
@@ -285,6 +289,11 @@ class SteamClient:
             for item in items:
                 out[str(item["id"])] = item
         return out, failed
+
+    def fetch_anticheat_items(self, appids, give_up_after: int = 10) -> tuple[dict[str, dict], set[str]]:
+        """fetch_items() asking only for extra_details - each game's anti-cheat
+        disclosure (core/anticheat.py)."""
+        return self.fetch_items(appids, {"include_extra_details": True}, give_up_after)
 
     def fetch_tag_names(self) -> dict[int, str]:
         """{tagid: English name} from IStoreService/GetTagList, fetched once per
@@ -343,7 +352,9 @@ class SteamClient:
         return body if body.get("success") else None
 
     def check_store_page(self, appid: str) -> int:
-        """HEAD request only – lightweight dead link check."""
+        """HEAD the store page: check_game_health()'s last resort when
+        appdetails answers without data. A delisted app redirects to the store
+        front and ends on 200, so this cannot tell one from a live game."""
         self._throttle_store()
         try:
             resp = self._session.head(

@@ -3,15 +3,27 @@ on:
   schedule: [{cron: '0 3 * * 0,3,5'}]
   workflow_dispatch:
 permissions: {contents: write}
+# queue: max - a run that finds another data job running waits its turn
+# (first in, first out) instead of evicting the run already waiting.
 concurrency:
   group: data-write
   cancel-in-progress: false
+  queue: max
 jobs:
   leaderboard:
     runs-on: ubuntu-latest
+    # The player counts come from the keyed Web API with no pause between
+    # batches, about 0.55 s a game: ~27 minutes for 2,900 online games. The
+    # budget stops the sampling with time left to save and commit.
+    timeout-minutes: 150
     steps:
+      # main as it is when the job STARTS: a run that waited its turn must
+      # work on what the job before it committed.
       - uses: actions/checkout@v4
+        with: {ref: main}
       - uses: actions/setup-python@v5
         with: {python-version: '3.15'}
       - run: chmod +x ./bash/online.sh && ./bash/online.sh
-        env: {STEAM_API_KEY: '${{ secrets.STEAM_API_KEY }}'}
+        env:
+          STEAM_API_KEY: '${{ secrets.STEAM_API_KEY }}'
+          JOB_BUDGET_MINUTES: '120'

@@ -2,14 +2,16 @@
 """Full data update – enriches incomplete records."""
 import sys, os
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from core.budget import Deadline
 from core.data_store import load_main, save_main, migrate_record
 from core.fetcher import update_all_full
 
 def main():
+    deadline = Deadline.from_env()
     games = load_main()
     print(f"Loaded {len(games)} games")
     for g in games: migrate_record(g)
-    update_all_full(games)
+    update_all_full(games, deadline=deadline)
     save_main(games)
     print(f"\n✓ Saved {len(games)} games")
 

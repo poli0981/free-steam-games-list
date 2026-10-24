@@ -84,6 +84,16 @@ def test_check_fails_on_a_line_that_would_block_nothing(repo, capsys):
     assert "blocked_at" in capsys.readouterr().out
 
 
+def test_list_shows_what_is_blocked(repo, capsys):
+    assert delete_game.main(["--list"]) == 0
+    assert "nothing blocked" in capsys.readouterr().out
+    delete_game.main(["10", "--reason", "broken"])
+    capsys.readouterr()
+    assert delete_game.main(["--list"]) == 0
+    out = capsys.readouterr().out
+    assert "broken" in out and "Ten" in out and "1 blocked game(s)." in out
+
+
 def test_appends_after_a_file_without_a_final_newline(repo):
     delete_game.main(["10", "--reason", "broken"])
     path = os.path.join("data", "blocklist.jsonl")

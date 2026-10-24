@@ -13,7 +13,6 @@ on:
       - "Auto Update JSON Data"
       - "Top Online Leaderboard"
       - "Update Reviews"
-      - "Check Dead Links"
       - "Purge Unhealthy Games"
       - "Ingest New Game Links"
       - "Force Re-fetch All (v2.1 Schema)"

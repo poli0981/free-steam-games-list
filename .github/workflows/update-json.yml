@@ -3,15 +3,26 @@ on:
   schedule: [{cron: '0 0 * * *'}]
   workflow_dispatch:
 permissions: {contents: write}
+# queue: max - a run that finds another data job running waits its turn
+# (first in, first out) instead of evicting the run already waiting.
 concurrency:
   group: data-write
   cancel-in-progress: false
+  queue: max
 jobs:
   update:
     runs-on: ubuntu-latest
+    timeout-minutes: 90
     steps:
+      # main as it is when the job STARTS. The commit the scheduled run was
+      # created on is older whenever another data job ran first, and this one
+      # then failed on a conflict in data/index.json (four times in ten days,
+      # October 2026).
       - uses: actions/checkout@v6
+        with: {ref: main}
       - uses: actions/setup-python@v6
         with: {python-version: '3.15'}
       - run: chmod +x ./bash/json.sh && ./bash/json.sh
-        env: {STEAM_API_KEY: '${{ secrets.STEAM_API_KEY }}'}
+        env:
+          STEAM_API_KEY: '${{ secrets.STEAM_API_KEY }}'
+          JOB_BUDGET_MINUTES: '60'

@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """
 Refresh all_time_peak - the most players each game has had at once - from
-SteamCharts, a thirtieth of the catalogue a day.
+SteamCharts, a thirtieth of the catalogue a day (less, once that passes
+PEAK_DAILY games).
 
 core/peaks.py explains the field; core/steamcharts.py the source and why it is
 read so carefully. Each run does two things:
@@ -12,7 +13,9 @@ read so carefully. Each run does two things:
      field for the whole catalogue on the first run.
   2. For the games whose slice is due (crc32(appid) % 30, see core/rotation.py:
      every game once a month), read SteamCharts' recorded all-time peak and
-     raise the field to it.
+     raise the field to it. Past PEAK_DAILY games a day the cycle grows to
+     60, 90, ... days (rotation.cycle_for), never shorter: SteamCharts is still
+     asked about a game at most once a month.
 
 The rules:
   - all_time_peak only ever goes UP. A failed request, an untracked app or a
@@ -23,8 +26,9 @@ The rules:
     never seen; both are normal and simply skipped until next month.
   - A 403, a 429 or a Cloudflare challenge stops the SteamCharts part of the
     run (everything already raised is kept and saved), and so do ten errors in
-    a row. The run still succeeds, with a warning: a refusal is SteamCharts'
-    call to make, not a pipeline failure.
+    a row, and so does the job's time budget (core/budget.py). The run still
+    succeeds, with a warning: a refusal is SteamCharts' call to make, not a
+    pipeline failure.
   - Everything is written by save_main().
 
 Usage (from the repository root):
@@ -41,12 +45,16 @@ from typing import Optional
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
+from core.budget import Deadline, expired
 from core.data_store import extract_appid, load_main, migrate_record, save_main
 from core.peaks import observed_peak, raise_peak
-from core.rotation import day_number, due
+from core.rotation import cycle_for, daily_order, day_number, due
 from core.steamcharts import SteamChartsClient
 
 PEAK_CYCLE_DAYS = 30
+# The most SteamCharts pages a day before the cycle grows (rotation.cycle_for):
+# about 17 minutes at 2-3 s a page.
+PEAK_DAILY = 400
 MAX_CONSECUTIVE_ERRORS = 10
 
 
@@ -55,13 +63,19 @@ def raise_from_samples(games: list[dict]) -> int:
     return sum(1 for g in games if raise_peak(g, observed_peak(g)))
 
 
-def raise_from_steamcharts(targets: list[dict], client, log=print) -> Counter:
+def raise_from_steamcharts(targets: list[dict], client, log=print,
+                           deadline: Optional[Deadline] = None) -> Counter:
     """Step 2. Returns a tally of the outcomes: "raised", "unchanged",
     "untracked", "error", and "skipped" for games never asked because the run
     stopped early."""
     tally: Counter = Counter()
     errors_in_a_row = 0
     for i, game in enumerate(targets):
+        if expired(deadline):
+            tally["skipped"] += len(targets) - i
+            log(f"::warning::The job's time budget ran out with {len(targets) - i} SteamCharts "
+                f"pages left; those games are asked on their next turn.")
+            break
         appid = extract_appid(game.get("link", ""))
         if not appid:
             continue
@@ -101,6 +115,7 @@ def main(argv: Optional[list[str]] = None) -> None:
     ap.add_argument("--dry-run", action="store_true", help="fetch and report, write nothing")
     args = ap.parse_args(argv)
 
+    deadline = Deadline.from_env()
     games = load_main()
     for g in games:
         migrate_record(g)
@@ -109,13 +124,14 @@ def main(argv: Optional[list[str]] = None) -> None:
     print(f"{len(games)} games; all_time_peak raised from our own samples for {from_samples}")
 
     day = day_number() if args.day is None else args.day
-    targets = games if args.all else [g for g in games if due(g, PEAK_CYCLE_DAYS, day)]
+    cycle = cycle_for(len(games), PEAK_CYCLE_DAYS, PEAK_DAILY)
+    targets = games if args.all else [g for g in daily_order(games, day) if due(g, cycle, day)]
     if args.limit is not None:
         targets = targets[: args.limit]
-    scope = "every game" if args.all else f"slice {day % PEAK_CYCLE_DAYS}/{PEAK_CYCLE_DAYS}"
+    scope = "every game" if args.all else f"slice {day % cycle}/{cycle}"
     print(f"SteamCharts: {len(targets)} games ({scope})")
 
-    tally = raise_from_steamcharts(targets, SteamChartsClient()) if targets else Counter()
+    tally = raise_from_steamcharts(targets, SteamChartsClient(), deadline=deadline) if targets else Counter()
     summary = ", ".join(f"{k} {v}" for k, v in tally.most_common()) or "nothing asked"
     print(f"\nSteamCharts: {summary}")
 

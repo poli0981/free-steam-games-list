@@ -659,10 +659,11 @@ counts as *no* — the page's *Last run* line says which one stopped it:
 - **The previous batch has been ingested**: `scripts/temp_info.jsonl` on `main`
   is empty. Checked again inside the commit itself, so a batch never lands in
   the middle of an ingest.
-- **No data job is running or waiting.** The `data-write` group keeps one
-  waiting run, and the ingest a batch starts would cancel a job already waiting
-  its turn. The list of those workflows is `web/shared/pipeline.ts`, which a
-  test holds to the YAML.
+- **No data job is running or waiting.** The `data-write` group queues its
+  runs (`queue: max`), so the ingest a batch starts would only wait behind such
+  a job; the gate makes a batch land when its ingest can start at once. The
+  list of those workflows is `web/shared/pipeline.ts`, which a test holds to
+  the YAML.
 - **Today's budget is not spent.** It is reserved before the commit and given
   back if the commit fails.
 

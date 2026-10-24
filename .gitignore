@@ -13,8 +13,6 @@ Thumbs.db
 # scripts/mark_dead_games.py and explicitly staged by mark-dead-games.yml.
 # It survives *.log today only because ignore rules do not apply to
 # already-tracked files -- rename or recreate it and it silently vanishes.
-# (scripts/dead_links.log is deliberately NOT excepted: bash/dead_links.sh
-# runs `git add .`, and that log is local diagnostic output.)
 !scripts/dead_games.log
 *.tmp
 *.temp

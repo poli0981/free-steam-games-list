@@ -132,6 +132,23 @@ def test_anticheat_items_survive_a_failed_batch(monkeypatch):
     assert sent["data_request"] == {"include_extra_details": True}
 
 
+def test_items_pass_the_data_request_through_and_tell_unknown_from_unanswered(monkeypatch):
+    monkeypatch.setattr(steam_client, "STORE_ITEMS_BATCH", 2)
+    answered = {"response": {"store_items": [
+        {"id": 730, "success": 1, "reviews": {}},
+        {"id": 1, "appid": 0, "success": 15},                      # unknown to Steam
+    ]}}
+    client, session = _client(_Resp(steam_client.STORE_ITEMS_URL, body=answered),
+                              _Resp(steam_client.STORE_ITEMS_URL, status_code=500))
+    monkeypatch.setattr(steam_client, "MAX_RETRIES", 1)
+    items, failed = client.fetch_items(["730", "1", "570"], {"include_reviews": True})
+    assert list(items) == ["730"]
+    assert failed == {"570"}                       # "1" was answered for: Steam does not know it
+    sent = json.loads(session.requests[0]["params"]["input_json"])
+    assert sent["data_request"] == {"include_reviews": True}
+    assert sent["context"]["country_code"] == "US"
+
+
 def test_anticheat_items_give_up_after_failures_in_a_row(monkeypatch):
     monkeypatch.setattr(steam_client, "STORE_ITEMS_BATCH", 1)
     bad = [_Resp(steam_client.STORE_ITEMS_URL, status_code=403) for _ in range(2)]

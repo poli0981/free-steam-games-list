@@ -194,7 +194,7 @@
         </Button>
         <p class="text-xs text-muted-foreground">
           A batch waits while the previous one is still in scripts/temp_info.jsonl, or while a data job is running or
-          waiting its turn - pushing then would cancel that job.
+          waiting its turn - the ingest it starts would only queue behind that job.
         </p>
       </article>
 
