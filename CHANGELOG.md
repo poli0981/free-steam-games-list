@@ -4,6 +4,60 @@ All notable changes to this awesome noob repo will be documented here.
 
 ## [Unreleased]
 
+## [v4.4.1] – 2026-10-26 (The "Tune-Up" Edition)
+
+A dependency and security pass. The desktop and Android apps take the
+patched TLS stack their updater talks to the release server with; the dev
+tooling, the Python pipeline and the CI workflows catch up with their
+fixes. Nothing changes in how the site or the apps look or behave. Desktop
+and Android bumped `2.2.1` → `2.2.2`; repo public-facing version `4.4.0` →
+`4.4.1`. The desktop app offers 2.2.2 through its updater once the release
+is published; on Android, install the new APK over the old one.
+
+### 🔐 Security
+
+- **The apps' TLS stack is patched.** rustls 0.23.46 closes four advisories,
+  among them an unauthenticated ServerHello that could downgrade later
+  connections to classical key exchange; rustls-webpki 0.103.16 and
+  webpki-root-certs 1.0.11 stop accepting certificates chained to the
+  distrusted emSign intermediates. In the apps this is the HTTPS the updater
+  checks for, and downloads, a new version over.
+- Also in the apps: tokio, anyhow and event-listener (soundness fixes) and
+  plist 1.10, whose quick-xml 0.42 closes two denial-of-service advisories.
+  Still waiting on Tauri: the zip 4 inside its updater plugin (three
+  extraction advisories; the updater checks every download's signature
+  before it opens it), the Linux GTK 3 bindings (glib 0.18) and the
+  unmaintained proc-macro-error, zbus_names and zvariant. They go when Tauri
+  moves.
+- Dev tooling: undici 7.30.1 inside wrangler's local simulator (three
+  advisories; it runs in `wrangler dev` and the deploy check, never in the
+  deployed Worker), zod 4.6.7 (in the unused-code report).
+- Two SvelteKit advisories are fixed only in SvelteKit 3 and need code this
+  site does not have - a prerendered page forwarding an untrusted
+  `cache-control` to `setHeaders`, and `use:enhance` form actions - so they
+  are dismissed as not applicable. The move to SvelteKit 3 is a migration of
+  its own.
+
+### 🧹 Changed
+
+- Pipeline: certifi 2026.10.23 (the CA bundle the scrapers verify Steam
+  with), coverage 7.17.0 for the tests, both pinned with their hashes.
+- Site and apps: bits-ui 2.20.2, Lucide 1.61.0, TanStack Virtual 3.13.48,
+  Vite 8.3.5; tooling: wrangler 4.152.0, knip 6.43.0, Tauri CLI 2.12.4.
+- Merged by Dependabot since v4.4.0 and first shipped in these apps: Tauri
+  2.12.4; in the build tooling, fast-uri 3.1.9 and serialize-javascript 7.1.4
+  (two advisories).
+- CI: every workflow runs on `actions/checkout` v6 and `actions/setup-python`
+  v6. The data jobs still on the Node 20 majors printed a deprecation warning
+  on every run. The release workflows take rust-cache 2.9.3.
+
+### 📚 Docs
+
+- `CLAUDE.md`: the undici override and when to delete it; why SvelteKit
+  stays on 2 and what would make the two advisories apply again.
+  `.github/dependabot.yml`: why checkout and setup-python majors are taken by
+  hand, for every workflow at once.
+
 ## [v4.4.0] – 2026-10-23 (The "Headroom" Edition)
 
 The data pipeline grows with the catalogue again. With almost 10,000 games
