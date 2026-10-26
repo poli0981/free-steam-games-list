@@ -11,7 +11,7 @@
  * player count would be days old on the page; those come only from the live
  * catalogue once it loads.
  *
- * This file must stay free of Svelte, $lib aliases and browser globals:
+ * This file must stay free of Svelte, `#lib` imports and browser globals:
  * build/game-seeds.ts imports it from vite.config.ts, in Node.
  */
 

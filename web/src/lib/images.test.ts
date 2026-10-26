@@ -124,11 +124,11 @@ describe("every media-host image can fall back to /img", () => {
   });
 
   it("is allowed by the web CSP and checked by verify-dist, under the same name as lib/site.ts", () => {
-    // svelte.config.js and verify-dist.mjs are plain Node and cannot import
-    // site.ts, so the literal is repeated there; this keeps the three equal.
-    // A web policy without the host blocks every image, the fallback hides it,
-    // and every view costs a Worker request again.
-    for (const file of ["svelte.config.js", "scripts/verify-dist.mjs"]) {
+    // build/sveltekit-config.ts (the CSP) and verify-dist.mjs repeat the
+    // literal rather than import site.ts; this keeps the three equal. A web
+    // policy without the host blocks every image, the fallback hides it, and
+    // every view costs a Worker request again.
+    for (const file of ["build/sveltekit-config.ts", "scripts/verify-dist.mjs"]) {
       expect(readFileSync(join(WEB, file), "utf-8"), file).toContain(`"${MEDIA_ORIGIN}"`);
     }
   });

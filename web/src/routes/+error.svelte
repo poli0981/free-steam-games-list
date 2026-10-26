@@ -1,7 +1,7 @@
 <script lang="ts">
   import { page } from "$app/state";
-  import ErrorView from "$lib/common/ErrorView.svelte";
-  import { isChunkLoadError } from "$lib/chunk-error";
+  import ErrorView from "#lib/common/ErrorView.svelte";
+  import { isChunkLoadError } from "#lib/chunk-error.js";
 
   // SvelteKit's own error boundary. A 404 from the router, a load() throw, or
   // a failed lazy import all land here.

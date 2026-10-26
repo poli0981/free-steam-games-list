@@ -4,6 +4,31 @@ All notable changes to this awesome noob repo will be documented here.
 
 ## [Unreleased]
 
+### 🧹 Changed
+
+- **The site and the apps build on SvelteKit 3** (3.1, with adapter-static
+  4). Nothing changes for readers: the same pages with the same text, the
+  same Content-Security-Policy and the same service-worker precache, each
+  checked against a SvelteKit 2 build of the same commit. SvelteKit 3 refuses
+  `svelte.config.js`, so its options moved to `web/build/sveltekit-config.ts`,
+  now with tests for both the web and the app policies; `$lib` imports became
+  `#lib`, and the `/legal/<slug>` matcher moved to `web/src/params.ts`.
+- The service worker is wired into the build by `web/build/pwa.ts`, on
+  vite-plugin-pwa: `@vite-pwa/sveltekit` never supported SvelteKit 3.
+- An old `/#/…` link to a page that no longer exists now opens the "Page not
+  found" page (`/error/404`); SvelteKit 3 refuses to navigate to it in place.
+  One that names another site (`/#//other.example/…`) is ignored.
+- SvelteKit now asks the site for its version (`/_app/version.json`, a few
+  bytes) when a tab regains focus and once an hour, where it used to ask only
+  after a navigation failed. A newer deploy still changes nothing until a
+  navigation fails, which then reloads the page, as before.
+
+### 🔐 Security
+
+- The two SvelteKit advisories dismissed in v4.4.1 (GHSA-27mw-82g8-phjj,
+  GHSA-pfhg-q3qv-9q6r) are fixed by the upgrade, and `npm audit` reports
+  nothing: the `cookie` override SvelteKit 2 needed is gone.
+
 ## [v4.4.1] – 2026-10-26 (The "Tune-Up" Edition)
 
 A dependency and security pass. The desktop and Android apps take the

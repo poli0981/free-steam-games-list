@@ -3,16 +3,16 @@
   import ArrowUp from "@lucide/svelte/icons/arrow-up";
   import ArrowDown from "@lucide/svelte/icons/arrow-down";
   import ChevronsUpDown from "@lucide/svelte/icons/chevrons-up-down";
-  import { games } from "$lib/games.svelte";
-  import { i18n } from "$lib/i18n.svelte";
-  import { acLevel, bucketByAntiCheat, type AcLevel } from "$lib/anti-cheat";
-  import { appidOf } from "$lib/data-store";
-  import { cn, formatNumber, parseIntSafe } from "$lib/utils";
-  import type { GameRecord } from "$lib/schema";
-  import QueryState from "$lib/common/QueryState.svelte";
-  import PageHeader from "$lib/common/PageHeader.svelte";
-  import Badge, { type BadgeVariant } from "$lib/ui/Badge.svelte";
-  import Seo from "$lib/common/Seo.svelte";
+  import { games } from "#lib/games.svelte.js";
+  import { i18n } from "#lib/i18n.svelte.js";
+  import { acLevel, bucketByAntiCheat, type AcLevel } from "#lib/anti-cheat.js";
+  import { appidOf } from "#lib/data-store.js";
+  import { cn, formatNumber, parseIntSafe } from "#lib/utils.js";
+  import type { GameRecord } from "#lib/schema.js";
+  import QueryState from "#lib/common/QueryState.svelte";
+  import PageHeader from "#lib/common/PageHeader.svelte";
+  import Badge, { type BadgeVariant } from "#lib/ui/Badge.svelte";
+  import Seo from "#lib/common/Seo.svelte";
 
   const t = i18n.t;
 

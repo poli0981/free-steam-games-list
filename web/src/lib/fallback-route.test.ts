@@ -1,7 +1,11 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
-import { MAY_FALL_BACK_ROUTES } from "./fallback-route";
+
+const goto = vi.hoisted(() => vi.fn());
+vi.mock("$app/navigation", () => ({ goto }));
+
+import { MAY_FALL_BACK_ROUTES, markRouteRendered, recoverFallbackRoute } from "./fallback-route";
 
 /**
  * Keeps fallback-route.ts's list honest.
@@ -67,5 +71,35 @@ describe("the may-fall-back route list", () => {
     const page = join(ROUTES, ...routeId.split("/").filter(Boolean), "+page.svelte");
     const src = stripComments(readFileSync(page, "utf-8"));
     expect(src).toContain(`markRouteRendered("${routeId}")`);
+  });
+});
+
+describe("recoverFallbackRoute", () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    goto.mockReset();
+  });
+
+  it("re-renders a route the host answered with the dashboard, in place and with its own load", () => {
+    vi.stubGlobal("location", { pathname: "/developers/Valve", search: "?page=2", hash: "#top" });
+    recoverFallbackRoute("/developers/[name]");
+    // SvelteKit 3's names: `replace`, not `replaceState`; `reset: false`, not
+    // `noScroll` (which throws there); `refreshAll`, not `invalidateAll`.
+    expect(goto).toHaveBeenCalledWith("/developers/Valve?page=2#top", {
+      replace: true,
+      reset: false,
+      refreshAll: true,
+    });
+  });
+
+  it("leaves a route alone when its own prerendered page hydrated", () => {
+    markRouteRendered("/publishers/[name]");
+    recoverFallbackRoute("/publishers/[name]");
+    expect(goto).not.toHaveBeenCalled();
+  });
+
+  it.each([null, "/", "/legal/[doc=legaldoc]"])("never re-renders %s, which cannot fall back", (routeId) => {
+    recoverFallbackRoute(routeId);
+    expect(goto).not.toHaveBeenCalled();
   });
 });

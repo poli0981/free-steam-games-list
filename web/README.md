@@ -119,12 +119,13 @@ web/
 ├── shared/                     # queue rules, API types, the human check's constants
 ├── build/game-seeds.ts         # build-time seeds for the prerendered game pages
 ├── build/legal-versions.ts     # content hashes + sources for the legal documents
+├── build/sveltekit-config.ts   # SvelteKit's options: adapter, CSP, prerender entries
+├── build/pwa.ts                # the service worker, wired into SvelteKit's build
 ├── src-tauri/                  # desktop + Android shell
 ├── static/                     # _headers, robots.txt, security.txt, generated art
 ├── scripts/verify-dist.mjs     # checks the built output (run in CI)
 ├── scripts/gen-fontface.py     # subsetted @font-face rules
 ├── scripts/gen-icons.py        # icons + og.png, from static/icon.svg
-├── svelte.config.js            # adapter, CSP, prerender entries
 └── wrangler.jsonc              # Worker + static-asset config
 ```
 
@@ -142,9 +143,9 @@ never prerendered: those are served the app shell and rendered from the
 catalogue.
 
 Two things about that are load-bearing and easy to break — both are explained
-at length in `svelte.config.js` and `src/lib/fallback-route.ts`:
+at length in `build/sveltekit-config.ts` and `src/lib/fallback-route.ts`:
 
-- `kit.paths.relative` is **false**. The default (`true`) gives prerendered
+- `paths.relative` is **false**. The default (`true`) gives prerendered
   pages relative asset URLs, which resolve against the wrong directory the
   moment a page is served as the fallback.
 - Both hosts answer an unmatched path with `index.html` — the prerendered
@@ -154,11 +155,11 @@ at length in `svelte.config.js` and `src/lib/fallback-route.ts`:
 
 ## Content-Security-Policy
 
-Owned by `kit.csp` in `svelte.config.js` and emitted as a `<meta>` tag with the
-sha256 of SvelteKit's inline bootstrap. It is deliberately **not** in
-`static/_headers`: browsers enforce the intersection of header and meta
-policies, so a `script-src 'self'` header blocks that script whatever the meta
-says, and the app renders but never hydrates.
+Owned by the `csp` option in `build/sveltekit-config.ts` and emitted as a
+`<meta>` tag with the sha256 of SvelteKit's inline bootstrap. It is
+deliberately **not** in `static/_headers`: browsers enforce the intersection
+of header and meta policies, so a `script-src 'self'` header blocks that
+script whatever the meta says, and the app renders but never hydrates.
 
 The policy has two flavours, selected by `TAURI_ENV_PLATFORM`. Under Tauri the
 origin is `tauri://localhost` (or `http://tauri.localhost` on Windows and
@@ -180,9 +181,10 @@ on "Enable with JS Snippet installation".
 
 ## PWA
 
-`@vite-pwa/sveltekit` builds a Workbox service worker, registered only after
-the legal consent step and the human check, and never in the Tauri build (a
-worker at `tauri.localhost` can never update).
+`vite-plugin-pwa` builds a Workbox service worker (`build/pwa.ts` wires it into
+SvelteKit's build), registered only after the legal consent step and the human
+check, and never in the Tauri build (a worker at `tauri.localhost` can never
+update).
 
 - Updates prompt ("Update available" → Reload) rather than swapping the app
   under an open page, and the worker checks for a new version hourly.

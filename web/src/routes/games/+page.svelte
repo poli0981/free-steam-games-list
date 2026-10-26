@@ -3,19 +3,19 @@
   import X from "@lucide/svelte/icons/x";
   import Download from "@lucide/svelte/icons/download";
   import { page as appPage } from "$app/state";
-  import { replaceState } from "$app/navigation";
-  import { games } from "$lib/games.svelte";
-  import { filters, FILTER_PARAMS, PAGE_SIZES } from "$lib/filters.svelte";
-  import { i18n } from "$lib/i18n.svelte";
-  import { buildSearchIndex, applyFilters, applySort, facets } from "$lib/games/filtering";
-  import { formatNumber } from "$lib/utils";
-  import { exportCsv, exportJson } from "$lib/export";
-  import QueryState from "$lib/common/QueryState.svelte";
-  import PageHeader from "$lib/common/PageHeader.svelte";
-  import GamesTable from "$lib/games/GamesTable.svelte";
-  import MobileGameCards from "$lib/games/MobileGameCards.svelte";
-  import Button from "$lib/ui/Button.svelte";
-  import Seo from "$lib/common/Seo.svelte";
+  import { goto } from "$app/navigation";
+  import { games } from "#lib/games.svelte.js";
+  import { filters, FILTER_PARAMS, PAGE_SIZES } from "#lib/filters.svelte.js";
+  import { i18n } from "#lib/i18n.svelte.js";
+  import { buildSearchIndex, applyFilters, applySort, facets } from "#lib/games/filtering.js";
+  import { formatNumber } from "#lib/utils.js";
+  import { exportCsv, exportJson } from "#lib/export.js";
+  import QueryState from "#lib/common/QueryState.svelte";
+  import PageHeader from "#lib/common/PageHeader.svelte";
+  import GamesTable from "#lib/games/GamesTable.svelte";
+  import MobileGameCards from "#lib/games/MobileGameCards.svelte";
+  import Button from "#lib/ui/Button.svelte";
+  import Seo from "#lib/common/Seo.svelte";
 
   const t = i18n.t;
 
@@ -73,7 +73,10 @@
     const timer = setTimeout(() => {
       const next = location.pathname + (query ? `?${query}` : "") + location.hash;
       if (next !== location.pathname + location.search + location.hash) {
-        replaceState(next, appPage.state);
+        // Shallow: the address bar and history entry change, nothing reloads,
+        // and with no `reset` the search box keeps its focus and the page its
+        // scroll position.
+        void goto(next, { shallow: true, replace: true, state: appPage.state });
       }
     }, 250);
     return () => clearTimeout(timer);

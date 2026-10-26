@@ -2,10 +2,10 @@
   import ShieldCheck from "@lucide/svelte/icons/shield-check";
   import FileText from "@lucide/svelte/icons/file-text";
   import ChevronRight from "@lucide/svelte/icons/chevron-right";
-  import { i18n } from "$lib/i18n.svelte";
-  import { LEGAL_DOCS, legalDocSlug } from "$lib/legal";
-  import PageHeader from "$lib/common/PageHeader.svelte";
-  import Seo from "$lib/common/Seo.svelte";
+  import { i18n } from "#lib/i18n.svelte.js";
+  import { LEGAL_DOCS, legalDocSlug } from "#lib/legal.js";
+  import PageHeader from "#lib/common/PageHeader.svelte";
+  import Seo from "#lib/common/Seo.svelte";
 
   const t = i18n.t;
 

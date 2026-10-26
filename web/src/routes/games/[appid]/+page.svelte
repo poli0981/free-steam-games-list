@@ -3,28 +3,28 @@
   import ExternalLink from "@lucide/svelte/icons/external-link";
   import Monitor from "@lucide/svelte/icons/monitor";
   import { page } from "$app/state";
-  import { games, removedGames } from "$lib/games.svelte";
-  import { i18n } from "$lib/i18n.svelte";
-  import { heroFallback, heroImage, socialImagePath } from "$lib/image";
-  import { imgFallback } from "$lib/img-fallback";
-  import { steamWebUrl, steamProtocolUrl } from "$lib/steam-link";
-  import { isAndroid } from "$lib/external-open";
+  import { games, removedGames } from "#lib/games.svelte.js";
+  import { i18n } from "#lib/i18n.svelte.js";
+  import { heroFallback, heroImage, socialImagePath } from "#lib/image.js";
+  import { imgFallback } from "#lib/img-fallback.js";
+  import { steamWebUrl, steamProtocolUrl } from "#lib/steam-link.js";
+  import { isAndroid } from "#lib/external-open.js";
   import {
     formatNumber,
     formatRelativeDate,
     parseReleaseDate,
     parseReviewPercent,
     reviewLabel,
-  } from "$lib/utils";
-  import { reviewTone } from "$lib/games/columns";
-  import { extractAppid } from "$lib/data-store";
-  import { seedScript, toSeed, type GameSeed } from "$lib/game-seed";
-  import { markRouteRendered } from "$lib/fallback-route";
-  import { SITE_ORIGIN } from "$lib/site";
-  import QueryState from "$lib/common/QueryState.svelte";
-  import Badge from "$lib/ui/Badge.svelte";
-  import Button from "$lib/ui/Button.svelte";
-  import Seo from "$lib/common/Seo.svelte";
+  } from "#lib/utils.js";
+  import { reviewTone } from "#lib/games/columns.js";
+  import { extractAppid } from "#lib/data-store.js";
+  import { seedScript, toSeed, type GameSeed } from "#lib/game-seed.js";
+  import { markRouteRendered } from "#lib/fallback-route.js";
+  import { SITE_ORIGIN } from "#lib/site.js";
+  import QueryState from "#lib/common/QueryState.svelte";
+  import Badge from "#lib/ui/Badge.svelte";
+  import Button from "#lib/ui/Button.svelte";
+  import Seo from "#lib/common/Seo.svelte";
   import type { PageData } from "./$types";
 
   let { data }: { data: PageData } = $props();

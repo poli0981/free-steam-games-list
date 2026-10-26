@@ -25,8 +25,9 @@ export default defineConfig(({ command, mode }) => ({
   publicDir: false,
   plugins: [
     tailwindcss(),
-    // configFile false: web/svelte.config.js is the SvelteKit app's, and its
-    // kit options mean nothing here.
+    // configFile false: SvelteKit's options are passed to its plugin in
+    // web/vite.config.ts and mean nothing here; no svelte.config.js may be
+    // picked up either (SvelteKit 3 refuses the file).
     svelte({ configFile: false, preprocess: vitePreprocess() }),
     command === "serve" && adminDevApi({ preview: mode === "preview" }),
     command === "build" &&

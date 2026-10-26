@@ -1,7 +1,6 @@
 /// <reference types="vitest/config" />
 import { defineConfig, type Plugin } from "vite";
 import { sveltekit } from "@sveltejs/kit/vite";
-import { SvelteKitPWA } from "@vite-pwa/sveltekit";
 // Tailwind 4 runs as a Vite plugin instead of a PostCSS plugin;
 // tailwind.config.ts and postcss.config.js do not exist.
 import tailwindcss from "@tailwindcss/vite";
@@ -10,6 +9,8 @@ import path from "node:path";
 import { readFileSync } from "node:fs";
 import { gameSeeds } from "./build/game-seeds";
 import { legalVersions } from "./build/legal-versions";
+import { svelteKitPWA } from "./build/pwa";
+import { sveltekitConfig } from "./build/sveltekit-config";
 
 // Version sourced from package.json (single source of truth, matches the Android
 // versionName) and exposed to the bundle as `__APP_VERSION__` for the update check.
@@ -18,9 +19,11 @@ const appVersion = JSON.parse(
 ).version as string;
 
 /**
- * True while the Tauri CLI is driving this build. Tauri 2 sets TAURI_ENV_* for
- * the process running beforeBuildCommand. Mirrors the same check in
- * svelte.config.js.
+ * True while the Tauri CLI is driving this build.
+ *
+ * Tauri 2 sets TAURI_ENV_* for the process running beforeBuildCommand, so
+ * this needs no extra npm script and no cross-env - which matters, because
+ * `VAR=1 vite build` in package.json does not work on Windows.
  */
 const IS_TAURI = Boolean(process.env.TAURI_ENV_PLATFORM);
 
@@ -51,8 +54,8 @@ function pwaVirtualStubs(): Plugin {
 }
 
 export default defineConfig(({ mode }) => ({
-  // No `base`. SvelteKit owns the base path (kit.paths), and setting Vite's
-  // would fight it.
+  // No `base`. SvelteKit owns the base path (its `paths` option), and setting
+  // Vite's would fight it.
   define: {
     __APP_VERSION__: JSON.stringify(appVersion),
     // Read by routes/games/[appid]/+page.ts. A route file cannot read
@@ -68,7 +71,9 @@ export default defineConfig(({ mode }) => ({
     // show what changed instead of asking for a second full read. Every
     // flavour: the packaged apps run the same gate.
     legalVersions(),
-    sveltekit(),
+    // Adapter, CSP, paths, prerender: build/sveltekit-config.ts (until
+    // SvelteKit 3, svelte.config.js).
+    sveltekit(sveltekitConfig(IS_TAURI)),
     /**
      * WEB ONLY. A service worker registered at tauri.localhost can never be
      * updated - Tauri's custom protocol does not satisfy the update
@@ -84,8 +89,10 @@ export default defineConfig(({ mode }) => ({
      * lib/pwa.ts removes any worker left behind by an older build.
      */
     IS_TAURI && pwaVirtualStubs(),
+    // After sveltekit(): build/pwa.ts writes the service worker between
+    // SvelteKit's prerender and its adapter, and relies on this order.
     !IS_TAURI &&
-      SvelteKitPWA({
+      svelteKitPWA({
         // "prompt": a new version waits until the reader chooses to reload
         // (lib/common/PwaIndicator.svelte), instead of the page reloading
         // itself mid-read. injectRegister false: nothing was ever injected
@@ -125,7 +132,7 @@ export default defineConfig(({ mode }) => ({
           maximumFileSizeToCacheInBytes: 6 * 1024 * 1024,
           globPatterns: ["**/*.{js,css,html,svg,woff2}"],
           // The social card is 145 KB that no VISITOR ever loads - it exists
-          // for crawlers. @vite-pwa/sveltekit adds every static asset to the
+          // for crawlers. build/pwa.ts adds every static asset to the
           // precache on its own, regardless of globPatterns, so keeping it
           // out of every install takes an explicit ignore.
           // The prerendered game pages: ~3,650 HTML files, ~120 MB. The glob

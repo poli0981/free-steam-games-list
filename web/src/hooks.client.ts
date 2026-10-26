@@ -8,12 +8,12 @@
  * this reloads once to pick up the new build instead of showing an error page
  * for an app that is not actually broken.
  */
-import type { HandleClientError } from "@sveltejs/kit";
-import { isChunkLoadError, reloadOnceForStaleChunk } from "$lib/chunk-error";
+import type { HandleClientError } from "@sveltejs/kit/hooks";
+import { isChunkLoadError, reloadOnceForStaleChunk } from "#lib/chunk-error.js";
 
-export const handleError: HandleClientError = ({ error, message }) => {
+export const handleError: HandleClientError = ({ error }) => {
   if (isChunkLoadError(error) && reloadOnceForStaleChunk()) {
     return { message: "Reloading to pick up the latest version" };
   }
-  return { message };
+  // Returning nothing keeps SvelteKit's own status and safe message.
 };

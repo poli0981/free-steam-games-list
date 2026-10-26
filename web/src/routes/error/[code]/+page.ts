@@ -1,4 +1,4 @@
-import { ERROR_CODES } from "$lib/common/ErrorView.svelte";
+import { ERROR_CODES } from "#lib/common/ErrorView.svelte";
 import type { EntryGenerator } from "./$types";
 
 /** Prerender one page per known code, so /error/503 is a real static document

@@ -2,7 +2,10 @@
   "$schema": "https://unpkg.com/knip@6/schema.json",
   "entry": [
     "src/workers/jsonl-parser.ts",
-    "src/index.css"
+    "src/index.css",
+    // SvelteKit 3's param matchers. knip's SvelteKit plugin still looks for
+    // the per-file src/params/*, so without this the file is "unused".
+    "src/params.ts"
   ],
   // worker/** was absent until 2026-09-12, so nothing in the Cloudflare Worker
   // was ever analysed - which is why five dead exports (commitFile,

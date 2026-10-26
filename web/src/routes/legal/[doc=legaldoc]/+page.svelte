@@ -1,10 +1,10 @@
 <script lang="ts">
   import ExternalLink from "@lucide/svelte/icons/external-link";
   import ArrowLeft from "@lucide/svelte/icons/arrow-left";
-  import { i18n } from "$lib/i18n.svelte";
-  import PageHeader from "$lib/common/PageHeader.svelte";
+  import { i18n } from "#lib/i18n.svelte.js";
+  import PageHeader from "#lib/common/PageHeader.svelte";
   import type { PageData } from "./$types";
-  import Seo from "$lib/common/Seo.svelte";
+  import Seo from "#lib/common/Seo.svelte";
 
   let { data }: { data: PageData } = $props();
 

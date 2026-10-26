@@ -5,33 +5,33 @@
   import { Dialog } from "bits-ui";
   import { page } from "$app/state";
   import { afterNavigate, goto } from "$app/navigation";
-  import { i18n } from "$lib/i18n.svelte";
-  import { theme, welcome, scrollbars } from "$lib/prefs.svelte";
-  import { consent } from "$lib/consent.svelte";
-  import { humanCheck } from "$lib/human-check-state.svelte";
-  import { appReady } from "$lib/app-ready";
-  import { installPaletteShortcut } from "$lib/palette.svelte";
-  import { games, installGamesRevalidation } from "$lib/games.svelte";
-  import { upgradeLegacyHashUrl } from "$lib/legacy-url";
-  import { recoverFallbackRoute } from "$lib/fallback-route";
-  import { installExternalLinkInterceptor } from "$lib/external-link-interceptor";
-  import { checkAndroidUpdate } from "$lib/android-update";
-  import { purgeTauriServiceWorker, purgeLegacyDataCache } from "$lib/pwa";
-  import { pwa } from "$lib/pwa-state.svelte";
-  import { loadAnalytics } from "$lib/analytics";
+  import { i18n } from "#lib/i18n.svelte.js";
+  import { theme, welcome, scrollbars } from "#lib/prefs.svelte.js";
+  import { consent } from "#lib/consent.svelte.js";
+  import { humanCheck } from "#lib/human-check-state.svelte.js";
+  import { appReady } from "#lib/app-ready.js";
+  import { installPaletteShortcut } from "#lib/palette.svelte.js";
+  import { games, installGamesRevalidation } from "#lib/games.svelte.js";
+  import { upgradeLegacyHashUrl } from "#lib/legacy-url.js";
+  import { recoverFallbackRoute } from "#lib/fallback-route.js";
+  import { installExternalLinkInterceptor } from "#lib/external-link-interceptor.js";
+  import { checkAndroidUpdate } from "#lib/android-update.js";
+  import { purgeTauriServiceWorker, purgeLegacyDataCache } from "#lib/pwa.js";
+  import { pwa } from "#lib/pwa-state.svelte.js";
+  import { loadAnalytics } from "#lib/analytics.js";
   import { pwaInfo } from "virtual:pwa-info";
-  import PwaIndicator from "$lib/common/PwaIndicator.svelte";
-  import DesktopUpdateDialog from "$lib/common/DesktopUpdateDialog.svelte";
-  import { isTauri, isAndroid, openExternal } from "$lib/external-open";
+  import PwaIndicator from "#lib/common/PwaIndicator.svelte";
+  import DesktopUpdateDialog from "#lib/common/DesktopUpdateDialog.svelte";
+  import { isTauri, isAndroid, openExternal } from "#lib/external-open.js";
   import { toast } from "svelte-sonner";
-  import ConsentGate from "$lib/common/ConsentGate.svelte";
-  import HumanCheck from "$lib/common/HumanCheck.svelte";
-  import Sidebar from "$lib/layout/Sidebar.svelte";
-  import Topbar from "$lib/layout/Topbar.svelte";
-  import CommandPalette from "$lib/common/CommandPalette.svelte";
-  import BackToTop from "$lib/common/BackToTop.svelte";
-  import ErrorView from "$lib/common/ErrorView.svelte";
-  import { clearStaleChunkFlag } from "$lib/chunk-error";
+  import ConsentGate from "#lib/common/ConsentGate.svelte";
+  import HumanCheck from "#lib/common/HumanCheck.svelte";
+  import Sidebar from "#lib/layout/Sidebar.svelte";
+  import Topbar from "#lib/layout/Topbar.svelte";
+  import CommandPalette from "#lib/common/CommandPalette.svelte";
+  import BackToTop from "#lib/common/BackToTop.svelte";
+  import ErrorView from "#lib/common/ErrorView.svelte";
+  import { clearStaleChunkFlag } from "#lib/chunk-error.js";
   // ?url so Vite returns the fingerprinted path. A hand-typed content hash
   // stops matching the moment the font or the bundler changes, and a preload
   // that 404s is worse than no preload - the browser still pays for it.
@@ -168,7 +168,7 @@
   $effect(() => {
     if (!landedOnHome || !consent.hydrated || !appReady() || welcome.seen) return;
     landedOnHome = false;
-    if (page.url.pathname === "/") void goto("/welcome", { replaceState: true });
+    if (page.url.pathname === "/") void goto("/welcome", { replace: true });
   });
 
   // Close the mobile drawer on navigation, or it stays open over the new page.
@@ -189,9 +189,9 @@
    * router does know: `page.route.id` is null. That is rendered as a 404 in
    * place.
    *
-   * NEVER goto() here. Navigating to an unmatched URL makes SvelteKit fall back
-   * to a native page load, the host serves index.html again, and the page
-   * reloads itself forever.
+   * NEVER goto() here. SvelteKit 3 rejects a goto() to an unmatched URL;
+   * SvelteKit 2 fell back to a native page load, the host served index.html
+   * again, and the page reloaded itself forever.
    */
   const unmatched = $derived(page.route.id === null);
 </script>

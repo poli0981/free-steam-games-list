@@ -34,8 +34,8 @@ updates:
         patterns: ['@tauri-apps/*']
     ignore:
       # Framework majors are migrations with their own staged PRs, not
-      # something to take as an unattended bump. (SvelteKit 3 needs the
-      # cookie override in package.json re-keyed or dropped; see CLAUDE.md.)
+      # something to take as an unattended bump (SvelteKit 3 moved its config,
+      # its $lib alias, its param matchers and the PWA wiring; see CLAUDE.md).
       - dependency-name: '@sveltejs/kit'
         update-types: [version-update:semver-major]
       - dependency-name: '@sveltejs/adapter-static'

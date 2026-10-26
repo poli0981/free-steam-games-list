@@ -7,16 +7,16 @@
   import ShieldEllipsis from "@lucide/svelte/icons/shield-ellipsis";
   import ArrowRight from "@lucide/svelte/icons/arrow-right";
   import type { Component } from "svelte";
-  import { games } from "$lib/games.svelte";
-  import { i18n } from "$lib/i18n.svelte";
-  import { isEmpty, appidOf } from "$lib/data-store";
-  import { formatNumber, formatRelativeDate } from "$lib/utils";
-  import { safeClass } from "$lib/safety";
-  import type { GameRecord } from "$lib/schema";
-  import QueryState from "$lib/common/QueryState.svelte";
-  import PageHeader from "$lib/common/PageHeader.svelte";
-  import Badge from "$lib/ui/Badge.svelte";
-  import Seo from "$lib/common/Seo.svelte";
+  import { games } from "#lib/games.svelte.js";
+  import { i18n } from "#lib/i18n.svelte.js";
+  import { isEmpty, appidOf } from "#lib/data-store.js";
+  import { formatNumber, formatRelativeDate } from "#lib/utils.js";
+  import { safeClass } from "#lib/safety.js";
+  import type { GameRecord } from "#lib/schema.js";
+  import QueryState from "#lib/common/QueryState.svelte";
+  import PageHeader from "#lib/common/PageHeader.svelte";
+  import Badge from "#lib/ui/Badge.svelte";
+  import Seo from "#lib/common/Seo.svelte";
 
   const t = i18n.t;
 

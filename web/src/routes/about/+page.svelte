@@ -8,14 +8,14 @@
   import TriangleAlert from "@lucide/svelte/icons/triangle-alert";
   import FileText from "@lucide/svelte/icons/file-text";
   import Bug from "@lucide/svelte/icons/bug";
-  import { games } from "$lib/games.svelte";
-  import { i18n } from "$lib/i18n.svelte";
-  import { LEGAL_DOCS, legalDocSlug } from "$lib/legal";
-  import { REPO_OWNER, REPO_NAME } from "$lib/schema";
-  import { formatNumber } from "$lib/utils";
-  import PageHeader from "$lib/common/PageHeader.svelte";
-  import Badge from "$lib/ui/Badge.svelte";
-  import Seo from "$lib/common/Seo.svelte";
+  import { games } from "#lib/games.svelte.js";
+  import { i18n } from "#lib/i18n.svelte.js";
+  import { LEGAL_DOCS, legalDocSlug } from "#lib/legal.js";
+  import { REPO_OWNER, REPO_NAME } from "#lib/schema.js";
+  import { formatNumber } from "#lib/utils.js";
+  import PageHeader from "#lib/common/PageHeader.svelte";
+  import Badge from "#lib/ui/Badge.svelte";
+  import Seo from "#lib/common/Seo.svelte";
 
   const t = i18n.t;
   const REPO_URL = `https://github.com/${REPO_OWNER}/${REPO_NAME}`;

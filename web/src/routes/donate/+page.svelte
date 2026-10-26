@@ -6,9 +6,9 @@
   import Github from "@lucide/svelte/icons/git-branch";
   import CreditCard from "@lucide/svelte/icons/credit-card";
   import ExternalLink from "@lucide/svelte/icons/external-link";
-  import { i18n } from "$lib/i18n.svelte";
-  import PageHeader from "$lib/common/PageHeader.svelte";
-  import Seo from "$lib/common/Seo.svelte";
+  import { i18n } from "#lib/i18n.svelte.js";
+  import PageHeader from "#lib/common/PageHeader.svelte";
+  import Seo from "#lib/common/Seo.svelte";
 
   const t = i18n.t;
 

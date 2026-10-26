@@ -1,9 +1,9 @@
 <script lang="ts">
   import ArrowRight from "@lucide/svelte/icons/arrow-right";
-  import { CHART_PAGES } from "$lib/chart-nav";
-  import { i18n } from "$lib/i18n.svelte";
-  import PageHeader from "$lib/common/PageHeader.svelte";
-  import Seo from "$lib/common/Seo.svelte";
+  import { CHART_PAGES } from "#lib/chart-nav.js";
+  import { i18n } from "#lib/i18n.svelte.js";
+  import PageHeader from "#lib/common/PageHeader.svelte";
+  import Seo from "#lib/common/Seo.svelte";
 
   const t = i18n.t;
 </script>

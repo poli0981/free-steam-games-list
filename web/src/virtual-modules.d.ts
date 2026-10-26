@@ -3,7 +3,7 @@
  * Implementations: web/build/game-seeds.ts, web/build/legal-versions.ts.
  */
 declare module "virtual:game-seeds" {
-  import type { GameSeed } from "$lib/game-seed";
+  import type { GameSeed } from "#lib/game-seed.js";
 
   /** Every appid with a prerendered page. Empty in the browser and in Tauri. */
   export function seedAppids(): string[];

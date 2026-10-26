@@ -1,4 +1,4 @@
-import { SITE_ORIGIN } from "$lib/site";
+import { SITE_ORIGIN } from "#lib/site.js";
 import { seedAppids } from "virtual:game-seeds";
 import { byCodeUnit } from "../../../shared/sort";
 
@@ -94,7 +94,7 @@ export async function GET() {
   // claiming none. The daily data commits do not rebuild the site.
   const lastmod = new Date().toISOString().slice(0, 10);
 
-  const { LEGAL_DOCS, legalDocSlug } = await import("$lib/legal");
+  const { LEGAL_DOCS, legalDocSlug } = await import("#lib/legal.js");
   const urls = [
     ..._paths().map((loc) => ({ loc, ...(HINTS[loc] ?? DEFAULT_HINT) })),
     ...LEGAL_DOCS.map((d) => ({

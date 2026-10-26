@@ -1,14 +1,14 @@
 <script lang="ts">
-  import { games } from "$lib/games.svelte";
-  import { i18n } from "$lib/i18n.svelte";
-  import { chartTheme, gridBox } from "$lib/chart-theme";
-  import { computeKpis, countByMonth, monthLabel } from "$lib/stats";
-  import { safeClass } from "$lib/safety";
-  import { formatCompact, formatNumber, parseIntSafe, reviewLabel } from "$lib/utils";
-  import QueryState from "$lib/common/QueryState.svelte";
-  import PageHeader from "$lib/common/PageHeader.svelte";
-  import EChart from "$lib/charts/EChart.svelte";
-  import Seo from "$lib/common/Seo.svelte";
+  import { games } from "#lib/games.svelte.js";
+  import { i18n } from "#lib/i18n.svelte.js";
+  import { chartTheme, gridBox } from "#lib/chart-theme.js";
+  import { computeKpis, countByMonth, monthLabel } from "#lib/stats.js";
+  import { safeClass } from "#lib/safety.js";
+  import { formatCompact, formatNumber, parseIntSafe, reviewLabel } from "#lib/utils.js";
+  import QueryState from "#lib/common/QueryState.svelte";
+  import PageHeader from "#lib/common/PageHeader.svelte";
+  import EChart from "#lib/charts/EChart.svelte";
+  import Seo from "#lib/common/Seo.svelte";
 
   const t = i18n.t;
   const records = $derived(games.data?.records ?? []);
