@@ -73,7 +73,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       # The one workflow not on the pipeline's Python (3.15, every other
       # setup-python): CodeQL's supported-languages page lists Python up to
