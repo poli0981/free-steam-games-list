@@ -4,6 +4,46 @@ All notable changes to this awesome noob repo will be documented here.
 
 ## [Unreleased]
 
+## [v4.5.1] – 2026-10-27 (The "Speed Bump" Edition)
+
+The site's Worker now limits how fast one address can call it, behind
+Cloudflare's own rate-limiting rule at the edge. Nothing changes for readers,
+the apps or the pipeline: every limit sits far above what they send. The
+desktop and Android apps stay at `2.3.0`, with no new build. Repo
+public-facing version `4.5.0` → `4.5.1`.
+
+### 🔐 Security
+
+- **Rate limits in the Worker, one budget per surface.** Per address and per
+  minute: the catalogue API 240 requests (loading the whole catalogue takes
+  about 16), the image proxy 600, the other public API routes 120, the human
+  check 20 (a person sends one a day) and the admin surface 300. Past a limit
+  the Worker answers `429 Too Many Requests` with `Retry-After: 60` until the
+  minute is up; the apps can read that answer, where they would otherwise have
+  seen a network error. An IPv6 address counts by its /64, the block one
+  subscriber is normally given. Cloudflare counts per data centre and
+  approximately, so these are ceilings for abuse, never quotas. The limits are
+  bindings in `web/wrangler.jsonc` and change by pull request.
+- **Two layers, the edge first.** The zone's rate-limiting rule still refuses
+  a burst before the Worker runs, at no cost, and is the only limit on the
+  pages themselves; the Worker adds the one-minute window the Free plan's
+  10-second rule cannot, and keeps holding if that rule is changed. If the
+  Worker's limiter is ever unavailable, requests go through rather than fail.
+- The recommended edge rule now covers the whole site except the hashed
+  JavaScript and CSS bundles, at 250 requests per 10 seconds per address. That
+  is about twice what a first visit sends once the offline cache fills in
+  (counted from the build: 110 to 130 requests in a few seconds). Applying it
+  is a Cloudflare dashboard change, described in `docs/SECURITY_SETUP.md` §3a.
+
+### 📚 Docs
+
+- `docs/SECURITY_SETUP.md` §3 describes both layers, how to check each one
+  with `curl`, and the Free-plan rule budget as it stands (one of one rate
+  limiting rule, four of five custom rules).
+- `CLAUDE.md` records the layer's rules: it fails open, is not logged, keeps a
+  60-second period and an account-unique `namespace_id` per binding, and needs
+  a budget for any prefix the Worker runs first for.
+
 ## [v4.5.0] – 2026-10-26 (The "Groundwork" Edition)
 
 The site and the apps move to SvelteKit 3, the framework every page is
