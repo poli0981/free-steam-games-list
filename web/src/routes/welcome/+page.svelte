@@ -16,12 +16,12 @@
   import RefreshCw from "@lucide/svelte/icons/refresh-cw";
   import Languages from "@lucide/svelte/icons/languages";
   import ScrollText from "@lucide/svelte/icons/scroll-text";
-  import { games } from "$lib/games.svelte";
-  import { welcome } from "$lib/prefs.svelte";
-  import { i18n, LANGUAGE_NAMES, SUPPORTED_LANGUAGES } from "$lib/i18n.svelte";
-  import { CONSENT_DOCS, legalDocSlug } from "$lib/legal";
-  import { cn, formatNumber } from "$lib/utils";
-  import Seo from "$lib/common/Seo.svelte";
+  import { games } from "#lib/games.svelte.js";
+  import { welcome } from "#lib/prefs.svelte.js";
+  import { i18n, LANGUAGE_NAMES, SUPPORTED_LANGUAGES } from "#lib/i18n.svelte.js";
+  import { CONSENT_DOCS, legalDocSlug } from "#lib/legal.js";
+  import { cn, formatNumber } from "#lib/utils.js";
+  import Seo from "#lib/common/Seo.svelte";
 
   const t = i18n.t;
 

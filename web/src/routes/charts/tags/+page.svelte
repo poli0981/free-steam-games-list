@@ -1,11 +1,11 @@
 <script lang="ts">
-  import { games } from "$lib/games.svelte";
-  import { i18n } from "$lib/i18n.svelte";
-  import { chartTheme } from "$lib/chart-theme";
-  import ChartPage from "$lib/charts/ChartPage.svelte";
-  import EChart from "$lib/charts/EChart.svelte";
-  import { countBy } from "$lib/stats";
-  import { SKIP_GENRE_TAGS } from "$lib/schema";
+  import { games } from "#lib/games.svelte.js";
+  import { i18n } from "#lib/i18n.svelte.js";
+  import { chartTheme } from "#lib/chart-theme.js";
+  import ChartPage from "#lib/charts/ChartPage.svelte";
+  import EChart from "#lib/charts/EChart.svelte";
+  import { countBy } from "#lib/stats.js";
+  import { SKIP_GENRE_TAGS } from "#lib/schema.js";
 
   const t = i18n.t;
 

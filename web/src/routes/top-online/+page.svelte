@@ -1,18 +1,18 @@
 <script lang="ts">
-  import { games } from "$lib/games.svelte";
-  import { i18n } from "$lib/i18n.svelte";
-  import { topByPlayers } from "$lib/stats";
-  import { appidOf } from "$lib/data-store";
-  import { headerToCapsule, thumbFallback } from "$lib/image";
-  import { imgFallback } from "$lib/img-fallback";
-  import { formatNumber, parseReviewPercent } from "$lib/utils";
-  import { reviewTone } from "$lib/games/columns";
-  import { chartTheme, gridBox } from "$lib/chart-theme";
-  import QueryState from "$lib/common/QueryState.svelte";
-  import PageHeader from "$lib/common/PageHeader.svelte";
-  import EChart from "$lib/charts/EChart.svelte";
-  import Badge from "$lib/ui/Badge.svelte";
-  import Seo from "$lib/common/Seo.svelte";
+  import { games } from "#lib/games.svelte.js";
+  import { i18n } from "#lib/i18n.svelte.js";
+  import { topByPlayers } from "#lib/stats.js";
+  import { appidOf } from "#lib/data-store.js";
+  import { headerToCapsule, thumbFallback } from "#lib/image.js";
+  import { imgFallback } from "#lib/img-fallback.js";
+  import { formatNumber, parseReviewPercent } from "#lib/utils.js";
+  import { reviewTone } from "#lib/games/columns.js";
+  import { chartTheme, gridBox } from "#lib/chart-theme.js";
+  import QueryState from "#lib/common/QueryState.svelte";
+  import PageHeader from "#lib/common/PageHeader.svelte";
+  import EChart from "#lib/charts/EChart.svelte";
+  import Badge from "#lib/ui/Badge.svelte";
+  import Seo from "#lib/common/Seo.svelte";
 
   const t = i18n.t;
 

@@ -7,19 +7,19 @@
   import Trash2 from "@lucide/svelte/icons/trash-2";
   import TrendingUp from "@lucide/svelte/icons/trending-up";
   import ArrowRight from "@lucide/svelte/icons/arrow-right";
-  import { games, removedGames } from "$lib/games.svelte";
-  import { computeKpis, countBy, topByPlayers } from "$lib/stats";
-  import { i18n } from "$lib/i18n.svelte";
-  import { formatNumber } from "$lib/utils";
-  import { appidOf } from "$lib/data-store";
-  import { headerToCapsule, thumbFallback } from "$lib/image";
-  import { imgFallback } from "$lib/img-fallback";
-  import { CHART_PAGES } from "$lib/chart-nav";
-  import QueryState from "$lib/common/QueryState.svelte";
-  import PageHeader from "$lib/common/PageHeader.svelte";
-  import EChart from "$lib/charts/EChart.svelte";
-  import { chartTheme, gridBox } from "$lib/chart-theme";
-  import Seo from "$lib/common/Seo.svelte";
+  import { games, removedGames } from "#lib/games.svelte.js";
+  import { computeKpis, countBy, topByPlayers } from "#lib/stats.js";
+  import { i18n } from "#lib/i18n.svelte.js";
+  import { formatNumber } from "#lib/utils.js";
+  import { appidOf } from "#lib/data-store.js";
+  import { headerToCapsule, thumbFallback } from "#lib/image.js";
+  import { imgFallback } from "#lib/img-fallback.js";
+  import { CHART_PAGES } from "#lib/chart-nav.js";
+  import QueryState from "#lib/common/QueryState.svelte";
+  import PageHeader from "#lib/common/PageHeader.svelte";
+  import EChart from "#lib/charts/EChart.svelte";
+  import { chartTheme, gridBox } from "#lib/chart-theme.js";
+  import Seo from "#lib/common/Seo.svelte";
 
   const t = i18n.t;
 

@@ -1,6 +1,6 @@
 import { error } from "@sveltejs/kit";
-import { LEGAL_DOCS, legalDocSlug, legalDocUrl } from "$lib/legal";
-import { renderRepoMarkdown } from "$lib/server/markdown";
+import { LEGAL_DOCS, legalDocSlug, legalDocUrl } from "#lib/legal.js";
+import { renderRepoMarkdown } from "#lib/server/markdown.js";
 import type { EntryGenerator, PageServerLoad } from "./$types";
 
 export const prerender = true;

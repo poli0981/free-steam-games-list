@@ -10,17 +10,17 @@
   import EyeOff from "@lucide/svelte/icons/eye-off";
   import Table from "@lucide/svelte/icons/table";
   import MoveVertical from "@lucide/svelte/icons/move-vertical";
-  import { pwa } from "$lib/pwa-state.svelte";
-  import { isTauri } from "$lib/external-open";
+  import { pwa } from "#lib/pwa-state.svelte.js";
+  import { isTauri } from "#lib/external-open.js";
   import { goto } from "$app/navigation";
-  import { i18n, LANGUAGE_NAMES, SUPPORTED_LANGUAGES } from "$lib/i18n.svelte";
-  import { scrollbars, theme, welcome, type ScrollbarMode, type Theme } from "$lib/prefs.svelte";
-  import { clearCache } from "$lib/cache";
-  import { games } from "$lib/games.svelte";
-  import { cn } from "$lib/utils";
-  import PageHeader from "$lib/common/PageHeader.svelte";
-  import Button from "$lib/ui/Button.svelte";
-  import Seo from "$lib/common/Seo.svelte";
+  import { i18n, LANGUAGE_NAMES, SUPPORTED_LANGUAGES } from "#lib/i18n.svelte.js";
+  import { scrollbars, theme, welcome, type ScrollbarMode, type Theme } from "#lib/prefs.svelte.js";
+  import { clearCache } from "#lib/cache.js";
+  import { games } from "#lib/games.svelte.js";
+  import { cn } from "#lib/utils.js";
+  import PageHeader from "#lib/common/PageHeader.svelte";
+  import Button from "#lib/ui/Button.svelte";
+  import Seo from "#lib/common/Seo.svelte";
 
   const t = i18n.t;
 

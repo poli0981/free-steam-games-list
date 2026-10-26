@@ -32,7 +32,12 @@ export function upgradeLegacyHashUrl(): void {
   // goto, not history.replaceState. By the time this runs the router has
   // already rendered the document it was given - "/", the dashboard - and a
   // bare replaceState changed the address bar while leaving the dashboard on
-  // screen. goto renders the route the hash names; replaceState keeps the hash
-  // URL out of history, so Back does not bounce through it.
-  void goto(hash.slice(1) || "/", { replaceState: true, noScroll: true });
+  // screen. goto renders the route the hash names; replace keeps the hash URL
+  // out of history, so Back does not bounce through it.
+  //
+  // goto rejects a path that matches no route (SvelteKit 3; SvelteKit 2 loaded
+  // it natively). A real load of that path gets the layout's 404 view, as it
+  // always did, and cannot come back here: the hash is gone.
+  const target = hash.slice(1) || "/";
+  goto(target, { replace: true, reset: false }).catch(() => location.replace(target));
 }

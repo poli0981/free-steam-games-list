@@ -1,11 +1,11 @@
 <script lang="ts">
-  import { games } from "$lib/games.svelte";
-  import { countBy } from "$lib/stats";
-  import { i18n } from "$lib/i18n.svelte";
-  import { chartTheme } from "$lib/chart-theme";
-  import { formatNumber } from "$lib/utils";
-  import ChartPage from "$lib/charts/ChartPage.svelte";
-  import EChart from "$lib/charts/EChart.svelte";
+  import { games } from "#lib/games.svelte.js";
+  import { countBy } from "#lib/stats.js";
+  import { i18n } from "#lib/i18n.svelte.js";
+  import { chartTheme } from "#lib/chart-theme.js";
+  import { formatNumber } from "#lib/utils.js";
+  import ChartPage from "#lib/charts/ChartPage.svelte";
+  import EChart from "#lib/charts/EChart.svelte";
 
   const t = i18n.t;
   const genres = $derived(countBy(games.data?.records ?? [], (r) => r.genre));

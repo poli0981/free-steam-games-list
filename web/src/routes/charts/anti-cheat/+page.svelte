@@ -1,11 +1,11 @@
 <script lang="ts">
-  import { games } from "$lib/games.svelte";
-  import { i18n } from "$lib/i18n.svelte";
-  import { chartTheme, gridBox } from "$lib/chart-theme";
-  import { acLevel, type AcLevel } from "$lib/anti-cheat";
-  import { countBy } from "$lib/stats";
-  import ChartPage from "$lib/charts/ChartPage.svelte";
-  import EChart from "$lib/charts/EChart.svelte";
+  import { games } from "#lib/games.svelte.js";
+  import { i18n } from "#lib/i18n.svelte.js";
+  import { chartTheme, gridBox } from "#lib/chart-theme.js";
+  import { acLevel, type AcLevel } from "#lib/anti-cheat.js";
+  import { countBy } from "#lib/stats.js";
+  import ChartPage from "#lib/charts/ChartPage.svelte";
+  import EChart from "#lib/charts/EChart.svelte";
 
   const t = i18n.t;
 

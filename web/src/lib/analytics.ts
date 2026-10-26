@@ -3,9 +3,10 @@
  *
  * WHY NOT THE AUTOMATIC SETUP. Cloudflare's "automatic" Web Analytics rewrites
  * HTML responses at the edge, after our origin response, and inserts the beacon
- * tag PLUS an inline loader script. `kit.csp` runs in `mode: "hash"`, and CSP3
- * says a script-src carrying a hash or nonce IGNORES 'unsafe-inline' — so there
- * is no policy we could write that admits that inline script. It had been
+ * tag PLUS an inline loader script. The CSP (build/sveltekit-config.ts) runs
+ * in `mode: "hash"`, and CSP3 says a script-src carrying a hash or nonce
+ * IGNORES 'unsafe-inline' — so there is no policy we could write that admits
+ * that inline script. It had been
  * enabled on the zone for months, logging two CSP violations per page load and
  * collecting exactly nothing (docs/SECURITY_SETUP.md §9). The dashboard must
  * stay on "Enable with JS Snippet installation" for this module to be the only

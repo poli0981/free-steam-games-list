@@ -20,7 +20,7 @@
    * not anything read off the request.
    */
   import { page } from "$app/state";
-  import { SITE_ORIGIN } from "$lib/site";
+  import { SITE_ORIGIN } from "#lib/site.js";
 
   interface Props {
     /** Page title WITHOUT the site suffix. Pass "" on the home page, whose

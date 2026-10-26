@@ -11,7 +11,7 @@
  * An ATTACHMENT, never an action. On a prerendered <img>, `use:` (like an
  * onload/onerror handler) makes Svelte write `onload="this.__e=event"` and
  * `onerror="this.__e=event"` into the HTML, so it can replay an event that
- * fired before hydration - and kit.csp, a hash policy, refuses inline event
+ * fired before hydration - and the CSP, a hash policy, refuses inline event
  * handlers: a CSP violation on every game page. verify-dist.mjs fails the
  * build if one appears. The replay is not needed anyway: a load that already
  * failed is `complete` with no `naturalWidth` by the time this runs.

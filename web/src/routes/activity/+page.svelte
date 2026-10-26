@@ -6,17 +6,17 @@
   import Bot from "@lucide/svelte/icons/bot";
   import User from "@lucide/svelte/icons/user";
   import Filter from "@lucide/svelte/icons/funnel";
-  import { Resource } from "$lib/resource.svelte";
-  import { appReady } from "$lib/app-ready";
-  import { i18n } from "$lib/i18n.svelte";
-  import { API_ORIGIN } from "$lib/site";
-  import { DEFAULT_BRANCH } from "$lib/schema";
-  import { formatRelativeDate, cn } from "$lib/utils";
-  import QueryState from "$lib/common/QueryState.svelte";
-  import PageHeader from "$lib/common/PageHeader.svelte";
-  import Badge from "$lib/ui/Badge.svelte";
-  import Button from "$lib/ui/Button.svelte";
-  import Seo from "$lib/common/Seo.svelte";
+  import { Resource } from "#lib/resource.svelte.js";
+  import { appReady } from "#lib/app-ready.js";
+  import { i18n } from "#lib/i18n.svelte.js";
+  import { API_ORIGIN } from "#lib/site.js";
+  import { DEFAULT_BRANCH } from "#lib/schema.js";
+  import { formatRelativeDate, cn } from "#lib/utils.js";
+  import QueryState from "#lib/common/QueryState.svelte";
+  import PageHeader from "#lib/common/PageHeader.svelte";
+  import Badge from "#lib/ui/Badge.svelte";
+  import Button from "#lib/ui/Button.svelte";
+  import Seo from "#lib/common/Seo.svelte";
 
   const t = i18n.t;
 

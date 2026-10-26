@@ -14,13 +14,14 @@
 /*
   # NO Content-Security-Policy here.
   #
-  # SvelteKit owns it now, in svelte.config.js under kit.csp, and emits it as a
-  # <meta> tag carrying the sha256 of the one inline bootstrap script it
-  # generates per page. A CSP could not live in both places: browsers enforce
-  # the INTERSECTION of a header policy and a meta policy, so a
-  # `script-src 'self'` header kept blocking that script no matter what the
-  # meta allowed - and the whole app rendered its HTML and then failed to
-  # hydrate. See the comment on kit.csp for the full reasoning.
+  # SvelteKit owns it now (the `csp` option in build/sveltekit-config.ts)
+  # and emits it as a <meta> tag carrying the sha256 of the one inline
+  # bootstrap script it generates per page. A CSP could not live in both
+  # places: browsers enforce the INTERSECTION of a header policy and a meta
+  # policy, so a `script-src 'self'` header kept blocking that script no
+  # matter what the meta allowed - and the whole app rendered its HTML and
+  # then failed to hydrate. See the comment on that option for the full
+  # reasoning.
   #
   # X-Frame-Options below is now load-bearing rather than belt-and-braces:
   # `frame-ancestors` is ignored in a meta CSP, so this is what stops framing.

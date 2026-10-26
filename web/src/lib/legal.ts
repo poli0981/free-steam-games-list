@@ -1,4 +1,4 @@
-import { REPO_OWNER, REPO_NAME } from "./schema";
+import { REPO_OWNER, REPO_NAME } from "./schema.ts";
 
 /**
  * Single source of truth for the project's legal documents.
@@ -6,6 +6,12 @@ import { REPO_OWNER, REPO_NAME } from "./schema";
  * Lifted out of About.tsx so the first-run consent gate and the About page
  * render the same list. Long-form legal bodies stay in English (markdown in
  * the repo `docs/` folder); only the surrounding UI chrome is translated.
+ *
+ * Node loads this file as it is (no Vite) while the site builds: src/params.ts
+ * imports it, and SvelteKit 3 imports params.ts with Node's import(). So every
+ * import here names its real file - `./schema.ts`, never `./schema` or `.js` -
+ * and the syntax stays type-strippable (no enums, no namespaces). Break it and
+ * `vite build` stops with ERR_MODULE_NOT_FOUND or a syntax error.
  */
 export interface LegalDoc {
   /** i18n key: render with t(). The document title as the lists show it. */
@@ -59,7 +65,7 @@ export function legalDocUrl(path: string): string {
 }
 
 /** Whether a /legal/<slug> names a document. The route's param matcher
- *  (src/params/legaldoc.ts), so an unknown slug matches no route at all and
+ *  (`legaldoc` in src/params.ts), so an unknown slug matches no route at all and
  *  renders the layout's translated 404 instead of the dashboard. */
 export function isLegalDocSlug(slug: string): boolean {
   return LEGAL_DOCS.some((d) => legalDocSlug(d.path) === slug);

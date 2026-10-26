@@ -14,7 +14,7 @@
  *
  * THIS FILE IS SHARED WITH THE ADMIN SPA (admin/src/App.svelte imports
  * `theme`), which builds with its own Vite config. It must therefore stay free
- * of `$app/*`, `$lib/*` and any virtual module - the reason consent moved out:
+ * of `$app/*` and any virtual module - the reason consent moved out:
  * it needs `virtual:legal-versions`, and pulling that in here failed the admin
  * build outright.
  */

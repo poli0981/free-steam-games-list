@@ -1,12 +1,12 @@
 <script lang="ts">
-  import { removedGames } from "$lib/games.svelte";
-  import { i18n } from "$lib/i18n.svelte";
-  import { chartTheme, gridBox } from "$lib/chart-theme";
-  import { formatNumber } from "$lib/utils";
-  import QueryState from "$lib/common/QueryState.svelte";
-  import PageHeader from "$lib/common/PageHeader.svelte";
-  import EChart from "$lib/charts/EChart.svelte";
-  import Seo from "$lib/common/Seo.svelte";
+  import { removedGames } from "#lib/games.svelte.js";
+  import { i18n } from "#lib/i18n.svelte.js";
+  import { chartTheme, gridBox } from "#lib/chart-theme.js";
+  import { formatNumber } from "#lib/utils.js";
+  import QueryState from "#lib/common/QueryState.svelte";
+  import PageHeader from "#lib/common/PageHeader.svelte";
+  import EChart from "#lib/charts/EChart.svelte";
+  import Seo from "#lib/common/Seo.svelte";
 
   const t = i18n.t;
 

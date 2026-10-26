@@ -16,7 +16,7 @@ Three places now, and none inherits from the others:
 
 | File | Covers |
 |---|---|
-| `web/svelte.config.js` (`kit.csp`) | the Content-Security-Policy on every app page |
+| `web/build/sveltekit-config.ts` (`csp`) | the Content-Security-Policy on every app page |
 | `web/static/_headers` | every other security header on static assets |
 | `web/worker/lib/http.ts` | everything the Worker generates (`/api/*`, `/img/*`) |
 
@@ -35,8 +35,9 @@ Executing inline script violates the following Content Security Policy
 directive 'script-src 'self''
 ```
 
-`kit.csp` with `mode: "hash"` makes SvelteKit compute that script's sha256 at
-build time and emit the whole policy as a `<meta>` tag that already trusts it.
+The `csp` option with `mode: "hash"` makes SvelteKit compute that script's
+sha256 at build time and emit the whole policy as a `<meta>` tag that already
+trusts it.
 
 **The header CSP had to go, not just relax.** Browsers enforce the
 INTERSECTION of a header policy and a meta policy, so leaving
@@ -627,7 +628,7 @@ only fix available is not to use that mode.
    `routes/+layout.svelte` that waits on `consent.accepted` and on the human
    check (section 12), so nothing loads before the reader accepts the terms,
    and never under Tauri.
-4. `svelte.config.js` allows `https://static.cloudflareinsights.com` in
+4. `build/sveltekit-config.ts` allows `https://static.cloudflareinsights.com` in
    `script-src` and `https://cloudflareinsights.com` in `connect-src`, **web
    flavour only**. `scripts/verify-dist.mjs` fails the build if either is
    missing from the web build or present in the Tauri build.

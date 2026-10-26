@@ -658,23 +658,45 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
 - `echarts-wordcloud` declares a stale `echarts@^5` peer. It runs fine on
   echarts 6 (all the legacy APIs it uses are still exported), so `package.json`
   carries an `overrides` entry. Do not "fix" it by pinning echarts back to 5.
-- **The `"@sveltejs/kit@2.70.3": { "cookie": "^0.7.2" }` override closes
-  GHSA-pxg6-pf52-xh8x** (kit 2 declares `cookie ^0.6.0`; only kit 3 moved on).
-  Kit imports just `parse`/`serialize`, which 0.7 keeps, and under
-  adapter-static that code runs only at prerender and in `vite dev`. The key
-  names kit's EXACT version because npm refuses a range key for a direct
-  dependency (`EOVERRIDE`). A kit bump therefore silently drops the override
-  and the alert comes back: re-key it, or delete it once kit asks for
-  `cookie` >= 0.7. Never carry it onto kit 3, which needs `cookie` 2.
-- **Kit stays on 2 with GHSA-27mw-82g8-phjj and GHSA-pfhg-q3qv-9q6r
-  dismissed** (Dependabot #71, #72, 2026-10-26: "vulnerable code not used").
-  Both are fixed only in kit 3 and need code this app does not have: a
-  prerendered page passing an untrusted `cache-control` to `setHeaders`, and
-  `use:enhance` form actions. There is neither a `setHeaders` call nor a form
-  action anywhere (the sitemap's `Cache-Control` is a constant); add one and
-  both advisories apply again. Kit 3 is a migration of its own - config moves
-  out of `svelte.config.js`, `$lib` becomes `#lib`, matchers move into
-  `src/params.ts` - and `@vite-pwa/sveltekit` 1.1.0 accepts only kit 2.
+- `runed` 0.35 (bits-ui's) declares an optional `@sveltejs/kit ^2.21.0` peer,
+  which npm enforces once kit is installed, so `package.json` overrides it to
+  our kit. bits-ui uses none of runed's kit code (`useSearchParams`, the only
+  part runed 0.38 changed for kit 3). Drop the entry once bits-ui depends on
+  runed >= 0.38.
+- **SvelteKit 3 takes its options from its Vite plugin.** They are
+  `sveltekitConfig(tauri)` in `web/build/sveltekit-config.ts`, which
+  `vite.config.ts` passes as `sveltekit(sveltekitConfig(IS_TAURI))`;
+  `sveltekit-config.test.ts` holds both flavours. `svelte.config.js` is
+  refused (the build stops while the file exists), and what was `kit.*` there
+  is a top-level option (`adapter`, `csp`, `paths`, `prerender`). Rules that
+  are easy to break:
+  - **`$lib` is gone; `#lib/*` is package.json `imports`.** A module import
+    names `.js` even for a `.ts` file (`#lib/utils.js`), a component its
+    `.svelte`. `tsconfig.json` repeats the mapping in `paths`, because
+    `svelte-check --tsgo` redirects `.svelte` imports to the declarations it
+    emits only through `paths`: without it every `#lib` component fell back to
+    the `*.svelte` shim - props unchecked, no error.
+  - **`src/params.ts` is imported by Node itself** (`vite build` uses
+    `import()`, not Vite), so it and what it imports (`lib/legal.ts`,
+    `lib/schema.ts`) name real `.ts` files and stay type-strippable; a `.js`
+    or extensionless import there is ERR_MODULE_NOT_FOUND at build time.
+  - **The PWA is `build/pwa.ts`**: vite-plugin-pwa wired into kit 3's
+    `buildApp`. @vite-pwa/sveltekit never supported kit 3; it wrote the worker
+    when the SERVER build closed, which kit 3 does first. Ours writes it in a
+    default-order `buildApp` hook placed after `sveltekit()` - after kit's
+    build-and-prerender, before the adapter's `post` hook copies
+    `.svelte-kit/output/client` into `dist/`. Placed before `sveltekit()`, it
+    would glob an empty output.
+  - `goto` options are `replace` (not `replaceState`), `reset: false` (not
+    `noScroll`/`keepFocus`, which THROW in dev) and `refreshAll` (not
+    `invalidateAll`); `/games` writes its filters with `goto(url, {shallow:
+    true, replace: true})`. `goto` rejects a URL that matches no route.
+  - Hook types come from `@sveltejs/kit/hooks`. The client `handleError` gets
+    `{kind, error, event}` for every error and returns nothing to keep kit's
+    own status and message.
+  - `version.pollInterval` is kit's default (an hour), and kit also checks
+    `/_app/version.json` whenever the tab regains focus. A new version only
+    sets `updated.current`; a navigation that then fails reloads natively.
 - **The `"miniflare": { "undici": "^7.30.1" }` override closes
   GHSA-xjj6-f33q-929c** and the two other undici advisories `npm audit`
   lists. miniflare pins undici EXACTLY (7.29.1, in the miniflare of wrangler
@@ -707,9 +729,10 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
   HashRouter-era `/#/…` URLs still arrive - from released 1.4.x builds, and from
   old links to the GitHub Pages site, whose tombstone redirect forwards the
   fragment - and `upgradeLegacyHashUrl()` upgrades them on load with
-  `goto(…, {replaceState})`. Do not remove it, and do not reduce it to a
-  `history.replaceState`: that fixed the address bar and left the dashboard
-  rendered.
+  `goto(…, {replace: true})`, falling back to `location.replace` for a path
+  that matches no route (kit 3's `goto` rejects it). Do not remove it, and do
+  not reduce it to a `history.replaceState`: that fixed the address bar and
+  left the dashboard rendered.
 - **`web/static/_headers` sets the browser cache, by path.** Hashed output
   (`/_app/immutable/*`, `/workbox-*`) is a year, immutable; the art and the
   manifest, which keep their names, are a day fresh plus a week of
@@ -730,7 +753,7 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
   must still trigger a build, or the site keeps the old text and hash; see
   `docs/DEPLOYMENT.md` "Which commits deploy" for a configuration that does
   both. Excludes beat includes there.
-- **The CSP lives in `web/svelte.config.js` (`kit.csp`), not in `_headers`.**
+- **The CSP lives in `web/build/sveltekit-config.ts` (`csp`), not in `_headers`.**
   SvelteKit emits one inline bootstrap script per page and hashes it there. A
   header CSP cannot coexist: browsers enforce the INTERSECTION of header and
   meta policies, so a `script-src 'self'` header blocks the script whatever the
@@ -740,7 +763,7 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
 - **That CSP has TWO flavours, chosen by `TAURI_ENV_PLATFORM`.** Under Tauri
   the page origin is `tauri://localhost`, so `'self'` means the BUNDLE, not the
   site — a `connect-src 'self'` policy blocks every `/api/data/*` fetch and the
-  packaged apps show an empty catalogue. `svelte.config.js` adds
+  packaged apps show an empty catalogue. `sveltekitConfig(true)` adds
   `https://free-steam-games.win`, `https://api.github.com`, `ipc:` and
   `http://ipc.localhost` only for that build; the web policy stays `'self'`,
   because dropping `api.github.com` from it was deliberate (`/api/activity`
@@ -759,7 +782,7 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
   the Tauri build with any of them.
 - **Cloudflare Web Analytics must stay on "JS Snippet installation", never
   automatic.** Automatic injection adds an INLINE loader at the edge, after our
-  response; `kit.csp` is `mode: "hash"`, and CSP3 makes a `script-src` carrying
+  response; the CSP is `mode: "hash"`, and CSP3 makes a `script-src` carrying
   a hash ignore `'unsafe-inline'` — so no policy can ever admit it. It was
   enabled that way for months, logging two CSP violations per page load and
   collecting nothing. `lib/analytics.ts` appends the beacon itself, from the
@@ -800,7 +823,7 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
 - **Never put `use:`, `onload` or `onerror` on an `<img>` that can be
   prerendered.** Svelte then writes `onload="this.__e=event"` and
   `onerror="this.__e=event"` into the HTML, to replay an event that fired
-  before hydration, and `kit.csp` is a hash policy, which refuses inline event
+  before hydration, and the CSP is a hash policy, which refuses inline event
   handlers: one CSP violation per page view (the game hero logged it on every
   page until it moved to an attachment). Use `{@attach}`, which writes nothing;
   `lib/img-fallback.ts` recovers a load that already failed from
@@ -875,7 +898,7 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
   `lib/fallback-route.ts` recovers the route offline the same way it does
   online. `verify-dist.mjs` now parses `dist/sw.js` and fails if the bound URL
   is not a precache entry.
-- **`kit.paths.relative` must stay `false`.** SvelteKit defaults it to `true`,
+- **`paths.relative` must stay `false`.** SvelteKit defaults it to `true`,
   which gives every PRERENDERED page `./_app/...` asset URLs. Served as the
   fallback for `/games/730` those resolve to `/games/_app/...`, which misses,
   falls into the SPA handler, and comes back as `index.html` with
@@ -899,8 +922,9 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
   `fallback-route.test.ts` holds the list against the routes whose `prerender`
   is not literally `true`, and checks each one marks itself. A path that matches NO route hydrates the same
   way with `page.route.id === null`; the root layout renders the 404 view in
-  place. Never `goto()` an unmatched URL — SvelteKit falls back to a native
-  load, the host answers with `index.html` again, and it loops forever.
+  place. Never `goto()` an unmatched URL: SvelteKit 3 rejects it (SvelteKit 2
+  fell back to a native load, the host answered with `index.html` again, and
+  it looped forever).
 - **Game pages are prerendered from build-time seeds, through a UNIVERSAL load.**
   `build/game-seeds.ts` serves `virtual:game-seeds`: in the SSR build it reads
   `../data` and inlines a seed per game (slow-changing fields only — never
@@ -909,7 +933,7 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
   Do not turn it into `+page.server.ts`: client navigation would then fetch
   `__data.json`, which for a game added after the deploy is `index.html` at
   200, and the page errors. `__PRERENDER_GAMES__` is false for Tauri.
-  `kit.prerender.handleHttpError` ignores 404s under `/img/` and `/api/` only,
+  `prerender.handleHttpError` ignores 404s under `/img/` and `/api/` only,
   because the crawler follows the page's `<img>` into a Worker route that does
   not exist at build time. That handler only decides pass/fail; the
   `[404] GET /img/…` line per game came from SvelteKit's DEFAULT server
@@ -936,7 +960,7 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
   `page.url.origin`, which during prerender is SvelteKit's internal
   `http://sveltekit-prerender` host. `seo.test.ts` enforces both.
 - **`sitemap.xml` is a prerendered route**, not a static file, driven by
-  `import.meta.glob` over the route table. It needs `kit.prerender.entries`
+  `import.meta.glob` over the route table. It needs `prerender.entries`
   because nothing links to it. Extra exports from a `+server.ts` must be
   `_`-prefixed or SvelteKit rejects the build.
 - **`static/` art is generated.** `icon.svg` is the only hand-edited mark;
@@ -945,7 +969,7 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
   SVG.
 - **The web app registers its service worker itself, after consent and the
   human check.**
-  `@vite-pwa/sveltekit` cannot inject a registration script — SvelteKit has no
+  vite-plugin-pwa cannot inject a registration script — SvelteKit has no
   `index.html` for it to write into — so for the whole of 2.0.0 the worker was
   built and never registered, and the manifest was linked from no page.
   `lib/pwa-state.svelte.ts` calls `registerSW` (`registerType: "prompt"`, so a
@@ -1010,13 +1034,13 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
   the human check. It
   uses `replaceState`, and the page marks itself seen on mount, so Back cannot
   loop into it. Crawlers never consent, so `/` stays the indexable page.
-- **`/legal/[doc=legaldoc]` has a param matcher** (`src/params/legaldoc.ts`).
+- **`/legal/[doc=legaldoc]` has a param matcher** (`legaldoc` in `src/params.ts`).
   An unknown slug therefore matches NO route and gets the layout's translated
   404; without it the host's fallback (the prerendered dashboard) hydrated as
   the doc route. Legal labels and hints in `lib/legal.ts` are i18n keys.
 - **`/games` mirrors its filters into the query string, browser-only**:
   `onMount` reads `location.search` (a link with filter parameters replaces the
-  stored filters) and a debounced `replaceState` writes back. Never read
+  stored filters) and a debounced shallow `goto` writes back. Never read
   `url.search` in markup or a load - prerender throws on it. The page number
   lives in the filter store, keyed to the criteria (`filters.pageFor`), so Back
   from a game keeps the page and a changed filter starts again at page 1.
@@ -1046,8 +1070,9 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
   first: `worker/index.ts` imports the generated module, so a bare
   `wrangler deploy` or `tsc` without it fails. That failure is intended.
   `build:admin` runs `svelte-kit sync` first: the admin imports files under
-  `web/src`, whose `tsconfig.json` extends `.svelte-kit/tsconfig.json`, and on a
-  clean checkout (CI) that file does not exist until SvelteKit has synced. The
+  `web/src`, whose `tsconfig.json` extends `$app/tsconfig`
+  (`node_modules/$app/tsconfig.json`), and on a clean checkout (CI) that file
+  does not exist until SvelteKit has synced. The
   emitter reads the bundle in `writeBundle`, never the output directory in
   `closeBundle`, which also runs after a FAILED build and hid that error behind
   an ENOENT.
@@ -1069,7 +1094,8 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
 - **It may import only pure modules of the public app**: `src/lib/ui/*`,
   `src/lib/utils.ts`, `src/lib/prefs.svelte.ts`, `src/fonts.css`,
   `src/styles/theme.css` (the design tokens, shared by both builds). Never
-  `$app/*` or `$lib/*`; that build cannot resolve them.
+  `$app/*` (nor a module that imports it) and no virtual module; that build
+  cannot resolve them.
 - **`admin/mock/` is a dev server, not a mode.** `npm run dev:admin` runs the
   real handlers against an in-memory D1 and fake GitHub; nothing under `worker/`
   or `admin/src` may import it, and the Worker has no flag that skips

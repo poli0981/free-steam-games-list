@@ -10,18 +10,18 @@
  * `[404] GET /img/...` line for it - 91% of the Workers Builds log, burying
  * anything worth reading. Answering before routing skips both.
  *
- * The prerenderer still sees a 404. `kit.prerender.handleHttpError`
- * (svelte.config.js) ignores it for exactly these two prefixes and fails the
- * build for any other path, so a genuinely broken internal link still stops
- * the build.
+ * The prerenderer still sees a 404. `prerender.handleHttpError`
+ * (build/sveltekit-config.ts) ignores it for exactly these two prefixes and
+ * fails the build for any other path, so a genuinely broken internal link
+ * still stops the build.
  *
  * `vite dev` never gets here for these paths: its proxy (vite.config.ts)
  * forwards /api and /img to production before SvelteKit's middleware runs.
  */
-import type { Handle } from "@sveltejs/kit";
+import type { Handle } from "@sveltejs/kit/hooks";
 
 export const handle: Handle = ({ event, resolve }) => {
-  // Same prefixes, same test, as handleHttpError in svelte.config.js.
+  // Same prefixes, same test, as handleHttpError in build/sveltekit-config.ts.
   const { pathname } = event.url;
   if (pathname.startsWith("/img/") || pathname.startsWith("/api/")) {
     return new Response(null, { status: 404 });

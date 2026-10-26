@@ -1,20 +1,18 @@
 import adapter from "@sveltejs/adapter-static";
+import type { sveltekit } from "@sveltejs/kit/vite";
 import { vitePreprocess } from "@sveltejs/vite-plugin-svelte";
 
-/**
- * True while the Tauri CLI is driving this build.
- *
- * Tauri 2 sets TAURI_ENV_* for the process running beforeBuildCommand, so
- * this needs no extra npm script and no cross-env - which matters, because
- * `VAR=1 vite build` in package.json does not work on Windows.
- */
-const IS_TAURI = Boolean(process.env.TAURI_ENV_PLATFORM);
+type SvelteKitConfig = NonNullable<Parameters<typeof sveltekit>[0]>;
 
 /**
- * One adapter, two targets.
+ * SvelteKit's own options, passed to its Vite plugin by vite.config.ts as
+ * `sveltekit(sveltekitConfig(IS_TAURI))`. They lived in svelte.config.js until
+ * SvelteKit 3, which refuses that file (the build stops if it exists) and
+ * takes the same options, minus the `kit` level, from the plugin. A function
+ * of the flavour, so sveltekit-config.test.ts can hold both policies.
  *
- * `adapter-static` with a fallback produces output that works unmodified in
- * both places this app ships:
+ * One adapter, two targets. `adapter-static` with a fallback produces output
+ * that works unmodified in both places this app ships:
  *
  *   - Cloudflare, where `not_found_handling: "single-page-application"` in
  *     wrangler.jsonc already serves index.html for an unmatched path, and the
@@ -29,9 +27,9 @@ const IS_TAURI = Boolean(process.env.TAURI_ENV_PLATFORM);
  * comment in the old React main.tsx claiming the webview has no server
  * fallback is out of date.
  */
-const config = {
-  preprocess: vitePreprocess(),
-  kit: {
+export function sveltekitConfig(tauri: boolean): SvelteKitConfig {
+  return {
+    preprocess: vitePreprocess(),
     adapter: adapter({
       // dist/, not build/: wrangler.jsonc's assets.directory and Tauri's
       // frontendDist both already point here, and changing them would mean
@@ -92,13 +90,6 @@ const config = {
        */
       relative: false,
     },
-
-    alias: {
-      // The React app used "@/..." for src-relative imports. Kept so a ported
-      // file does not have to rewrite every import path at the same time as
-      // its rendering.
-      "@": "src",
-    },
     /**
      * The Content-Security-Policy, owned HERE rather than in static/_headers.
      *
@@ -142,9 +133,11 @@ const config = {
          * the human check, and tauri.conf.json's header policy would block
          * both anyway. verify-dist.mjs fails either build that gets this wrong.
          */
+        // `as const` on every conditional list below: a spread is not typed
+        // by the directive it lands in, and SvelteKit types each source.
         "script-src": [
           "self",
-          ...(IS_TAURI ? [] : ["https://static.cloudflareinsights.com", "https://challenges.cloudflare.com"]),
+          ...(tauri ? [] : (["https://static.cloudflareinsights.com", "https://challenges.cloudflare.com"] as const)),
         ],
         // 'unsafe-inline' is load-bearing for style-src: Bits UI positions
         // popovers and dialogs with inline style attributes, and ECharts sizes
@@ -156,14 +149,14 @@ const config = {
           "data:",
           // Same reason as connect-src: under Tauri 'self' is the bundle, so
           // artwork proxied through /img/* is cross-origin.
-          ...(IS_TAURI ? ["https://free-steam-games.win", "blob:"] : []),
+          ...(tauri ? (["https://free-steam-games.win", "blob:"] as const) : []),
           // The R2 bucket's custom domain (MEDIA_ORIGIN in lib/site.ts): the
           // minted AVIF art, served from Cloudflare's cache without running
           // the Worker. Web only - under Tauri every image comes through
           // /img/*. Without it every thumbnail would silently fall back to
           // /img (lib/img-fallback.ts), so verify-dist fails a web build that
           // lacks it.
-          ...(IS_TAURI ? [] : ["https://media.free-steam-games.win"]),
+          ...(tauri ? [] : (["https://media.free-steam-games.win"] as const)),
           "https://shared.akamai.steamstatic.com",
           "https://shared.fastly.steamstatic.com",
           "https://cdn.akamai.steamstatic.com",
@@ -182,7 +175,7 @@ const config = {
          * only there, by the Android release check, which the web never runs
          * (it is gated on isTauri() && isAndroid()).
          */
-        "connect-src": IS_TAURI
+        "connect-src": tauri
           ? [
               "self",
               "https://free-steam-games.win",
@@ -199,7 +192,7 @@ const config = {
          * default-src 'self' and the widget is refused. The Tauri policy keeps
          * no frame-src at all, so it stays exactly as it was.
          */
-        ...(IS_TAURI ? {} : { "frame-src": ["self", "https://challenges.cloudflare.com"] }),
+        ...(tauri ? {} : { "frame-src": ["self", "https://challenges.cloudflare.com"] }),
         "worker-src": ["self"],
         "manifest-src": ["self"],
         "media-src": ["none"],
@@ -208,7 +201,6 @@ const config = {
         "form-action": ["none"],
       },
     },
-
     prerender: {
       // "*" is every route SvelteKit can reach by crawling links from the
       // entry points. /sitemap.xml is linked from robots.txt, not from any
@@ -235,17 +227,5 @@ const config = {
         throw new Error(message);
       },
     },
-
-    typescript: {
-      config(cfg) {
-        // The generated config is what svelte-check uses. The Worker and the
-        // tests have their own tsconfigs; this one must not try to typecheck
-        // either of them.
-        cfg.exclude = [...(cfg.exclude ?? []), "../worker/**"];
-        return cfg;
-      },
-    },
-  },
-};
-
-export default config;
+  };
+}

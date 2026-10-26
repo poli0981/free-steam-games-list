@@ -3,9 +3,9 @@
  * human check (common/HumanCheck.svelte), which runs after consent.
  *
  * Appended at runtime, like lib/analytics.ts's beacon and for the same reason:
- * kit.csp runs in mode "hash", which admits an external script by host
- * (`script-src https://challenges.cloudflare.com`, web flavour only) and never
- * an inline one. The widget itself is an iframe from that host, which is what
+ * the CSP (build/sveltekit-config.ts) runs in mode "hash", which admits an
+ * external script by host (`script-src https://challenges.cloudflare.com`, web
+ * flavour only) and never an inline one. The widget itself is an iframe from that host, which is what
  * the web policy's `frame-src` is for. The Tauri policy has neither.
  *
  * Always Cloudflare's exact URL, never a proxied or cached copy: Cloudflare

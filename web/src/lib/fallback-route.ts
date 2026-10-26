@@ -64,13 +64,13 @@ export function recoverFallbackRoute(routeId: string | null): void {
   // The route's own page hydrated: it was a real (prerendered) document.
   if (rendered === routeId) return;
 
-  // invalidateAll so the route's own load() runs; without it SvelteKit can
-  // reuse the shell's `data: [null, null]`. replaceState so the shell does not
-  // become a Back-button stop, and noScroll because the user has not moved.
+  // refreshAll so the route's own load() runs; without it SvelteKit can
+  // reuse the shell's `data: [null, null]`. replace so the shell does not
+  // become a Back-button stop, and reset false because the user has not moved.
   void goto(location.pathname + location.search + location.hash, {
-    replaceState: true,
-    noScroll: true,
-    invalidateAll: true,
+    replace: true,
+    reset: false,
+    refreshAll: true,
   });
 }
 

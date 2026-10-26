@@ -1,6 +1,6 @@
 <script lang="ts">
   import { page } from "$app/state";
-  import ErrorView, { isErrorCode } from "$lib/common/ErrorView.svelte";
+  import ErrorView, { isErrorCode } from "#lib/common/ErrorView.svelte";
 
   // An unknown code falls back to 404 IN PLACE rather than redirecting: a
   // redirect would replace the URL the user was sent, which is exactly the

@@ -1,13 +1,13 @@
 <script lang="ts">
   import Building2 from "@lucide/svelte/icons/building-2";
-  import { games } from "$lib/games.svelte";
-  import { i18n } from "$lib/i18n.svelte";
-  import { countBy } from "$lib/stats";
-  import { formatNumber } from "$lib/utils";
-  import QueryState from "$lib/common/QueryState.svelte";
-  import PageHeader from "$lib/common/PageHeader.svelte";
-  import Input from "$lib/ui/Input.svelte";
-  import Seo from "$lib/common/Seo.svelte";
+  import { games } from "#lib/games.svelte.js";
+  import { i18n } from "#lib/i18n.svelte.js";
+  import { countBy } from "#lib/stats.js";
+  import { formatNumber } from "#lib/utils.js";
+  import QueryState from "#lib/common/QueryState.svelte";
+  import PageHeader from "#lib/common/PageHeader.svelte";
+  import Input from "#lib/ui/Input.svelte";
+  import Seo from "#lib/common/Seo.svelte";
 
   const t = i18n.t;
 
