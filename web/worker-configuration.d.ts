@@ -4,12 +4,17 @@
 interface __BaseEnv_Env {
 	MEDIA: R2Bucket;
 	DB: D1Database;
+	RL_DATA: RateLimit;
+	RL_IMG: RateLimit;
+	RL_API: RateLimit;
+	RL_HUMAN: RateLimit;
+	RL_ADMIN: RateLimit;
 	IMAGES: ImagesBinding;
 	ASSETS: Fetcher;
 	SITE_ORIGIN: "https://free-steam-games.win";
 	IMG_TRANSFORM: "true";
 	IMG_TRANSFORM_MONTHLY_CAP: "20000";
-	IMG_MINT_PER_TICK: "10";
+	IMG_MINT_PER_TICK: "40";
 	ADMIN_RETENTION_DAYS: "180";
 	BLOCKED_COUNTRIES: "CN,RU,AR";
 	ACCESS_TEAM_DOMAIN: "polished-hall-48fd.cloudflareaccess.com";

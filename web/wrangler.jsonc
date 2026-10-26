@@ -94,6 +94,33 @@
     "binding": "IMAGES"
   },
 
+  // Per-IP request limits, the Worker's half of rate limiting
+  // (worker/lib/rate-limit.ts). The zone's WAF rate-limiting rule is the
+  // first layer and refuses a burst before this Worker runs at all
+  // (docs/SECURITY_SETUP.md section 3); the Free plan fixes it at 10 seconds,
+  // one rule. These add a 60-second window and one budget per surface, and
+  // still hold if that rule is edited or deleted. They see only the four
+  // `run_worker_first` prefixes - the prerendered pages are the WAF's alone.
+  //
+  // Counts are per Cloudflare location and approximate; the key is the
+  // client's IPv4 address or IPv6 /64. Over a limit the Worker answers 429
+  // with Retry-After: 60, so every "period" stays 60 (rate-limit.test.ts
+  // holds that). A namespace_id must be unique within the Cloudflare account:
+  // two bindings that share one share counters, across Workers too.
+  //
+  //   RL_DATA   /api/data/*  a cold catalogue load is ~16 requests
+  //   RL_IMG    /img/*       the apps fetch every thumbnail here
+  //   RL_API    /api/activity, /api/updates/desktop, any other public /api/*
+  //   RL_HUMAN  /api/human-check  a person sends one a day
+  //   RL_ADMIN  /admin, /admin/*, /api/ingest/*  (behind Access as well)
+  "ratelimits": [
+    { "name": "RL_DATA", "namespace_id": "730001", "simple": { "limit": 240, "period": 60 } },
+    { "name": "RL_IMG", "namespace_id": "730002", "simple": { "limit": 600, "period": 60 } },
+    { "name": "RL_API", "namespace_id": "730003", "simple": { "limit": 120, "period": 60 } },
+    { "name": "RL_HUMAN", "namespace_id": "730004", "simple": { "limit": 20, "period": 60 } },
+    { "name": "RL_ADMIN", "namespace_id": "730005", "simple": { "limit": 300, "period": 60 } }
+  ],
+
   // Reconcile approvals against the published dataset. Every 15 minutes rather
   // than hourly because the gap between approving and seeing it land is the
   // one moment a reviewer is actually watching; a tick with nothing approved

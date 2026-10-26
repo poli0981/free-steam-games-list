@@ -444,6 +444,29 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
   it must keep excluding). `geo.ts` FAILS OPEN on an unknown country:
   `request.cf` is undefined under Vitest and under `wrangler dev` without
   `--remote`, and failing closed there 403s every test.
+- **Rate limiting has two layers, and the WAF rule is the first.** The zone's
+  one Free-plan rate-limiting rule (IP, 10 s, Block 10 s; `docs/SECURITY_SETUP.md`
+  §3a) refuses a burst before the Worker is invoked, and is the only limit on
+  the prerendered pages. `worker/lib/rate-limit.ts` is the second: the
+  `ratelimits` bindings in `wrangler.jsonc`, 60-second windows, one budget per
+  surface (`RL_DATA`, `RL_IMG`, `RL_API`, `RL_HUMAN`, `RL_ADMIN`), keyed by
+  IPv4 address or IPv6 /64, checked after the country block and before every
+  route and the Access check, answering 429 with `Retry-After: 60`. Rules:
+  - It FAILS OPEN (no binding, no `CF-Connecting-IP`, a throwing `limit()`).
+    Vitest and `admin/mock` bind no limiter, which is why no other test sees
+    it; the catalogue must never fail to load because of this layer.
+  - Counts are per Cloudflare location and approximate: a limit is an abuse
+    ceiling far above any client (a cold catalogue load is ~16 data requests),
+    never a quota to tighten.
+  - Refusals are not logged: Workers Logs has the 429 status, and a line each
+    would double a flood's log volume.
+  - A 429 carries CORS only where its route does (`data`, `api`), never on the
+    human check or the admin surface.
+  - Every `period` stays 60 (the Retry-After), and a `namespace_id` is unique
+    in the ACCOUNT - another Worker reusing one shares its counters. A new
+    `run_worker_first` prefix needs a class, and a new binding needs its line in
+    `worker-configuration.d.ts`. `rate-limit.test.ts` holds the periods, the
+    namespaces, the binding names and the prefix coverage.
 - `audit_log` and `commit_jobs` are pruned daily after `ADMIN_RETENTION_DAYS`
   (wrangler.jsonc, 180). `docs/PRIVACY_POLICY.md` states the number: change
   both together. `ingest_queue` and `ingest_decisions` are never pruned — the

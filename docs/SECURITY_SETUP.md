@@ -221,55 +221,140 @@ becomes `"pending"`, and `"preloaded"` once it ships in a browser release.
 
 ---
 
-## 3. Rate limiting — one rule, and it blocks
+## 3. Rate limiting — two layers, the WAF rule first
+
+Two limits, in this order:
+
+1. **The zone's WAF rate-limiting rule** (3a) refuses a burst at the edge,
+   *before* the Worker runs: a flood it catches costs no Worker invocation, no
+   subrequest and no R2 read. It is also the only limit on the prerendered
+   pages, which never reach the Worker.
+2. **The Worker's limits** (3b, `web/worker/lib/rate-limit.ts`) give each
+   surface the Worker serves its own budget over 60 seconds. They stop a
+   client that paces itself just under the WAF's 10-second threshold, and they
+   keep holding if the WAF rule is edited or deleted - the same reason
+   `BLOCKED_COUNTRIES` sits beside the country rule (section 4).
+
+Neither replaces the other. The WAF rule alone cannot tell a human check from
+an image, and the Worker alone has already been invoked, and billed, by the
+time it says no.
+
+### 3a. The WAF rule — one rule, and it blocks
 
 The Free plan allows exactly **one** rate-limiting rule, and fixes most of it:
 counting by IP only, a **10-second** period, a **10-second** mitigation
 timeout, expression fields limited to the URI path and verified-bot status,
-and cached requests count too. So the decision is not how many rules but what
-the single rule covers.
+and cached requests count too (no cache exclusion). A refused request gets
+HTTP 429 with Cloudflare's error 1015 page. So the decision is not how many
+rules but what the single rule covers.
 
-The two public surfaces that cost money are `/img/*` (proxies Steam's CDN) and
-`/api/data/*` (proxies GitHub raw). `/admin` (with its API at `/admin/api/*`)
-and `/api/ingest/*` are behind Cloudflare Access already. One rule covers both proxies:
+**Recommended (since 2026-10-27): the whole zone except the hashed bundles.**
+Security → Security rules → Rate limiting rules → the existing rule → Edit
+(the Free plan cannot add a second one):
 
-**Security → WAF → Rate limiting rules → Create rule → Edit expression**
+| Field | Value |
+|---|---|
+| Rule name | `site-wide` |
+| Expression | `not starts_with(http.request.uri.path, "/_app/immutable/") and not cf.client.bot` |
+| Characteristics | IP |
+| Period | 10 seconds |
+| Requests | **250** |
+| Action | Block |
+| Duration | 10 seconds |
+
+Why this scope: every page, the API, the image proxy, the icons and the
+service worker count, on every hostname of the zone - the rule has no
+hostname field, so `media.free-steam-games.win` counts too. `/_app/immutable/*`
+is left out because a cold first visit fetches about 115 of those files at
+once (the home page alone preloads 53), the browser then keeps them for a
+year, and the asset server serves them at no cost. `not cf.client.bot` keeps
+verified search crawlers, which read the 10,000 prerendered game pages, out of
+the count.
+
+Why 250 per 10 seconds, counted from the build rather than a template: right
+after consent and the human check, a first visit sends the page and its icons
+(about 6 requests), the service worker's precache of 56 non-hashed URLs (41
+pages, 8 `__data.json`, 6 images and the manifest), the catalogue (about 16:
+`index.json`, 14 shards, the removed-games list), `/api/activity`,
+`/api/human-check` and the dashboard's thumbnails - 110 to 130 requests within
+a few seconds. 150 left no room for a second person behind the same address
+(a shared office, or a mobile carrier's CGNAT); 250 does. A script faster than
+25 requests a second is blocked for 10 seconds, again and again; one slower
+than that meets the Worker's per-minute budgets on the paths that cost money.
+
+Block is tolerable because the timeout is fixed at 10 seconds: a false
+positive costs a real visitor ten seconds of missing thumbnails, not a
+lockout.
+
+**The narrower rule it replaces** is still a valid choice if pages should not
+count at all - the Worker limits cover `/api/*` either way:
 
 | Field | Value |
 |---|---|
 | Rule name | `public-proxies` |
 | Expression | `(starts_with(http.request.uri.path, "/img/") or starts_with(http.request.uri.path, "/api/data/")) and not cf.client.bot` |
-| Characteristics | IP |
-| Period | 10 seconds |
-| Requests | **150** |
-| Action | Block |
-| Duration | 10 seconds |
+| Requests | **150** per 10 seconds, IP, Block for 10 seconds |
 
-Why 150 per 10 seconds, from a measured session rather than a template:
-opening `/games` fetches `index.json`, 5 shards and roughly 30 thumbnails in
-the first couple of seconds, and fast-scrolling the virtualised table adds a
-few dozen more. Someone browsing hard stays under ~100 in any 10-second window;
-150 leaves headroom for a shared office or CGNAT address that looks like one
-client. A scraper pulling faster than 15 requests a second is blocked for 10
-seconds, again and again.
-
-Block is tolerable here because the Free plan's timeout is fixed at 10 seconds:
-a false positive costs a real visitor ten seconds of missing thumbnails, not a
-lockout. `not cf.client.bot` keeps verified search crawlers out of the count.
-
-**Use the WAF rule, not a Worker-side limiter.** The WAF rejects at the edge
-*before* the Worker runs, so an abusive burst costs no Worker invocations. A
-limiter inside the Worker has already paid for the request by the time it says
-no — backwards for cost control.
-
-**Check** (this will get your own IP blocked for 10 seconds, which is the point):
+**Check** (blocks your own IP for 10 seconds, which is the point; a static
+file, so no Worker invocation is spent):
 
 ```bash
-for i in $(seq 1 200); do curl -s -o /dev/null -w '%{http_code}\n' https://free-steam-games.win/api/data/data/index.json; done | sort | uniq -c
+seq 1 300 | xargs -P 30 -I{} curl -s -o /dev/null -w '%{http_code}\n' https://free-steam-games.win/robots.txt | sort | uniq -c
 ```
 
-Expected: about 150 × `200`, then `429`s. Watch **Security → Events** for a
-week before changing the threshold.
+Expected: about 250 × `200`, then `429`s. With `public-proxies` instead, a
+static file is never counted: use `/api/data/data/index.json` and expect about
+150. Watch **Security → Events** for a week before changing the threshold.
+
+### 3b. The Worker limits — one budget per surface
+
+`ratelimits` bindings in `web/wrangler.jsonc`, checked by
+`web/worker/lib/rate-limit.ts` after the country block and before every route,
+the admin surface's Access check included:
+
+| Binding | Paths | Requests per IP per minute |
+|---|---|---|
+| `RL_DATA` | `/api/data/*` | 240 |
+| `RL_IMG` | `/img/*` | 600 |
+| `RL_API` | `/api/activity`, `/api/updates/desktop`, any other public `/api/*` | 120 |
+| `RL_HUMAN` | `/api/human-check` | 20 |
+| `RL_ADMIN` | `/admin`, `/admin/*`, `/api/ingest/*` | 300 |
+
+- **Key:** the client's IPv4 address, or its IPv6 /64 (one subscriber usually
+  holds a whole /64). Counted per Cloudflare location and approximately - a
+  few requests over the limit can pass - so these are ceilings for abuse,
+  never quotas. Each sits well above what a person, the apps or the discovery
+  workflow sends: a cold catalogue load is about 16 data requests, a person
+  sends one human check a day, discovery a few ingest calls a run.
+- **Refusal:** HTTP 429, `{"error":"too many requests"}`, `Retry-After: 60`,
+  `Cache-Control: no-store`. `/api/data/*` and the public API also carry
+  `Access-Control-Allow-Origin: *`, so the packaged apps see the 429 instead
+  of a CORS failure; the human check and the admin surface carry none (they
+  are same-origin by design).
+- **Clients:** a 429 on a pack makes the site and the apps try the plain shard
+  once, then report a failed load; the human check lets the reader through
+  (it refuses only on Cloudflare's verdict); discovery stops its run with the
+  status.
+- **Fails open:** no binding, no `CF-Connecting-IP`, or a limiter that throws
+  lets the request through. The WAF rule is the boundary; this must never be
+  why the catalogue does not load.
+- **Not logged:** Workers Logs already records every invocation with its
+  status - filter on 429. A console line per refusal would double the log
+  volume of exactly the floods this is for. The bindings do not appear in the
+  dashboard.
+- **Changing a limit** is a pull request to `web/wrangler.jsonc` (it deploys
+  with the Worker). Keep every `period` at 60, which is what `Retry-After`
+  promises (`rate-limit.test.ts` checks), and keep each `namespace_id` unique
+  within the Cloudflare account: two bindings with one ID share their
+  counters, across Workers too.
+
+**Check** (after a deploy; spends 130 cheap invocations):
+
+```bash
+seq 1 130 | xargs -P 10 -I{} curl -s -o /dev/null -w '%{http_code}\n' https://free-steam-games.win/api/no-such-route | sort | uniq -c
+```
+
+Expected: about 120 × `404`, then `429` for the rest of that minute.
 
 ---
 
@@ -823,10 +908,11 @@ Retry.
 from `_headers` and may log a harmless message from inside
 `challenges.cloudflare.com`; that is not a violation of this site's policy.
 
-**Rate limit (optional, no extra rule).** Each POST costs one siteverify
-subrequest. The `public-proxies` expression in section 3 can take
-`or http.request.uri.path eq "/api/human-check"`; a person sends a few a day,
-far below 150 per 10 seconds.
+**Rate limit.** Each POST costs one siteverify subrequest, so the route has
+its own Worker budget, `RL_HUMAN`: 20 per IP per minute (section 3b), where a
+person sends one a day. A refused check lets the reader through like any other
+answer that is not a verdict. The `site-wide` WAF rule (section 3a) counts it
+too; the narrower `public-proxies` rule does not.
 
 **Local testing.** `npm run dev` skips the check: its `/api` proxy points at
 production, which refuses a localhost token. `npm run preview` proxies the same
@@ -858,7 +944,10 @@ pruned daily after `ADMIN_RETENTION_DAYS` (180), which
 `docs/PRIVACY_POLICY.md` states.
 
 **The Free-plan rule budget is now the constraint to watch:** the one rate
-limiting rule is used (section 3), and two of the five custom rules are
-(section 4). A third custom rule is affordable; a second rate-limiting rule is
-not, without upgrading. Configuration Rules are a separate quota: one of ten
-is used (section 10).
+limiting rule is used (section 3a), and four of the five custom rules are
+(as of 2026-10-27: `human-check-pages`, `blocked-countries`,
+`media-host-paths`, and Cloudflare's AI Crawl Control rule). A fifth custom
+rule is affordable; a second rate-limiting rule is not, without upgrading -
+which is why per-surface limits live in the Worker (section 3b), where they
+cost no rule. Configuration Rules are a separate quota: one of ten is used
+(section 10).
