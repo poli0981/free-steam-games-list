@@ -21,9 +21,9 @@ jobs:
     steps:
       # main as it is when the job STARTS: a run that waited its turn must
       # work on what the job before it committed.
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with: {ref: main}
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with: {python-version: '3.15'}
       - run: chmod +x ./bash/offline.sh && ./bash/offline.sh
         env:

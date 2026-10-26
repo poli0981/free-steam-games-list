@@ -99,9 +99,11 @@ updates:
       actions-all:
         patterns: ['*']
     ignore:
-      # Action majors are held until the GITHUB_TOKEN checkout migration is
-      # confirmed green — do not stack an untested action-major bump on top
-      # of a credential change you still need to verify.
+      # Majors of these two are taken by hand, for every workflow at once: the
+      # data jobs that check out, commit and push run only on a schedule, so a
+      # pull request's CI never exercises them. Keep ONE major across all
+      # workflows - the Node 20 ones (checkout v4, setup-python v5) printed a
+      # deprecation warning on every run until 2026-10-26.
       - dependency-name: actions/checkout
         update-types: [version-update:semver-major]
       - dependency-name: actions/setup-python

@@ -666,6 +666,23 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
   dependency (`EOVERRIDE`). A kit bump therefore silently drops the override
   and the alert comes back: re-key it, or delete it once kit asks for
   `cookie` >= 0.7. Never carry it onto kit 3, which needs `cookie` 2.
+- **Kit stays on 2 with GHSA-27mw-82g8-phjj and GHSA-pfhg-q3qv-9q6r
+  dismissed** (Dependabot #71, #72, 2026-10-26: "vulnerable code not used").
+  Both are fixed only in kit 3 and need code this app does not have: a
+  prerendered page passing an untrusted `cache-control` to `setHeaders`, and
+  `use:enhance` form actions. There is neither a `setHeaders` call nor a form
+  action anywhere (the sitemap's `Cache-Control` is a constant); add one and
+  both advisories apply again. Kit 3 is a migration of its own - config moves
+  out of `svelte.config.js`, `$lib` becomes `#lib`, matchers move into
+  `src/params.ts` - and `@vite-pwa/sveltekit` 1.1.0 accepts only kit 2.
+- **The `"miniflare": { "undici": "^7.30.1" }` override closes
+  GHSA-xjj6-f33q-929c** and the two other undici advisories `npm audit`
+  lists. miniflare pins undici EXACTLY (7.29.1, in the miniflare of wrangler
+  4.152.0, the newest on 2026-10-26), and undici runs only in local tooling
+  (`wrangler dev`, `cf:check`), never in the deployed Worker. Delete the
+  override once `npm view wrangler@latest dependencies.miniflare` names a
+  miniflare whose own pin is >= 7.30.1: left behind, it would hold undici on
+  7 after miniflare moves to 8.
 - **TypeScript is two packages, on purpose.** TypeScript 7 (the Go compiler)
   has no JavaScript API, and svelte-check and `svelte-kit sync` (route
   `$types`) need one, so `typescript` stays 6 and 7 is the alias
