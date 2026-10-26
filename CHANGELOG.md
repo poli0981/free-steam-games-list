@@ -4,6 +4,17 @@ All notable changes to this awesome noob repo will be documented here.
 
 ## [Unreleased]
 
+## [v4.5.0] – 2026-10-26 (The "Groundwork" Edition)
+
+The site and the apps move to SvelteKit 3, the framework every page is
+built on. Nothing about how they look or work should change: every page,
+the Content-Security-Policy and the offline cache were compared with a
+SvelteKit 2 build of the same commit before the switch. The apps also take
+Tauri 2.12.5. Desktop and Android bumped `2.2.2` → `2.3.0`; repo
+public-facing version `4.4.1` → `4.5.0`. The desktop app offers 2.3.0
+through its updater once the release is published; on Android, install the
+new APK over the old one.
+
 ### 🧹 Changed
 
 - **The site and the apps build on SvelteKit 3** (3.1, with adapter-static
@@ -22,6 +33,7 @@ All notable changes to this awesome noob repo will be documented here.
   bytes) when a tab regains focus and once an hour, where it used to ask only
   after a navigation failed. A newer deploy still changes nothing until a
   navigation fails, which then reloads the page, as before.
+- The desktop and Android apps take Tauri 2.12.5 (tauri-build 2.7.4).
 
 ### 🔐 Security
 
