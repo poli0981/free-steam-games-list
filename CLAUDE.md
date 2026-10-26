@@ -729,10 +729,13 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
   HashRouter-era `/#/…` URLs still arrive - from released 1.4.x builds, and from
   old links to the GitHub Pages site, whose tombstone redirect forwards the
   fragment - and `upgradeLegacyHashUrl()` upgrades them on load with
-  `goto(…, {replace: true})`, falling back to `location.replace` for a path
-  that matches no route (kit 3's `goto` rejects it). Do not remove it, and do
-  not reduce it to a `history.replaceState`: that fixed the address bar and
-  left the dashboard rendered.
+  `goto(…, {replace: true})`; a path that matches no route (kit 3's `goto`
+  rejects it) goes to `/error/404`. The hash is resolved against the page's
+  origin and ignored if it names another (`#//other.example`), and nothing
+  from it may reach `location.*` - CodeQL flagged exactly that as XSS and an
+  open redirect. Do not remove it, and do not reduce it to a
+  `history.replaceState`: that fixed the address bar and left the dashboard
+  rendered.
 - **`web/static/_headers` sets the browser cache, by path.** Hashed output
   (`/_app/immutable/*`, `/workbox-*`) is a year, immutable; the art and the
   manifest, which keep their names, are a day fresh plus a week of

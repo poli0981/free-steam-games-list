@@ -27,8 +27,13 @@ import { goto } from "$app/navigation";
 
 export function upgradeLegacyHashUrl(): void {
   if (typeof window === "undefined") return;
-  const { hash } = window.location;
+  const { hash, origin } = window.location;
   if (!hash.startsWith("#/")) return;
+  // The hash is anyone's to write. Resolved against this origin and checked
+  // against it, because `#//other.example/…` (or `#/\other.example`) names
+  // another site, and an old link is never a reason to leave this one.
+  const url = new URL(hash.slice(1), origin);
+  if (url.origin !== origin) return;
   // goto, not history.replaceState. By the time this runs the router has
   // already rendered the document it was given - "/", the dashboard - and a
   // bare replaceState changed the address bar while leaving the dashboard on
@@ -36,8 +41,7 @@ export function upgradeLegacyHashUrl(): void {
   // out of history, so Back does not bounce through it.
   //
   // goto rejects a path that matches no route (SvelteKit 3; SvelteKit 2 loaded
-  // it natively). A real load of that path gets the layout's 404 view, as it
-  // always did, and cannot come back here: the hash is gone.
-  const target = hash.slice(1) || "/";
-  goto(target, { replace: true, reset: false }).catch(() => location.replace(target));
+  // it natively). Such a link gets the 404 page at its fixed address: nothing
+  // from the hash ever reaches a navigation that bypasses the router.
+  void goto(url, { replace: true, reset: false }).catch(() => goto("/error/404", { replace: true }));
 }

@@ -5,12 +5,11 @@ vi.mock("$app/navigation", () => ({ goto }));
 
 import { upgradeLegacyHashUrl } from "./legacy-url";
 
+const ORIGIN = "https://free-steam-games.win";
+
 /** A page loaded at `/` + hash, as a 1.4.x link or the old Pages tombstone sends it. */
 function loadWithHash(hash: string) {
-  const replace = vi.fn();
-  vi.stubGlobal("window", { location: { hash } });
-  vi.stubGlobal("location", { hash, replace });
-  return replace;
+  vi.stubGlobal("window", { location: { hash, origin: ORIGIN } });
 }
 
 describe("upgradeLegacyHashUrl", () => {
@@ -38,13 +37,25 @@ describe("upgradeLegacyHashUrl", () => {
     goto.mockResolvedValue(undefined);
     loadWithHash(hash);
     upgradeLegacyHashUrl();
-    expect(goto).toHaveBeenCalledWith(path, { replace: true, reset: false });
+    expect(goto).toHaveBeenCalledOnce();
+    const [url, options] = goto.mock.calls[0];
+    expect(String(url)).toBe(`${ORIGIN}${path}`);
+    expect(options).toEqual({ replace: true, reset: false });
   });
 
-  it("loads a path that matches no route natively, where it gets the 404 view", async () => {
-    goto.mockRejectedValue(new Error("Cannot find a route for /no-such-page"));
-    const replace = loadWithHash("#/no-such-page");
+  it.each(["#//other.example/games/730", "#/\\other.example/games/730"])(
+    "never leaves the site for %s",
+    (hash) => {
+      loadWithHash(hash);
+      upgradeLegacyHashUrl();
+      expect(goto).not.toHaveBeenCalled();
+    },
+  );
+
+  it("sends a path that matches no route to the 404 page", async () => {
+    goto.mockRejectedValueOnce(new Error("Cannot find a route for /no-such-page")).mockResolvedValue(undefined);
+    loadWithHash("#/no-such-page");
     upgradeLegacyHashUrl();
-    await vi.waitFor(() => expect(replace).toHaveBeenCalledWith("/no-such-page"));
+    await vi.waitFor(() => expect(goto).toHaveBeenLastCalledWith("/error/404", { replace: true }));
   });
 });

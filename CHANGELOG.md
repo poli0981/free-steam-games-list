@@ -16,7 +16,8 @@ All notable changes to this awesome noob repo will be documented here.
 - The service worker is wired into the build by `web/build/pwa.ts`, on
   vite-plugin-pwa: `@vite-pwa/sveltekit` never supported SvelteKit 3.
 - An old `/#/…` link to a page that no longer exists now opens the "Page not
-  found" view; SvelteKit 3 refuses to navigate to it in place.
+  found" page (`/error/404`); SvelteKit 3 refuses to navigate to it in place.
+  One that names another site (`/#//other.example/…`) is ignored.
 - SvelteKit now asks the site for its version (`/_app/version.json`, a few
   bytes) when a tab regains focus and once an hour, where it used to ask only
   after a navigation failed. A newer deploy still changes nothing until a
