@@ -455,9 +455,15 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
   - It FAILS OPEN (no binding, no `CF-Connecting-IP`, a throwing `limit()`).
     Vitest and `admin/mock` bind no limiter, which is why no other test sees
     it; the catalogue must never fail to load because of this layer.
-  - Counts are per Cloudflare location and approximate: a limit is an abuse
-    ceiling far above any client (a cold catalogue load is ~16 data requests),
-    never a quota to tighten.
+  - Counts are effectively PER SERVER, whatever the docs say about
+    "per location" (measured 2026-10-27, SIN): over one keep-alive connection
+    a budget held exactly (121 then 429), with a new connection per request
+    it refused nothing (175 human checks in 70 s against 20). So it stops
+    browsers and connection-reusing scripts; a client that reconnects every
+    time is the WAF rule's (which counted exactly 250). A limit is an abuse
+    ceiling far above any client (a cold catalogue load is ~16 data
+    requests), never a quota to tighten. Test it over ONE connection
+    (`SECURITY_SETUP.md` §3b), or it looks broken.
   - Refusals are not logged: Workers Logs has the 429 status, and a line each
     would double a flood's log volume.
   - A 429 carries CORS only where its route does (`data`, `api`), never on the

@@ -102,10 +102,12 @@
   // still hold if that rule is edited or deleted. They see only the four
   // `run_worker_first` prefixes - the prerendered pages are the WAF's alone.
   //
-  // Counts are per Cloudflare location and approximate; the key is the
-  // client's IPv4 address or IPv6 /64. Over a limit the Worker answers 429
-  // with Retry-After: 60, so every "period" stays 60 (rate-limit.test.ts
-  // holds that). A namespace_id must be unique within the Cloudflare account:
+  // Counts are effectively per server (measured: a budget held exactly over
+  // one keep-alive connection and not at all across fresh connections), so a
+  // client that reconnects for every request is the WAF rule's to stop. The
+  // key is the client's IPv4 address or IPv6 /64. Over a limit the Worker
+  // answers 429 with Retry-After: 60, so every "period" stays 60
+  // (rate-limit.test.ts holds that). A namespace_id must be unique within the Cloudflare account:
   // two bindings that share one share counters, across Workers too.
   //
   //   RL_DATA   /api/data/*  a cold catalogue load is ~16 requests

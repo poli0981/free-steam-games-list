@@ -15,10 +15,14 @@
  * the WAF rule is all that limits them.
  *
  * The limits are `ratelimits` bindings in wrangler.jsonc, one per class below.
- * Cloudflare counts per location and approximately (a few requests over the
- * limit can pass), so a limit here is a ceiling for abuse, never an accurate
- * quota - every number sits well above what a person, the apps or the
- * discovery workflow sends.
+ * Cloudflare documents them as per location and eventually consistent; what
+ * was measured (2026-10-27, SIN) is per SERVER: over one keep-alive connection
+ * a budget held exactly, with a new connection per request it refused nothing.
+ * So this stops browsers (HTTP/2, one connection a page) and scripts that
+ * reuse their connection; one that reconnects every time is the WAF rule's,
+ * which counts exactly. A limit here is a ceiling for abuse, never a quota -
+ * every number sits well above what a person, the apps or the discovery
+ * workflow sends.
  *
  * FAIL OPEN. A missing binding (Vitest, `admin/mock`, a config that lost one),
  * a request without CF-Connecting-IP, or a limit() call that throws lets the

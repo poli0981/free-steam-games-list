@@ -231,9 +231,11 @@ Two limits, in this order:
    pages, which never reach the Worker.
 2. **The Worker's limits** (3b, `web/worker/lib/rate-limit.ts`) give each
    surface the Worker serves its own budget over 60 seconds. They stop a
-   client that paces itself just under the WAF's 10-second threshold, and they
-   keep holding if the WAF rule is edited or deleted - the same reason
-   `BLOCKED_COUNTRIES` sits beside the country rule (section 4).
+   client that keeps its connection open and paces itself just under the
+   WAF's 10-second threshold, and they keep holding if the WAF rule is edited
+   or deleted - the same reason `BLOCKED_COUNTRIES` sits beside the country
+   rule (section 4). They count per server, not per data centre (3b), so a
+   client that reconnects for every request is the WAF rule's to stop.
 
 Neither replaces the other. The WAF rule alone cannot tell a human check from
 an image, and the Worker alone has already been invoked, and billed, by the
@@ -326,11 +328,26 @@ the admin surface's Access check included:
 | `RL_ADMIN` | `/admin`, `/admin/*`, `/api/ingest/*` | 300 |
 
 - **Key:** the client's IPv4 address, or its IPv6 /64 (one subscriber usually
-  holds a whole /64). Counted per Cloudflare location and approximately - a
-  few requests over the limit can pass - so these are ceilings for abuse,
-  never quotas. Each sits well above what a person, the apps or the discovery
-  workflow sends: a cold catalogue load is about 16 data requests, a person
-  sends one human check a day, discovery a few ingest calls a run.
+  holds a whole /64).
+- **What it counts, measured 2026-10-27 in Singapore (SIN), not what the docs
+  imply.** Cloudflare's documentation says counts are per location and
+  eventually consistent. In practice each count lives on the server running
+  the Worker and reaches the rest of the data centre too slowly to matter
+  within a minute:
+  - over ONE keep-alive connection the limit held exactly: `/api/no-such-route`
+    121 × `404` then `429`, `/api/human-check` 19 × `405` then `429`;
+  - with a new connection per request, which Cloudflare spreads over many
+    servers, it refused nothing: 175 human checks in 70 seconds, budget 20.
+
+  So this layer limits a browser (HTTP/2 carries a whole page on one
+  connection) and any script that reuses its connection, which is most of
+  them. A client that reconnects for every request pays a TLS handshake each
+  time and is stopped by the WAF rule, which counted exactly (3a). Either way
+  these are ceilings for abuse, never quotas. Each sits well above what a
+  person, the apps or the discovery workflow sends: a cold catalogue load is
+  about 16 data requests, a person sends one human check a day, discovery a
+  few ingest calls a run. A strict per-data-centre count would need a Durable
+  Object on every request - not worth it while the WAF rule exists.
 - **Refusal:** HTTP 429, `{"error":"too many requests"}`, `Retry-After: 60`,
   `Cache-Control: no-store`. `/api/data/*` and the public API also carry
   `Access-Control-Allow-Origin: *`, so the packaged apps see the 429 instead
@@ -353,13 +370,18 @@ the admin surface's Access check included:
   within the Cloudflare account: two bindings with one ID share their
   counters, across Workers too.
 
-**Check** (after a deploy; spends 130 cheap invocations):
+**Check** (after a deploy; spends 130 cheap invocations). One `curl` with
+the list on stdin and no `--parallel` sends every request over the same
+connection, which is what this layer counts:
 
 ```bash
-seq 1 130 | xargs -P 10 -I{} curl -s -o /dev/null -w '%{http_code}\n' https://free-steam-games.win/api/no-such-route | sort | uniq -c
+for i in $(seq 1 130); do printf 'url = "https://free-steam-games.win/api/no-such-route"\noutput = "/dev/null"\n'; done | curl -s -w '%{http_code}\n' -K - | sort | uniq -c
 ```
 
-Expected: about 120 × `404`, then `429` for the rest of that minute.
+Expected: about 120 × `404`, then `429` for the rest of that minute (measured
+2026-10-27: 121 and 19; on Windows `curl.exe`, write `NUL` for `/dev/null`).
+A loop or `xargs` of separate `curl`s connects anew each time and may see no
+`429` at all - that is the per-server counting above, not a broken limit.
 
 ---
 

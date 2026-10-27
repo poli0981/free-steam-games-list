@@ -21,9 +21,11 @@ public-facing version `4.5.0` → `4.5.1`.
   the Worker answers `429 Too Many Requests` with `Retry-After: 60` until the
   minute is up; the apps can read that answer, where they would otherwise have
   seen a network error. An IPv6 address counts by its /64, the block one
-  subscriber is normally given. Cloudflare counts per data centre and
-  approximately, so these are ceilings for abuse, never quotas. The limits are
-  bindings in `web/wrangler.jsonc` and change by pull request.
+  subscriber is normally given. Cloudflare keeps these counts per server, so
+  they stop a client that keeps its connection open, as browsers and most
+  scripts do; one that reconnects for every request is left to the edge rule,
+  which counts exactly. They are ceilings for abuse, never quotas. The limits
+  are bindings in `web/wrangler.jsonc` and change by pull request.
 - **Two layers, the edge first.** The zone's rate-limiting rule still refuses
   a burst before the Worker runs, at no cost, and is the only limit on the
   pages themselves; the Worker adds the one-minute window the Free plan's
