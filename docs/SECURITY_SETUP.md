@@ -299,12 +299,17 @@ count at all - the Worker limits cover `/api/*` either way:
 file, so no Worker invocation is spent):
 
 ```bash
-seq 1 300 | xargs -P 30 -I{} curl -s -o /dev/null -w '%{http_code}\n' https://free-steam-games.win/robots.txt | sort | uniq -c
+for i in $(seq 1 400); do printf 'url = "https://free-steam-games.win/robots.txt"\noutput = "/dev/null"\n'; done | curl -s --parallel --parallel-max 50 -w '%{http_code}\n' -K - | sort | uniq -c
 ```
 
-Expected: about 250 × `200`, then `429`s. With `public-proxies` instead, a
-static file is never counted: use `/api/data/data/index.json` and expect about
-150. Watch **Security → Events** for a week before changing the threshold.
+Expected: about 250 × `200`, then `429`s (measured 2026-10-27: 250 and 150).
+It has to be ONE `curl --parallel`, which reuses its connections: a loop or
+`xargs` of separate `curl`s pays a TLS handshake per request, stays near 20
+requests a second from a home connection and never reaches the limit
+(measured: 300 × `200`). On Windows `curl.exe`, write `NUL` for `/dev/null`.
+With `public-proxies` instead, a static file is never counted: use
+`/api/data/data/index.json` and expect about 150. Watch **Security → Events**
+for a week before changing the threshold.
 
 ### 3b. The Worker limits — one budget per surface
 
