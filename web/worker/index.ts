@@ -28,6 +28,7 @@ import { mintImages } from "./lib/img-mint";
 import { defaultAdminDeps } from "./lib/deps";
 import { isPruneTick, pruneAdminHistory } from "./lib/prune";
 import { isBlockedCountry } from "./lib/geo";
+import { rateLimited } from "./lib/rate-limit";
 
 export default {
   async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
@@ -157,6 +158,13 @@ async function route(
       }),
     );
   }
+
+  // Per-IP limits, after the country block so a refused request is not also
+  // counted, and before the admin block for the same reason as that one: one
+  // place, ahead of every route (lib/rate-limit.ts). The WAF rate-limiting
+  // rule runs before the Worker and is the first layer; this is the second.
+  const limited = await rateLimited(request, pathname, env);
+  if (limited) return limited;
 
   if (pathname.startsWith("/api/data/")) {
     return handleData(request, url, ctx);

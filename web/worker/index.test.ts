@@ -138,6 +138,66 @@ describe("the country block", () => {
   });
 });
 
+describe("the rate limits", () => {
+  /** makeEnv() binds no limiter, which is why every other test is unaffected
+   *  (lib/rate-limit.ts fails open). Here each one allows two requests. */
+  function limitedEnv(extra: Record<string, unknown> = {}) {
+    const calls: string[] = [];
+    const counts = new Map<string, number>();
+    const limiter = (binding: string) => ({
+      async limit({ key }: { key: string }) {
+        calls.push(binding);
+        const n = (counts.get(binding + key) ?? 0) + 1;
+        counts.set(binding + key, n);
+        return { success: n <= 2 };
+      },
+    });
+    const bindings = Object.fromEntries(
+      ["RL_DATA", "RL_IMG", "RL_API", "RL_HUMAN", "RL_ADMIN"].map((b) => [b, limiter(b)]),
+    );
+    return { env: { ...makeEnv(), ...bindings, ...extra } as unknown as Env, calls };
+  }
+
+  const hit = (limited: Env, path: string, headers: Record<string, string> = {}) =>
+    worker.fetch(
+      new Request(`https://free-steam-games.win${path}`, { headers: { "CF-Connecting-IP": "203.0.113.7", ...headers } }),
+      limited,
+      ctx,
+    );
+
+  it("answers 429 once a client spends its budget, before the route runs", async () => {
+    const { env: limited } = limitedEnv();
+    expect((await hit(limited, "/api/no-such-route")).status).toBe(404);
+    expect((await hit(limited, "/api/no-such-route")).status).toBe(404);
+    const res = await hit(limited, "/api/no-such-route");
+    expect(res.status).toBe(429);
+    expect(res.headers.get("Retry-After")).toBe("60");
+    expect(res.headers.get("Access-Control-Allow-Origin")).toBe("*");
+  });
+
+  it("limits the admin surface ahead of the Access check", async () => {
+    const { env: limited } = limitedEnv();
+    await hit(limited, "/admin/api/me");
+    await hit(limited, "/admin/api/me");
+    const res = await hit(limited, "/admin/api/me", { "Cf-Access-Jwt-Assertion": await token() });
+    expect(res.status).toBe(429);
+    // Same-origin by design: no CORS on the admin API, refusal included.
+    expect(res.headers.get("Access-Control-Allow-Origin")).toBeNull();
+  });
+
+  it("gives the human check its own budget", async () => {
+    const { env: limited, calls } = limitedEnv();
+    await hit(limited, "/api/human-check");
+    expect(calls).toEqual(["RL_HUMAN"]);
+  });
+
+  it("does not count a request the country block already refused", async () => {
+    const { env: limited, calls } = limitedEnv({ BLOCKED_COUNTRIES: "CN" });
+    expect((await hit(limited, "/api/activity", { "CF-IPCountry": "CN" })).status).toBe(403);
+    expect(calls).toEqual([]);
+  });
+});
+
 describe("the human-check route", () => {
   // Through the real router: a handler test cannot notice the route being
   // shadowed by the /api/* 404 or pulled behind the Access block.
