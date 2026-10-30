@@ -1,0 +1,23 @@
+{
+  "schema": 1,
+  "appid": "4732690",
+  "link": "https://store.steampowered.com/app/4732690/",
+  "name": "Arknights: Endfield",
+  "fields": {
+    "genre": {
+      "value": "RTS",
+      "was": "Action",
+      "set_by": "admin",
+      "set_at": "2026-10-30T14:40:02.296Z",
+      "reason": ""
+    },
+    "type_game": {
+      "value": "online",
+      "was": "offline",
+      "set_by": "admin",
+      "set_at": "2026-10-30T14:40:02.296Z",
+      "reason": ""
+    }
+  },
+  "retired": {}
+}
