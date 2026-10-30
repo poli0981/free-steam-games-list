@@ -1,0 +1,30 @@
+{
+  "schema": 1,
+  "appid": "4813850",
+  "link": "https://store.steampowered.com/app/4813850/",
+  "name": "Stella Sora",
+  "fields": {
+    "anti_cheat": {
+      "value": "ACE",
+      "was": "-",
+      "set_by": "admin",
+      "set_at": "2026-10-30T14:33:32.825Z",
+      "reason": ""
+    },
+    "is_kernel_ac": {
+      "value": true,
+      "was": null,
+      "set_by": "admin",
+      "set_at": "2026-10-30T14:33:32.825Z",
+      "reason": ""
+    },
+    "anti_cheat_note": {
+      "value": "AntiCheat Expert",
+      "was": "",
+      "set_by": "admin",
+      "set_at": "2026-10-30T14:33:32.825Z",
+      "reason": ""
+    }
+  },
+  "retired": {}
+}
