@@ -75,8 +75,18 @@ export function downloadBlob(content: string, filename: string, mime: string) {
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
+/**
+ * The CSV as a spreadsheet should open it. Without a byte order mark Excel
+ * reads a CSV in the system's legacy code page and turns every Japanese,
+ * Chinese or Korean name into mojibake - on Japanese Windows too, whose code
+ * page is not UTF-8 either. Other programs skip the mark; JSON needs none.
+ */
+export function csvForExcel(csv: string): string {
+  return "\uFEFF" + csv;
+}
+
 export function exportCsv(records: GameRecord[], filename = "f2p-games.csv") {
-  downloadBlob(recordsToCsv(records), filename, "text/csv");
+  downloadBlob(csvForExcel(recordsToCsv(records)), filename, "text/csv");
 }
 
 export function exportJson(records: GameRecord[], filename = "f2p-games.json") {
