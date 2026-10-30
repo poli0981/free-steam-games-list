@@ -4,6 +4,7 @@
   import { i18n } from "#lib/i18n.svelte.js";
   import { countBy } from "#lib/stats.js";
   import { formatNumber } from "#lib/utils.js";
+  import { searchKey } from "#lib/search-fold.js";
   import QueryState from "#lib/common/QueryState.svelte";
   import PageHeader from "#lib/common/PageHeader.svelte";
   import Input from "#lib/ui/Input.svelte";
@@ -16,9 +17,11 @@
   const studios = $derived(countBy(games.data?.records ?? [], (r) => r.publisher));
 
   let q = $state("");
-  const shown = $derived(
-    q.trim() ? studios.filter((s) => s.name.toLowerCase().includes(q.trim().toLowerCase())) : studios,
-  );
+  // Folded once per record set, not per keystroke: a name typed in another
+  // width or kana script still matches (lib/search-fold.ts).
+  const keys = $derived(studios.map((s) => searchKey(s.name)));
+  const needle = $derived(searchKey(q).trim());
+  const shown = $derived(needle ? studios.filter((_, i) => keys[i].includes(needle)) : studios);
 </script>
 
 <Seo title={t("studios.publishersTitle")} description={t("studios.publishersSeo")} />

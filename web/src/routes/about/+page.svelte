@@ -118,6 +118,7 @@
     <ul class="mt-3 list-disc space-y-2 pl-5 text-sm text-muted-foreground">
       <li>{t("about.headsUpGenre")}</li>
       <li>{t("about.headsUpEnglish")}</li>
+      <li>{t("about.headsUpLanguages")}</li>
       <li>{t("about.headsUpValve")}</li>
     </ul>
   </section>

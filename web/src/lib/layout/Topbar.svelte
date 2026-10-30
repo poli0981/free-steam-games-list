@@ -14,6 +14,7 @@
   import { openPalette } from "../palette.svelte";
   import { formatNumber } from "../utils";
   import { cn } from "../utils";
+  import { jumpsToGames } from "./header-search";
 
   let { onOpenMenu }: { onOpenMenu: () => void } = $props();
 
@@ -44,9 +45,17 @@
 
   // Typing in the header search jumps to /games, because the box filters the
   // table and staying on /charts while it silently filtered a table you cannot
-  // see is the kind of thing that reads as a broken search.
-  function onSearchInput() {
-    if (filters.search && !location.pathname.startsWith("/games")) void goto("/games");
+  // see is the kind of thing that reads as a broken search. Not mid-word under
+  // an input method: that jump waits for compositionend (./header-search.ts).
+  // `reset: false` keeps the box focused: the default reset moved focus to
+  // <body>, and the next keystroke went nowhere. The page scrolls inside
+  // <main>, which a reset never touched, so focus is all it changes.
+  function jumpIfNeeded(composing: boolean) {
+    if (jumpsToGames(filters.search, location.pathname, composing)) void goto("/games", { reset: false });
+  }
+
+  function onSearchInput(e: Event) {
+    jumpIfNeeded((e as InputEvent).isComposing);
   }
 </script>
 
@@ -70,6 +79,7 @@
       type="search"
       bind:value={filters.search}
       oninput={onSearchInput}
+      oncompositionend={() => jumpIfNeeded(false)}
       placeholder={t("topbar.searchPlaceholder")}
       aria-label={t("topbar.searchPlaceholder")}
       class="h-9 w-full rounded-md border border-input bg-transparent pl-8 pr-3 text-sm

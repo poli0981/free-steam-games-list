@@ -13,6 +13,7 @@
   import { headerToCapsule, thumbFallback } from "../image";
   import { imgFallback } from "../img-fallback";
   import { cn } from "../utils";
+  import { longEnough, searchKey } from "../search-fold";
 
   const t = i18n.t;
 
@@ -23,22 +24,31 @@
    */
   const routes = paletteRoutes(CHART_PAGES);
 
-  const q = $derived(palette.query.trim().toLowerCase());
+  // Folded (lib/search-fold.ts): a name typed in another width or kana script
+  // still matches. Folded BEFORE trimming, which turns U+3000 into a space.
+  const q = $derived(searchKey(palette.query).trim());
 
   const matchedRoutes = $derived(
-    q ? routes.filter((r) => t(r.i18n).toLowerCase().includes(q) || r.to.includes(q)) : routes,
+    q ? routes.filter((r) => searchKey(t(r.i18n)).includes(q) || r.to.includes(q)) : routes,
   );
 
+  // Once per record set, not per keystroke; derived lazily, so only once the
+  // palette is first searched.
+  const gameKeys = $derived((games.data?.records ?? []).map((g) => searchKey(g.name ?? "")));
+
   // Capped at 8: the palette is for jumping somewhere, not for browsing the
-  // catalogue - /games is for that.
+  // catalogue - /games is for that. Two characters, or one kanji, kana or
+  // Hangul syllable, which is already a word.
   const matchedGames = $derived.by(() => {
-    if (q.length < 2) return [];
+    if (!longEnough(q, 2)) return [];
     const all = games.data?.records ?? [];
+    const keys = gameKeys;
     const out = [];
-    for (const g of all) {
+    for (let i = 0; i < all.length; i++) {
+      const g = all[i];
       // Only rows with an appid: a game is reachable by /games/<appid> alone,
       // and `items` below indexes games by position.
-      if (g.name?.toLowerCase().includes(q) && appidOf(g)) out.push(g);
+      if (keys[i].includes(q) && appidOf(g)) out.push(g);
       if (out.length >= 8) break;
     }
     return out;
