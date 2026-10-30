@@ -15,7 +15,13 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
 
 - **`appid` is not a stored field.** It is parsed out of `link` with
   `/\/app\/(\d+)/` (`web/src/lib/data-store.ts`, `extract_appid` in
-  `scripts/core/data_store.py`). Never add it as a column; derive it.
+  `scripts/core/data_store.py`). Never add it as a column; derive it. It is
+  ASCII digits on both sides: JavaScript's `\d` is ASCII, Python's is not, so
+  `extract_appid` refuses a run of digits with any non-ASCII one in it
+  (`/app/730٤` is `None`, never 730) and `normalize_link()` reads a queued line
+  through NFKC first, which turns a Japanese keyboard's `５１１８７００` into
+  5118700. A non-ASCII appid would miss every comparison and make
+  `rotation.slice_of()` (`.encode("ascii")`) stop every refresh.
 
 - **Numeric-looking fields are formatted strings, not numbers.**
   `current_players: "492,197"`, `reviews: "86% (Very Positive)"`,
@@ -233,8 +239,10 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
   `notes`, trusts `has_paid_dlc` only from a real store page (an age gate has
   no language table or tags) or a gated game's DLC prices, compares every
   value as stored (normalised, `description` truncated - and a blurb merely
-  cut off later, now that `&quot;` is one character, is written without
-  counting as news), and bumps `last_updated` only on a real change. A game
+  cut off somewhere else is written without counting as news: later, now
+  that `&quot;` is one character, or earlier, at a CJK sentence end since
+  v4.6.0; `_fuller_cut()` takes two cuts of one text, never a rewrite), and
+  bumps `last_updated` only on a real change. A game
   with empty tags, languages or `language_details` is in the page group EVERY
   day, first, capped at `MISSING_DAILY_CAP`; `--missing-only` runs just those.
   A game whose appdetails no longer call it free is LISTED in a `::warning::`,
@@ -372,6 +380,32 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
   rule a reviewer turned on there (off by default, at most 500 a day). Either
   way it is a REQUEST in `temp_info.jsonl` that `ingest_new.py` still checks
   game by game.
+- **Discovery takes games in every language** (since v4.6.0). The store search
+  (`SteamClient.fetch_search_page()`) sends no `supportedlang`; pinned to
+  english it left out 1,592 of 18,790 free games (2026-10-30), mostly Chinese,
+  Japanese or Korean only, and without it Steam filters on no language at all.
+  Rules that are easy to break:
+  - The search sends `l=english`. It fixes the language of the row TEXT, never
+    which rows come back: discovery skips a row whose release reads "Coming
+    soon" and the backfill parses English month names.
+  - Every other request still asks Steam in English, so tags, genre, language
+    names, review labels and dates stay English; a name or description the
+    developer never wrote in English stays in their script. That is the
+    record, not a parsing error.
+  - A candidate's payload carries `languages` (appdetails'
+    `supported_languages`, read by `appdetails_languages()`), which `/admin`
+    shows with a "No English" badge. Auto-approve treats such a game like any
+    other. Rows queued earlier have no list: the Worker never rewrites a
+    queued row's `payload_json`.
+  - Both workflows' guard step greps the two discovery scripts for
+    `save_main|save_jsonl|clear_temp|fetch_full` as WORDS, comments and
+    docstrings included: none of the four may appear in them at all.
+  - The `discovery` group queues (`queue: max`) in both of its workflows, so
+    backfill windows dispatched together wait in turn instead of cancelling
+    each other; `pipeline.test.ts` holds a group to one setting.
+  - A game that declares no language (29 of them) has empty `languages` once
+    ingested: Refresh Store Data's repair group takes it every day and the
+    admin Quality page flags it. Accepted.
 - **Auto-approve (`worker/lib/auto-approve.ts`, run by the cron after
   reconcile) commits a batch only when every gate says yes**, and a gate it
   cannot evaluate says no: enabled (or "Run one batch now"), its D1 lease,
@@ -1076,6 +1110,31 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
   `url.search` in markup or a load - prerender throws on it. The page number
   lives in the filter store, keyed to the criteria (`filters.pageFor`), so Back
   from a game keeps the page and a changed filter starts again at page 1.
+  The language filter (`?lang=`) offers the names stored in `languages`,
+  Steam's English ones: data, never i18n keys.
+- **Search folds; storage never does.** `lib/search-fold.ts` `fold()` is NFKC
+  plus hiragana to katakana, applied to BOTH sides of every search box
+  (`/games`' Fuse index, the palette, /developers, /publishers, the anti-cheat
+  list), so `ﾄﾛｲ`, `とろい` and `トロイ` find one game and a full-width `４`
+  or `：` its ASCII twin. Never apply it to stored text: NFKC rewrites U+3000
+  and half-width kana, which `save_main()` keeps as spelling. Rules:
+  - Fuse gets one `getFn` per KEY. A wrapped `Fuse.config.getFn` hands back
+    `{v, i}` objects for array fields (`tags`, `developer`, `publisher`), not
+    strings, and folding those type-checks and then breaks.
+  - Fold the query, THEN trim: NFKC turns U+3000 into a plain space.
+  - Not Fuse's `ignoreDiacritics`: it strips the dakuten, making ガ equal カ.
+    And no `includeMatches`: its positions would point into folded text.
+  - The header search jumps to /games only once an input method has finished
+    composing (`lib/layout/header-search.ts`); the value is still written on
+    every keystroke, because Android keyboards compose Latin words too. The
+    jump is `goto("/games", {reset: false})`: the default reset moved focus to
+    `<body>` and the next keystroke was lost. The page scrolls inside `<main>`,
+    which no reset touches, so focus is all `reset` changes there.
+  - The palette takes one kanji, kana or Hangul syllable where Latin needs two.
+  - A CSV download starts with a byte order mark (`csvForExcel()`), or Excel
+    opens CJK names as mojibake. It is the escape `"\uFEFF"` in the source;
+    the editing tools turn a typed escape into the raw character, so write it
+    with a script and check the bytes.
 - **`safe` is classified by `lib/safety.ts`** (`y`, `n`, `?` = not reviewed,
   `""` = never set). `/games`, `/stats` and `/health` all use it; `?` is a
   to-do, not missing data, so /health reports it as its own group.

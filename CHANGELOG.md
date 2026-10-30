@@ -4,6 +4,54 @@ All notable changes to this awesome noob repo will be documented here.
 
 ## [Unreleased]
 
+### ✨ Added
+
+- **Games in every language.** Discovery used to search Steam only for free
+  games that list English, which left out 1,592 of them: mostly Simplified
+  Chinese (784), Japanese (317), Korean (165) and Traditional Chinese (164)
+  only, the free Japanese visual novel `//トロイメライ・ノクターン` among them.
+  It now proposes every free game whatever its languages, and every release
+  window swept before gets one more pass. The pipeline still asks Steam in English, so
+  tags, genres and language names stay in English; a name or description the
+  developer never wrote in English stays in their language.
+- **A language filter on Games**, counted like the others and part of the
+  link (`?lang=Japanese`), so a reader can keep to the languages they read.
+  The About page says the catalogue now covers every language.
+- **Search across scripts and widths.** Every search box (Games, the command
+  palette, developers, publishers and the anti-cheat list) now matches
+  half-width and full-width forms and hiragana and katakana as one: `ﾄﾛｲ`,
+  `とろい` and `トロイ` find the same game, and `４` finds `4`. One kanji, kana
+  or Hangul syllable is enough in the command palette.
+- `/admin` shows a candidate's languages, with a **No English** badge when
+  English is not among them. Such games are decided like any other.
+
+### 🐛 Fixed
+
+- The header search no longer jumps to Games in the middle of a word typed
+  with a Japanese, Chinese or Korean input method; it waits until the word is
+  chosen. And it keeps its focus when it does jump: until now the next letter
+  typed after the jump went nowhere, whatever the language.
+- A CSV export opens in Excel with its Japanese, Chinese and Korean names
+  intact (it now starts with a byte order mark).
+- A long Chinese or Japanese description is cut at the end of a sentence
+  where it can be, and never ends in `、…` or `。…`.
+- A queued store link written in full-width digits (`５１１８７００`) is read
+  as the appid it is; digits of any other script are refused. Such an appid
+  used to slip through, and the next daily refresh would have stopped on it.
+  The blocklist now accepts exactly the lines the site's own reader does.
+
+### 🧰 Pipeline
+
+- Discovery runs wait in turn: backfill windows dispatched together no longer
+  cancel each other, and a window can be swept a whole year at a time
+  (`max_pages`). Each run says how many candidates do not list English.
+
+### 📚 Docs
+
+- `docs/plan/19-all-languages.md`: what kept these games out, what every
+  workflow does with them, and what is left (games not sold in the US, CJK
+  fonts).
+
 ## [v4.5.1] – 2026-10-27 (The "Speed Bump" Edition)
 
 The site's Worker now limits how fast one address can call it, behind

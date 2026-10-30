@@ -78,7 +78,7 @@ npm run tauri:build    # release binary into web/src-tauri/target/release/bundle
 <details>
 <summary><b>The admin at <code>/admin</code></b></summary>
 
-`Discover New Games` sweeps the Steam store daily and proposes candidates into a Cloudflare D1 queue. The maintainer reviews them in a small Svelte app embedded in the Worker (never shipped to visitors): approving commits the store link to `scripts/temp_info.jsonl`, and the pipeline does the rest, checking every game again (free, a game, reachable) before it is published. Approval can also run on its own, in batches with a daily cap, once the maintainer turns it on. Decided and already-published rows are read-only. Corrections to published games are saved as override files that survive every pipeline run, and a removed game goes into `data/blocklist.jsonl`, which keeps it out of the catalogue until it is restored. An overview, the pipeline's runs and a data-quality report complete it. See [`docs/ADMIN.md`](docs/ADMIN.md).
+`Discover New Games` sweeps the Steam store daily for free games in every language, not only the ones that support English, and proposes candidates into a Cloudflare D1 queue. The maintainer reviews them in a small Svelte app embedded in the Worker (never shipped to visitors): approving commits the store link to `scripts/temp_info.jsonl`, and the pipeline does the rest, checking every game again (free, a game, reachable) before it is published. Approval can also run on its own, in batches with a daily cap, once the maintainer turns it on. Decided and already-published rows are read-only. Corrections to published games are saved as override files that survive every pipeline run, and a removed game goes into `data/blocklist.jsonl`, which keeps it out of the catalogue until it is restored. An overview, the pipeline's runs and a data-quality report complete it. See [`docs/ADMIN.md`](docs/ADMIN.md).
 
 </details>
 
@@ -177,7 +177,7 @@ scripts/
 | Workflow              | Trigger                          | What it does                                              |
 | --------------------- | -------------------------------- | --------------------------------------------------------- |
 | Auto Update JSON      | Daily 00:00 UTC                  | Fills in incomplete records (API + HTML scrape)           |
-| Discover New Games    | Daily 05:00 UTC                  | Propose new free games into the `/admin` review queue     |
+| Discover New Games    | Daily 05:00 UTC                  | Propose new free games, any language, to the `/admin` queue |
 | Ingest New            | On `scripts/temp_info.jsonl` or `data/blocklist.jsonl` push, and every 3 h | Apply removals, then add approved games |
 | Top Online            | Sun/Wed/Fri 03:00 UTC            | Live player leaderboard                                   |
 | Top Offline           | 1st + 15th of month 05:00 UTC    | Leaderboard for single-player F2P concurrents             |
@@ -197,7 +197,7 @@ The site itself is deployed by Cloudflare Workers Builds on every push to `main`
 ### Contribute
 
 New games arrive on their own: `Discover New Games` sweeps the Steam store
-daily into a review queue, and the maintainer approves them at `/admin` — by
+daily, in every language, into a review queue, and the maintainer approves them at `/admin` — by
 hand, or with an auto-approve rule that has a daily cap and is off until turned
 on. Discovery only proposes, and every approved game is checked again by the
 pipeline (free, a game, reachable) before it is published. Missing a free game
