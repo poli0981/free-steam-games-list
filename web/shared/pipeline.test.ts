@@ -13,6 +13,9 @@
  *     rebase conflict in data/index.json;
  *   - declare `timeout-minutes`, and a JOB_BUDGET_MINUTES at least 20 below
  *     it (scripts/core/budget.py): the script stops in time to save and push.
+ *
+ * The same holds for any shared group (`discovery`): its members queue, or
+ * none of them does.
  */
 import { describe, expect, it } from "vitest";
 import { existsSync, readdirSync, readFileSync } from "node:fs";
@@ -76,6 +79,19 @@ describe("every data-write workflow", () => {
       expect(checkouts.length, file).toBeGreaterThan(0);
       expect(refs.length, file).toBe(checkouts.length);
     }
+  });
+
+  it("shares its queue setting with every workflow in its group", () => {
+    // A group named by an expression is one run's own; only fixed names are shared.
+    const byGroup = new Map<string, boolean[]>();
+    for (const f of readdirSync(DIR).filter((name) => name.endsWith(".yml"))) {
+      const text = code(`.github/workflows/${f}`);
+      const group = /^\s*group\s*:\s*([\w-]+)\s*$/m.exec(text)?.[1];
+      if (!group) continue;
+      byGroup.set(group, [...(byGroup.get(group) ?? []), /\bqueue\s*:\s*max\b/.test(text)]);
+    }
+    expect(byGroup.get("discovery")).toEqual([true, true]);
+    for (const [group, queues] of byGroup) expect(new Set(queues).size, group).toBe(1);
   });
 
   it("stops at its budget in time to save before its timeout", () => {
