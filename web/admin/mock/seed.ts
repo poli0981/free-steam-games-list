@@ -18,6 +18,7 @@ interface Rec {
   release_date?: string;
   reviews?: string;
   current_players?: string;
+  languages?: string[];
 }
 
 const HOUR = 3_600_000;
@@ -65,7 +66,14 @@ export function seed(sqlite: SqliteD1, repo: FakeRepo, records: Rec[], now: Date
       pct(r),
       r.current_players ?? "N/A",
       players(r),
-      JSON.stringify({ link: r.link, name: r.name, reviews: r.reviews, current_players: r.current_players }),
+      JSON.stringify({
+        link: r.link,
+        name: r.name,
+        reviews: r.reviews,
+        current_players: r.current_players,
+        // Discovery records every candidate's languages since v4.6.0.
+        languages: r.languages,
+      }),
       extra.source ?? (n % 5 === 0 ? "backfill:2025" : "discover"),
       status,
       extra.by ?? null,
@@ -93,6 +101,12 @@ export function seed(sqlite: SqliteD1, repo: FakeRepo, records: Rec[], now: Date
   };
 
   for (let k = 0; k < 45; k++) row(hide(next()), "pending");
+  // A game whose store page lists no English, for the dialog's "No English" badge.
+  // Outside the pool, so it never meets another open row for the same game.
+  const foreign = records.find(
+    (r) => !pool.includes(r) && r.name && r.header_image && r.languages?.length && !r.languages.includes("English"),
+  );
+  if (foreign) row(hide(foreign), "pending", { seenAgo: HOUR / 2 });
   for (let k = 0; k < 6; k++) row(hide(next()), "deferred", { seenAgo: (60 + k) * HOUR });
   row(hide(next()), "failed", { reason: "never appeared in data/ or removed_games.jsonl - approve again to retry", by: reviewer, at: iso(30 * HOUR) });
   row(hide(next()), "failed", { reason: "rejected by ingest pipeline", by: reviewer, at: iso(50 * HOUR) });
