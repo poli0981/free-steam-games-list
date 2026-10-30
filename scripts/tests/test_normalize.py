@@ -203,6 +203,21 @@ def test_save_main_writes_every_record_normalised_and_none_as_news(workdir):
     assert stored["last_updated"] == "2026-01-01T00:00:00Z"
 
 
+def test_a_cjk_blurb_already_stored_is_never_cut_again(workdir):
+    # Exactly the cap, ending in "、…" as the old rule could leave it: the new
+    # rule must not touch it, or every such record would change on the next save.
+    blurb = ("星の稗史を記録する本屋で、" * 14)[:data_store.DESCRIPTION_MAX - 2] + "、…"
+    assert len(blurb) == data_store.DESCRIPTION_MAX
+    game = {"link": "https://store.steampowered.com/app/5118700/", "name": "//トロイメライ・ノクターン",
+            "description": blurb, "last_updated": "2026-01-01T00:00:00Z"}
+    data_store.save_main([game], apply_human_overrides=False)
+    before = _shards()
+    [stored] = data_store.load_main()
+    assert stored["description"] == blurb and stored["name"] == "//トロイメライ・ノクターン"
+    data_store.save_main(data_store.load_main(), apply_human_overrides=False)
+    assert _shards() == before
+
+
 def test_saving_what_was_loaded_changes_no_byte(workdir):
     data_store.save_main([_messy(1), _messy(2)], apply_human_overrides=False)
     before = _shards()

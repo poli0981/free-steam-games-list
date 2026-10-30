@@ -90,6 +90,40 @@ def test_a_numeric_link_no_longer_crashes_the_run(repo):
     assert open(os.path.join("scripts", "temp_info.jsonl"), encoding="utf-8").read() == ""
 
 
+@pytest.mark.parametrize("raw, link", [
+    # A non-English store page: the slug is the name, percent-encoded or raw.
+    ("https://store.steampowered.com/app/5118700/%E3%83%88%E3%83%AD%E3%82%A4/",
+     "https://store.steampowered.com/app/5118700/"),
+    ("https://store.steampowered.com/app/5118700/トロイメライノクターン/?l=japanese",
+     "https://store.steampowered.com/app/5118700/"),
+    # A Japanese keyboard types full-width digits; NFKC reads them as ASCII.
+    ("５１１８７００", "https://store.steampowered.com/app/5118700/"),
+    ("store.steampowered.com/app/５１１８７００/", "https://store.steampowered.com/app/5118700/"),
+    # Any other script's digits are refused, never stored: a non-ASCII appid
+    # would stop every refresh (rotation.slice_of encodes it as ASCII).
+    ("٥١١٨٧٠٠", None),
+    ("https://store.steampowered.com/app/٥١١٨٧٠٠/", None),
+    ("https://store.steampowered.com/app/730٤/", None),
+])
+def test_a_link_in_any_script_becomes_the_canonical_one_or_nothing(raw, link):
+    assert data_store.normalize_link(raw) == link
+
+
+def test_extract_appid_reads_ascii_digits_only():
+    assert data_store.extract_appid("https://store.steampowered.com/app/730/") == "730"
+    assert data_store.extract_appid("https://store.steampowered.com/app/５/") is None
+    assert data_store.extract_appid("https://store.steampowered.com/app/730٤/") is None
+
+
+def test_a_link_in_other_digits_is_refused_and_the_run_goes_on(repo):
+    _queue({"link": "٥١١٨٧٠٠"}, {"link": "５１１８７００"})
+    ingest_new.main()
+    assert _appids() == ["1", "5118700"]
+    assert repo == ["5118700"]
+    # Not logged: a row without an appid is dropped by dedup_removed().
+    assert data_store.load_jsonl(os.path.join("scripts", "removed_games.jsonl")) == []
+
+
 def test_a_blocked_game_is_skipped_before_any_steam_request(repo):
     with open(os.path.join("data", "blocklist.jsonl"), "w", encoding="utf-8", newline="\n") as f:
         f.write(serialize_entry(make_entry("440", "Blocked", "not_free", "", "2026-10-13T12:00:00Z")) + "\n")

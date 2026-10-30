@@ -194,18 +194,25 @@ def details_values(data: dict) -> dict:
 
 
 def _fuller_cut(stored, fresh: str) -> bool:
-    """Whether `fresh` is the stored blurb, only cut off later.
+    """Whether `fresh` is the stored blurb, only cut off somewhere else.
 
     A blurb stored HTML-escaped was truncated while "&quot;" still took six
     characters; decoded, the same blurb fits further under DESCRIPTION_MAX.
-    That is not news about the game, so it is written without counting as a
-    change. Only a blurb that grew from the stored one passes; one the
+    And since v4.6.0 a CJK blurb is cut just after a sentence end where it can
+    be, a little EARLIER than the hard cut it was stored with. Neither is news
+    about the game, so it is written without counting as a change. Only two
+    cuts of one text pass - one stem a prefix of the other; a blurb the
     publisher rewrote is still a change.
     """
     if not isinstance(stored, str) or not stored.endswith(ELLIPSIS):
         return False
     stem = stored[:-1].rstrip()
-    return bool(stem) and len(fresh) > len(stored) and fresh.startswith(stem)
+    if not stem:
+        return False
+    if len(fresh) > len(stored):
+        return fresh.startswith(stem)
+    fresh_stem = fresh[:-1].rstrip() if fresh.endswith(ELLIPSIS) else ""
+    return bool(fresh_stem) and fresh != stored and stem.startswith(fresh_stem)
 
 
 def apply_app_details(game: dict, data: dict) -> list[str]:

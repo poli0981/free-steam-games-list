@@ -11,6 +11,7 @@ import hashlib
 import json
 import os
 import re
+import unicodedata
 from datetime import datetime, timezone
 from typing import Optional
 
@@ -30,16 +31,27 @@ _EMPTY_STRINGS = frozenset({"", "N/A", "-", "?"})
 
 
 def extract_appid(link: str) -> Optional[str]:
-    """Extract appid from any Steam URL or bare number. O(1) regex."""
+    """Extract appid from any Steam URL or bare number. O(1) regex.
+
+    ASCII digits only. The regex digit class also takes full-width (５) and
+    other scripts' digits; such an id would miss every comparison, and
+    rotation.slice_of() encodes it as ASCII, which would stop every refresh.
+    The whole run of digits is read first, so "/app/730٤" is refused rather
+    than read as 730.
+    """
     if not link:
         return None
     m = _APPID_RE.search(link)
-    return m.group(1) if m else None
+    return m.group(1) if m and m.group(1).isascii() else None
 
 
 def normalize_link(raw: str) -> Optional[str]:
-    raw = raw.strip().rstrip("/")
-    if raw.isdigit():
+    """The canonical store link for a queued line: a store URL in any form
+    (slug, query string, no scheme) or a bare appid. NFKC first, so an appid
+    typed in full-width digits, a Japanese keyboard's default, is read as
+    ASCII; any other kind of digit is refused."""
+    raw = unicodedata.normalize("NFKC", raw).strip().rstrip("/")
+    if raw.isascii() and raw.isdigit():
         return f"https://store.steampowered.com/app/{raw}/"
     appid = extract_appid(raw)
     return f"https://store.steampowered.com/app/{appid}/" if appid else None
@@ -221,6 +233,14 @@ def load_main() -> list[dict]:
 ELLIPSIS = "\u2026"
 
 
+# Sentence ends a cut may back off to, as to a space (。！？).
+_SENTENCE_ENDS = "\u3002\uff01\uff1f"
+# Trimmed before the ellipsis: the Latin set, then the CJK comma, full stop,
+# full-width comma, full-width full stop, colon and semicolon (、。，．：；).
+# Like ! and ?, the CJK ！ and ？ stay.
+_TRAILING = " ,;:.\u2014\u2013-\u3001\u3002\uff0c\uff0e\uff1a\uff1b"
+
+
 def truncate_description(text: str) -> str:
     """Shorten one blurb to DESCRIPTION_MAX, on a word boundary where possible.
 
@@ -229,18 +249,26 @@ def truncate_description(text: str) -> str:
     single write to data/ -- if it were not idempotent it would nibble a
     character off every description on every run and rewrite all five shards
     forever.
+
+    Only a blurb longer than the cap is cut, so every stored description
+    (all <= DESCRIPTION_MAX) comes back unchanged whatever the rule: a new
+    rule reaches only blurbs read fresh from Steam.
     """
     t = (text or "").strip()
     if len(t) <= DESCRIPTION_MAX:
         return t
     # -1 leaves room for the ellipsis, so the STORED value never exceeds the cap.
     cut = t[:DESCRIPTION_MAX - 1]
+    # A word boundary, or just after a CJK sentence end: Chinese and Japanese
+    # blurbs have no spaces to back off to. Whichever comes later.
     space = cut.rfind(" ")
-    # Only back off to a word boundary if one is reasonably near the end;
+    sentence = max(cut.rfind(c) for c in _SENTENCE_ENDS) + 1
+    boundary = max(space, sentence)
+    # Only back off to a boundary if one is reasonably near the end;
     # otherwise a blurb with no spaces in its tail would lose most of itself.
-    if space >= int(DESCRIPTION_MAX * 0.6):
-        cut = cut[:space]
-    return cut.rstrip(" ,;:.\u2014\u2013-") + ELLIPSIS
+    if boundary >= int(DESCRIPTION_MAX * 0.6):
+        cut = cut[:boundary]
+    return cut.rstrip(_TRAILING) + ELLIPSIS
 
 
 def truncate_descriptions(records: list[dict]) -> int:

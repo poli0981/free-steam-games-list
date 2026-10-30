@@ -393,6 +393,39 @@ def test_a_rewritten_blurb_is_a_change():
     assert "description" in rsd.apply_app_details(game, {"short_description": "New words entirely."})
 
 
+# Two sentences (76 and 64 characters), then a third that runs past the cap.
+CJK_BLURB = "星の稗史を記録する本屋で物語を紡ぐノベルゲームです" * 3 + "。" \
+    + "貴方の選択は果たして何を意味していましたか" * 3 + "。" + "静かな夜の湖畔で" * 10
+
+
+def test_a_cjk_blurb_is_cut_after_a_sentence():
+    cut = rsd.truncate_description(CJK_BLURB)
+    # Just after the second "。", which is trimmed like a Latin full stop.
+    assert cut == CJK_BLURB[:CJK_BLURB.index("。", 80)] + "…"
+    assert len(cut) <= DESCRIPTION_MAX
+    assert rsd.truncate_description(cut) == cut
+
+
+def test_a_cjk_comma_never_comes_before_the_ellipsis():
+    # No sentence end and no space: a hard cut, landing just after "、".
+    blurb = "物" * (DESCRIPTION_MAX - 2) + "、" + "語" * 50
+    assert rsd.truncate_description(blurb) == "物" * (DESCRIPTION_MAX - 2) + "…"
+
+
+def test_a_cjk_blurb_cut_earlier_than_stored_is_written_but_is_not_news():
+    hard = CJK_BLURB[:DESCRIPTION_MAX - 1] + "…"   # how the old rule cut it
+    game = _game(description=hard)
+    assert "description" not in rsd.apply_app_details(game, {"short_description": CJK_BLURB})
+    assert game["description"] == rsd.truncate_description(CJK_BLURB)
+
+
+def test_a_shorter_rewrite_is_still_a_change():
+    game = _game(description=CJK_BLURB[:DESCRIPTION_MAX - 1] + "…")
+    assert "description" in rsd.apply_app_details(game, {"short_description": "新しい説明です。"})
+    game = _game(description="Old words, cut short…")
+    assert "description" in rsd.apply_app_details(game, {"short_description": "Other words, cut…"})
+
+
 # ──────────── A growing catalogue ────────────
 
 def test_the_page_cycle_grows_with_the_catalogue_and_keeps_its_weekday():

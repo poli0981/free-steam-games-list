@@ -13,7 +13,7 @@ import os
 import pytest
 
 from core import blocklist, data_store
-from core.blocklist import BlocklistError, load_blocklist, make_entry, serialize_entry
+from core.blocklist import BlocklistError, entry_problem, load_blocklist, make_entry, serialize_entry
 
 GOLDEN = os.path.join(os.path.dirname(__file__), "fixtures", "blocklist_golden.jsonl")
 
@@ -145,6 +145,22 @@ def test_damaged_and_incomplete_lines_block_nothing(workdir, capsys):
     data_store.save_main([_game(a) for a in "12345"], apply_human_overrides=False)
     assert _appids() == ["1", "2", "3", "4"]
     assert "ignored" in capsys.readouterr().out
+
+
+@pytest.mark.parametrize("appid, blocked_at", [
+    ("５１１８７００", "2026-10-13T12:00:00Z"),       # full-width digits
+    ("٥١١٨٧٠٠", "2026-10-13T12:00:00Z"),            # Arabic-Indic digits
+    ("730\n", "2026-10-13T12:00:00Z"),               # `$` used to allow this
+    ("730", "２０２６-10-13T12:00:00Z"),
+    ("730", "2026-10-13T12:00:00Z\n"),
+])
+def test_a_line_removal_ts_would_refuse_blocks_nothing(appid, blocked_at):
+    # web/shared/removal.ts reads these with JavaScript's ASCII-only digits
+    # and an anchored `$`; both sides must refuse the same lines.
+    entry = {"appid": appid, "link": "", "name": "", "reason": "not_free", "note": "",
+             "blocked_at": blocked_at, "by": "admin"}
+    assert entry_problem(entry) is not None
+    assert entry_problem({**entry, "appid": "730", "blocked_at": "2026-10-13T12:00:00Z"}) is None
 
 
 def test_blocking_again_later_logs_the_new_removal(workdir):
