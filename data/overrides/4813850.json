@@ -24,6 +24,13 @@
       "set_by": "admin",
       "set_at": "2026-10-30T14:33:32.825Z",
       "reason": ""
+    },
+    "type_game": {
+      "value": "online",
+      "was": "offline",
+      "set_by": "admin",
+      "set_at": "2026-10-30T14:35:52.380Z",
+      "reason": ""
     }
   },
   "retired": {}
