@@ -23,10 +23,12 @@ appid. That is the reason for windowing at all -- ~12,000 unknown appids at the
 store throttle is several hours, far past a job timeout. One quarter is a
 sitting most of the way through.
 
-Language filter: fetch_search_page pins supportedlang=english, which is known to
-exclude ~1,537 titles. That is deliberately left as-is so this sweep and the
-daily one agree on what the catalogue is supposed to contain; widening it is a
-separate decision, not a backfill detail.
+Languages: since v4.6.0 fetch_search_page lists free games in every language,
+for this sweep and the daily one alike. Until then it pinned
+supportedlang=english, which left out 1,592 titles (2026-10-30), most of them
+Chinese, Japanese or Korean only - so every window swept before v4.6.0 needs
+one more pass to find them. Each candidate carries its languages, and a dry
+run says which ones list no English.
 
 Usage:
     python scripts/backfill_discover.py --year 2025 --quarter 3 --dry-run
@@ -41,8 +43,8 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from core.steam_client import get_client
 from discover_new import (
-    PAGE_SIZE, POST_BATCH, catalogue_appids, enrich, parse_search_rows,
-    safe_stdout, worker_get, worker_post,
+    PAGE_SIZE, POST_BATCH, catalogue_appids, enrich, language_note,
+    parse_search_rows, safe_stdout, without_english, worker_get, worker_post,
 )
 
 MONTHS = {m: i for i, m in enumerate(
@@ -242,12 +244,15 @@ def main():
         client.close()
 
     print(f"\ncandidates: {len(candidates)}")
+    if candidates:
+        print(f"  of which without English: {without_english(candidates)}")
     if rejected:
         print("rejected:", ", ".join(f"{k}={v}" for k, v in sorted(rejected.items())))
 
     if args.dry_run:
         for c in candidates[:20]:
-            print(f"  {c.appid:>8}  {c.release_date:<14} {c.name[:50]}")
+            note = language_note(c.payload["languages"])
+            print(f"  {c.appid:>8}  {c.release_date:<14} {c.name[:50]}  {note}".rstrip())
         if len(candidates) > 20:
             print(f"  ... and {len(candidates) - 20} more")
         return 0

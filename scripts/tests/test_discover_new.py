@@ -1,4 +1,7 @@
-"""How discover_new reads the redirect Cloudflare Access answers with."""
+"""How discover_new reads the redirect Cloudflare Access answers with, the
+search rows, and the languages a candidate carries to the review queue."""
+import pytest
+
 import discover_new
 
 
@@ -72,3 +75,50 @@ def test_appids_outside_anchors_are_still_recovered():
 def test_a_page_cut_off_inside_a_tag_keeps_the_rows_before_it():
     html = '<a data-ds-appid="570"><span class="title">Dota 2</span></a><a data-ds-appid="730"'
     assert discover_new.parse_search_rows(html) == [("570", "Dota 2", "")]
+
+
+@pytest.mark.parametrize("text, expected", [
+    # 5118700 as appdetails answered it on 2026-10-30.
+    ("Japanese", ["Japanese"]),
+    ("English<strong>*</strong>, Simplified Chinese<strong>*</strong>, Japanese"
+     "<br><strong>*</strong>languages with full audio support",
+     ["English", "Simplified Chinese", "Japanese"]),
+    ("Korean<br/><strong>*</strong>languages with full audio support", ["Korean"]),
+    ("Spanish - Spain, Portuguese - Brazil<BR />footnote", ["Spanish - Spain", "Portuguese - Brazil"]),
+    ("Fran&ccedil;ais , , Deutsch", ["Français", "Deutsch"]),
+    ("", []),
+    (None, []),
+    (["English"], []),                      # not the shape Steam sends
+])
+def test_appdetails_languages(text, expected):
+    assert discover_new.appdetails_languages(text) == expected
+
+
+def test_appdetails_languages_are_capped():
+    text = ", ".join(f"Lang{i}" for i in range(60))
+    assert len(discover_new.appdetails_languages(text)) == discover_new.MAX_LANGUAGES
+
+
+def test_a_candidate_carries_its_languages():
+    data = {"name": "//トロイメライ・ノクターン", "type": "game", "is_free": True,
+            "supported_languages": "Japanese", "release_date": {"date": "Oct 16, 2026"}}
+    cand = discover_new.Candidate("5118700", data)
+    assert cand.link == "https://store.steampowered.com/app/5118700/"
+    assert cand.to_wire()["payload"]["languages"] == ["Japanese"]
+    assert discover_new.Candidate("1", {}).payload["languages"] == []
+
+
+@pytest.mark.parametrize("languages, note", [
+    (["English", "Japanese"], ""),
+    (["Japanese"], "no English: Japanese"),
+    (["Korean", "Japanese", "Thai", "Russian"], "no English: Korean, Japanese, Thai, ..."),
+    ([], "no languages declared"),
+])
+def test_language_note(languages, note):
+    assert discover_new.language_note(languages) == note
+
+
+def test_candidates_without_english_are_counted():
+    cands = [discover_new.Candidate(str(i), {"supported_languages": s})
+             for i, s in enumerate(["English", "Japanese", "", "English, Korean"])]
+    assert discover_new.without_english(cands) == 2
