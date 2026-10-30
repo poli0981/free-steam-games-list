@@ -8,6 +8,7 @@
   import { acLevel, bucketByAntiCheat, type AcLevel } from "#lib/anti-cheat.js";
   import { appidOf } from "#lib/data-store.js";
   import { cn, formatNumber, parseIntSafe } from "#lib/utils.js";
+  import { searchKey } from "#lib/search-fold.js";
   import type { GameRecord } from "#lib/schema.js";
   import QueryState from "#lib/common/QueryState.svelte";
   import PageHeader from "#lib/common/PageHeader.svelte";
@@ -57,12 +58,13 @@
   let sortDir = $state<"asc" | "desc">("desc");
 
   const shown = $derived.by(() => {
-    const q = search.trim().toLowerCase();
+    // A few hundred rows: folding them per keystroke costs nothing.
+    const q = searchKey(search).trim();
     const list = rows.filter(
       (r) =>
         (!family || r.family === family) &&
         (!q ||
-          (r.game.name ?? "").toLowerCase().includes(q) ||
+          searchKey(r.game.name ?? "").includes(q) ||
           r.family.toLowerCase().includes(q) ||
           (r.game.anti_cheat ?? "").toLowerCase().includes(q)),
     );

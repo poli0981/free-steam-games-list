@@ -1,5 +1,16 @@
 import { describe, expect, it } from "vitest";
-import { exactTime, plural, prettyJson, rangeLabel, relativeTime, shortSha, showValue } from "./format";
+import {
+  exactTime,
+  lacksEnglish,
+  languagesLabel,
+  payloadLanguages,
+  plural,
+  prettyJson,
+  rangeLabel,
+  relativeTime,
+  shortSha,
+  showValue,
+} from "./format";
 
 const NOW = Date.parse("2026-09-17T12:00:00Z");
 
@@ -39,5 +50,29 @@ describe("format", () => {
   it("prettyJson falls back to the raw text", () => {
     expect(prettyJson('{"a":1}')).toBe('{\n  "a": 1\n}');
     expect(prettyJson("{broken")).toBe("{broken");
+  });
+
+  it("payloadLanguages tells no list from an empty one", () => {
+    expect(payloadLanguages('{"languages":["Japanese"]}')).toEqual(["Japanese"]);
+    expect(payloadLanguages('{"languages":[]}')).toEqual([]);
+    expect(payloadLanguages('{"languages":["English",3,null,"Korean"]}')).toEqual(["English", "Korean"]);
+    // Queued before v4.6.0, or not a payload at all.
+    expect(payloadLanguages('{"short_description":"x"}')).toBeNull();
+    expect(payloadLanguages('{"languages":"Japanese"}')).toBeNull();
+    expect(payloadLanguages("{broken")).toBeNull();
+    expect(payloadLanguages("null")).toBeNull();
+    expect(payloadLanguages("7")).toBeNull();
+    expect(payloadLanguages("")).toBeNull();
+    expect(payloadLanguages(undefined)).toBeNull();
+  });
+
+  it("languagesLabel and lacksEnglish", () => {
+    expect(languagesLabel(["Japanese", "Korean"])).toBe("Japanese, Korean");
+    expect(languagesLabel([])).toBe("none declared");
+    expect(languagesLabel(null)).toBe("—");
+    expect(lacksEnglish(["Japanese"])).toBe(true);
+    expect(lacksEnglish([])).toBe(true);
+    expect(lacksEnglish(["English", "Japanese"])).toBe(false);
+    expect(lacksEnglish(null)).toBe(false);
   });
 });

@@ -33,6 +33,7 @@
       genre: filters.genre,
       typeGame: filters.typeGame,
       platform: filters.platform,
+      language: filters.language,
       safe: filters.safe,
       status: filters.status,
       hasAntiCheat: filters.hasAntiCheat,
@@ -162,6 +163,19 @@
     >
       <option value={null}>{t("games.filterAllPlatforms")}</option>
       {#each facet.platform as [name, count] (name)}
+        <option value={name}>{name} ({count})</option>
+      {/each}
+    </select>
+
+    <!-- The catalogue lists games in every language. Names are Steam's English
+         ones, as stored: data, not i18n keys. -->
+    <select
+      bind:value={filters.language}
+      aria-label={t("games.filterAllLanguages")}
+      class="h-8 rounded-md border border-input bg-background px-2 text-xs"
+    >
+      <option value={null}>{t("games.filterAllLanguages")}</option>
+      {#each facet.language as [name, count] (name)}
         <option value={name}>{name} ({count})</option>
       {/each}
     </select>

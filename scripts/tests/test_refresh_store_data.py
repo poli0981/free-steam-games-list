@@ -344,6 +344,22 @@ def test_missing_only_takes_just_the_repairs():
     assert [(g["link"], p, d) for g, p, d in plan] == [(games[1]["link"], True, False)]
 
 
+def test_stray_genres_are_read_every_day_capped(monkeypatch):
+    monkeypatch.setattr(rsd, "GENRE_DAILY_CAP", 2)
+    games = [_game(str(10 * i), genre="Free To Play") for i in range(1, 6)] + [_game("730")]
+    plan = rsd.build_plan(games, day=3)
+    strays = [(g, d) for g, _, d in plan if g["genre"] == "Free To Play" and d and not rsd.due(
+        g, rsd.DETAILS_CYCLE_DAYS, 3)]
+    assert len(strays) <= 2
+    assert all(d for _, d in strays)
+    assert sum(1 for g, _, _ in plan if g["link"].endswith("/730/")) <= 1
+
+
+def test_a_page_repair_with_a_stray_genre_reads_its_details_too():
+    plan = rsd.build_plan([_game("4156010", tags=[], genre="Free To Play")], day=0)
+    assert [(p, d) for _, p, d in plan] == [(True, True)]
+
+
 def test_a_details_only_run_repairs_no_page():
     plan = rsd.build_plan([_game("4156010", tags=[])], day=0, want_page=False)
     assert not any(p for _, p, _ in plan)
@@ -388,9 +404,66 @@ def test_a_blurb_that_now_fits_further_is_written_but_is_not_news():
     assert game["description"] == rsd.truncate_description(blurb)
 
 
+GENRES = {"genres": [{"description": "Casual"}, {"description": "Free To Play"},
+                     {"description": "Indie"}]}
+
+
+def test_a_stray_genre_is_replaced_by_the_one_appdetails_gives():
+    game = _game("4156010", genre="Free To Play")
+    assert "genre" in rsd.apply_app_details(game, GENRES)
+    assert game["genre"] == "Casual"
+
+
+def test_a_genre_a_person_could_have_chosen_is_never_touched():
+    game = _game("4156010", genre="Puzzle")
+    assert "genre" not in rsd.apply_app_details(game, GENRES)
+    assert game["genre"] == "Puzzle"
+
+
+def test_a_stray_genre_stays_without_genres_or_under_an_override():
+    game = _game("4156010", genre="Free To Play")
+    assert "genre" not in rsd.apply_app_details(game, {"genres": []})
+    guard = rsd.OverrideGuard({"4156010": {"fields": {"genre": {"value": "Free To Play"}}}})
+    assert "genre" not in rsd.apply_app_details(game, GENRES, guard)
+    assert game["genre"] == "Free To Play"
+
+
 def test_a_rewritten_blurb_is_a_change():
     game = _game(description="Old words, cut short…")
     assert "description" in rsd.apply_app_details(game, {"short_description": "New words entirely."})
+
+
+# Two sentences (76 and 64 characters), then a third that runs past the cap.
+CJK_BLURB = "星の稗史を記録する本屋で物語を紡ぐノベルゲームです" * 3 + "。" \
+    + "貴方の選択は果たして何を意味していましたか" * 3 + "。" + "静かな夜の湖畔で" * 10
+
+
+def test_a_cjk_blurb_is_cut_after_a_sentence():
+    cut = rsd.truncate_description(CJK_BLURB)
+    # Just after the second "。", which is trimmed like a Latin full stop.
+    assert cut == CJK_BLURB[:CJK_BLURB.index("。", 80)] + "…"
+    assert len(cut) <= DESCRIPTION_MAX
+    assert rsd.truncate_description(cut) == cut
+
+
+def test_a_cjk_comma_never_comes_before_the_ellipsis():
+    # No sentence end and no space: a hard cut, landing just after "、".
+    blurb = "物" * (DESCRIPTION_MAX - 2) + "、" + "語" * 50
+    assert rsd.truncate_description(blurb) == "物" * (DESCRIPTION_MAX - 2) + "…"
+
+
+def test_a_cjk_blurb_cut_earlier_than_stored_is_written_but_is_not_news():
+    hard = CJK_BLURB[:DESCRIPTION_MAX - 1] + "…"   # how the old rule cut it
+    game = _game(description=hard)
+    assert "description" not in rsd.apply_app_details(game, {"short_description": CJK_BLURB})
+    assert game["description"] == rsd.truncate_description(CJK_BLURB)
+
+
+def test_a_shorter_rewrite_is_still_a_change():
+    game = _game(description=CJK_BLURB[:DESCRIPTION_MAX - 1] + "…")
+    assert "description" in rsd.apply_app_details(game, {"short_description": "新しい説明です。"})
+    game = _game(description="Old words, cut short…")
+    assert "description" in rsd.apply_app_details(game, {"short_description": "Other words, cut…"})
 
 
 # ──────────── A growing catalogue ────────────

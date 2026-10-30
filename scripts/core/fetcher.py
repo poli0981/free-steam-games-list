@@ -14,7 +14,7 @@ from typing import Optional
 from .anticheat import apply_anti_cheat, from_categories
 from .budget import Deadline, report
 from .constants import (
-    STEAM_API_KEY, SKIP_GENRE_TAGS,
+    STEAM_API_KEY, SKIP_GENRE_TAGS, NOT_GENRES,
     BATCH_SIZE, BATCH_PAUSE_MIN, BATCH_PAUSE_MAX,
 )
 from .steam_client import get_client
@@ -58,6 +58,39 @@ def _infer_type_game(categories: list[dict]) -> str:
     return ""
 
 
+# ──────────── Genre ────────────
+
+_SKIP_GENRES = frozenset(t.casefold() for t in SKIP_GENRE_TAGS)
+_NOT_GENRES = frozenset(t.casefold() for t in NOT_GENRES)
+
+
+def is_stray_genre(genre) -> bool:
+    """A stored genre that is not a genre ("Free To Play"): the scraper's
+    leftover, never a choice a person made."""
+    return isinstance(genre, str) and genre.strip().casefold() in _NOT_GENRES
+
+
+def pick_genre(genres: list) -> str:
+    """The genre for appdetails' `genres` names: the first not on the skip
+    list, else the first that is a genre at all, else "Uncategorized".
+
+    Case-insensitive. appdetails writes "Free To Play" and the skip list said
+    "Free to Play"; the exact match let 1,357 games be stored with it as their
+    genre (2026-10-30), and the fallback to the first name could pick it too.
+    """
+    names = [g.strip() for g in genres if isinstance(g, str) and g.strip()]
+    kept = [g for g in names if g.casefold() not in _SKIP_GENRES]
+    if kept:
+        return kept[0]
+    real = [g for g in names if g.casefold() not in _NOT_GENRES]
+    return real[0] if real else "Uncategorized"
+
+
+def appdetails_genres(data: dict) -> list:
+    """The genre names appdetails lists, in its order."""
+    return [g.get("description", "") for g in data.get("genres") or [] if isinstance(g, dict)]
+
+
 # ──────────── Apply functions ────────────
 
 def apply_details(game: dict, data: dict) -> dict:
@@ -77,9 +110,7 @@ def apply_details(game: dict, data: dict) -> dict:
             game["header_image"] = img
 
     if is_empty(game.get("genre")):
-        raw = [g["description"] for g in data.get("genres", [])]
-        filt = [g for g in raw if g not in SKIP_GENRE_TAGS]
-        game["genre"] = filt[0] if filt else (raw[0] if raw else "Uncategorized")
+        game["genre"] = pick_genre(appdetails_genres(data))
 
     if is_empty(game.get("developer")):
         devs = data.get("developers", [])

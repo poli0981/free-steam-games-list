@@ -3,11 +3,13 @@ fetch_full() builds every new game (ingest_new.py) and refills incomplete ones
 (update_data.py, refetch_all.py). These pin how it treats the anti-cheat
 fields: filled from the developer's disclosure on the page it already fetched,
 else from appdetails' VAC category, never replaced, and never where an
-override would undo it.
+override would undo it. And how it picks a genre: never a price model.
 
 Steam is never called: the client is a fake. Run from the repository root:
 python -m pytest scripts/tests
 """
+import pytest
+
 from core import fetcher
 from core.data_store import make_skeleton
 from core.overrides import OverrideGuard
@@ -122,6 +124,37 @@ def test_apply_details_writes_no_anti_cheat():
     game = make_skeleton(LINK)
     fetcher.apply_details(game, VAC_DETAILS)
     assert (game["anti_cheat"], game["anti_cheat_note"], game["is_kernel_ac"]) == ("-", "", None)
+
+
+@pytest.mark.parametrize("genres, genre", [
+    (["Action", "Free To Play"], "Action"),
+    # appdetails capitalises the T; the skip list used to miss it.
+    (["Casual", "Free To Play", "Indie"], "Casual"),
+    (["Free To Play", "Massively Multiplayer"], "Massively Multiplayer"),
+    (["Free To Play", "Early Access"], "Uncategorized"),
+    (["Free To Play"], "Uncategorized"),
+    (["Indie", "Simulation"], "Simulation"),
+    ([], "Uncategorized"),
+    ([" RPG ", None, ""], "RPG"),
+])
+def test_pick_genre_never_picks_a_price_model(genres, genre):
+    assert fetcher.pick_genre(genres) == genre
+
+
+def test_apply_details_reads_genres_case_insensitively():
+    game = make_skeleton(LINK)
+    game["genre"] = ""
+    fetcher.apply_details(game, {"genres": [{"id": "37", "description": "Free To Play"},
+                                            {"id": "4", "description": "Casual"}]})
+    assert game["genre"] == "Casual"
+
+
+@pytest.mark.parametrize("genre, stray", [
+    ("Free To Play", True), ("free to play", True), (" Early Access ", True),
+    ("Casual", False), ("", False), (None, False), (["Free To Play"], False),
+])
+def test_a_stray_genre_is_one_no_person_chose(genre, stray):
+    assert fetcher.is_stray_genre(genre) is stray
 
 
 def test_the_guard_reaches_fetch_full():

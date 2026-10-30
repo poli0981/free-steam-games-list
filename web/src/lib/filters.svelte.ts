@@ -26,6 +26,8 @@ class Filters {
   genre = $state<string | null>(null);
   typeGame = $state<"online" | "offline" | null>(null);
   platform = $state<string | null>(null);
+  /** One of the languages Steam lists for the game, by its English name. */
+  language = $state<string | null>(null);
   safe = $state<SafeClass | null>(null);
   status = $state<"active" | "delisted" | null>(null);
   hasAntiCheat = $state<boolean | null>(null);
@@ -49,6 +51,7 @@ class Filters {
       this.genre !== null ||
       this.typeGame !== null ||
       this.platform !== null ||
+      this.language !== null ||
       this.safe !== null ||
       this.status !== null ||
       this.hasAntiCheat !== null ||
@@ -63,6 +66,7 @@ class Filters {
       this.genre,
       this.typeGame,
       this.platform,
+      this.language,
       this.safe,
       this.status,
       this.hasAntiCheat,
@@ -96,6 +100,7 @@ class Filters {
     this.genre = null;
     this.typeGame = null;
     this.platform = null;
+    this.language = null;
     this.safe = null;
     this.status = null;
     this.hasAntiCheat = null;
@@ -111,6 +116,7 @@ class Filters {
     if (this.genre !== null) q.set("genre", this.genre);
     if (this.typeGame !== null) q.set("type", this.typeGame);
     if (this.platform !== null) q.set("platform", this.platform);
+    if (this.language !== null) q.set("lang", this.language);
     if (this.safe !== null) q.set("safe", SAFE_PARAM[this.safe]);
     if (this.status !== null) q.set("status", this.status);
     if (this.hasAntiCheat !== null) q.set("ac", this.hasAntiCheat ? "yes" : "no");
@@ -135,6 +141,7 @@ class Filters {
     const type = q.get("type");
     this.typeGame = type === "online" || type === "offline" ? type : null;
     this.platform = q.get("platform") || null;
+    this.language = q.get("lang") || null;
     const safe = Object.entries(SAFE_PARAM).find(([, param]) => param === q.get("safe"));
     this.safe = safe ? (safe[0] as SafeClass) : null;
     const status = q.get("status");
@@ -157,4 +164,4 @@ class Filters {
 export const filters = new Filters();
 
 /** Query parameters the /games page owns. */
-export const FILTER_PARAMS = new Set(["q", "genre", "type", "platform", "safe", "status", "ac", "dead", "sort", "dir", "page"]);
+export const FILTER_PARAMS = new Set(["q", "genre", "type", "platform", "lang", "safe", "status", "ac", "dead", "sort", "dir", "page"]);

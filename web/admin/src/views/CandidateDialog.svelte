@@ -21,7 +21,15 @@
   import StatusBadge from "../components/StatusBadge.svelte";
   import { api, errorMessage, SessionExpiredError } from "../lib/api";
   import { isAbort, reportError } from "../lib/notify";
-  import { exactTime, prettyJson, relativeTime, steamUrl } from "../lib/format";
+  import {
+    exactTime,
+    lacksEnglish,
+    languagesLabel,
+    payloadLanguages,
+    prettyJson,
+    relativeTime,
+    steamUrl,
+  } from "../lib/format";
   import { LOCK_HELP, REOPEN_TEXT } from "../lib/labels";
   import { lockReason } from "../../../shared/queue-rules";
   import { REMOVED_DECISION_PREFIX } from "../../../shared/removal";
@@ -67,6 +75,8 @@
   });
 
   const lock = $derived(data ? lockReason(data) : null);
+  // Discovery takes games in every language since v4.6.0; older rows have no list.
+  const languages = $derived(data ? payloadLanguages(data.payload_json) : null);
 
   async function reopen() {
     if (!data || reopening) return;
@@ -119,6 +129,7 @@
           <div class="flex flex-wrap items-center gap-2">
             <StatusBadge status={data.status} />
             {#if data.published}<Badge variant="success">in the catalogue</Badge>{/if}
+            {#if lacksEnglish(languages)}<Badge variant="info">No English</Badge>{/if}
             <span class="font-mono text-xs text-muted-foreground">appid {data.appid}</span>
           </div>
           <div class="flex flex-wrap gap-x-4 gap-y-1 text-sm">
@@ -145,6 +156,7 @@
         {@render fact("Type", data.app_type)}
         {@render fact("Free to play", data.is_free ? "yes" : "no")}
         {@render fact("Store health", data.health_status)}
+        {@render fact("Languages", languagesLabel(languages), languagesLabel(languages))}
         {@render fact("First seen", relativeTime(data.first_seen_at), exactTime(data.first_seen_at))}
         {@render fact("Last seen", relativeTime(data.last_seen_at), exactTime(data.last_seen_at))}
         {@render fact("Times seen", String(data.seen_count))}

@@ -92,6 +92,22 @@ def test_appdetails_asks_for_english():
     assert session.requests[0]["cookies"] is None   # age cookies: store pages only
 
 
+def test_search_asks_for_every_language_and_english_text():
+    body = {"success": 1, "results_html": "", "total_count": 0, "start": 0}
+    client, session = _client(_Resp("https://store.steampowered.com/search/results/", body=body))
+    assert client.fetch_search_page(0) == body
+    [req] = session.requests
+    assert "supportedlang" not in req["params"]      # games in every language
+    assert req["params"]["l"] == "english"           # "Coming soon" and month names
+    assert req["params"]["maxprice"] == "free" and req["params"]["category1"] == 998
+    assert req["cookies"] is None                    # age cookies: store pages only
+
+
+def test_a_failed_search_page_is_none():
+    client, _ = _client(_Resp("https://store.steampowered.com/search/results/", body={"success": 0}))
+    assert client.fetch_search_page(0) is None
+
+
 def test_store_items_are_keyed_by_the_id_asked_for():
     body = {"response": {"store_items": [
         {"id": 2279510, "appid": 2279510, "success": 1, "tags": []},

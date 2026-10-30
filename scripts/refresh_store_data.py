@@ -41,7 +41,12 @@ The rules, because these fields were fill-if-empty until now:
   - A value is only ever replaced by a NON-EMPTY one. A failed request, an age
     gate, a delisted app or a changed page layout leaves the stored value alone.
   - MANUAL_FIELDS are never written (genre, type_game, anti_cheat, safe, ...),
-    and neither is `notes`: health checks and "no longer free" belong to
+    with one exception: a stored genre that is not a genre ("Free To Play",
+    left by a case-sensitive skip list until v4.6.0) is replaced by the one
+    appdetails gives (fetcher.pick_genre), unless an override owns the field.
+    No person chose it. Such games are in the details group every day, first
+    after the page repairs, at most GENRE_DAILY_CAP a day.
+    Nor is `notes` written: health checks and "no longer free" belong to
     purge_unhealthy.py and mark_dead_games.py. A game appdetails no longer
     calls free is only listed, in a ::warning:: - purge removes a game only
     when Steam's store API flags it too, and this is where the opposite case
@@ -78,11 +83,14 @@ from core.data_store import (
     ELLIPSIS, extract_appid, is_empty, load_main, migrate_record, now_iso, save_main,
     truncate_description,
 )
-from core.fetcher import process_batch, scrape_store_fields
+from core.fetcher import (
+    appdetails_genres, is_stray_genre, pick_genre, process_batch, scrape_store_fields,
+)
 from core.health_checker import free_per_appdetails
 from core.normalize import (
     clean_list, clean_text, decode_entities, normalize_records, normalize_release_date,
 )
+from core.overrides import OverrideGuard
 # The rotation (crc32 slices) is shared with refresh_peaks.py.
 from core.rotation import cycle_for, daily_order, day_number, due
 from core.steam_client import get_client
@@ -97,6 +105,10 @@ DETAILS_DAILY = 500
 # 2026-10-10; the cap is for the day something breaks for every game at once,
 # so a two-hour job cannot turn into a whole-catalogue crawl.
 MISSING_DAILY_CAP = 150
+# Games with a stray genre ("Free To Play") whose appdetails are read a day on
+# top of the rotation: 1,357 on 2026-10-30, so about nine days, then only the
+# odd one a new rule lets through.
+GENRE_DAILY_CAP = 150
 
 PAGE_FIELDS = ("tags", "languages", "language_details", "has_paid_dlc")
 DETAILS_FIELDS = (
@@ -194,32 +206,49 @@ def details_values(data: dict) -> dict:
 
 
 def _fuller_cut(stored, fresh: str) -> bool:
-    """Whether `fresh` is the stored blurb, only cut off later.
+    """Whether `fresh` is the stored blurb, only cut off somewhere else.
 
     A blurb stored HTML-escaped was truncated while "&quot;" still took six
     characters; decoded, the same blurb fits further under DESCRIPTION_MAX.
-    That is not news about the game, so it is written without counting as a
-    change. Only a blurb that grew from the stored one passes; one the
+    And since v4.6.0 a CJK blurb is cut just after a sentence end where it can
+    be, a little EARLIER than the hard cut it was stored with. Neither is news
+    about the game, so it is written without counting as a change. Only two
+    cuts of one text pass - one stem a prefix of the other; a blurb the
     publisher rewrote is still a change.
     """
     if not isinstance(stored, str) or not stored.endswith(ELLIPSIS):
         return False
     stem = stored[:-1].rstrip()
-    return bool(stem) and len(fresh) > len(stored) and fresh.startswith(stem)
+    if not stem:
+        return False
+    if len(fresh) > len(stored):
+        return fresh.startswith(stem)
+    fresh_stem = fresh[:-1].rstrip() if fresh.endswith(ELLIPSIS) else ""
+    return bool(fresh_stem) and fresh != stored and stem.startswith(fresh_stem)
 
 
-def apply_app_details(game: dict, data: dict) -> list[str]:
+def apply_app_details(game: dict, data: dict, guard: Optional[OverrideGuard] = None) -> list[str]:
     changed: list[str] = []
     for field, value in details_values(data).items():
         if field == "description" and _fuller_cut(game.get("description"), value):
             game["description"] = value
             continue
         _replace(game, field, value, changed)
+    # The one manual field this job writes, and only a value no person chose:
+    # a genre that is not a genre. Left alone when appdetails names no genre,
+    # and when an override owns the field.
+    genres = appdetails_genres(data)
+    if is_stray_genre(game.get("genre")) and genres:
+        genre = pick_genre(genres)
+        appid = extract_appid(game.get("link", ""))
+        if guard is None or guard.allows(appid, "genre", genre):
+            _replace(game, "genre", genre, changed)
     return changed
 
 
 def refresh_game(game: dict, client, page: bool, details: bool,
-                 not_free: Optional[list] = None) -> list[str]:
+                 not_free: Optional[list] = None,
+                 guard: Optional[OverrideGuard] = None) -> list[str]:
     """Refresh one game in place. Returns the fields that changed. A game
     whose appdetails no longer call it free is added to `not_free`."""
     appid = extract_appid(game.get("link", ""))
@@ -230,7 +259,7 @@ def refresh_game(game: dict, client, page: bool, details: bool,
     if details:
         data = client.fetch_app_details(appid)
         if data:
-            changed += apply_app_details(game, data)
+            changed += apply_app_details(game, data, guard)
             if not_free is not None and not free_per_appdetails(data):
                 not_free.append(f"{appid} {game.get('name', '')[:40]}")
     if page:
@@ -254,23 +283,34 @@ def build_plan(games: list[dict], day: int, want_page: bool = True,
                page_cycle: int = PAGE_CYCLE_DAYS,
                details_cycle: int = DETAILS_CYCLE_DAYS) -> list[tuple]:
     """[(game, page, details)] for one day: the games with empty store fields
-    first (page group, every day), then the day's rotation slices.
+    first (page group, every day), then the games with a stray genre
+    (appdetails, every day), then the day's rotation slices.
 
-    Both parts come in an order that changes daily (rotation.daily_order):
-    the repairs are capped at MISSING_DAILY_CAP, so a residue Steam never
-    fills cannot hold the same places forever, and a run that meets its time
-    budget leaves a different part of the slice for the next one.
-    missing_only keeps just the repairs, store page only.
+    All of it comes in an order that changes daily (rotation.daily_order):
+    the repairs are capped (MISSING_DAILY_CAP, GENRE_DAILY_CAP), so a residue
+    Steam never fills cannot hold the same places forever, and a run that
+    meets its time budget leaves a different part of the slice for the next one.
+    missing_only keeps just the store-field repairs, store page only.
     """
+    order = daily_order(games, day)
     repairs: list[dict] = []
     if want_page:
-        repairs = daily_order([g for g in games if missing_store_fields(g)], day)[:MISSING_DAILY_CAP]
+        repairs = [g for g in order if missing_store_fields(g)][:MISSING_DAILY_CAP]
     if missing_only:
         return [(g, True, False) for g in repairs]
 
-    plan = [(g, True, want_details and due(g, details_cycle, day)) for g in repairs]
+    strays: list[dict] = []
+    if want_details:
+        strays = [g for g in order if is_stray_genre(g.get("genre"))][:GENRE_DAILY_CAP]
+    stray_ids = {id(g) for g in strays}
+    plan = [(g, True, want_details and (due(g, details_cycle, day) or id(g) in stray_ids))
+            for g in repairs]
     taken = {id(g) for g in repairs}
-    for g in daily_order(games, day):
+    for g in strays:
+        if id(g) not in taken:
+            plan.append((g, want_page and due(g, page_cycle, day), True))
+            taken.add(id(g))
+    for g in order:
         if id(g) in taken:
             continue
         page = want_page and due(g, page_cycle, day)
@@ -314,13 +354,16 @@ def main(argv: Optional[list[str]] = None) -> None:
     n_page = sum(1 for _, p, _ in plan if p)
     n_details = sum(1 for _, _, d in plan if d)
     n_missing = sum(1 for g, p, _ in plan if p and missing_store_fields(g))
+    n_stray = sum(1 for g, _, d in plan if d and is_stray_genre(g.get("genre")))
     print(f"{len(games)} games; day {day}: store page for {n_page} "
           f"(slice {day % page_cycle}/{page_cycle}, {n_missing} with empty store fields), "
-          f"appdetails for {n_details} (slice {day % details_cycle}/{details_cycle})")
+          f"appdetails for {n_details} (slice {day % details_cycle}/{details_cycle}, "
+          f"{n_stray} with a genre that is not one)")
     if not plan:
         return
 
     client = get_client()
+    guard = OverrideGuard.load()
     flags = {id(g): (page, details) for g, page, details in plan}
     fields: Counter = Counter()
     not_free: list[str] = []
@@ -329,7 +372,7 @@ def main(argv: Optional[list[str]] = None) -> None:
     def refresh(game: dict) -> None:
         nonlocal touched
         page, details = flags[id(game)]
-        changed = refresh_game(game, client, page=page, details=details, not_free=not_free)
+        changed = refresh_game(game, client, page=page, details=details, not_free=not_free, guard=guard)
         if changed:
             touched += 1
             fields.update(changed)

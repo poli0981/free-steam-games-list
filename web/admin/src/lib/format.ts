@@ -61,6 +61,35 @@ export function prettyJson(text: string | null | undefined): string {
   }
 }
 
+/**
+ * The languages a candidate's payload lists: English names, as discovery read
+ * them from appdetails. `null` when there is no list - rows queued before
+ * discovery took games in every language (v4.6.0), or a payload that does not
+ * parse - which is not the same as `[]`, a game that declares no language.
+ */
+export function payloadLanguages(text: string | null | undefined): string[] | null {
+  if (!text) return null;
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(text);
+  } catch {
+    return null;
+  }
+  const list = (parsed as { languages?: unknown } | null)?.languages;
+  if (!Array.isArray(list)) return null;
+  return list.filter((l): l is string => typeof l === "string");
+}
+
+/** The languages as the candidate dialog shows them. */
+export function languagesLabel(languages: string[] | null): string {
+  if (languages === null) return "—";
+  return languages.length ? languages.join(", ") : "none declared";
+}
+
+/** A known list without English: a reader of English cannot play the game. */
+export const lacksEnglish = (languages: string[] | null): boolean =>
+  languages !== null && !languages.includes("English");
+
 /** "1-50 of 646" for a pager. */
 export function rangeLabel(offset: number, count: number, total: number): string {
   if (!total || !count) return `0 of ${formatInt(total)}`;

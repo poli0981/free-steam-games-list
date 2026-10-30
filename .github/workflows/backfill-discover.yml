@@ -3,10 +3,15 @@ name: Backfill Discovery (TEMPORARY)
 # >>> TEMPORARY. DELETE THIS FILE AND scripts/backfill_discover.py ONCE THE
 # >>> HISTORICAL BACKLOG HAS BEEN WORKED THROUGH.
 #
-# Measured 2026-09-10: Steam lists 16,668 free games matching the catalogue's
-# own filters; data/ holds 3,424. This workflow chews through that gap one
-# release window at a time. `Discover New Games` covers everything from today
-# forward and is permanent -- this one is not.
+# Measured 2026-09-10: Steam listed 16,668 free games that support English;
+# data/ held 3,424. This workflow chews through that gap one release window at
+# a time. `Discover New Games` covers everything from today forward and is
+# permanent -- this one is not.
+#
+# Since v4.6.0 discovery takes games in every language (18,790 free games on
+# 2026-10-30, 1,592 of them without English), so a window swept before then
+# needs one more pass. A whole recent year is ~30 search pages; a window is
+# done only when the log says "walked past the window".
 #
 # Same propose-only contract as the daily job: `contents: read`, and the same
 # guard step asserting no dataset-writing helper is reachable.
@@ -29,6 +34,10 @@ on:
         description: 'Max candidates to propose in one run'
         required: false
         default: '250'
+      max_pages:
+        description: 'Search pages to walk once the window is found (100 rows each; a whole recent year is ~30)'
+        required: false
+        default: '40'
       dry_run:
         description: 'Find candidates but do not POST them'
         type: boolean
@@ -51,9 +60,12 @@ permissions:
 concurrency:
   # Shares the `discovery` group with the daily job on purpose: two sweeps
   # hammering Steam's search from the same runner pool is the one way to earn a
-  # rate limit that hurts both.
+  # rate limit that hurts both. `queue: max`, like the daily job: windows are
+  # dispatched several at a time, and the default single waiting slot would
+  # cancel all but the last.
   group: discovery
   cancel-in-progress: false
+  queue: max
 
 jobs:
   backfill:
@@ -102,6 +114,7 @@ jobs:
           YEAR: ${{ inputs.year }}
           QUARTER: ${{ inputs.quarter }}
           LIMIT: ${{ inputs.limit || '250' }}
+          MAX_PAGES: ${{ inputs.max_pages || '40' }}
           DRY: ${{ inputs.dry_run && '--dry-run' || '' }}
         run: |
           # An absent YEAR means this is the scheduled run, so both env defaults
@@ -119,7 +132,7 @@ jobs:
           fi
           # A blank quarter must be omitted from argv, not passed as an empty
           # string: argparse rejects '' as an invalid choice.
-          args="--year $YEAR --limit $LIMIT"
+          args="--year $YEAR --limit $LIMIT --max-pages $MAX_PAGES"
           if [ -n "$QUARTER" ]; then args="$args --quarter $QUARTER"; fi
           echo "backfill_discover.py $args $DRY"
           python scripts/backfill_discover.py $args $DRY

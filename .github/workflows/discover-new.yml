@@ -34,11 +34,17 @@ permissions:
 
 concurrency:
   # Its own group, NOT `data-write`: this job writes nothing to the repo, so
-  # queueing it behind the ~115-minute data jobs would delay discovery for no
+  # queueing it behind the long data jobs would delay discovery for no
   # benefit. Two overlapping discovery runs are the only real hazard, and this
   # covers that.
+  #
+  # `queue: max` keeps every waiting run (up to 100, first in, first out).
+  # Without it the group keeps ONE: a third run - a backfill dispatched while
+  # another waits - cancels the one already waiting. Every member of the group
+  # says the same (Backfill Discovery too); web/shared/pipeline.test.ts holds it.
   group: discovery
   cancel-in-progress: false
+  queue: max
 
 jobs:
   discover:

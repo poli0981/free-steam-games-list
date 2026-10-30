@@ -51,10 +51,13 @@ ATTRIBUTION = "admin"
 
 STATUS_CODE = "admin_removed"
 
-_APPID = re.compile(r"^\d{1,10}$")
+# ASCII digits and the whole string (fullmatch): Python's digit class also
+# takes full-width and other scripts' digits, and `$` a trailing newline, all
+# of which web/shared/removal.ts refuses. One line must mean one thing to both.
+_APPID = re.compile(r"\d{1,10}", re.ASCII)
 # now_iso()'s shape exactly. dedup_removed() compares removed_at as a string,
 # so a millisecond suffix would sort differently from the pipeline's own rows.
-_ISO_SECONDS = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$")
+_ISO_SECONDS = re.compile(r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z", re.ASCII)
 
 
 class BlocklistError(RuntimeError):
@@ -70,10 +73,10 @@ def entry_problem(entry: object) -> Optional[str]:
     if not isinstance(entry, dict):
         return "not an object"
     appid = entry.get("appid")
-    if not isinstance(appid, str) or not _APPID.match(appid):
+    if not isinstance(appid, str) or not _APPID.fullmatch(appid):
         return "appid must be 1-10 digits, as a string"
     blocked_at = entry.get("blocked_at")
-    if not isinstance(blocked_at, str) or not _ISO_SECONDS.match(blocked_at):
+    if not isinstance(blocked_at, str) or not _ISO_SECONDS.fullmatch(blocked_at):
         # Without a fixed timestamp the log line would be stamped anew on every
         # write and rewritten forever.
         return "blocked_at must look like 2026-10-13T12:00:00Z"

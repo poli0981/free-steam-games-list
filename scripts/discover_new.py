@@ -32,13 +32,17 @@ from core.steam_client import get_client
 
 # Steam caps the search page at 100 rows regardless of what we ask for.
 PAGE_SIZE = 100
-# A page spans roughly 11 days of releases at the current rate (~8-9/day), so
-# five pages is about eight weeks of insurance. If the cron silently stops for a
-# month, the next successful run still catches everything with no intervention.
+# A page spans about a week of releases (13 a day in October 2026, every
+# language), so five pages is over a month of insurance. If the cron silently
+# stops for a few weeks, the next successful run still catches everything with
+# no intervention.
 DEFAULT_MAX_PAGES = 5
 DEFAULT_STOP_AFTER_KNOWN = 2
 # The Worker's own cap; batches larger than this are rejected.
 POST_BATCH = 100
+# Steam knows about 30 languages; the cap only bounds what a publisher's
+# string can put into the payload.
+MAX_LANGUAGES = 40
 
 _RE_APPID = re.compile(r'data-ds-appid="([^"]+)"')
 _RE_TITLE = re.compile(r'<span class="title">(.*?)</span>', re.S)
@@ -48,6 +52,7 @@ _RE_TITLE = re.compile(r'<span class="title">(.*?)</span>', re.S)
 # "Coming soon" skip below silently never fired.
 _RE_RELEASED = re.compile(r'<div class="search_released[^"]*">(.*?)</div>', re.S)
 _RE_TAGS = re.compile(r"<[^>]+>")
+_RE_BR = re.compile(r"<br\s*/?>", re.I)
 
 # Types that are not games. `category1=998` already filters most of these out,
 # but appdetails is the authoritative source and occasionally disagrees.
@@ -73,6 +78,9 @@ class Candidate:
             "platforms": data.get("platforms") or {},
             "developers": (data.get("developers") or [])[:6],
             "publishers": (data.get("publishers") or [])[:6],
+            # Discovery proposes games in every language; this is what tells a
+            # reviewer which ones a reader of English cannot play.
+            "languages": appdetails_languages(data.get("supported_languages")),
         }
 
     def to_wire(self):
@@ -160,6 +168,38 @@ def parse_search_rows(results_html):
         rows = [(a, "", "") for a in _RE_APPID.findall(results_html)
                 if a.isdigit()]
     return rows
+
+
+def appdetails_languages(text):
+    """The language names in appdetails' `supported_languages`, in its order.
+
+    Steam sends one HTML string, named in the request's language (English
+    here): "English<strong>*</strong>, Japanese<br><strong>*</strong>languages
+    with full audio support". The asterisks mark full audio and the line break
+    starts that footnote. A game that declares no language has no key at all:
+    an empty list, which is not the same thing as "no English".
+    """
+    if not isinstance(text, str):
+        return []
+    first = _RE_BR.split(text, maxsplit=1)[0]
+    plain = html.unescape(_RE_TAGS.sub("", first)).replace("*", "")
+    return [n.strip() for n in plain.split(",") if n.strip()][:MAX_LANGUAGES]
+
+
+def language_note(languages):
+    """What a dry run says about a candidate's languages: nothing for a game
+    that lists English."""
+    if "English" in languages:
+        return ""
+    if not languages:
+        return "no languages declared"
+    more = ", ..." if len(languages) > 3 else ""
+    return "no English: " + ", ".join(languages[:3]) + more
+
+
+def without_english(candidates):
+    """How many candidates do not list English, for the run's summary."""
+    return sum(1 for c in candidates if "English" not in c.payload["languages"])
 
 
 def catalogue_appids():
@@ -395,12 +435,15 @@ def main():
         client.close()
 
     print(f"\ncandidates: {len(candidates)}")
+    if candidates:
+        print(f"  of which without English: {without_english(candidates)}")
     if rejected:
         print("rejected:", ", ".join(f"{k}={v}" for k, v in sorted(rejected.items())))
 
     if args.dry_run:
         for c in candidates[:20]:
-            print(f"  {c.appid:>8}  {c.release_date:<14} {c.name[:50]}")
+            note = language_note(c.payload["languages"])
+            print(f"  {c.appid:>8}  {c.release_date:<14} {c.name[:50]}  {note}".rstrip())
         if len(candidates) > 20:
             print(f"  ... and {len(candidates) - 20} more")
         return 0

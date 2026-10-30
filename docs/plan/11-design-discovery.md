@@ -667,6 +667,7 @@ workflow_dispatch: mode=backfill, start_offset=0, max_pages=9, budget=700
 4. **Playtest apps' `type` value.** `--strict-names` covers the case either way, but the frequency is unmeasured.
 5. **Region-locked `unavailable` rate from a GitHub runner IP.** This determines whether the optional negative cache is worth building. The first backfill run's counters measure it — that is why `Stats` breaks the drop reasons out individually rather than reporting one "skipped" number.
 6. **`supportedlang=english`.** Keeping it excludes 1,537 titles (8.4%) **[measured]**. Matching the existing dataset's character is the v1 default; it is a one-line knob if you later decide the tracker should be language-neutral.
+   *Decided 2026-10-30, v4.6.0: language-neutral. The search sends no `supportedlang` (1,592 titles were excluded by then); see [19-all-languages.md](19-all-languages.md).*
 
 ### Files this design touches
 

@@ -314,8 +314,8 @@ class SteamClient:
         return self._tag_names
 
     def fetch_search_page(self, start: int, count: int = 100) -> Optional[dict]:
-        """Store search: free games, newest first. Returns the parsed JSON
-        ({'success', 'results_html', 'total_count', 'start'}) or None.
+        """Store search: free games in every language, newest first. Returns the
+        parsed JSON ({'success', 'results_html', 'total_count', 'start'}) or None.
 
         This is the ONLY discovery-capable method on this client - every other
         one needs an appid you already have. It deliberately shares
@@ -325,6 +325,17 @@ class SteamClient:
         Measured: the server caps page size at 100 regardless of `count`, and a
         `start` past the end returns zero rows rather than an error, so a paging
         loop terminates naturally.
+
+        No `supportedlang`. Until v4.6.0 it was pinned to english, which left out
+        every game that does not list English: 1,592 of 18,790 free games on
+        2026-10-30, most of them Chinese, Japanese or Korean only. Without it
+        Steam filters on no language at all (the same 18,790 with `l=english`
+        and with an `Accept-Language: ja` header).
+
+        `l=english` sets the language of the row TEXT, never which rows come
+        back: discovery skips a row whose release reads "Coming soon", and the
+        backfill reads English month names. Before, only the session's
+        Accept-Language header kept that text English.
         """
         resp = self._get(
             "https://store.steampowered.com/search/results/",
@@ -334,9 +345,9 @@ class SteamClient:
                 "count": count,
                 "maxprice": "free",
                 "category1": 998,      # "Games" - excludes DLC/soundtracks/videos/software
-                "supportedlang": "english",
                 "sort_by": "Released_DESC",
                 "infinite": 1,
+                "l": "english",
             },
             throttle_fn=self._throttle_store,
             timeout=20,

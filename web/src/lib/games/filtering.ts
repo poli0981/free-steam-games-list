@@ -4,11 +4,12 @@
  * Kept as plain functions rather than a component or a rune so the page can
  * compose them in one `$derived` chain and so they are testable without a DOM.
  */
-import Fuse from "fuse.js";
+import Fuse, { type IFuseOptions } from "fuse.js";
 import type { GameRecord } from "../schema";
 import { COLS } from "./columns";
 import type { SortDir } from "../filters.svelte";
 import { safeClass, type SafeClass } from "../safety";
+import { fold } from "../search-fold";
 
 /**
  * Fuse options, carried over verbatim.
@@ -17,9 +18,21 @@ import { safeClass, type SafeClass } from "../safety";
  * tight enough that a three-letter query does not return a third of the
  * catalogue. The key list matters as much: searching `description` is what
  * lets "battle royale" find games whose name says nothing of the sort.
+ *
+ * Every key is read through fold(), and so is the query (applyFilters), so a
+ * name matches in any width or kana script. One getFn per key, not a wrapped
+ * `Fuse.config.getFn`: for an array field that one hands back `{v, i}`
+ * objects, not strings. No `includeMatches`: its positions would point into
+ * the folded text.
  */
-const FUSE_OPTIONS = {
-  keys: ["name", "description", "tags", "developer", "publisher"],
+const FUSE_OPTIONS: IFuseOptions<GameRecord> = {
+  keys: [
+    { name: "name", getFn: (g) => fold(g.name ?? "") },
+    { name: "description", getFn: (g) => fold(g.description ?? "") },
+    { name: "tags", getFn: (g) => (g.tags ?? []).map(fold) },
+    { name: "developer", getFn: (g) => (g.developer ?? []).map(fold) },
+    { name: "publisher", getFn: (g) => (g.publisher ?? []).map(fold) },
+  ],
   threshold: 0.32,
   ignoreLocation: true,
 };
@@ -29,6 +42,7 @@ export interface FilterCriteria {
   genre: string | null;
   typeGame: "online" | "offline" | null;
   platform: string | null;
+  language: string | null;
   safe: SafeClass | null;
   status: "active" | "delisted" | null;
   hasAntiCheat: boolean | null;
@@ -48,12 +62,15 @@ export function applyFilters(
   c: FilterCriteria,
 ): GameRecord[] {
   // Search first: it is the most selective, so every later predicate runs over
-  // a smaller list.
-  let out = c.search.trim() ? fuse.search(c.search.trim()).map((r) => r.item) : records;
+  // a smaller list. Folded BEFORE trimming: NFKC turns U+3000, the space a
+  // Japanese keyboard types, into a plain one.
+  const query = fold(c.search).trim();
+  let out = query ? fuse.search(query).map((r) => r.item) : records;
 
   if (c.genre) out = out.filter((g) => g.genre === c.genre);
   if (c.typeGame) out = out.filter((g) => g.type_game === c.typeGame);
   if (c.platform) out = out.filter((g) => (g.platforms ?? []).includes(c.platform!));
+  if (c.language) out = out.filter((g) => (g.languages ?? []).includes(c.language!));
   // !== null, not truthiness: "" (never filled in) is a real choice.
   if (c.safe !== null) out = out.filter((g) => safeClass(g.safe) === c.safe);
   if (c.status) out = out.filter((g) => g.status === c.status);
@@ -96,11 +113,15 @@ export function applySort(
 export function facets(records: GameRecord[]) {
   const genre = new Map<string, number>();
   const platform = new Map<string, number>();
+  // Steam's English language names, as the pipeline stores them: a facet of
+  // data, never i18n keys.
+  const language = new Map<string, number>();
   for (const g of records) {
     if (g.genre) genre.set(g.genre, (genre.get(g.genre) ?? 0) + 1);
     for (const p of g.platforms ?? []) platform.set(p, (platform.get(p) ?? 0) + 1);
+    for (const l of new Set(g.languages ?? [])) language.set(l, (language.get(l) ?? 0) + 1);
   }
   const sorted = (m: Map<string, number>) =>
     [...m.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
-  return { genre: sorted(genre), platform: sorted(platform) };
+  return { genre: sorted(genre), platform: sorted(platform), language: sorted(language) };
 }

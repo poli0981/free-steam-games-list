@@ -329,9 +329,11 @@ account higher up this page.
 
 ## 8. Working through the backlog
 
-Measured 2026-09-10: Steam lists **16,668** free games matching the
-catalogue's own filters (`category1=998`, `maxprice=free`,
-`supportedlang=english`); `data/` holds **3,424**.
+Measured 2026-09-10: Steam listed **16,668** free games that support English
+(`category1=998`, `maxprice=free`, `supportedlang=english`); `data/` held
+**3,424**. Since v4.6.0 discovery takes games in every language, with no
+`supportedlang`: **18,790** free games on 2026-10-30, 1,592 of them without
+English ([docs/plan/19-all-languages.md](plan/19-all-languages.md)).
 
 Two jobs close that gap, and they are not the same kind of thing:
 
@@ -359,6 +361,19 @@ about 8 page fetches instead of 90 for an old window. A window is finished when
 a re-run reports `candidates: 0`; the scheduled run's window is the
 `SWEEP_YEAR`/`SWEEP_QUARTER` block at the top of the workflow file, which you
 bump as you go.
+
+Every window swept before v4.6.0 found only games that list English, so it
+needs one more pass. A whole year at a time works once `max_pages` covers it (a
+recent year is about 30 pages of 100):
+
+```bash
+gh workflow run "Backfill Discovery (TEMPORARY)" -f year=2024 -f limit=1000 -f max_pages=60
+```
+
+A window is done when its log says `walked past the window`; `stopping: hit
+--max-pages` means it was cut short. Runs dispatched together wait in turn
+(`queue: max`). Each log counts the candidates without English, and a dry run
+lists their languages.
 
 When the backlog is closed, delete `scripts/backfill_discover.py`, delete
 `.github/workflows/backfill-discover.yml`, and drop
@@ -421,7 +436,10 @@ a dialog is open, and never interrupt IME composition.
 
 Click a game (or press `e`) for its details: the payload as submitted, the
 durable decision for the game, and every other row the queue holds for the same
-appid. A `rejected` row has **Reopen** there. It moves that one row back to
+appid. **Languages** lists what the game supports, as Steam names them, with a
+**No English** badge when English is not among them; such a game is decided
+like any other, and auto-approve treats it the same. Rows queued before v4.6.0
+show "—": discovery did not record languages then. A `rejected` row has **Reopen** there. It moves that one row back to
 `pending` and deletes the rejection, but only if no other row for the game is
 open or committed and the game has no approved decision; otherwise the dialog
 says which of those stopped it. There is no bulk reopen, on purpose. A game
