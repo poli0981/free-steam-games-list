@@ -73,6 +73,13 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
   field an active override covers, or a retired entry's value, would be undone
   by `apply_overrides()` and bump `last_updated` on every run.
 
+  One stored genre is not a judgement: a value in `NOT_GENRES` ("Free To
+  Play", "Early Access"; `constants.py`), a price model or a release state.
+  Until v4.6.0 the skip list matched appdetails' names case-sensitively and
+  1,357 games were stored with "Free To Play". `fetcher.pick_genre()` compares
+  casefolded and never falls back to one, and Refresh Store Data replaces a
+  stored one (`is_stray_genre()`) from appdetails, guarded like any writer.
+
 - **`data/overrides/<appid>.json` is human intent, and it is permanent.**
   `apply_overrides()` is called from inside `save_main()` — the single choke
   point through which all 15 data-writing scripts pass, and the only code that
@@ -236,7 +243,9 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
   The slice is visited in `rotation.daily_order()`, so a run that meets its
   time budget leaves a different tail each day. It
   replaces values only with NON-EMPTY ones, never writes `MANUAL_FIELDS` or
-  `notes`, trusts `has_paid_dlc` only from a real store page (an age gate has
+  `notes` - except a stray genre (above), read from appdetails every day,
+  first after the page repairs, at most `GENRE_DAILY_CAP` a day, and left
+  alone under an override - trusts `has_paid_dlc` only from a real store page (an age gate has
   no language table or tags) or a gated game's DLC prices, compares every
   value as stored (normalised, `description` truncated - and a blurb merely
   cut off somewhere else is written without counting as news: later, now

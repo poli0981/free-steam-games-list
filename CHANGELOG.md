@@ -10,7 +10,8 @@ The catalogue now takes free games in every language, not only the ones
 that support English: about 1,300 more, most of them Chinese, Japanese or
 Korean, arrive through the review queue over the next days. The site and
 the apps get a language filter, search that matches across scripts and
-widths, and CSV files that Excel opens correctly. Desktop and Android
+widths, and CSV files that Excel opens correctly; and 1,357 games filed under
+"Free To Play" get a real genre. Desktop and Android
 bumped `2.3.0` → `2.4.0`; repo public-facing version `4.5.1` → `4.6.0`.
 The desktop app offers 2.4.0 through its updater once the release is
 published; on Android, install the new APK over the old one.
@@ -46,6 +47,12 @@ published; on Android, install the new APK over the old one.
   intact (it now starts with a byte order mark).
 - A long Chinese or Japanese description is cut at the end of a sentence
   where it can be, and never ends in `、…` or `。…`.
+- **"Free To Play" is no longer a genre.** Steam spells it with a capital T,
+  the list of names never to use as a genre had a small one, and 1,357 games
+  were filed under "Free To Play" - the third most common genre, and one that
+  says nothing about a catalogue of free games. New games get their real
+  genre, and the daily store refresh gives the 1,357 theirs from Steam, 150 a
+  day (about nine days). A genre someone set by hand is never touched.
 - A queued store link written in full-width digits (`５１１８７００`) is read
   as the appid it is; digits of any other script are refused. Such an appid
   used to slip through, and the next daily refresh would have stopped on it.

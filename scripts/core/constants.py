@@ -47,6 +47,11 @@ SKIP_GENRE_TAGS = frozenset({
     "Cross-Platform Multiplayer", "In-App Purchases",
     "Massively Multiplayer", "Competitive",
 })
+# Not genres at all: a price model and a release state. Every game here is
+# free, so "Free To Play" tells a reader nothing. Both are on the skip list
+# above; this is what a genre may never FALL BACK to (fetcher.pick_genre), and
+# what Refresh Store Data replaces when it finds one stored.
+NOT_GENRES = frozenset({"Free to Play", "Early Access"})
 
 # ──────────── Anti-Cheat patterns ────────────
 # A key or a pattern matches a name only as whole words (core/anticheat.py

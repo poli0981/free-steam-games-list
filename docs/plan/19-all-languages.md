@@ -150,12 +150,22 @@ A window counts as done only when its log says "walked past the window"; a
 run that reaches its limit is run again. Windows before 2019 get their
 non-English games when they are first swept.
 
-## Left for later
+## Found on the way: genre "Free To Play"
 
-- **Genre "Free To Play".** `SKIP_GENRE_TAGS` holds `"Free to Play"`, but
-  appdetails writes `"Free To Play"` and the comparison is case-sensitive:
-  1,084 records have that genre, 809 of them added since 2026-10-01. `genre`
-  is a human-judgement field, so the fix needs its own decision.
+`SKIP_GENRE_TAGS` held `"Free to Play"`, but appdetails writes `"Free To
+Play"` and the comparison was case-sensitive, and the fallback took the first
+name anyway: 1,357 of 12,854 games had it as their genre. Not a language
+problem, but fixed in the same release:
+
+- `fetcher.pick_genre()` compares casefolded and never falls back to a price
+  model or a release state (`NOT_GENRES`); with nothing else it says
+  "Uncategorized".
+- Refresh Store Data replaces a stored "Free To Play" from appdetails, 150
+  games a day, first after the page repairs, never under an override. `genre`
+  is a human-judgement field, and this is its one scheduled writer: no person
+  chose "Free To Play".
+
+## Left for later
 - **Games not sold in the US.** Every request goes out as the US; covering
   region-locked games needs another country or runner.
 - **CJK fonts and `lang`.** CJK text renders in the system's font (a Linux
