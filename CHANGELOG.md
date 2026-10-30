@@ -4,6 +4,17 @@ All notable changes to this awesome noob repo will be documented here.
 
 ## [Unreleased]
 
+## [v4.6.0] – 2026-10-30 (The "Polyglot" Edition)
+
+The catalogue now takes free games in every language, not only the ones
+that support English: about 1,300 more, most of them Chinese, Japanese or
+Korean, arrive through the review queue over the next days. The site and
+the apps get a language filter, search that matches across scripts and
+widths, and CSV files that Excel opens correctly. Desktop and Android
+bumped `2.3.0` → `2.4.0`; repo public-facing version `4.5.1` → `4.6.0`.
+The desktop app offers 2.4.0 through its updater once the release is
+published; on Android, install the new APK over the old one.
+
 ### ✨ Added
 
 - **Games in every language.** Discovery used to search Steam only for free
