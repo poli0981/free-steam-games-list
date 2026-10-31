@@ -4,6 +4,16 @@ All notable changes to this awesome noob repo will be documented here.
 
 ## [Unreleased]
 
+## [v4.6.1] – 2026-10-31 (The "Zip Tie" Edition)
+
+A security pass. The desktop app's updater takes the patched zip reader
+v4.4.1 had to leave waiting on Tauri, and the service-worker build takes
+patched glob and minimatch. Nothing
+changes in how the site or the apps look or behave. Desktop and Android
+bumped `2.4.0` → `2.4.1`; repo public-facing version `4.6.0` → `4.6.1`.
+The desktop app offers 2.4.1 through its updater once the release is
+published; on Android, install the new APK over the old one.
+
 ### 🔐 Security
 
 - **The desktop updater's zip reader is patched.** tauri-plugin-updater
@@ -15,8 +25,7 @@ All notable changes to this awesome noob repo will be documented here.
   unbounded symlink target, and an AES entry accepted without its
   authentication code. The updater opens a zip only on Windows, and only
   after it has checked the download's signature, so a forged archive never
-  reached it; it was the last of the items v4.4.1 left waiting on Tauri.
-  Still upstream: the Linux GTK 3 bindings (glib 0.18) and the unmaintained
+  reached it. Still waiting on Tauri: the Linux GTK 3 bindings (glib 0.18) and the unmaintained
   proc-macro-error, zbus_names and zvariant.
 - Build tooling: glob 14.0.3 and minimatch 11.0.3 in the service-worker
   build, two moderate advisories published on 2026-10-30 (an aborted walk
