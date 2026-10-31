@@ -4,6 +4,35 @@ All notable changes to this awesome noob repo will be documented here.
 
 ## [Unreleased]
 
+### 🔐 Security
+
+- **The desktop updater's zip reader is patched.** tauri-plugin-updater
+  2.14.1 moves from zip 4 to zip 9.2, which closes six advisories in how an
+  archive is read and extracted, one of them critical: two headers in one
+  archive that disagree, so whatever checks an archive and whatever unpacks
+  it could see different files. The others are symlinks pointing out of the
+  destination, setuid bits and permissions carried through symlinks, an
+  unbounded symlink target, and an AES entry accepted without its
+  authentication code. The updater opens a zip only on Windows, and only
+  after it has checked the download's signature, so a forged archive never
+  reached it; it was the last of the items v4.4.1 left waiting on Tauri.
+  Still upstream: the Linux GTK 3 bindings (glib 0.18) and the unmaintained
+  proc-macro-error, zbus_names and zvariant.
+- Build tooling: glob 14.0.3 and minimatch 11.0.3 in the service-worker
+  build, two moderate advisories published on 2026-10-30 (an aborted walk
+  that kept reading directories, and patterns that could take exponential
+  time). Only this repository's own patterns reach them, at build time; the
+  service worker precaches exactly the same 172 URLs as before.
+- deepmerge, used by the Svelte and rollup plugins to merge their own
+  configuration at build time, has a low advisory with no fixed release. It
+  never ships to the site, the Worker or the apps, and the alert is
+  dismissed as a tolerable risk.
+
+### 📚 Docs
+
+- `CLAUDE.md`: the glob and minimatch overrides, why they are safe and when
+  to delete them; the undici override can go with wrangler 4.156.0.
+
 ## [v4.6.0] – 2026-10-30 (The "Polyglot" Edition)
 
 The catalogue now takes free games in every language, not only the ones

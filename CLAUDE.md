@@ -776,7 +776,23 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
   (`wrangler dev`, `cf:check`), never in the deployed Worker. Delete the
   override once `npm view wrangler@latest dependencies.miniflare` names a
   miniflare whose own pin is >= 7.30.1: left behind, it would hold undici on
-  7 after miniflare moves to 8.
+  7 after miniflare moves to 8. Wrangler 4.156.0 (2026-10-29) is the first
+  whose miniflare pins 7.30.1, so the change that takes wrangler to it or
+  later drops the override in the same commit.
+- **The `"workbox-build": { "glob": "^14.0.2" }` and
+  `"filelist": { "minimatch": "^11.0.1" }` overrides close
+  GHSA-3g3m-2fjr-6pw4 and GHSA-g3hv-75wg-m249** (2026-10-30), fixed only in
+  the new majors. workbox-build 7.4.1 asks glob `^11` and calls only
+  `globSync(pattern, {cwd, follow, ignore})`, which glob 14 keeps; its one
+  break that could touch us, an `ignore` starting with `/`, matches nothing
+  in `vite.config.ts` or `build/pwa.ts`. The precache was compared URL by
+  URL before and after (172 = 172). filelist is reached only through ejs's
+  CLI (`ejs` → `jake` → `filelist`); the off-main-thread plugin calls
+  `ejs.render`, which never loads jake. Delete each override once
+  `npm ls glob minimatch` shows no version below the fixed one without it.
+  `deepmerge` (GHSA-gcqx-w48m-w2h4, low) has no fixed release at all; it
+  merges our own Vite/rollup config at build time, and its alert is
+  dismissed as tolerable risk.
 - **TypeScript is two packages, on purpose.** TypeScript 7 (the Go compiler)
   has no JavaScript API, and svelte-check and `svelte-kit sync` (route
   `$types`) need one, so `typescript` stays 6 and 7 is the alias

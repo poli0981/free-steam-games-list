@@ -90,6 +90,12 @@
     },
     "miniflare": {
       "undici": "^7.30.1"
+    },
+    "workbox-build": {
+      "glob": "^14.0.2"
+    },
+    "filelist": {
+      "minimatch": "^11.0.1"
     }
   },
   "engines": {
