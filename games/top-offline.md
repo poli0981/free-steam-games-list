@@ -1,110 +1,110 @@
 # 🎮 Top Offline – Single-Player Leaderboard
 
-> 2026-10-15 06:37 UTC | 5329 offline games | 167,883 concurrent players
+> 2026-11-01 06:42 UTC | 10403 offline games | 186,766 concurrent players
 
 Free-to-play Steam games where `type_game` is set to anything other than `online` (typically single-player, demos, or story-driven titles). Refreshed bi-weekly via `top-offline.yml`.
 
 | # | Game | Players | Trend | Tier | Rating | Genre | AC | Peak | Link |
 |---|------|---------|-------|------|--------|-------|----|------|------|
-| 1 | Bongo Cat | 117,009 | 📉-21% | 🔥 Mega | ★★★★★ | Clicker |  | 148,248 | [Steam](https://store.steampowered.com/app/3419430/) |
-| 2 | Banana | 4,966 | 📈+55% | 🟢 Healthy | ★★★★☆ | Clicker |  | 27,877 | [Steam](https://store.steampowered.com/app/2923300/) |
-| 3 | Cell to Singularity - Evolution Never... | 4,131 | 📉-19% | 🟢 Healthy | ★★★★☆ | Clicker |  | 5,127 | [Steam](https://store.steampowered.com/app/977400/) |
-| 4 | Your Chronicle | 2,460 | ↓-4% | 🟢 Healthy | ★★★★☆ | Idler |  | 3,638 | [Steam](https://store.steampowered.com/app/1546320/) |
-| 5 | PC FISH: Taskbar Aquarium | 2,320 | 📉-32% | 🟢 Healthy | ★★★☆☆ | Simulation | - | 3,421 | [Steam](https://store.steampowered.com/app/4842670/) |
-| 6 | My Party Is Grinding | 1,967 | 📉-42% | 🟢 Healthy | ★☆☆☆☆ | RPG | - | 3,366 | [Steam](https://store.steampowered.com/app/4952980/) |
-| 7 | Bongo Waifu | 1,736 | 📉-18% | 🟢 Healthy | ★★★★☆ | Clicker | - | 6,516 | [Steam](https://store.steampowered.com/app/3861430/) |
-| 8 | Idle Hero TD - Tower Defense RPG | 1,728 | ↑+4% | 🟢 Healthy | ★★★★☆ | Action | - | 1,728 | [Steam](https://store.steampowered.com/app/2897580/) |
-| 9 | Firestone – Idle Clicker Online RPG | 1,497 | 📉-17% | 🟡 Stable | ★★★☆☆ | RPG | - | 1,994 | [Steam](https://store.steampowered.com/app/1013320/) |
-| 10 | Silly Linguine Cat Simulator Deluxe O... | 1,081 | ↓-6% | 🟡 Stable | ★★★★★ | Clicker |  | 1,149 | [Steam](https://store.steampowered.com/app/4368350/) |
-| 11 | Bomb Farm | 1,077 | 📉-47% | 🟡 Stable | ★★☆☆☆ | Simulation | - | 2,028 | [Steam](https://store.steampowered.com/app/4892010/) |
-| 12 | Farmer Against Potatoes Idle | 1,026 | 📉-20% | 🟡 Stable | ★★★★★ | Free To Play | - | 1,287 | [Steam](https://store.steampowered.com/app/1535560/) |
-| 13 | Idling to Rule the Gods | 867 | ↓-10% | 🟡 Stable | ★★★★☆ | Idler |  | 1,051 | [Steam](https://store.steampowered.com/app/466170/) |
-| 14 | Idle Wizard | 825 | 📈+27% | 🟡 Stable | ★★★★☆ | Idler | - | 825 | [Steam](https://store.steampowered.com/app/992070/) |
-| 15 | Crush Crush | 767 | 📉-50% | 🟡 Stable | ★★★★☆ | Dating Sim |  | 2,071 | [Steam](https://store.steampowered.com/app/459820/) |
-| 16 | Sill Cats | 758 | 📉-20% | 🟡 Stable | ★★★★☆ | Simulation | - | 978 | [Steam](https://store.steampowered.com/app/4641700/) |
-| 17 | Idle Slayer | 738 | 📉-44% | 🟡 Stable | ★★★★☆ | Strategy | - | 1,325 | [Steam](https://store.steampowered.com/app/1353300/) |
-| 18 | Reverse: 1999 | 688 | ↓-12% | 🟡 Stable | ★★★★☆ | RPG | - | 783 | [Steam](https://store.steampowered.com/app/3092660/) |
-| 19 | Fish Idle 2: Underwater Mystery | 629 | ↓-4% | 🟡 Stable | ★★☆☆☆ | Adventure | - | 658 | [Steam](https://store.steampowered.com/app/3037410/) |
-| 20 | Upload Labs | 603 | 📉-34% | 🟡 Stable | ★★★★☆ | Simulation | - | 1,348 | [Steam](https://store.steampowered.com/app/3606890/) |
-| 21 | Soccer Manager 2027 | 600 | 📉-18% | 🟡 Stable | ★★★☆☆ | Simulation | - | 732 | [Steam](https://store.steampowered.com/app/3217240/) |
-| 22 | The Perfect Tower II | 584 | ↓-12% | 🟡 Stable | ★★★★☆ | Action | - | 663 | [Steam](https://store.steampowered.com/app/1197260/) |
-| 23 | Idle Iktah | 555 | → | 🟡 Stable | ★★★☆☆ | Idler | - | 759 | [Steam](https://store.steampowered.com/app/3298520/) |
-| 24 | Galaxy Idle Clicker | 524 | 📉-21% | 🟡 Stable | ★★★☆☆ | Clicker |  | 770 | [Steam](https://store.steampowered.com/app/2962810/) |
-| 25 | Synergism | 507 | 📉-15% | 🟡 Stable | ★★★☆☆ | Idler | - | 871 | [Steam](https://store.steampowered.com/app/3552310/) |
-| 26 | Idle Cave Miner | 506 | 📉-21% | 🟡 Stable | ★★★★☆ | Idler | - | 746 | [Steam](https://store.steampowered.com/app/2289450/) |
-| 27 | Leaf Blower Revolution - Idle Game | 499 | ↓-11% | 🟡 Stable | ★★★★☆ | Clicker |  | 761 | [Steam](https://store.steampowered.com/app/1468260/) |
-| 28 | Sword of Convallaria | 428 | 📉-19% | 🟡 Stable | ★★★☆☆ | RPG | - | 528 | [Steam](https://store.steampowered.com/app/2526380/) |
-| 29 | Bitburner | 414 | 📉-20% | 🟡 Stable | ★★★★★ | Programming | - | 711 | [Steam](https://store.steampowered.com/app/1812820/) |
-| 30 | Doki Doki Literature Club! | 401 | ↓-4% | 🟡 Stable | ★★★★★ | Visual Novel |  | 539 | [Steam](https://store.steampowered.com/app/698780/) |
-| 31 | Poppy Playtime | 358 | ↓-10% | 🟡 Stable | ★★★★☆ | Horror |  | 3,982 | [Steam](https://store.steampowered.com/app/1721470/) |
-| 32 | 月圆之夜 (Night of Full Moon) | 345 | 📈+21% | 🟡 Stable | ★★★★☆ | Roguelike | - | 345 | [Steam](https://store.steampowered.com/app/769560/) |
-| 33 | Archmage Idle | 334 | 📈+20% | 🟡 Stable | ★★☆☆☆ | RPG | - | 334 | [Steam](https://store.steampowered.com/app/4557350/) |
-| 34 | Coloring Pixels | 326 | ↓-9% | 🟡 Stable | ★★★★★ | Puzzle |  | 370 | [Steam](https://store.steampowered.com/app/897330/) |
-| 35 | Life is Strange - Episode 1 | 270 | 📈+22% | 🟠 Low | ★★★★★ | Adventure |  | 324 | [Steam](https://store.steampowered.com/app/319630/) |
-| 36 | CivIdle | 245 | 📉-34% | 🟠 Low | ★★★☆☆ | Strategy |  | 487 | [Steam](https://store.steampowered.com/app/2181940/) |
-| 37 | Slime Trader | 243 | 📉-70% | 🟠 Low | ★☆☆☆☆ | Simulation | - | 806 | [Steam](https://store.steampowered.com/app/5164660/) |
-| 38 | PANOPTYCA : Idle RPG Manager | 239 | 📈+36% | 🟠 Low | ★★☆☆☆ | RPG | - | 239 | [Steam](https://store.steampowered.com/app/3882730/) |
-| 39 | SCREENSIDE FISHER | 229 | 📉-67% | 🟠 Low | ★★★★★ | Free To Play | - | 695 | [Steam](https://store.steampowered.com/app/4270850/) |
-| 40 | Idle Fishing | 214 | 📈+16% | 🟠 Low | ★★★★☆ | RPG | - | 214 | [Steam](https://store.steampowered.com/app/2725560/) |
-| 41 | Kill the Lich Idle | 204 | 📈+21% | 🟠 Low | ★★☆☆☆ | Idler | - | 329 | [Steam](https://store.steampowered.com/app/4522510/) |
-| 42 | Soda Dungeon 2 | 203 | ↑+4% | 🟠 Low | ★★★★☆ | RPG | - | 250 | [Steam](https://store.steampowered.com/app/946050/) |
-| 43 | Pocket Waifu: Desktop Pet | 199 | 📉-25% | 🟠 Low | ★★★★☆ | Free To Play | - | 267 | [Steam](https://store.steampowered.com/app/2989820/) |
-| 44 | Idle Spiral | 195 | 📉-41% | 🟠 Low | ★★★★☆ | Idler | - | 330 | [Steam](https://store.steampowered.com/app/1827980/) |
-| 45 | Life is Strange 2 | 175 | 📈+24% | 🟠 Low | ★★★★☆ | Adventure | - | 175 | [Steam](https://store.steampowered.com/app/532210/) |
-| 46 | Free Solitaire | 158 | 📉-21% | 🟠 Low | ★★★★★ | Card Game | - | 200 | [Steam](https://store.steampowered.com/app/3330280/) |
-| 47 | DUNGEON SLASHER | 157 | 📉-48% | 🟠 Low | ★★☆☆☆ | Action | - | 302 | [Steam](https://store.steampowered.com/app/2712460/) |
-| 48 | Territory Idle | 120 | ↑+13% | 🟠 Low | ★★★☆☆ | Idler | - | 145 | [Steam](https://store.steampowered.com/app/1017100/) |
-| 49 | Nexus Legacy | 118 | 📉-28% | 🟠 Low | ★★☆☆☆ | Strategy | - | 164 | [Steam](https://store.steampowered.com/app/4661910/) |
-| 50 | The Red Pearls Of Borneo | 116 | 📉-32% | 🟠 Low | ★★★★★ | Puzzle |  | 509 | [Steam](https://store.steampowered.com/app/4488860/) |
-| 51 | Wet Wealth | 115 | 📉-39% | 🟠 Low | ★★★☆☆ | Visual Novel | - | 573 | [Steam](https://store.steampowered.com/app/4293850/) |
-| 52 | Zoo 2: Animal Park | 111 | 📉-17% | 🟠 Low | ★★★☆☆ | Simulation | - | 211 | [Steam](https://store.steampowered.com/app/1352330/) |
-| 53 | Grim Clicker | 108 | 📉-26% | 🟠 Low | ★★★☆☆ | Idler | - | 203 | [Steam](https://store.steampowered.com/app/1160750/) |
-| 54 | Cube Escape: Paradox | 105 | 📉-31% | 🟠 Low | ★★★★★ | Adventure | - | 234 | [Steam](https://store.steampowered.com/app/909080/) |
-| 55 | We Were Here | 96 | 📈+20% | 🟠 Low | ★★★★☆ | Action | - | 244 | [Steam](https://store.steampowered.com/app/582500/) |
-| 56 | Girls' Frontline | 92 | ↓-7% | 🟠 Low | ★★★★☆ | Turn-based Strategy | - | 208 | [Steam](https://store.steampowered.com/app/3887700/) |
-| 57 | Sill Sticks | 91 | 📉-16% | 🟠 Low | ★★★★★ | Simulation | - | 108 | [Steam](https://store.steampowered.com/app/4861510/) |
-| 58 | Bard Idle | 84 | 📈+24% | 🟠 Low | ★★★☆☆ | Party-Based RPG |  | 108 | [Steam](https://store.steampowered.com/app/1803580/) |
-| 59 | Ultimate Custom Night | 84 | ↑+12% | 🟠 Low | ★★★★★ | Action | - | 167 | [Steam](https://store.steampowered.com/app/871720/) |
-| 60 | DPS IDLE 2 | 83 | 📉-25% | 🟠 Low | ★★☆☆☆ | Idler |  | 178 | [Steam](https://store.steampowered.com/app/2402710/) |
-| 61 | Buy a Croquette! | 83 | 📉-22% | 🟠 Low | ★★★★★ | Adventure | - | 107 | [Steam](https://store.steampowered.com/app/2167960/) |
-| 62 | Lowmoor Idle RPG: An Adventurer's Chr... | 83 | 📉-31% | 🟠 Low | ★★★★☆ | RPG | - | 121 | [Steam](https://store.steampowered.com/app/4977360/) |
-| 63 | Dark Deception | 82 | 📉-31% | 🟠 Low | ★★★★☆ | Action | - | 137 | [Steam](https://store.steampowered.com/app/332950/) |
-| 64 | Our Life: Beginnings & Always | 82 | → | 🟠 Low | ★★★★★ | Visual Novel | - | 132 | [Steam](https://store.steampowered.com/app/1129190/) |
-| 65 | Sill Dogs | 82 | 📈+52% | 🟠 Low | ★★★★☆ | Simulation | - | 82 | [Steam](https://store.steampowered.com/app/5119020/) |
-| 66 | World of Guns: Gun Disassembly | 81 | ↓-10% | 🟠 Low | ★★★★☆ | Action | - | 90 | [Steam](https://store.steampowered.com/app/262410/) |
-| 67 | The Powder Toy | 81 | ↓-12% | 🟠 Low | ★★★★★ | Simulation | - | 92 | [Steam](https://store.steampowered.com/app/1148350/) |
-| 68 | Egg | 76 | 📈+81% | 🟠 Low | ★★★★☆ | Action | - | 76 | [Steam](https://store.steampowered.com/app/2784840/) |
-| 69 | Virtual Cottage | 75 | 📉-17% | 🟠 Low | ★★★★★ | Cozy | - | 149 | [Steam](https://store.steampowered.com/app/1369320/) |
-| 70 | Vacuum Warrior - Idle Game | 73 | 📉-18% | 🟠 Low | ★★★☆☆ | Idler | - | 170 | [Steam](https://store.steampowered.com/app/2302990/) |
-| 71 | Watch | 73 | 📉-47% | 🟠 Low | ★★★☆☆ | Idler | - | 184 | [Steam](https://store.steampowered.com/app/894060/) |
-| 72 | Pieceful Gallery | 72 | 📈+200% | 🟠 Low | ★★★☆☆ | Simulation | - | 72 | [Steam](https://store.steampowered.com/app/3794810/) |
-| 73 | Viridi | 71 | 📈+255% | 🟠 Low | ★★★★☆ | Simulation | - | 75 | [Steam](https://store.steampowered.com/app/375950/) |
-| 74 | Adventure Escape Mysteries | 71 | 📉-20% | 🟠 Low | ★★★★☆ | Puzzle | - | 148 | [Steam](https://store.steampowered.com/app/1141020/) |
-| 75 | Molili AI Friends: Your AI Desk Pal | 70 | 📉-53% | 🟠 Low | ★★★★☆ | Software |  | 240 | [Steam](https://store.steampowered.com/app/4141770/) |
-| 76 | Artesnaut | 70 | 📉-44% | 🟠 Low | ★★☆☆☆ | RPG | - | 124 | [Steam](https://store.steampowered.com/app/4485620/) |
-| 77 | TASMON: Taskbar Monsters | 70 | 📉-37% | 🟠 Low | ★★☆☆☆ | RPG | - | 111 | [Steam](https://store.steampowered.com/app/4985540/) |
-| 78 | Taimanin Squad | 69 | 📉-82% | 🟠 Low | ★☆☆☆☆ | Strategy |  | 1,146 | [Steam](https://store.steampowered.com/app/4195470/) |
-| 79 | Cat | 69 | → | 🟠 Low | ★★★★☆ | Simulation | - | 71 | [Steam](https://store.steampowered.com/app/2408310/) |
-| 80 | ERROR143 | 68 | 📈+70% | 🟠 Low | ★★★★☆ | Visual Novel | - | 68 | [Steam](https://store.steampowered.com/app/2066550/) |
-| 81 | Sheepy: A Short Adventure | 66 | 📈+35% | 🟠 Low | ★★★★★ | Adventure | - | 66 | [Steam](https://store.steampowered.com/app/1568400/) |
-| 82 | Peach Clicker | 66 | ↑+14% | 🟠 Low | ★★☆☆☆ | Adventure | - | 66 | [Steam](https://store.steampowered.com/app/3125030/) |
-| 83 | Idle Startup | 64 | 📉-24% | 🟠 Low | ★★☆☆☆ | Simulation | - | 515 | [Steam](https://store.steampowered.com/app/4779560/) |
-| 84 | Farm Manager | 64 | ↓-10% | 🟠 Low | ★★☆☆☆ | Simulation | - | 71 | [Steam](https://store.steampowered.com/app/3759820/) |
-| 85 | Amazons vs Zombies 🔞 | 63 | 📉-31% | 🟠 Low | ★★☆☆☆ | Action | - | 215 | [Steam](https://store.steampowered.com/app/4103710/) |
-| 86 | Path of the idle cultivator | 63 | ↓-5% | 🟠 Low | ★★★☆☆ | RPG | - | 66 | [Steam](https://store.steampowered.com/app/5007580/) |
-| 87 | ball | 63 | ↓-15% | 🟠 Low | ★★☆☆☆ | Adventure | - | 74 | [Steam](https://store.steampowered.com/app/3095590/) |
-| 88 | MISHA | 63 | ↓-9% | 🟠 Low | ★★★★☆ | Free To Play | - | 69 | [Steam](https://store.steampowered.com/app/3868850/) |
-| 89 | Sexy Airlines EVO | 62 | 📉-25% | 🟠 Low | ★☆☆☆☆ | Dating Sim |  | 87 | [Steam](https://store.steampowered.com/app/1745200/) |
-| 90 | Intravenous 3: Borderline | 61 | 📉-85% | 🟠 Low | ★★★★★ | Action | - | 418 | [Steam](https://store.steampowered.com/app/4890770/) |
-| 91 | Car Clicker | 61 | 📉-22% | 🟠 Low | ★☆☆☆☆ | Free To Play | - | 78 | [Steam](https://store.steampowered.com/app/3059840/) |
-| 92 | Koltera 2 | 59 | 📉-33% | 🟠 Low | ★★★☆☆ | Idler |  | 433 | [Steam](https://store.steampowered.com/app/2834700/) |
-| 93 | NSFW Solitaire & Puzzles | 59 | 🆕 | 🟠 Low | ★★★★☆ | Card Game | - | 72 | [Steam](https://store.steampowered.com/app/2274120/) |
-| 94 | Box Clicker | 59 | 📉-20% | 🟠 Low | ★★☆☆☆ | Simulation | - | 74 | [Steam](https://store.steampowered.com/app/3071740/) |
-| 95 | Coins | 59 | 📉-27% | 🟠 Low | ★★☆☆☆ | Free To Play | - | 81 | [Steam](https://store.steampowered.com/app/3083090/) |
-| 96 | Fish | 59 | 📉-19% | 🟠 Low | ★★☆☆☆ | Action | - | 73 | [Steam](https://store.steampowered.com/app/3088770/) |
-| 97 | Orange - The Annoying Clicker | 58 | 📉-26% | 🟠 Low | ★☆☆☆☆ | Simulation | - | 78 | [Steam](https://store.steampowered.com/app/3058800/) |
-| 98 | Letters | 58 | 📉-27% | 🟠 Low | ★★☆☆☆ | Simulation | - | 79 | [Steam](https://store.steampowered.com/app/3064270/) |
-| 99 | Banana & Cucumber | 57 | ↓-10% | 🟠 Low | ★★☆☆☆ | Free To Play | - | 63 | [Steam](https://store.steampowered.com/app/3015610/) |
-| 100 | Coin2tools | 57 | 📈+46% | 🟠 Low | ★☆☆☆☆ | RPG | - | 57 | [Steam](https://store.steampowered.com/app/5021400/) |
+| 1 | Bongo Cat | 99,852 | ↓-15% | 🔥 Mega | ★★★★★ | Clicker |  | 148,248 | [Steam](https://store.steampowered.com/app/3419430/) |
+| 2 | Revolution Idle | 6,777 | ↓-8% | ⭐ Hot | ★★★★☆ | Simulation | - | 7,393 | [Steam](https://store.steampowered.com/app/2763740/) |
+| 3 | Banana | 4,950 | → | 🟢 Healthy | ★★★★☆ | Clicker |  | 27,877 | [Steam](https://store.steampowered.com/app/2923300/) |
+| 4 | Cell to Singularity - Evolution Never... | 4,494 | ↑+9% | 🟢 Healthy | ★★★★☆ | Clicker |  | 5,127 | [Steam](https://store.steampowered.com/app/977400/) |
+| 5 | Task Bar Cube | 4,211 | → | 🟢 Healthy | ★☆☆☆☆ | RPG | - | 4,211 | [Steam](https://store.steampowered.com/app/5084200/) |
+| 6 | Blue Archive | 3,558 | 📈+48% | 🟢 Healthy | ★★☆☆☆ | Adventure | NGS🔴 | 3,558 | [Steam](https://store.steampowered.com/app/3557620/) |
+| 7 | Unnamed Space Idle | 3,042 | → | 🟢 Healthy | ★★★★☆ | Simulation | - | 3,083 | [Steam](https://store.steampowered.com/app/2471100/) |
+| 8 | PC FISH: Taskbar Aquarium | 3,004 | 📈+29% | 🟢 Healthy | ★★★☆☆ | Simulation | - | 3,421 | [Steam](https://store.steampowered.com/app/4842670/) |
+| 9 | Your Chronicle | 2,742 | ↑+11% | 🟢 Healthy | ★★★☆☆ | Idler |  | 3,638 | [Steam](https://store.steampowered.com/app/1546320/) |
+| 10 | Tap Ninja - Idle game | 2,692 | → | 🟢 Healthy | ★★★★☆ | Action | - | 2,724 | [Steam](https://store.steampowered.com/app/1891700/) |
+| 11 | Bongo Waifu | 1,980 | ↑+14% | 🟢 Healthy | ★★★★☆ | Clicker | - | 6,516 | [Steam](https://store.steampowered.com/app/3861430/) |
+| 12 | Idle Hero TD - Tower Defense RPG | 1,829 | ↑+6% | 🟢 Healthy | ★★★★☆ | Action | - | 1,829 | [Steam](https://store.steampowered.com/app/2897580/) |
+| 13 | Idle Champions of the Forgotten Realms | 1,710 | ↓-9% | 🟢 Healthy | ★★★☆☆ | Action | - | 1,878 | [Steam](https://store.steampowered.com/app/627690/) |
+| 14 | Firestone – Idle Clicker Online RPG | 1,626 | ↑+9% | 🟢 Healthy | ★★★☆☆ | RPG | - | 1,994 | [Steam](https://store.steampowered.com/app/1013320/) |
+| 15 | My Party Is Grinding | 1,612 | 📉-18% | 🟢 Healthy | ★☆☆☆☆ | RPG | - | 3,366 | [Steam](https://store.steampowered.com/app/4952980/) |
+| 16 | Crush Crush | 1,452 | 📈+89% | 🟡 Stable | ★★★★☆ | Dating Sim |  | 2,071 | [Steam](https://store.steampowered.com/app/459820/) |
+| 17 | Silly Linguine Cat Simulator Deluxe O... | 1,211 | ↑+12% | 🟡 Stable | ★★★★★ | Clicker |  | 1,211 | [Steam](https://store.steampowered.com/app/4368350/) |
+| 18 | Farmer Against Potatoes Idle | 1,053 | → | 🟡 Stable | ★★★★☆ | Free To Play | - | 1,287 | [Steam](https://store.steampowered.com/app/1535560/) |
+| 19 | Incremental Epic Hero 2 | 1,038 | ↑+9% | 🟡 Stable | ★★★☆☆ | Adventure | - | 1,038 | [Steam](https://store.steampowered.com/app/1690710/) |
+| 20 | Antimatter Dimensions | 1,035 | ↓-5% | 🟡 Stable | ★★★★☆ | Free To Play | - | 1,092 | [Steam](https://store.steampowered.com/app/1399720/) |
+| 21 | Idling to Rule the Gods | 1,010 | 📈+16% | 🟡 Stable | ★★★★☆ | Idler |  | 1,051 | [Steam](https://store.steampowered.com/app/466170/) |
+| 22 | Poppy Playtime | 902 | 📈+152% | 🟡 Stable | ★★★★☆ | Horror |  | 3,982 | [Steam](https://store.steampowered.com/app/1721470/) |
+| 23 | Idle Slayer | 865 | 📈+17% | 🟡 Stable | ★★★★☆ | Strategy | - | 1,325 | [Steam](https://store.steampowered.com/app/1353300/) |
+| 24 | Sill Cats | 839 | ↑+11% | 🟡 Stable | ★★★★☆ | Simulation | - | 978 | [Steam](https://store.steampowered.com/app/4641700/) |
+| 25 | Bomb Farm | 832 | 📉-23% | 🟡 Stable | ★★☆☆☆ | Simulation | - | 2,028 | [Steam](https://store.steampowered.com/app/4892010/) |
+| 26 | The Perfect Tower II | 795 | 📈+36% | 🟡 Stable | ★★★★☆ | Action | - | 795 | [Steam](https://store.steampowered.com/app/1197260/) |
+| 27 | Upload Labs | 793 | 📈+32% | 🟡 Stable | ★★★★☆ | Simulation | - | 1,348 | [Steam](https://store.steampowered.com/app/3606890/) |
+| 28 | Reverse: 1999 | 756 | ↑+10% | 🟡 Stable | ★★★★☆ | RPG | - | 783 | [Steam](https://store.steampowered.com/app/3092660/) |
+| 29 | Fish Idle 2: Underwater Mystery | 746 | 📈+19% | 🟡 Stable | ★★☆☆☆ | Adventure | - | 746 | [Steam](https://store.steampowered.com/app/3037410/) |
+| 30 | Soccer Manager 2027 | 703 | 📈+17% | 🟡 Stable | ★★★☆☆ | Simulation | - | 732 | [Steam](https://store.steampowered.com/app/3217240/) |
+| 31 | Idle Wizard | 700 | 📉-15% | 🟡 Stable | ★★★★☆ | Idler | - | 825 | [Steam](https://store.steampowered.com/app/992070/) |
+| 32 | Taimanin Squad | 670 | 📈+871% | 🟡 Stable | ★☆☆☆☆ | Strategy |  | 1,146 | [Steam](https://store.steampowered.com/app/4195470/) |
+| 33 | Idle Cave Miner | 599 | 📈+18% | 🟡 Stable | ★★★★☆ | Idler | - | 746 | [Steam](https://store.steampowered.com/app/2289450/) |
+| 34 | Sword of Convallaria | 590 | 📈+38% | 🟡 Stable | ★★★☆☆ | RPG | - | 590 | [Steam](https://store.steampowered.com/app/2526380/) |
+| 35 | Synergism | 559 | ↑+10% | 🟡 Stable | ★★★☆☆ | Idler | - | 871 | [Steam](https://store.steampowered.com/app/3552310/) |
+| 36 | Idle Iktah | 553 | → | 🟡 Stable | ★★★☆☆ | Idler | - | 759 | [Steam](https://store.steampowered.com/app/3298520/) |
+| 37 | Doki Doki Literature Club! | 536 | 📈+34% | 🟡 Stable | ★★★★★ | Visual Novel |  | 539 | [Steam](https://store.steampowered.com/app/698780/) |
+| 38 | Leaf Blower Revolution - Idle Game | 528 | ↑+6% | 🟡 Stable | ★★★★☆ | Clicker |  | 761 | [Steam](https://store.steampowered.com/app/1468260/) |
+| 39 | GIRLS' FRONTLINE 2: EXILIUM | 508 | ↑+7% | 🟡 Stable | ★★★☆☆ | Action | - | 508 | [Steam](https://store.steampowered.com/app/3347400/) |
+| 40 | Galaxy Idle Clicker | 503 | ↓-4% | 🟡 Stable | ★★★☆☆ | Clicker |  | 770 | [Steam](https://store.steampowered.com/app/2962810/) |
+| 41 | Trimps | 484 | 📉-19% | 🟡 Stable | ★★★★☆ | Free To Play | - | 601 | [Steam](https://store.steampowered.com/app/1877960/) |
+| 42 | DUNGEON SLASHER | 480 | 📈+206% | 🟡 Stable | ★★☆☆☆ | Action | - | 480 | [Steam](https://store.steampowered.com/app/2712460/) |
+| 43 | Archmage Idle | 454 | 📈+36% | 🟡 Stable | ★★☆☆☆ | RPG | - | 454 | [Steam](https://store.steampowered.com/app/4557350/) |
+| 44 | KAIJU NO. 8 THE GAME | 445 | 📈+137% | 🟡 Stable | ★★☆☆☆ | RPG | - | 445 | [Steam](https://store.steampowered.com/app/3393070/) |
+| 45 | Bitburner | 418 | → | 🟡 Stable | ★★★★☆ | Programming | - | 711 | [Steam](https://store.steampowered.com/app/1812820/) |
+| 46 | 月圆之夜 (Night of Full Moon) | 396 | ↑+15% | 🟡 Stable | ★★★★☆ | Roguelike | - | 396 | [Steam](https://store.steampowered.com/app/769560/) |
+| 47 | Coloring Pixels | 282 | ↓-13% | 🟠 Low | ★★★★★ | Puzzle |  | 370 | [Steam](https://store.steampowered.com/app/897330/) |
+| 48 | PANOPTYCA : Idle RPG Manager | 277 | 📈+16% | 🟠 Low | ★★☆☆☆ | RPG | - | 277 | [Steam](https://store.steampowered.com/app/3882730/) |
+| 49 | HoloCure - Save the Fans! | 276 | 📉-22% | 🟠 Low | ★★★★★ | Action | - | 354 | [Steam](https://store.steampowered.com/app/2420510/) |
+| 50 | Dark Deception | 252 | 📈+207% | 🟠 Low | ★★★★☆ | Action | - | 252 | [Steam](https://store.steampowered.com/app/332950/) |
+| 51 | Life is Strange - Episode 1 | 233 | ↓-14% | 🟠 Low | ★★★★★ | Adventure |  | 324 | [Steam](https://store.steampowered.com/app/319630/) |
+| 52 | CivIdle | 231 | ↓-6% | 🟠 Low | ★★★☆☆ | Strategy |  | 487 | [Steam](https://store.steampowered.com/app/2181940/) |
+| 53 | Idle Spiral | 218 | ↑+12% | 🟠 Low | ★★★☆☆ | Idler | - | 330 | [Steam](https://store.steampowered.com/app/1827980/) |
+| 54 | Idle Fishing | 216 | → | 🟠 Low | ★★★★☆ | RPG | - | 216 | [Steam](https://store.steampowered.com/app/2725560/) |
+| 55 | SCREENSIDE FISHER | 212 | ↓-7% | 🟠 Low | ★★★★★ | Free To Play | - | 695 | [Steam](https://store.steampowered.com/app/4270850/) |
+| 56 | Free Solitaire | 211 | 📈+34% | 🟠 Low | ★★★★★ | Card Game | - | 211 | [Steam](https://store.steampowered.com/app/3330280/) |
+| 57 | Soda Dungeon 2 | 210 | ↑+3% | 🟠 Low | ★★★★☆ | RPG | - | 250 | [Steam](https://store.steampowered.com/app/946050/) |
+| 58 | Cube Escape: Paradox | 198 | 📈+89% | 🟠 Low | ★★★★★ | Adventure | - | 234 | [Steam](https://store.steampowered.com/app/909080/) |
+| 59 | Scratch Inc. | 193 | 📉-25% | 🟠 Low | ★★★★☆ | Simulation | - | 256 | [Steam](https://store.steampowered.com/app/3788420/) |
+| 60 | We Were Here | 185 | 📈+93% | 🟠 Low | ★★★★☆ | Action | - | 244 | [Steam](https://store.steampowered.com/app/582500/) |
+| 61 | Pocket Waifu: Desktop Pet | 180 | ↓-10% | 🟠 Low | ★★★★☆ | Casual | - | 267 | [Steam](https://store.steampowered.com/app/2989820/) |
+| 62 | Kill the Lich Idle | 175 | ↓-14% | 🟠 Low | ★★☆☆☆ | Idler | - | 329 | [Steam](https://store.steampowered.com/app/4522510/) |
+| 63 | Heartfall — A Tale in Three Lives | 168 | 📉-72% | 🟠 Low | ★★★★★ | RPG | - | 605 | [Steam](https://store.steampowered.com/app/5257930/) |
+| 64 | Sill Sticks | 166 | 📈+82% | 🟠 Low | ★★★★★ | Simulation | - | 166 | [Steam](https://store.steampowered.com/app/4861510/) |
+| 65 | The Red Pearls Of Borneo | 151 | 📈+30% | 🟠 Low | ★★★★★ | Puzzle |  | 509 | [Steam](https://store.steampowered.com/app/4488860/) |
+| 66 | Infinitode 2 - Infinite Tower Defense | 150 | 📈+25% | 🟠 Low | ★★★★☆ | Strategy | - | 150 | [Steam](https://store.steampowered.com/app/937310/) |
+| 67 | Ultimate Custom Night | 146 | 📈+74% | 🟠 Low | ★★★★☆ | Action | - | 167 | [Steam](https://store.steampowered.com/app/871720/) |
+| 68 | Idle Skilling | 146 | ↓-5% | 🟠 Low | ★★★☆☆ | Simulation | - | 153 | [Steam](https://store.steampowered.com/app/1048370/) |
+| 69 | Wet Wealth | 143 | 📈+24% | 🟠 Low | ★★★☆☆ | Visual Novel | - | 573 | [Steam](https://store.steampowered.com/app/4293850/) |
+| 70 | Underworld Idle | 131 | 📉-28% | 🟠 Low | ★★★☆☆ | Strategy | - | 181 | [Steam](https://store.steampowered.com/app/1540960/) |
+| 71 | MISHA | 130 | 📈+106% | 🟠 Low | ★★★★☆ | Free To Play | - | 130 | [Steam](https://store.steampowered.com/app/3868850/) |
+| 72 | A Date with Death | 130 | 📉-23% | 🟠 Low | ★★★★★ | Simulation | - | 168 | [Steam](https://store.steampowered.com/app/2415010/) |
+| 73 | Slime Trader | 128 | 📉-47% | 🟠 Low | ★☆☆☆☆ | Simulation | - | 806 | [Steam](https://store.steampowered.com/app/5164660/) |
+| 74 | Buy a Croquette! | 123 | 📈+48% | 🟠 Low | ★★★★★ | Adventure | - | 123 | [Steam](https://store.steampowered.com/app/2167960/) |
+| 75 | Life is Strange 2 | 121 | 📉-31% | 🟠 Low | ★★★★☆ | Adventure | - | 175 | [Steam](https://store.steampowered.com/app/532210/) |
+| 76 | Z.A.T.O. // I Love the World and Ever... | 119 | 📈+148% | 🟠 Low | ★★★★★ | Adventure | - | 119 | [Steam](https://store.steampowered.com/app/4122860/) |
+| 77 | Girls' Frontline | 106 | 📈+15% | 🟠 Low | ★★★★☆ | Turn-based Strategy | - | 208 | [Steam](https://store.steampowered.com/app/3887700/) |
+| 78 | Grim Clicker | 106 | → | 🟠 Low | ★★★☆☆ | Idler | - | 203 | [Steam](https://store.steampowered.com/app/1160750/) |
+| 79 | Gumballs & Dungeons | 105 | 📈+239% | 🟠 Low | ★★★★★ | Adventure | - | 105 | [Steam](https://store.steampowered.com/app/3112010/) |
+| 80 | World of Guns: Gun Disassembly | 103 | 📈+27% | 🟠 Low | ★★★★☆ | Action | - | 103 | [Steam](https://store.steampowered.com/app/262410/) |
+| 81 | Nexus Legacy | 102 | ↓-14% | 🟠 Low | ★★☆☆☆ | Strategy | - | 164 | [Steam](https://store.steampowered.com/app/4661910/) |
+| 82 | Zoo 2: Animal Park | 101 | ↓-9% | 🟠 Low | ★★★☆☆ | Simulation | - | 211 | [Steam](https://store.steampowered.com/app/1352330/) |
+| 83 | Sill Dogs | 100 | 📈+22% | 🟠 Low | ★★★★☆ | Simulation | - | 100 | [Steam](https://store.steampowered.com/app/5119020/) |
+| 84 | Star Chef 2: Cooking Game | 98 | 📉-16% | 🟠 Low | ★★☆☆☆ | Simulation | - | 117 | [Steam](https://store.steampowered.com/app/1612810/) |
+| 85 | Outcast Tales | 97 | 📉-56% | 🟠 Low | ★★★★★ | Adventure | - | 221 | [Steam](https://store.steampowered.com/app/2551970/) |
+| 86 | Territory Idle | 96 | 📉-20% | 🟠 Low | ★★★☆☆ | Idler | - | 145 | [Steam](https://store.steampowered.com/app/1017100/) |
+| 87 | No Results Found | 93 | 📈+98% | 🟠 Low | ★★★★★ | Adventure | - | 204 | [Steam](https://store.steampowered.com/app/4911390/) |
+| 88 | Playable Archive | 93 | 📉-37% | 🟠 Low | ★★★★★ | Adventure | - | 147 | [Steam](https://store.steampowered.com/app/5356470/) |
+| 89 | Romance Club - Stories I Play | 92 | 📉-29% | 🟠 Low | ★★★☆☆ | Adventure | - | 129 | [Steam](https://store.steampowered.com/app/2433470/) |
+| 90 | Idle Pins | 92 | → | 🟠 Low | ★★☆☆☆ | RPG | - | 92 | [Steam](https://store.steampowered.com/app/1709920/) |
+| 91 | Baldi's Basics Classic Remastered | 91 | 📈+153% | 🟠 Low | ★★★★☆ | Horror | - | 106 | [Steam](https://store.steampowered.com/app/1712830/) |
+| 92 | The Powder Toy | 90 | ↑+11% | 🟠 Low | ★★★★★ | Simulation | - | 92 | [Steam](https://store.steampowered.com/app/1148350/) |
+| 93 | DFHack - Dwarf Fortress Modding Engine | 89 | 📉-32% | 🟠 Low | ★★★★★ | RPG | - | 131 | [Steam](https://store.steampowered.com/app/2346660/) |
+| 94 | Katawa Shoujo | 87 | 📈+85% | 🟠 Low | ★★★★★ | Free To Play | - | 87 | [Steam](https://store.steampowered.com/app/3068300/) |
+| 95 | Sheepy: A Short Adventure | 86 | 📈+30% | 🟠 Low | ★★★★★ | Adventure | - | 86 | [Steam](https://store.steampowered.com/app/1568400/) |
+| 96 | Arrow a Row | 82 | 📈+67% | 🟠 Low | ★★★★★ | Roguelike | - | 237 | [Steam](https://store.steampowered.com/app/2495980/) |
+| 97 | Artesnaut | 81 | 📈+16% | 🟠 Low | ★★☆☆☆ | RPG | - | 124 | [Steam](https://store.steampowered.com/app/4485620/) |
+| 98 | Our Life: Beginnings & Always | 80 | → | 🟠 Low | ★★★★★ | Visual Novel | - | 132 | [Steam](https://store.steampowered.com/app/1129190/) |
+| 99 | vivid/stasis | 79 | 📈+61% | 🟠 Low | ★★★★☆ | Rhythm | - | 248 | [Steam](https://store.steampowered.com/app/2093940/) |
+| 100 | MergeCrafter | 79 | 📈+25% | 🟠 Low | ★★★☆☆ | Adventure | - | 79 | [Steam](https://store.steampowered.com/app/1964220/) |
 
-*+5229 more (5029 <10 players)*
+*+10303 more (9989 <10 players)*
