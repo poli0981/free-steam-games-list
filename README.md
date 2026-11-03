@@ -46,6 +46,7 @@ A SvelteKit 2 / Svelte 5 app, prerendered and served by a Cloudflare Worker that
 - **Browse** — virtualised table (TanStack Virtual), filters for genre, type, platform, status, anti-cheat and safety, Fuse.js fuzzy search, sortable columns, 50/100/200/500/all pages. Filters live in the URL, so a filtered view can be shared.
 - **Charts** — Apache ECharts: dashboard KPIs, genres, platforms, languages, tags, anti-cheat (chart and a searchable index), reviews, player tiers, release years and catalogue growth, DRM/DLC, delisted games, plus a stats page (Metacritic, retention, games that went quiet).
 - **A page per game** — `/games/:appid` is prerendered for search engines and filled with live player counts and reviews in the browser.
+- **Random games** — `/random` rolls one to five games when you cannot decide: online, offline or either, dead games only if you ask, never one marked unsafe. Roll again for a new set; opening a game and coming back keeps the picks.
 - **Fresh data, verified** — `data/index.json` carries a SHA-256 per shard; the app only caches a generation it could verify, keeps the last good one offline, and re-checks when you come back to the tab.
 - **Installable** — a web app you can install, with an offline mode and an update prompt.
 - **i18n** vi / en — auto-detected, switchable from the welcome page or Settings.
