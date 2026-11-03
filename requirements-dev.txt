@@ -6,4 +6,4 @@
 vulture==2.16
 pip-audit==2.10.1
 # Keep equal to the pin in requirements-test.txt.
-pytest==9.1.1
+pytest==9.2.0
