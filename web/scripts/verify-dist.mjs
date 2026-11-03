@@ -150,7 +150,7 @@ const TURNSTILE_HOST = "https://challenges.cloudflare.com";
 const MEDIA_HOST = "https://media.free-steam-games.win";
 
 // Strings that must never be baked into a page before data exists.
-const BAKED_EMPTY_STATES = [en.games.noResults, en.health.allClear, en.studios.notFound];
+const BAKED_EMPTY_STATES = [en.games.noResults, en.health.allClear, en.studios.notFound, en.random.noMatch];
 const CONSENT_TITLE = en.consent.title;
 const HUMAN_CHECK_TITLE = en.humanCheck.title;
 

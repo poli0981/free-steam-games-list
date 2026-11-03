@@ -4,6 +4,42 @@ All notable changes to this awesome noob repo will be documented here.
 
 ## [Unreleased]
 
+## [v4.7.0] – 2026-11-03 (The "Lucky Dip" Edition)
+
+Two small additions. A Random games page picks up to five games from the
+catalogue when you cannot decide what to play, and the first-run terms screen
+gets a way out: on the website, "Leave site" takes you back to the page you
+came from; in the apps, Decline now quits, which on Android it never did. No
+legal document changed, so nobody is asked to accept the terms again. Desktop
+and Android bumped `2.4.1` → `2.5.0`; repo public-facing version `4.6.1` →
+`4.7.0`. The desktop app offers 2.5.0 through its updater once the release is
+published; on Android, install the new APK over the old one.
+
+### ✨ Added
+
+- **Random games.** `/random`, in the sidebar, the menu and the command
+  palette, with a dice button on the dashboard, rolls one to five games (five
+  to start with): online, offline or either, dead games only when you ask for
+  them, and never one marked unsafe. Roll again for a set that avoids the
+  games on screen; a smaller count keeps the first ones, a larger one adds to
+  them. Opening a game and coming back keeps the picks, and nothing is
+  stored: a reload rolls anew.
+- **Leave site**, on the first-run terms screen and on the notice after
+  Decline (website only). A page may not open the browser's own start page,
+  so it goes back to the page before the site - the new-tab page when you
+  typed the address there, the search results when you came from a search -
+  past every page of the site you opened in between. When the site is the
+  first page in its tab, it says so and offers to close the tab; that takes a
+  second click, because closing the last tab closes the browser window too.
+
+### 🐛 Fixed
+
+- Declining the terms quits the Android app. It did nothing at all: the app
+  asked its window to close, which does nothing on Android. Both apps now quit
+  through Tauri's own exit, and the declined notice appears if an app is ever
+  still open afterwards. The apps also drop a permission nothing uses any more
+  (closing a window from script) for the one quitting needs.
+
 ### 🧰 Tooling & misc
 
 - Dependencies: SvelteKit 3.1.1 and adapter-static 4.0.1, Svelte 5.57.3,
@@ -15,6 +51,12 @@ All notable changes to this awesome noob repo will be documented here.
   site or the apps behave.
 - The undici override is gone: wrangler 4.156.0's local simulator pins the
   patched undici 7.30.1 itself.
+
+### 📚 Docs
+
+- `CLAUDE.md`: how `/random` rolls and why it stores nothing; how Leave site
+  finds the page before the site, and why Decline quits through `exit()`.
+- Both READMEs list the random page and its modules.
 
 ## [v4.6.1] – 2026-10-31 (The "Zip Tie" Edition)
 

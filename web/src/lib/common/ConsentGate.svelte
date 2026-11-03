@@ -3,6 +3,7 @@
   import ShieldCheck from "@lucide/svelte/icons/shield-check";
   import ChevronRight from "@lucide/svelte/icons/chevron-right";
   import FileDiff from "@lucide/svelte/icons/file-diff";
+  import House from "@lucide/svelte/icons/house";
   import { page } from "$app/state";
   import { consent } from "../consent.svelte";
   import { CONSENT_DOCS, legalDocSlug } from "../legal";
@@ -10,12 +11,23 @@
   import { i18n } from "../i18n.svelte";
   import { isTauri } from "../external-open";
   import { isUngatedPath } from "../gates";
+  import { closeTab, leaveSite } from "../leave-site";
+  import { pwa } from "../pwa-state.svelte";
   import Button from "../ui/Button.svelte";
 
   const t = i18n.t;
 
   let checked = $state(false);
   let declined = $state(false);
+
+  // The apps have no browser to go back in, and Decline already quits them.
+  // Settled when the component is created in the page; the server render that
+  // reads it never shows the gate (`open` waits for consent.hydrated).
+  const canLeave = !isTauri();
+
+  /** "nowhere": the site is the first page in this tab, so the only way out is
+   *  closing it. "refused": the browser would not let the page do that either. */
+  let leaving = $state<"idle" | "nowhere" | "refused">("idle");
 
   // /error/* and /legal/* stay readable before consent; lib/gates.ts says why,
   // and HumanCheck.svelte exempts exactly the same routes.
@@ -89,36 +101,81 @@
   // overflow-auto, so wheel events over it never reach the page beneath.
 
   async function decline() {
-    // Desktop: declining means you do not get the app, so quit it. On the web
-    // there is nothing to quit, so show a blocking notice with a way back.
+    // Apps: declining means you do not get the app, so quit it - with exit()
+    // from the app module (capability core:app:allow-exit), not the window's
+    // close(). On Android close() does nothing at all: tao reports a destroyed
+    // window only from the Activity's onDestroy, so Decline sat there dead.
+    // exit() finishes the activity there (back to the home screen) and ends
+    // the process on the desktop. On the web there is nothing to quit, so show
+    // a blocking notice with a way back.
     if (isTauri()) {
       try {
-        const { getCurrentWindow } = await import("@tauri-apps/api/window");
-        await getCurrentWindow().close();
+        const { exit } = await import("@tauri-apps/api/app");
+        await exit(0);
+        // exit() can resolve before Android's closing transition has run.
+        // Still here a while later means it did not happen: say so.
+        setTimeout(() => (declined = true), 2000);
         return;
       } catch (err) {
-        console.error("ConsentGate: failed to close window", err);
+        console.error("ConsentGate: failed to quit the app", err);
       }
     }
     declined = true;
   }
+
+  // Web only (canLeave): back to the page before the site; lib/leave-site.ts
+  // has why that is the nearest a page can get to the browser's start page.
+  function leave() {
+    leaveSite(window, () => (leaving = "nowhere"));
+  }
+
+  function closeThisTab() {
+    if (!closeTab(window)) leaving = "refused";
+  }
 </script>
 
-<!-- Both cards below centre with m-auto, not items-center: auto margins centre
+<!-- The cards below centre with m-auto, not items-center: auto margins centre
      a card that fits and collapse for one that does not, so on a short phone
      the card scrolls from its top instead of losing it above the screen.
      p-safe-or-4 keeps it clear of the Android system bars. -->
 {#if !open}
   <!-- nothing: the page underneath is already rendered -->
+{:else if leaving !== "idle"}
+  <div class="fixed inset-0 z-[60] flex overflow-auto bg-background/95 p-safe-or-4 backdrop-blur-sm">
+    <div class="m-auto w-full max-w-md rounded-lg border bg-card p-8 text-center">
+      <House class="mx-auto mb-4 size-10 text-muted-foreground" />
+      <h1 class="mb-2 text-xl font-semibold">{t("consent.leaveNowhereTitle")}</h1>
+      <p role="status" class="text-sm text-muted-foreground">
+        {leaving === "refused" ? t("consent.leaveRefused") : t("consent.leaveNowhereBody")}
+      </p>
+      <div class="mt-6 flex flex-wrap justify-center gap-2">
+        {#if leaving === "nowhere"}
+          <Button onclick={closeThisTab}>
+            {pwa.standalone ? t("consent.leaveCloseWindow") : t("consent.leaveCloseTab")}
+          </Button>
+        {/if}
+        <!-- Back to whichever card was showing: the terms, or the declined notice. -->
+        <Button variant="outline" onclick={() => (leaving = "idle")}>{t("consent.back")}</Button>
+      </div>
+    </div>
+  </div>
 {:else if declined}
   <div class="fixed inset-0 z-[60] flex overflow-auto bg-background/95 p-safe-or-4 backdrop-blur-sm">
     <div class="m-auto w-full max-w-md rounded-lg border border-warning/40 bg-warning/5 p-8 text-center">
       <ShieldCheck class="mx-auto mb-4 size-10 text-warning" />
       <h1 class="mb-2 text-xl font-semibold">{t("consent.declinedTitle")}</h1>
       <p class="text-sm text-muted-foreground">{t("consent.declinedBody")}</p>
-      <Button class="mt-6" variant="outline" onclick={() => (declined = false)}>
-        {t("consent.back")}
-      </Button>
+      <div class="mt-6 flex flex-wrap justify-center gap-2">
+        <Button variant="outline" onclick={() => (declined = false)}>
+          {t("consent.back")}
+        </Button>
+        {#if canLeave}
+          <Button variant="ghost" onclick={leave}>
+            <House class="size-4" />
+            {t("consent.leave")}
+          </Button>
+        {/if}
+      </div>
     </div>
   </div>
 {:else}
@@ -206,6 +263,12 @@
           {reviewing ? t("consent.acceptChanges") : t("consent.continue")}
         </Button>
         <Button variant="ghost" onclick={decline}>{t("consent.decline")}</Button>
+        {#if canLeave}
+          <Button variant="ghost" class="sm:ml-auto" onclick={leave}>
+            <House class="size-4" />
+            {t("consent.leave")}
+          </Button>
+        {/if}
       </div>
     </div>
   </div>

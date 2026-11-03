@@ -33,6 +33,8 @@ export const prerender = true;
 const HINTS: Record<string, { freq: string; priority: string }> = {
   "/": { freq: "daily", priority: "1.0" },
   "/games": { freq: "daily", priority: "0.9" },
+  // Mostly controls until the catalogue has loaded; a different roll every visit.
+  "/random": { freq: "monthly", priority: "0.4" },
   "/top-online": { freq: "daily", priority: "0.8" },
   "/top-offline": { freq: "daily", priority: "0.8" },
   "/stats": { freq: "weekly", priority: "0.8" },

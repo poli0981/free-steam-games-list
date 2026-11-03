@@ -12,6 +12,7 @@
  */
 import type { Component } from "svelte";
 import BarChart3 from "@lucide/svelte/icons/chart-column";
+import Dices from "@lucide/svelte/icons/dices";
 import Gamepad2 from "@lucide/svelte/icons/gamepad-2";
 import Heart from "@lucide/svelte/icons/heart";
 import HeartPulse from "@lucide/svelte/icons/heart-pulse";
@@ -42,6 +43,7 @@ export interface NavItem {
 export const PRIMARY: NavItem[] = [
   { to: "/", i18n: "nav.dashboard", icon: LayoutDashboard, exact: true },
   { to: "/games", i18n: "nav.games", icon: Gamepad2 },
+  { to: "/random", i18n: "nav.random", icon: Dices },
   { to: "/top-online", i18n: "nav.topOnline", icon: Users },
   { to: "/top-offline", i18n: "nav.topOffline", icon: Trophy },
   { to: "/charts", i18n: "nav.charts", icon: BarChart3 },

@@ -1118,6 +1118,28 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
   The gate renders only after `consent.hydrated`: rendered before storage was
   read, it was baked into every prerendered page and flashed for returning
   visitors.
+- **Declining or leaving at the gate.** In the apps Decline calls `exit()` from
+  `@tauri-apps/api/app` (capability `core:app:allow-exit` in
+  `capabilities/default.json`), never `getCurrentWindow().close()`: on Android
+  that resolves without closing anything (tao reports a destroyed window only
+  from the Activity's `onDestroy`), so Decline did nothing there before 2.5.0.
+  `exit()` finishes the activity on Android and ends the process on the
+  desktop; the declined notice appears if the app is still alive 2 s later. On
+  the web, "Leave site" (`lib/leave-site.ts`, hidden under Tauri) goes back to
+  the page before the site, because no page may open the browser's own start
+  page (`chrome://newtab`, `about:home`). Rules:
+  - It steps over ALL of the site's entries at once,
+    `history.go(-(navigation.currentEntry.index + 1))`: `entries()` is the
+    contiguous same-origin run, other documents and SvelteKit's pushState
+    entries included. Without the Navigation API it is one step back.
+  - `history.go()` is silent when there is nowhere to go (the foreign entries
+    can all be forward ones), so a 1.5 s watchdog shows "Nothing to go back
+    to"; `beforeunload`, `pagehide` and `popstate` cancel it. `pagehide`
+    matters: timers freeze in the back/forward cache and resume on restore.
+  - When every entry is the site's, closing the tab is a SECOND, explicit click
+    (`closeTab()`): closing the last tab closes the browser window with it.
+  - `consent-gate.test.ts` holds the exit import, the capability and the two
+    guarded Leave buttons; `leave-site.test.ts` holds the algorithm.
 - **`/welcome` is shown once, by the layout, and only to a visit that STARTED
   on `/`** (not a deep link, not `/#/…`, not mid-session), after consent and
   the human check. It
@@ -1135,6 +1157,25 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
   from a game keeps the page and a changed filter starts again at page 1.
   The language filter (`?lang=`) offers the names stored in `languages`,
   Steam's English ones: data, never i18n keys.
+- **`/random` keeps its picks in memory, and only the reader rolls.**
+  `lib/random.svelte.ts` holds appids, module-level so Back from a game shows
+  the same games, and NO `f2p:*` key: the Privacy Policy lists every stored
+  key, and editing it reopens the consent gate for everyone. Rules:
+  - A roll happens in a handler, or once in an `untrack`ed effect when the
+    catalogue first arrives - never in `$derived` or markup, which would roll
+    again on every revalidation or language switch. `resolve()` is the
+    deterministic part: it drops a pick that left the catalogue or stopped
+    qualifying, and nothing tops it back up.
+  - Randomness is `crypto.getRandomValues` with rejection sampling and a sparse
+    Fisher-Yates (`lib/random-pick.ts`). Never `Math.random`: SonarCloud
+    reports it as hotspot S2245, and an unreviewed hotspot fails the gate.
+  - Never a game marked unsafe or without an appid; dead games only on
+    request. The route is top-level on purpose: under `/games/` the header
+    search would stop jumping to /games, `isActive` would light Games too, and
+    the PWA's `globIgnores` would leave it out of the precache.
+  - A plural key needs its base key (`random.pool` beside `random.pool_one`):
+    `t()` falls back from `_other` to the base, and the i18n test requires
+    every literal key to exist.
 - **Search folds; storage never does.** `lib/search-fold.ts` `fold()` is NFKC
   plus hiragana to katakana, applied to BOTH sides of every search box
   (`/games`' Fuse index, the palette, /developers, /publishers, the anti-cheat

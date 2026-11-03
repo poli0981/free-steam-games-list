@@ -94,13 +94,15 @@ web/
 │   ├── routes/                 # pages; +layout, +error, sitemap.xml
 │   ├── params/                 # route param matchers (legal document slugs)
 │   ├── lib/
-│   │   ├── *.svelte.ts         # rune state: games, filters, prefs, i18n, pwa
+│   │   ├── *.svelte.ts         # rune state: games, filters, random picks, prefs, i18n, pwa
 │   │   ├── schema.ts           # mirrors scripts/core/constants.py
 │   │   ├── games-loader.ts     # verified shard generations, offline fallback
 │   │   ├── cache.ts            # IndexedDB read/write
 │   │   ├── fallback-route.ts   # re-renders routes served the SPA shell
 │   │   ├── consent.svelte.ts   # legal consent, hashed per document
 │   │   ├── diff.ts             # the line diff the consent gate shows
+│   │   ├── leave-site.ts       # the consent gate's "Leave site": back to the page before
+│   │   ├── random-pick.ts      # /random: crypto sampling and who may come up
 │   │   ├── analytics.ts        # the beacon, appended only after consent
 │   │   ├── human-check.ts      # the Turnstile check's rules (+ -state.svelte.ts, turnstile.ts)
 │   │   ├── gates.ts            # the routes no first-run gate covers

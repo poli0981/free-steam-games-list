@@ -17,7 +17,13 @@
     "decline": "Từ chối",
     "declinedTitle": "Bạn cần chấp nhận điều khoản",
     "declinedBody": "Bạn phải chấp nhận các giấy phép, EULA, Chính sách quyền riêng tư, Tuyên bố miễn trừ và Điều khoản sử dụng để dùng F2P Tracker.",
-    "back": "Quay lại"
+    "back": "Quay lại",
+    "leave": "Rời trang",
+    "leaveNowhereTitle": "Không có trang nào để quay về",
+    "leaveNowhereBody": "Trang này là trang đầu tiên trong thẻ hoặc cửa sổ này, nên không có trang nào trước đó để quay về. Hãy đóng nó để rời đi.",
+    "leaveCloseTab": "Đóng thẻ này",
+    "leaveCloseWindow": "Đóng cửa sổ này",
+    "leaveRefused": "Trình duyệt không cho trang tự đóng một thẻ đã có lịch sử duyệt. Hãy tự đóng thẻ hoặc cửa sổ để rời đi."
   },
   "humanCheck": {
     "title": "Đang xác minh bạn là người thật",
@@ -64,6 +70,7 @@
   "nav": {
     "dashboard": "Tổng quan",
     "games": "Trò chơi",
+    "random": "Game ngẫu nhiên",
     "topOnline": "Top Online",
     "topOffline": "Top Offline",
     "charts": "Biểu đồ",
@@ -196,6 +203,20 @@
   },
   "topOffline": {
     "subtitle": "Top 100 game F2P single-player / không-online theo số người chơi đồng thời."
+  },
+  "random": {
+    "subtitle": "Chưa biết chơi gì? Gieo xúc xắc để chọn tối đa năm game miễn phí trong danh sách.",
+    "seoDescription": "Game miễn phí trên Steam được chọn ngẫu nhiên - online hay offline, có hoặc không tính những game không còn ai chơi.",
+    "roll": "Gieo xúc xắc",
+    "rollAgain": "Gieo lại",
+    "countLabel": "Số lượng",
+    "includeDead": "Tính cả game đã chết",
+    "pool": "Chọn từ {{total}} game",
+    "pool_one": "Chọn từ {{total}} game",
+    "announce": "Đã chọn {{count}} game: {{names}}",
+    "announce_one": "Đã chọn 1 game: {{names}}",
+    "noMatch": "Không có game nào khớp với các lựa chọn này.",
+    "openOnSteam": "Mở trên Steam"
   },
   "settings": {
     "title": "Cài đặt",

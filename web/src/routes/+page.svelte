@@ -7,6 +7,7 @@
   import Trash2 from "@lucide/svelte/icons/trash-2";
   import TrendingUp from "@lucide/svelte/icons/trending-up";
   import ArrowRight from "@lucide/svelte/icons/arrow-right";
+  import Dices from "@lucide/svelte/icons/dices";
   import { games, removedGames } from "#lib/games.svelte.js";
   import { computeKpis, countBy, topByPlayers } from "#lib/stats.js";
   import { i18n } from "#lib/i18n.svelte.js";
@@ -20,6 +21,7 @@
   import EChart from "#lib/charts/EChart.svelte";
   import { chartTheme, gridBox } from "#lib/chart-theme.js";
   import Seo from "#lib/common/Seo.svelte";
+  import Button from "#lib/ui/Button.svelte";
 
   const t = i18n.t;
 
@@ -73,7 +75,14 @@
   subtitle={games.data
     ? t("dashboard.subtitle", { count: formatNumber(kpis.total) })
     : t("dashboard.seoDescription")}
-/>
+>
+  {#snippet actions()}
+    <Button variant="outline" size="sm" href="/random">
+      <Dices class="size-4" />
+      {t("nav.random")}
+    </Button>
+  {/snippet}
+</PageHeader>
 
 <QueryState loading={games.pending} error={games.error} retry={() => games.refetch()}>
   <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
