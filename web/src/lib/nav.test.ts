@@ -26,4 +26,15 @@ describe("navigation lists", () => {
   it("publishers is reachable from the sidebar", () => {
     expect(PRIMARY.some((r) => r.to === "/publishers")).toBe(true);
   });
+
+  it("random games are reachable from the sidebar", () => {
+    expect(PRIMARY.some((r) => r.to === "/random")).toBe(true);
+  });
+
+  it("the sidebar's icons are all distinct", () => {
+    // An icon shared by two rows is useless for finding either (nav.ts). EXTRA
+    // is left out: it is palette-only, and /welcome shares About's icon.
+    const icons = [...PRIMARY, ...SECONDARY].map((r) => r.icon);
+    expect(new Set(icons).size).toBe(icons.length);
+  });
 });

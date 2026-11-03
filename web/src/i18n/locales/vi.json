@@ -64,6 +64,7 @@
   "nav": {
     "dashboard": "Tổng quan",
     "games": "Trò chơi",
+    "random": "Game ngẫu nhiên",
     "topOnline": "Top Online",
     "topOffline": "Top Offline",
     "charts": "Biểu đồ",
@@ -196,6 +197,20 @@
   },
   "topOffline": {
     "subtitle": "Top 100 game F2P single-player / không-online theo số người chơi đồng thời."
+  },
+  "random": {
+    "subtitle": "Chưa biết chơi gì? Gieo xúc xắc để chọn tối đa năm game miễn phí trong danh sách.",
+    "seoDescription": "Game miễn phí trên Steam được chọn ngẫu nhiên - online hay offline, có hoặc không tính những game không còn ai chơi.",
+    "roll": "Gieo xúc xắc",
+    "rollAgain": "Gieo lại",
+    "countLabel": "Số lượng",
+    "includeDead": "Tính cả game đã chết",
+    "pool": "Chọn từ {{total}} game",
+    "pool_one": "Chọn từ {{total}} game",
+    "announce": "Đã chọn {{count}} game: {{names}}",
+    "announce_one": "Đã chọn 1 game: {{names}}",
+    "noMatch": "Không có game nào khớp với các lựa chọn này.",
+    "openOnSteam": "Mở trên Steam"
   },
   "settings": {
     "title": "Cài đặt",

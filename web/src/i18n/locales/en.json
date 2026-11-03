@@ -64,6 +64,7 @@
   "nav": {
     "dashboard": "Dashboard",
     "games": "Games",
+    "random": "Random games",
     "topOnline": "Top Online",
     "topOffline": "Top Offline",
     "charts": "Charts",
@@ -196,6 +197,20 @@
   },
   "topOffline": {
     "subtitle": "Top 100 single-player or non-online F2P titles by concurrent players."
+  },
+  "random": {
+    "subtitle": "Can't decide what to play? Roll up to five free games from the catalogue.",
+    "seoDescription": "Free-to-play Steam games picked at random - online or offline, with or without the ones nobody plays any more.",
+    "roll": "Roll the dice",
+    "rollAgain": "Roll again",
+    "countLabel": "How many",
+    "includeDead": "Include dead games",
+    "pool": "Picked from {{total}} games",
+    "pool_one": "Picked from {{total}} game",
+    "announce": "{{count}} games picked: {{names}}",
+    "announce_one": "1 game picked: {{names}}",
+    "noMatch": "No game matches these settings.",
+    "openOnSteam": "Open on Steam"
   },
   "settings": {
     "title": "Settings",
