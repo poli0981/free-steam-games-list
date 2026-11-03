@@ -38,12 +38,12 @@
     "@fontsource-variable/bricolage-grotesque": "^5.3.0",
     "@fontsource-variable/ibm-plex-sans": "^5.3.0",
     "@fontsource-variable/jetbrains-mono": "^5.3.0",
-    "@lucide/svelte": "^1.61.0",
-    "@tanstack/svelte-virtual": "^3.13.48",
+    "@lucide/svelte": "^1.66.0",
+    "@tanstack/svelte-virtual": "^3.13.50",
     "@tauri-apps/api": "^2.12.4",
     "@tauri-apps/plugin-process": "~2.4.0",
-    "@tauri-apps/plugin-shell": "^2.5.0",
-    "@tauri-apps/plugin-updater": "~2.14.0",
+    "@tauri-apps/plugin-shell": "^2.6.0",
+    "@tauri-apps/plugin-updater": "~2.14.1",
     "bits-ui": "^2.20.2",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
@@ -51,19 +51,19 @@
     "echarts-wordcloud": "^2.1.0",
     "fuse.js": "^7.5.0",
     "idb-keyval": "^6.3.0",
-    "svelte-sonner": "^1.2.1",
+    "svelte-sonner": "^1.2.2",
     "tailwind-merge": "^3.7.0"
   },
   "devDependencies": {
-    "@sveltejs/adapter-static": "4.0.0",
-    "@sveltejs/kit": "3.1.0",
+    "@sveltejs/adapter-static": "4.0.1",
+    "@sveltejs/kit": "3.1.1",
     "@sveltejs/vite-plugin-svelte": "7.3.1",
     "@tailwindcss/vite": "^4.3.3",
     "@tauri-apps/cli": "^2.12.4",
-    "@types/node": "^26.6.5",
+    "@types/node": "^26.6.6",
     "@typescript/native": "npm:typescript@~7.0.2",
     "@vitest/coverage-v8": "^5.0.5",
-    "knip": "^6.43.0",
+    "knip": "^6.44.1",
     "rehype-sanitize": "^6.0.0",
     "rehype-slug": "^6.0.0",
     "rehype-stringify": "^10.0.1",
@@ -71,7 +71,7 @@
     "remark-parse": "^11.0.0",
     "remark-rehype": "^11.1.2",
     "rollup-plugin-visualizer": "^7.1.1",
-    "svelte": "5.57.2",
+    "svelte": "5.57.3",
     "svelte-check": "4.7.7",
     "tailwindcss": "^4.3.3",
     "typescript": "^6.0.3",
@@ -79,7 +79,7 @@
     "vite": "^8.3.5",
     "vite-plugin-pwa": "^2.0.0",
     "vitest": "^5.0.5",
-    "wrangler": "^4.152.0"
+    "wrangler": "^4.156.0"
   },
   "overrides": {
     "echarts-wordcloud": {
@@ -87,9 +87,6 @@
     },
     "runed": {
       "@sveltejs/kit": "$@sveltejs/kit"
-    },
-    "miniflare": {
-      "undici": "^7.30.1"
     },
     "workbox-build": {
       "glob": "^14.0.2"

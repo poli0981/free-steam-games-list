@@ -4,6 +4,18 @@ All notable changes to this awesome noob repo will be documented here.
 
 ## [Unreleased]
 
+### 🧰 Tooling & misc
+
+- Dependencies: SvelteKit 3.1.1 and adapter-static 4.0.1, Svelte 5.57.3,
+  the Tauri shell plugin 2.6.0 (JavaScript and Rust together) and
+  single-instance 2.5.5, the updater's JavaScript side 2.14.1 (its Rust side
+  already was), wrangler 4.156.0, pytest 9.2.0 and the SonarCloud scan
+  action 8.4.0, plus patch releases of the icon, toast and virtual-list
+  libraries. No security advisory among them; nothing changes in how the
+  site or the apps behave.
+- The undici override is gone: wrangler 4.156.0's local simulator pins the
+  patched undici 7.30.1 itself.
+
 ## [v4.6.1] – 2026-10-31 (The "Zip Tie" Edition)
 
 A security pass. The desktop app's updater takes the patched zip reader

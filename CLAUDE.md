@@ -769,16 +769,14 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
   - `version.pollInterval` is kit's default (an hour), and kit also checks
     `/_app/version.json` whenever the tab regains focus. A new version only
     sets `updated.current`; a navigation that then fails reloads natively.
-- **The `"miniflare": { "undici": "^7.30.1" }` override closes
-  GHSA-xjj6-f33q-929c** and the two other undici advisories `npm audit`
-  lists. miniflare pins undici EXACTLY (7.29.1, in the miniflare of wrangler
-  4.152.0, the newest on 2026-10-26), and undici runs only in local tooling
-  (`wrangler dev`, `cf:check`), never in the deployed Worker. Delete the
-  override once `npm view wrangler@latest dependencies.miniflare` names a
-  miniflare whose own pin is >= 7.30.1: left behind, it would hold undici on
-  7 after miniflare moves to 8. Wrangler 4.156.0 (2026-10-29) is the first
-  whose miniflare pins 7.30.1, so the change that takes wrangler to it or
-  later drops the override in the same commit.
+- **miniflare pins undici EXACTLY**, so an undici advisory in `npm audit`
+  waits for a wrangler whose miniflare pins the fixed version. undici runs
+  only in local tooling (`wrangler dev`, `cf:check`), never in the deployed
+  Worker. A bridging override (`"miniflare": { "undici": "^x" }`) goes in the
+  same commit that takes wrangler to such a release - left behind, it would
+  hold undici on its major after miniflare moves on. The one for
+  GHSA-xjj6-f33q-929c went with wrangler 4.156.0 (`npm ls undici`: 7.30.1,
+  miniflare's own pin).
 - **The `"workbox-build": { "glob": "^14.0.2" }` and
   `"filelist": { "minimatch": "^11.0.1" }` overrides close
   GHSA-3g3m-2fjr-6pw4 and GHSA-g3hv-75wg-m249** (2026-10-30), fixed only in
