@@ -17,7 +17,13 @@
     "decline": "Decline",
     "declinedTitle": "You need to accept the terms",
     "declinedBody": "You must accept the licences, EULA, Privacy Policy, Disclaimer, and Terms of Use to use F2P Tracker.",
-    "back": "Back"
+    "back": "Back",
+    "leave": "Leave site",
+    "leaveNowhereTitle": "Nothing to go back to",
+    "leaveNowhereBody": "This site is the first page in this tab or window, so there is no earlier page to return to. Close it to leave.",
+    "leaveCloseTab": "Close this tab",
+    "leaveCloseWindow": "Close this window",
+    "leaveRefused": "The browser does not let a page close a tab that has a history. Close the tab or window yourself to leave."
   },
   "humanCheck": {
     "title": "Checking you are human",

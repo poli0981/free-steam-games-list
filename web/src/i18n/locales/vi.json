@@ -17,7 +17,13 @@
     "decline": "Từ chối",
     "declinedTitle": "Bạn cần chấp nhận điều khoản",
     "declinedBody": "Bạn phải chấp nhận các giấy phép, EULA, Chính sách quyền riêng tư, Tuyên bố miễn trừ và Điều khoản sử dụng để dùng F2P Tracker.",
-    "back": "Quay lại"
+    "back": "Quay lại",
+    "leave": "Rời trang",
+    "leaveNowhereTitle": "Không có trang nào để quay về",
+    "leaveNowhereBody": "Trang này là trang đầu tiên trong thẻ hoặc cửa sổ này, nên không có trang nào trước đó để quay về. Hãy đóng nó để rời đi.",
+    "leaveCloseTab": "Đóng thẻ này",
+    "leaveCloseWindow": "Đóng cửa sổ này",
+    "leaveRefused": "Trình duyệt không cho trang tự đóng một thẻ đã có lịch sử duyệt. Hãy tự đóng thẻ hoặc cửa sổ để rời đi."
   },
   "humanCheck": {
     "title": "Đang xác minh bạn là người thật",

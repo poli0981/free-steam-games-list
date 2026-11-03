@@ -1,13 +1,13 @@
 {
   "$schema": "../gen/schemas/desktop-schema.json",
   "identifier": "default",
-  "description": "Cross-platform capabilities for the main window. The frontend is a static SvelteKit app that fetches its data from free-steam-games.win over plain HTTP, so shell:open is the only native bridge it needs - it opens external links, which the webview otherwise blocks. The desktop-only updater lives in updater.json so the Android/iOS build, which does not compile that plugin, does not fail ACL resolution.",
+  "description": "Cross-platform capabilities for the main window. The frontend is a static SvelteKit app that fetches its data from free-steam-games.win over plain HTTP, so it needs two native bridges: shell:open, which opens external links the webview otherwise blocks, and app exit, which quits the app when the reader declines the terms (core:default does not include it, and the window's close() does nothing on Android). The desktop-only updater lives in updater.json so the Android/iOS build, which does not compile that plugin, does not fail ACL resolution.",
   "windows": [
     "main"
   ],
   "permissions": [
     "core:default",
-    "core:window:allow-close",
+    "core:app:allow-exit",
     "shell:allow-open"
   ]
 }
