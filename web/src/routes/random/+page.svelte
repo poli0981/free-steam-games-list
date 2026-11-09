@@ -15,6 +15,7 @@
   import PageHeader from "#lib/common/PageHeader.svelte";
   import Seo from "#lib/common/Seo.svelte";
   import Badge from "#lib/ui/Badge.svelte";
+  import AntiCheatBadge from "#lib/games/AntiCheatBadge.svelte";
   import Button from "#lib/ui/Button.svelte";
 
   const t = i18n.t;
@@ -169,8 +170,10 @@
               <div class="aspect-[460/215] w-full bg-muted"></div>
             {/if}
             <h2 class="flex items-center gap-1.5 px-4 pt-3 text-base font-semibold group-hover:text-primary">
-              {#if r.is_dead}<span title={t("games.deadTitle")}>💀</span>{/if}
-              <span class="min-w-0 truncate">{r.name || "—"}</span>
+              {#if r.is_dead}<span aria-hidden="true" title={t("games.deadTitle")}>💀</span>{/if}
+              <span class="min-w-0 truncate">
+                {r.name || "—"}{#if r.is_dead}<span class="sr-only">, {t("games.deadTitle")}</span>{/if}
+              </span>
             </h2>
           </a>
 
@@ -182,9 +185,7 @@
             {/if}
             {#if r.genre}<Badge variant="outline">{r.genre}</Badge>{/if}
             {#if r.anti_cheat && r.anti_cheat !== "-"}
-              <Badge variant={r.is_kernel_ac ? "destructive" : "warning"} class="block max-w-full truncate">
-                {r.anti_cheat}
-              </Badge>
+              <AntiCheatBadge name={r.anti_cheat} kernel={r.is_kernel_ac} class="block max-w-full truncate" />
             {/if}
           </div>
 
