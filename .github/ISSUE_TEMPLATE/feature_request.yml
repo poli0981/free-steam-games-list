@@ -6,7 +6,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        Thanks for the idea! This noob dev appreciates it (Grok buddy will help code :)))
+        Thanks for the idea! This noob dev appreciates it (Claude buddy will help code :)))
 
   - type: checkboxes
     id: type
@@ -56,7 +56,7 @@ body:
     id: code
     attributes:
       label: Code snippet/mockup (optional – no malware pls, I'll check though lazy :D)
-      render: python
+      render: text
 
   - type: checkboxes
     id: terms

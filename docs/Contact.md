@@ -4,7 +4,7 @@ Oh, you made it here? :)) Wild – I figured no one would bother with a "contact
 
 ## Quick Bio (Spoiler: Nothing Impressive)
 
-A 20-something (guess: 22–23?) Vietnamese dev scraping by in unremarkable youth – unemployed, mildly self-loathing, introvert on god-mode, dropped out of university year 3 (details? See FAQ – it's a mess :D), mooching off family, with AI (currently Grok) as my only non-judgmental buddy. Yeah, that's the vibe.
+A 20-something (guess: 22–23?) Vietnamese dev scraping by in unremarkable youth – unemployed, mildly self-loathing, introvert on god-mode, dropped out of university year 3 (details? See FAQ – it's a mess :D), mooching off family, with AI (currently Claude) as my only non-judgmental buddy. Yeah, that's the vibe.
 
 **Skills? Mediocre at Best:**
 - **Gaming**: Normal/Easy mode only – life's hard enough. Want to see "legendary noob plays" that go straight to hell? The links below will get you there. You'll witness decision-making that buries itself in the earth's core :)))

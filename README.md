@@ -1,7 +1,7 @@
-[![Games Count](https://img.shields.io/badge/Games-3.6k%2B-green?style=flat&logo=steam)](data/)
+[![Games Count](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fpoli0981%2Ffree-steam-games-list%2Fmain%2Fdata%2Findex.json&query=%24.total&label=Games&color=green&style=flat&logo=steam)](data/)
 [![Last Updated](https://img.shields.io/badge/Updated-Daily-blue?style=flat&logo=github-actions)](.github/workflows)
 [![Top Online](https://img.shields.io/badge/Top%20Online-Live%20Leaderboard-red?style=flat&logo=steam)](games/top-online.md)
-[![Version](https://img.shields.io/badge/version-4.0.0-purple?style=flat&logo=github)](https://github.com/poli0981/free-steam-games-list)
+[![Version](https://img.shields.io/github/v/release/poli0981/free-steam-games-list?filter=v*&sort=semver&label=version&color=purple&style=flat&logo=github)](https://github.com/poli0981/free-steam-games-list/releases)
 [![Web App](https://img.shields.io/badge/Web%20App-Live-2563eb?style=flat&logo=svelte)](https://free-steam-games.win/)
 [![Desktop](https://img.shields.io/badge/Desktop-Tauri%202-FFC131?style=flat&logo=tauri)](https://github.com/poli0981/free-steam-games-list/releases)
 [![Android](https://img.shields.io/badge/Android-11%2B%20APK-3DDC84?style=flat&logo=android)](https://github.com/poli0981/free-steam-games-list/releases)
@@ -9,7 +9,7 @@
 ![Visitors](https://visitor-badge.laobi.icu/badge?page_id=poli0981.free-steam-games-list)
 [![Sponsor](https://img.shields.io/badge/Sponsor-Buy%20me%20a%20coffee-ff5f5f?style=flat&logo=buy-me-a-coffee)](.github/FUNDING.yml)
 
-A **curated list** of free-to-play games on Steam — now ~3,600 of them — no quality guarantees, no endorsements, just pure listings by a broke, unemployed Vietnamese dev with too much free time and a Steam library full of sale games (80% under $10).
+A **curated list** of free-to-play games on Steam — the badge above has today's count — no quality guarantees, no endorsements, just pure listings by a broke, unemployed Vietnamese dev with too much free time and a Steam library full of sale games (80% under $10).
 
 **v4.0.0** is the version that got rebuilt from the ground up. It is still a list. It is also:
 
@@ -28,20 +28,21 @@ A **curated list** of free-to-play games on Steam — now ~3,600 of them — no 
 | Surface              | URL                                                                                                                  |
 | -------------------- | -------------------------------------------------------------------------------------------------------------------- |
 | 🌐 Web app          | <https://free-steam-games.win/>                                                                  |
-| 🖥️ Desktop releases  | [GitHub Releases](https://github.com/poli0981/free-steam-games-list/releases) (Win `.msi`, Mac `.dmg`, Linux `.AppImage`) |
+| 🖥️ Desktop releases  | [GitHub Releases](https://github.com/poli0981/free-steam-games-list/releases) (Win `.msi` / `.exe`, Mac `.dmg`, Linux `.AppImage` / `.deb` / `.rpm`) |
 | 📱 Android APK      | [GitHub Releases](https://github.com/poli0981/free-steam-games-list/releases) (sideload `.apk`, **Android 11+** — see [`docs/android-support.md`](docs/android-support.md)) |
 | 🏆 Top online (md)  | [games/top-online.md](games/top-online.md)                                                                           |
 | 🎯 Top offline (md) | [games/top-offline.md](games/top-offline.md)                                                                         |
-| 📦 Raw data         | [data/data_001.jsonl](data/data_001.jsonl) … `data_005.jsonl` (5 sharded JSONL files)              |
+| 📦 Raw data         | [data/](data/) — JSONL shards of 800 games each (`data_001.jsonl` …), listed with a SHA-256 each in [`data/index.json`](data/index.json) |
 | 🛠️ About            | <https://free-steam-games.win/about> (in-app)                                                   |
 | 👤 Authors          | [`AUTHORS.md`](AUTHORS.md) — maintainer + contact channels + AI-assistant disclosure                                 |
+| ♿ Accessibility    | [`ACCESSIBILITY.md`](ACCESSIBILITY.md) — what works with a keyboard, screen reader and zoom, what doesn't yet, how to report a barrier |
 
-### What's new in v4.0.0
+### What's in v4
 
 <details>
 <summary><b>Web app at <code>free-steam-games.win/</code></b></summary>
 
-A SvelteKit 2 / Svelte 5 app, prerendered and served by a Cloudflare Worker that also proxies the dataset (`/api/data/*`) and Steam artwork (`/img/*`), so your browser talks to this site only — apart from Cloudflare's analytics beacon and its Turnstile human check, both loaded only after you accept the terms. Features:
+A SvelteKit 3 / Svelte 5 app, prerendered and served by a Cloudflare Worker that also proxies the dataset (`/api/data/*`) and Steam artwork (`/img/*`; on the website the art comes from the site's own media host, `media.free-steam-games.win`), so your browser talks to this site only — apart from Cloudflare's analytics beacon and its Turnstile human check, both loaded only after you accept the terms. Features:
 
 - **Browse** — virtualised table (TanStack Virtual), filters for genre, type, platform, status, anti-cheat and safety, Fuse.js fuzzy search, sortable columns, 50/100/200/500/all pages. Filters live in the URL, so a filtered view can be shared.
 - **Charts** — Apache ECharts: dashboard KPIs, genres, platforms, languages, tags, anti-cheat (chart and a searchable index), reviews, player tiers, release years and catalogue growth, DRM/DLC, delisted games, plus a stats page (Metacritic, retention, games that went quiet).
@@ -52,7 +53,7 @@ A SvelteKit 2 / Svelte 5 app, prerendered and served by a Cloudflare Worker that
 - **i18n** vi / en — auto-detected, switchable from the welcome page or Settings.
 - **⌘K command palette**, **first-run introduction**, and the legal documents rendered in the app.
 
-Pushing to `main` deploys (Cloudflare Workers Builds). Pipeline commits to `data/**` do not need a rebuild: the data is proxied, not bundled. See [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md).
+Cloudflare Workers Builds deploys from `main`; which commits trigger a build is in [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md). Pipeline commits to `data/**` do not need a rebuild: the data is proxied, not bundled.
 
 </details>
 
@@ -61,7 +62,7 @@ Pushing to `main` deploys (Cloudflare Workers Builds). Pipeline commits to `data
 
 A native shell around the same web app, distributed via [GitHub Releases](https://github.com/poli0981/free-steam-games-list/releases):
 
-- Windows `.msi`, macOS `.dmg` (universal Apple Silicon + Intel), Linux `.AppImage` and `.deb`, and an Android `.apk`.
+- Windows `.msi` and `-setup.exe`, macOS `.dmg` (universal Apple Silicon + Intel), Linux `.AppImage`, `.deb` and `.rpm`, and an Android `.apk`.
 - Resizable window; `steam://` links open the Steam client.
 - The desktop app checks for a signed update on start and installs it when you say so, keeping your settings.
 - Same data path as the web app (`/api/data/*` on free-steam-games.win), same offline cache.
@@ -101,9 +102,11 @@ The Python pipeline that powered v2 is untouched and runs daily as before:
 ```
 .
 ├── data/                       # Sharded data (the source of truth)
-│   ├── data_001.jsonl          # ≤ 800 records
-│   ├── data_002.jsonl … 005    # the rest
-│   └── index.json              # last_updated, totals, shard manifest
+│   ├── data_001.jsonl …        # 800 records per shard, as many shards as it takes
+│   ├── index.json              # last_updated, totals, shard manifest (SHA-256 each)
+│   ├── blocklist.jsonl         # removed games, kept out of every write
+│   ├── overrides/              # human corrections, re-applied on every write
+│   └── snapshots/              # daily per-game players and reviews
 │
 ├── games/                      # The two generated leaderboards
 │   ├── top-online.md           # live leaderboard
@@ -128,7 +131,7 @@ The Python pipeline that powered v2 is untouched and runs daily as before:
 │   ├── src-tauri/              # Tauri 2 desktop + Android shell (Rust)
 │   └── static/                 # icons, social image, robots.txt, _headers
 │
-├── docs/                       # Legal + acknowledgements + contact
+├── docs/                       # Legal, setup and ops docs, plans (plan/), Vietnamese copies (i18n/vi/)
 ├── .github/workflows/          # data pipeline, discovery, CI, desktop/Android release
 ├── LICENSE                     # MIT — code
 └── LICENSE-DATA                # CC BY 4.0 — dataset
@@ -193,7 +196,15 @@ scripts/
 | Release Desktop / Android | On `desktop-v*` / `android-v*` tag | Build the apps into a draft release                  |
 | Announce Discussion   | On release `published`           | Auto-create a GitHub Discussion in `Announcements`        |
 
-The site itself is deployed by Cloudflare Workers Builds on every push to `main`, not by a workflow.
+Also in `.github/workflows/`:
+- **CodeQL** and **SonarCloud**: code scanning on pushes and pull requests.
+- **Check Overrides**: pull requests that touch the override or blocklist files.
+- **Backfill Discovery**: temporary; a weekly re-sweep of older release windows into the same `/admin` queue.
+- **Announce Release to Discord**: posts each published release.
+- Three **Notify** workflows: CI failures, the Pages deploy, the release pipeline.
+- **Deploy Web (GitHub Pages)**: it only serves a redirect to the new site now.
+
+The site itself is deployed by Cloudflare Workers Builds, not by a workflow.
 
 ### Contribute
 
@@ -210,9 +221,11 @@ is archived and no longer a way in.
 
 **Issues** are for reports, not submissions:
 [Bug report](.github/ISSUE_TEMPLATE/bug_report.yml),
+[Accessibility barrier](.github/ISSUE_TEMPLATE/accessibility.yml),
 [Feature request](.github/ISSUE_TEMPLATE/feature_request.yml),
-[Delete game](.github/ISSUE_TEMPLATE/delete_game.yml) and
-[Feedback](.github/ISSUE_TEMPLATE/feedback.yml). All reviewed by hand.
+[Delete game](.github/ISSUE_TEMPLATE/delete_game.yml),
+[Feedback](.github/ISSUE_TEMPLATE/feedback.yml) and
+[Off-topic](.github/ISSUE_TEMPLATE/off_topic.yml). All reviewed by hand.
 
 **The manual way.** Fork, append store links to `scripts/temp_info.jsonl`, and open a pull request:
 
@@ -257,7 +270,10 @@ Unemployed, introvert max level, dropped out uni year 3, mooching off family. Ne
 - [Contact](docs/Contact.md) — where to find the maintainer.
 - [CODE OF CONDUCT](CODE_OF_CONDUCT.md) — be chill.
 - [SECURITY](SECURITY.md) — vulnerability reporting.
-- [`web/README.md`](web/README.md) — stack details, per-phase changelog, build instructions.
+- [Security setup](docs/SECURITY_SETUP.md) — the operational side: headers, WAF, rate limits, Access, each with a check command.
+- [ACCESSIBILITY](ACCESSIBILITY.md) — what works with a keyboard, screen reader and zoom, what doesn't yet, and how to report a barrier.
+- [Android support](docs/android-support.md) ([VI](docs/i18n/vi/android-support.md)) — why Android 11+, and what the APK is tested on.
+- [`web/README.md`](web/README.md) — web stack, data paths, CSP, PWA, i18n, build and checks.
 
 Code is [MIT](LICENSE); the dataset is [CC BY 4.0](LICENSE-DATA) with carve-outs for fields the project does not own (`description`, `header_image`). Keep the right licence with you if you fork. Star if you find a hidden gem ✨
 

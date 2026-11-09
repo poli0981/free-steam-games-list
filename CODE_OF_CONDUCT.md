@@ -8,12 +8,12 @@ Be nice. Or at least civil. We're all unemployed introverts at heart (or pretend
 ### Standards
 - **Be respectful:** No harassment, no toxicity, no personal attacks. This ain't Dota 2 chat.
 - **Be helpful:** Suggestions, additions, fixes – yes. Trolling, spam, off-topic rants – no.
-- **Be inclusive:** Everyone's welcome, regardless of skill level (especially noobs on Easy mode).
+- **Be inclusive:** Everyone's welcome, regardless of skill level (especially noobs on Easy mode), and however you use the site: mouse, keyboard, screen reader, zoom. If something keeps you out, see [`ACCESSIBILITY.md`](ACCESSIBILITY.md).
 - **No malware/fake links:** Instant ban from contributing. I have trust issues already.
 - **Disagreements?** Keep it calm in Issues/PRs. If it gets heated, I'll just close it and go play a game.
 
 ### Enforcement
-I'm the only maintainer (with Grok as backup), so violations = close issue/PR, block if needed. No appeals – life's too short.
+I'm the only maintainer (with an AI assistant as backup), so violations = close issue/PR, block if needed. No appeals – life's too short.
 
 **Reporting:** if something needs raising privately rather than in the Issue
 thread it happened in, email **contact@poli0981.dev**. One person reads it, so

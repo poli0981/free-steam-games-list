@@ -4,6 +4,47 @@ All notable changes to this awesome noob repo will be documented here.
 
 ## [Unreleased]
 
+### ✨ Added
+
+- **An accessibility statement.** `ACCESSIBILITY.md` says what works today
+  with a keyboard, a screen reader and zoom, and what does not work yet: the
+  games table, most charts, the first-run screens, zoom in the apps. It also
+  lists which browsers and apps are checked by hand, and how a report is
+  handled. GitHub shows it as the repository's Accessibility tab. Barriers get
+  their own issue form and an `accessibility` label, and the About page links
+  the statement and the form.
+- A pull request template covering what and why, the checks to run, and a
+  short accessibility list for interface changes.
+
+### 🐛 Fixed
+
+- The About page's stack list said SvelteKit 2 and counted 3,600 rows. Its
+  footnote said everything the page loads comes from this site, which is not
+  true of Cloudflare's beacon and human check. It now says what is true: the
+  game data and art come from this site. The Vietnamese AI note gains the
+  sentence it was missing.
+- Source archives (`git archive`, GitHub's "Source code" downloads) left out
+  three legal documents that the web build reads, so building from one
+  stopped. They are included now.
+
+### 📚 Docs
+
+- The community docs match the repository again:
+  - **README:** live game-count and version badges, SvelteKit 3, every desktop
+    package, the shard layout, the workflows its table left out, and which
+    commits deploy.
+  - **SECURITY.md:** the real stack, pushes with the built-in token, and the
+    media host and the ingest and update endpoints in scope.
+  - **AUTHORS.md, `username.txt`, CONTRIBUTING.md and the code of conduct.**
+  - **The issue forms:** the hash links, GitHub Pages permalinks and the
+    editing and GPG options are gone. The version is under the title, not
+    behind a hover.
+  - **`web/README.md`, `docs/dev_env.md` (EN + VI), the acknowledgements and
+    the contact page.** Neither of the last two is a document you accept, so
+    nobody is asked to accept the terms again.
+- `CLAUDE.md`: `ACCESSIBILITY.md` is a claim about the code, kept true in the
+  same pull request.
+
 ## [v4.7.0] – 2026-11-03 (The "Lucky Dip" Edition)
 
 Two small additions. A Random games page picks up to five games from the
