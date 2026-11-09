@@ -33,6 +33,9 @@ export interface ColDef {
   key: ColumnKey;
   /** i18n key, or "" for the icon-only columns. */
   label: string;
+  /** i18n key read only by screen readers, for the icon-only columns: an
+   *  empty column header leaves every cell under it unnamed. */
+  srLabel?: string;
   width: number;
   sortable?: boolean;
   align?: "left" | "right" | "center";
@@ -40,8 +43,8 @@ export interface ColDef {
 }
 
 export const COLS: ColDef[] = [
-  { key: "thumb", label: "", width: 64 },
-  { key: "issues", label: "", width: 30 },
+  { key: "thumb", label: "", srLabel: "games.colImage", width: 64 },
+  { key: "issues", label: "", srLabel: "games.colIssues", width: 30 },
   {
     key: "name",
     label: "games.colName",
@@ -113,7 +116,7 @@ export const COLS: ColDef[] = [
     sortable: true,
     sortValue: (g) => g.status ?? "",
   },
-  { key: "link", label: "", width: 48 },
+  { key: "link", label: "", srLabel: "games.colSteam", width: 48 },
 ];
 
 export const TOTAL_WIDTH = COLS.reduce((sum, c) => sum + c.width, 0);

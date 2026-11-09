@@ -14,8 +14,8 @@
   import { imgFallback } from "../img-fallback";
   import { recordIssues } from "../validation";
   import { formatNumber, parseReviewPercent, cn } from "../utils";
-  import { openExternal } from "../external-open";
   import Badge from "../ui/Badge.svelte";
+  import AntiCheatBadge from "./AntiCheatBadge.svelte";
 
   let { rows }: { rows: GameRecord[] } = $props();
 
@@ -63,62 +63,87 @@
 </script>
 
 <div class="overflow-hidden rounded-lg border bg-card">
-  <div bind:this={viewport} class="h-[calc(100dvh-20rem)] overflow-auto scrollbar-slim scrollbar-panel">
-    <div style:width="{TOTAL_WIDTH}px" style:min-width="100%">
-      <!-- Sticky header. A real <table> cannot be virtualised without either
-           losing sticky headers or fighting the row heights, so this is a grid
-           that keeps the table SEMANTICS through role attributes. -->
+  <!-- min-h: the height follows the window, so at 300-400% zoom it reached
+       zero and the list vanished. Taller than a tiny window, the page scrolls. -->
+  <div bind:this={viewport} class="h-[calc(100dvh-20rem)] min-h-64 overflow-auto scrollbar-slim scrollbar-panel">
+    <!-- A real <table> cannot be virtualised without either losing the sticky
+         header or fighting the row heights, so this is a grid of divs with the
+         ARIA table roles. They have to be complete to mean anything: the table
+         around the rows, the row and column counts (only the rows on screen
+         exist), and a row index on each. Rows used to be <a role="row"> with no
+         table around them, which a screen reader announced as neither a link
+         nor a table. -->
+    <div
+      role="table"
+      aria-label={t("games.title")}
+      aria-rowcount={rows.length + 1}
+      aria-colcount={COLS.length}
+      style:width="{TOTAL_WIDTH}px"
+      style:min-width="100%"
+    >
       <div
         role="row"
+        aria-rowindex={1}
         class="sticky top-0 z-10 flex h-10 items-center border-b bg-card/95 backdrop-blur"
       >
         {#each COLS as col (col.key)}
           {@const active = filters.sortKey === col.key}
           <div
             role="columnheader"
-            aria-sort={active ? (filters.sortDir === "asc" ? "ascending" : "descending") : "none"}
+            aria-sort={col.sortable ? (active ? (filters.sortDir === "asc" ? "ascending" : "descending") : "none") : undefined}
             style:width="{col.width}px"
             class="shrink-0 px-2"
           >
-            {#if col.label}
+            {#if col.label && col.sortable}
               <button
                 type="button"
-                disabled={!col.sortable}
                 onclick={() => toggleSort(col.key, col.sortable)}
-                title={col.sortable ? t("games.sortBy", { column: t(col.label) }) : undefined}
+                title={t("games.sortBy", { column: t(col.label) })}
                 class={cn(
-                  "flex w-full items-center gap-1 text-xs font-semibold uppercase tracking-wide",
+                  "flex w-full items-center gap-1 text-xs font-semibold uppercase tracking-wide hover:text-foreground",
                   col.align === "right" && "justify-end",
-                  col.sortable ? "hover:text-foreground" : "cursor-default",
                   active ? "text-foreground" : "text-muted-foreground",
                 )}
               >
                 <span class="truncate">{t(col.label)}</span>
-                {#if col.sortable}
-                  {#if !active}
-                    <ChevronsUpDown class="size-3 shrink-0 opacity-40" />
-                  {:else if filters.sortDir === "asc"}
-                    <ChevronUp class="size-3 shrink-0" />
-                  {:else}
-                    <ChevronDown class="size-3 shrink-0" />
-                  {/if}
+                {#if !active}
+                  <ChevronsUpDown class="size-3 shrink-0 opacity-40" />
+                {:else if filters.sortDir === "asc"}
+                  <ChevronUp class="size-3 shrink-0" />
+                {:else}
+                  <ChevronDown class="size-3 shrink-0" />
                 {/if}
               </button>
+            {:else if col.label}
+              <!-- Not sortable: plain text, not a disabled button that a screen
+                   reader announces as one. -->
+              <span class="block truncate text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                {t(col.label)}
+              </span>
+            {:else if col.srLabel}
+              <span class="sr-only">{t(col.srLabel)}</span>
             {/if}
           </div>
         {/each}
       </div>
 
-      <div style:height="{$virtualizer.getTotalSize()}px" class="relative">
+      <div role="rowgroup" style:height="{$virtualizer.getTotalSize()}px" class="relative">
         {#each items as item (item.key)}
           {@const g = rows[item.index]}
           {@const appid = appidOf(g)}
           {@const issues = recordIssues(g)}
           {@const pct = parseReviewPercent(g.reviews)}
-          <a
-            href={appid ? `/games/${appid}` : g.link}
+          <!-- The whole row still opens the game: the name's link stretches
+               over it (after:absolute inset-0, against this positioned row), so
+               there is one link per row instead of a row that is a link.
+               Things that must stay hoverable or clickable on their own (the
+               warning and dead-game tooltips, the Steam link) sit above it
+               with relative z-[1]. Its focus ring is drawn by the row: the
+               cells clip overflow and would cut an outline off. -->
+          <div
             role="row"
-            class="absolute left-0 flex items-center border-b text-sm transition-colors hover:bg-accent/60"
+            aria-rowindex={item.index + 2}
+            class="absolute left-0 flex items-center border-b text-sm transition-colors hover:bg-accent/60 has-[:focus-visible]:bg-accent/60 has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-ring has-[:focus-visible]:ring-inset"
             style:height="{item.size}px"
             style:width="{TOTAL_WIDTH}px"
             style:transform="translateY({item.start}px)"
@@ -150,18 +175,20 @@
                   {/if}
                 {:else if col.key === "issues"}
                   {#if issues.length}
-                    <span
-                      class="grid size-5 place-items-center text-warning"
-                      title={issues.map((i) => t(i.message, i.vars)).join(" · ")}
-                    >
+                    {@const issueText = issues.map((i) => t(i.message, i.vars)).join(" · ")}
+                    <span class="relative z-[1] grid size-5 place-items-center text-warning" title={issueText}>
                       <TriangleAlert class="size-3.5" />
+                      <span class="sr-only">{issueText}</span>
                     </span>
                   {/if}
                 {:else if col.key === "name"}
-                  <span class="font-medium">
-                    {#if g.is_dead}<span title={t("games.deadTitle")} class="mr-1">💀</span>{/if}
-                    {g.name || "—"}
-                  </span>
+                  {#if g.is_dead}<span aria-hidden="true" title={t("games.deadTitle")} class="relative z-[1] mr-1">💀</span>{/if}
+                  <a
+                    href={appid ? `/games/${appid}` : g.link}
+                    class="font-medium after:absolute after:inset-0 after:content-[''] focus-visible:outline-none"
+                  >
+                    {g.name || "—"}{#if g.is_dead}<span class="sr-only">, {t("games.deadTitle")}</span>{/if}
+                  </a>
                 {:else if col.key === "genre"}
                   {#if g.genre}<Badge variant="outline">{g.genre}</Badge>{:else}<span class="text-muted-foreground">—</span>{/if}
                 {:else if col.key === "type_game"}
@@ -182,7 +209,7 @@
                   <span class="font-mono tnum">{formatNumber(g.all_time_peak)}</span>
                 {:else if col.key === "anti_cheat"}
                   {#if g.anti_cheat && g.anti_cheat !== "-"}
-                    <Badge variant={g.is_kernel_ac ? "destructive" : "warning"}>{g.anti_cheat}</Badge>
+                    <AntiCheatBadge name={g.anti_cheat} kernel={g.is_kernel_ac} />
                   {:else}<span class="text-muted-foreground">—</span>{/if}
                 {:else if col.key === "platforms"}
                   <span class="text-xs text-muted-foreground">
@@ -195,36 +222,27 @@
                     {t(g.status === "active" ? "common.active" : "common.delisted")}
                   </Badge>
                 {:else if col.key === "link"}
-                  <!-- stopPropagation so the Steam link does not also trigger
-                       the row navigation wrapping it. -->
-                  <span
-                    role="link"
-                    tabindex="0"
+                  <!-- A real link now that it is not nested inside the row's
+                       own link, so the apps' external-link interceptor opens it
+                       in the system browser like any other. Out of the Tab
+                       order: one stop per row, not two, and a game's own page
+                       has the same Steam links for the keyboard. Screen readers
+                       still find it. -->
+                  <a
+                    href={g.link}
+                    target="_blank"
+                    rel="noreferrer"
+                    tabindex="-1"
+                    aria-label={t("games.openOnSteamNamed", { name: g.name || appid || "" })}
                     title={t("detail.openOnSteam", { appid: appidOf(g) })}
-                    onclick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      // openExternal, not window.open: the Tauri webview blocks
-                      // window.open to external URLs, and the global link
-                      // interceptor only sees <a> elements - this is a span
-                      // inside the row's own internal link.
-                      void openExternal(g.link);
-                    }}
-                    onkeydown={(e) => {
-                      if (e.key === "Enter") {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        void openExternal(g.link);
-                      }
-                    }}
-                    class="inline-grid size-6 place-items-center text-muted-foreground hover:text-primary"
+                    class="relative z-[1] inline-grid size-6 place-items-center text-muted-foreground hover:text-primary"
                   >
                     <ExternalLink class="size-3.5" />
-                  </span>
+                  </a>
                 {/if}
               </div>
             {/each}
-          </a>
+          </div>
         {/each}
       </div>
     </div>
