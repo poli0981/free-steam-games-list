@@ -35,7 +35,10 @@ What matters most, in this order:
 
 ## What works today
 
-Checked against the code on 2026-11-09 (website and apps 2.5.0).
+Checked against the code on 2026-11-09. The website has everything below. The
+desktop and Android apps 2.5.0 were built before the games table, first-run
+screen, colour, zoom and focus fixes of that day, and get them with their next
+release.
 
 - **Language.** The page declares its language, and changes it when you
   switch between English and Vietnamese.
@@ -43,15 +46,33 @@ Checked against the code on 2026-11-09 (website and apps 2.5.0).
   The header and both navigation menus are labelled, and the menus mark the
   page you are on. Each page has one main heading and its own title, and
   moving to another page announces the new title.
-- **Keyboard.** Links and controls show a focus ring (one exception, below).
+- **Keyboard.** Links and controls show a focus ring.
   <kbd>Ctrl</kbd>/<kbd>⌘</kbd>+<kbd>K</kbd> opens a command palette that
   works like a search box with a list: arrow keys, <kbd>Enter</kbd>,
   <kbd>Esc</kbd>. The menu drawer on small screens, the palette and the
   desktop update dialog keep focus inside while they are open, close with
   <kbd>Esc</kbd>, and put focus back where it was.
+- **The games table.** A screen reader hears a table: column headers
+  (including names for the image, data-issue and Steam columns), the total
+  number of rows and columns, and the position of each row, even though only
+  the rows on screen exist. Each row is one stop for <kbd>Tab</kbd>, the
+  game's name, and the whole row lights up when it has focus. Clicking
+  anywhere on a row still opens the game. On a phone the cards are a list
+  that says how many games it holds and where you are in it.
+- **The first-run screens.** The terms screen and the human check are
+  dialogs. Focus moves into them, and the page behind is out of reach for the
+  keyboard and for screen readers until you are through. The command palette
+  shortcut does nothing while they are open.
 - **Names.** Buttons that only show an icon have a text name. Switches (the
   language and theme buttons, the scrollbar options, the choices on *Random
   games*, the anti-cheat families) say whether they are on.
+- **Colour and contrast.** In both themes, text is at least 4.5:1 against its
+  background, badges and the current menu item included, and the edges of
+  text boxes and drop-downs are at least 3:1. Kernel-level anti-cheat carries
+  a shield icon as well as its red, and the words "Kernel-level". They are
+  spelled out on a game's page and read out by screen readers in the table,
+  the cards and *Random games*. A test computes these ratios from the theme's
+  colours, so a later colour change cannot quietly undo them.
 - **Charts.** Each chart is announced as an image named by its title. Some
   also give the numbers as text: *Top online* and *Top offline* list 100 games
   under their charts, *Genres* lists the top 24, *Tags* writes out 40 of its
@@ -60,10 +81,12 @@ Checked against the code on 2026-11-09 (website and apps 2.5.0).
 - **Images, sound and motion.** Game art is decorative (`alt=""`); the game's
   name is always written next to it. Nothing plays sound or video. With your
   system's *reduce motion* setting on, page animations and transitions are cut
-  short and scrolling jumps instead of gliding.
-- **Zoom and small screens.** The website never blocks pinch-zoom. Below
-  tablet width the games table turns into cards, and a test checks that every
-  grid falls back to one column on a phone.
+  short, and scrolling jumps instead of gliding, "back to top" included.
+- **Zoom and small screens.** The website never blocks pinch-zoom, and the
+  games list keeps a usable height at 400% zoom. The desktop app zooms with
+  <kbd>Ctrl</kbd>/<kbd>⌘</kbd> and <kbd>+</kbd> / <kbd>−</kbd> (from its next
+  release). Below tablet width the games table turns into cards, and a test
+  checks that every grid falls back to one column on a phone.
 - **Settings.** Theme (dark by default, light, or follow the system), English
   or Vietnamese, and hidden scrollbars. Hidden scrollbars still scroll from
   the keyboard.
@@ -77,43 +100,25 @@ Checked against the code on 2026-11-09 (website and apps 2.5.0).
 Known, and not fixed yet. Where there is another way to get the same thing, it
 says so.
 
-- **The games table is not a table to a screen reader.** Its rows are links
-  dressed up as table rows with no table around them, and three of its columns
-  have no header text. Each row takes two <kbd>Tab</kbd> presses, because the
-  Steam icon inside it is a second stop. Only the rows on screen exist in the
-  page, so a screen reader's browse mode and the browser's find-in-page see
-  only those.
-  *Instead:* narrow the list with search and the filters, open a game's own
-  page, or export to CSV/JSON. The [Markdown leaderboards](games/) are
-  ordinary tables.
-- **The first-run screens.** Before the site opens you get the terms screen,
-  then (website only) a human check. Neither moves keyboard focus into itself
-  or keeps it there, so <kbd>Tab</kbd> walks through the hidden page behind
-  first. The terms screen is also not announced as a dialog, and each screen
-  adds a second main heading while it is open. The human check is Cloudflare
-  Turnstile, in a frame this project does not control. If it says your
-  browser is unsupported, there is no retry button.
-  *Instead:* the desktop and Android apps never show the human check, and
-  everything in the catalogue is readable on GitHub.
 - **Charts.** Values, tooltips and legends are drawn on a canvas and need a
   pointer. Several charts have no text version: DRM, languages, platforms,
   players, reviews, release years, delisted games, most of *Stats*, and the
   genre chart on the dashboard. Several tell categories apart by colour alone.
   Chart animations ignore *reduce motion*.
   *Instead:* the CSV/JSON export, or the raw data.
-- **Colour.**
-  - Kernel-level anti-cheat is shown only by a red badge instead of an amber
-    one: in the games table, the cards, a game's page and *Random games*.
-    *Instead:* the [anti-cheat list](https://free-steam-games.win/charts/anti-cheat/list)
-    says it in words.
-  - In the light theme, links, primary buttons, warnings and some badges are
-    below the 4.5:1 contrast WCAG asks of text.
-    *Instead:* the dark theme, which is the default.
-  - The borders of text boxes and drop-downs are below 3:1 in both themes.
-  - Contrast themes (forced colours) get no special support.
-- **Hover-only hints.** The 💀 on a dead game and the warning icon in a table
-  row explain themselves only in a mouse-hover tooltip. A screen reader just
-  reads "skull".
+- **The games table is virtualised.** Only the rows on screen exist in the
+  page. A screen reader is told the full count, but the browser's
+  find-in-page only sees those rows.
+  *Instead:* narrow the list with search and the filters, or export to
+  CSV/JSON.
+- **The human check is Cloudflare Turnstile,** in a frame this project does
+  not control. If it says your browser is unsupported, there is no retry
+  button.
+  *Instead:* the desktop and Android apps never show it, and everything in
+  the catalogue is readable on GitHub.
+- **Hover-only hints.** To sighted readers, the 💀 on a dead game and the
+  warning icon in a table row explain themselves only in a mouse-hover
+  tooltip. Screen readers get the words.
   *Instead:* **Hide dead** on the Games page takes dead games out of the
   list.
 - **Changes that are not announced:** the number of results after you filter,
@@ -124,18 +129,16 @@ says so.
   exist only in English. Game names and descriptions are in whatever language
   the developer wrote them. None of it is tagged, so a screen reader reads it
   in the interface language's voice.
-- **Zoom.**
-  - On the website, the games list and the cards sit in boxes sized to the
-    window, so at 300-400% zoom they shrink to almost nothing. Long values
-    are cut off with "…", and a few small labels have fixed pixel sizes.
-  - The desktop app has page zoom turned off: <kbd>Ctrl</kbd>+<kbd>+</kbd>
-    does nothing. As far as the code shows, the Android app does not
-    pinch-zoom either.
-  - *Instead:* game pages and the CSV/JSON export; the website in a browser;
-    or your system's magnifier or text size.
-- **The command palette's search box** shows no focus ring.
-- **No automated accessibility tests.** Svelte's accessibility warnings show
-  up in development but do not fail the build.
+- **Contrast themes** (Windows' forced colours) get no special support.
+- **Zoom.** Long values are cut off with "…", and a few small labels have
+  fixed pixel sizes. As far as the code shows, the Android app does not
+  pinch-zoom.
+  *Instead:* game pages and the CSV/JSON export, the website in a browser, or
+  your system's magnifier or text size.
+- **Automated checks are static.** A test holds the fixes above in place and
+  computes the theme's contrast, but nothing runs a screen reader or an
+  accessibility scanner, and Svelte's accessibility warnings do not fail the
+  build.
 
 ## Supported environments
 
@@ -211,11 +214,15 @@ interface:
 - Check it 360 px wide, at 200% zoom, in both themes, and with *reduce motion*
   on.
 - Build overlays and pop-ups on Bits UI's `Dialog` (focus trap,
-  <kbd>Esc</kbd>, focus returned), not a hand-made `div`.
+  <kbd>Esc</kbd>, focus returned), not a hand-made `div`. A screen that must
+  block the page reports itself in `web/src/lib/overlays.svelte.ts`, and the
+  layout makes everything behind it inert.
 - Put new text in both `web/src/i18n/locales/en.json` and `vi.json`.
 - Read the accessibility warnings `npm run check` prints. CI does not fail on
   them, so nobody else will. Add no new `svelte-ignore a11y_*` without giving
   a reason in the pull request.
+- `web/src/lib/a11y.test.ts` holds the fixes listed above and the theme's
+  contrast. If it fails, fix the change, not the test.
 
 The [pull request template](.github/pull_request_template.md) has the short
 version as a checklist. Coding agents also follow [`CLAUDE.md`](CLAUDE.md),
@@ -232,4 +239,5 @@ which says to keep this file true.
   [Discussions › Ideas](https://github.com/poli0981/free-steam-games-list/discussions/categories/ideas),
   or an issue.
 
-*Last reviewed: 2026-11-09 (website and apps 2.5.0).*
+*Last reviewed: 2026-11-09, after that day's accessibility fixes (website).
+Desktop and Android apps: 2.5.0.*

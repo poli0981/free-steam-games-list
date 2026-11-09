@@ -1208,11 +1208,36 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
   edits the list and its "Last reviewed" line in the same pull request.
   Reports arrive through `.github/ISSUE_TEMPLATE/accessibility.yml` (label
   `accessibility`), and the About page links both the form and the statement.
-  Two of its limitations look solved and are not:
-  - `GamesTable.svelte`'s comment says the grid "keeps the table SEMANTICS",
-    but its rows are `<a role="row">` with no `table`/`grid` parent.
-  - The desktop app cannot zoom: Tauri's `zoomHotkeysEnabled` defaults to
-    false and `tauri.conf.json` does not set it.
+  `src/lib/a11y.test.ts` holds the fixes it lists. Rules that are easy to
+  break:
+  - **The games table is an ARIA table only when it is complete.** That means
+    `role="table"` with `aria-rowcount`/`aria-colcount`, a `rowgroup`, and
+    `aria-rowindex` on every virtualised row. Every column needs a label or an
+    `srLabel` (`games/columns.ts`). It used to be `<a role="row">` with
+    nothing around it, which a screen reader read as neither a table nor a
+    link.
+  - **A row is not a link.** The name's `<a>` stretches over the row
+    (`after:absolute after:inset-0`). Anything that must stay hoverable or
+    clickable on its own sits above it with `relative z-[1]`: the tooltips,
+    and the Steam `<a>`, which is `tabindex="-1"` so a row is one Tab stop.
+    The row draws the focus ring (`has-[:focus-visible]`), because cells clip
+    overflow.
+  - **The first-run overlays report to `lib/overlays.svelte.ts`.** The layout
+    makes the page behind them `inert`: the bare pages' wrapper, the skip link
+    and the shell. Ctrl/Cmd+K stands down while they are open, because the
+    palette would open under the gate and trap focus there. They are
+    `role="dialog"`, focus themselves with `focusOnMount`, and title
+    themselves with an h2. `BackToTop` is inside the shell so that it goes
+    inert with the page.
+  - **Kernel-level anti-cheat goes through `games/AntiCheatBadge.svelte`.** It
+    adds a shield icon and the words, so the colour is not the only cue.
+  - **Theme colours are checked by the WCAG formula.** The test computes
+    4.5:1 for text (badges on their /15 tint included) and 3:1 for
+    `--input`/`--ring` in both themes. A token edit that drops below either
+    fails.
+  - **Desktop zoom needs both parts:** `zoomHotkeysEnabled` on the window,
+    and `capabilities/zoom.json`. The latter is desktop-only, and macOS/Linux
+    zoom through an injected script that calls `set_webview_zoom`.
 
   Svelte's a11y warnings never fail CI (`svelte-check` runs without
   `--fail-on-warnings`), so read them.
