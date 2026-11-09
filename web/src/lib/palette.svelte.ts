@@ -1,3 +1,5 @@
+import { overlays } from "./overlays.svelte";
+
 /**
  * Command-palette open state, kept out of the component so anything can open
  * it — the topbar button, the keyboard shortcut, an empty-state prompt — without
@@ -40,6 +42,9 @@ export function installPaletteShortcut(): () => void {
   function onKeydown(e: KeyboardEvent) {
     if (e.isComposing || e.keyCode === 229) return;
     if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+      // Not under a first-run overlay: the palette would open beneath it and
+      // trap focus out of sight (overlays.svelte.ts).
+      if (overlays.open) return;
       e.preventDefault();
       palette.toggle();
       return;

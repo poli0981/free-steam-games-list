@@ -26,6 +26,45 @@ All notable changes to this awesome noob repo will be documented here.
 - Source archives (`git archive`, GitHub's "Source code" downloads) left out
   three legal documents that the web build reads, so building from one
   stopped. They are included now.
+- **Accessibility.** These reach the website as soon as they are merged, and
+  the apps with their next release:
+  - **The games table** is now a table to a screen reader. It exposes its
+    roles, the row and column counts, and a position for every row, even
+    though only the rows on screen exist. The image, data-issue and Steam
+    columns have names.
+  - **Table rows** are no longer a link wrapped around another link, and each
+    row is one <kbd>Tab</kbd> stop instead of two. Clicking anywhere on a row
+    still opens the game.
+  - **The phone cards** are a list that tells a screen reader its length and
+    each card's position.
+  - **The terms screen and the human check** are dialogs that take focus, and
+    the page behind them is out of reach until you are through. Before, Tab
+    walked through the hidden page first, and Ctrl/⌘+K could open the
+    command palette underneath them, out of sight but holding focus.
+  - **Kernel-level anti-cheat** shows a shield icon and the words, not only a
+    red badge.
+  - **Contrast:**
+    - Light-theme links, primary buttons, warnings and badges reach 4.5:1.
+      The light theme's amber is a shade darker as a result.
+    - Red badges in the dark theme reach 4.5:1 too.
+    - Text boxes and drop-downs have a visible 3:1 edge in both themes.
+  - **Zoom:**
+    - The games list keeps a minimum height when zoomed in, instead of
+      shrinking to nothing at 300-400%.
+    - The desktop app zooms with Ctrl/⌘ and + / −, from its next release.
+  - **Smaller fixes:**
+    - "Back to top" is out of the Tab order while it is hidden, and jumps
+      instead of gliding when *reduce motion* is on.
+    - The command palette's search box shows a focus ring.
+    - Screen readers read out the 💀 and the table's warning icon as words.
+  - `ACCESSIBILITY.md` moves all of this from "Known limitations" to "What
+    works today".
+
+### 🧰 Tooling & misc
+
+- `web/src/lib/a11y.test.ts` holds those fixes in the code. It also computes
+  the theme's contrast with the WCAG formula, so a colour edit that drops
+  below 4.5:1 for text, or below 3:1 for a control's edge, fails the tests.
 
 ### 📚 Docs
 
@@ -43,7 +82,7 @@ All notable changes to this awesome noob repo will be documented here.
     the contact page.** Neither of the last two is a document you accept, so
     nobody is asked to accept the terms again.
 - `CLAUDE.md`: `ACCESSIBILITY.md` is a claim about the code, kept true in the
-  same pull request.
+  same pull request, and the rules behind the accessibility fixes.
 
 ## [v4.7.0] – 2026-11-03 (The "Lucky Dip" Edition)
 

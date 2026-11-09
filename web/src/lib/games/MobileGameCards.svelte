@@ -10,6 +10,7 @@
   import { formatNumber, parseReviewPercent, cn } from "../utils";
   import { reviewTone } from "./columns";
   import Badge from "../ui/Badge.svelte";
+  import AntiCheatBadge from "./AntiCheatBadge.svelte";
 
   // Below md the 1,282px-wide table is unusable, so the same rows render as
   // cards. Still virtualised: 3,700 cards is as many DOM nodes as 3,700 rows.
@@ -39,8 +40,11 @@
   const items = $derived($virtualizer.getVirtualItems());
 </script>
 
-<div bind:this={viewport} class="h-[calc(100dvh-18rem)] overflow-auto scrollbar-slim scrollbar-panel">
-  <div style:height="{$virtualizer.getTotalSize()}px" class="relative">
+<!-- min-h, as in GamesTable: at 300-400% zoom the window-sized height reached
+     zero. A list with its size and each card's position, since only the cards
+     on screen exist. -->
+<div bind:this={viewport} class="h-[calc(100dvh-18rem)] min-h-64 overflow-auto scrollbar-slim scrollbar-panel">
+  <div role="list" aria-label={t("games.title")} style:height="{$virtualizer.getTotalSize()}px" class="relative">
     {#each items as item (item.key)}
       {@const g = rows[item.index]}
       {@const appid = appidOf(g)}
@@ -50,62 +54,69 @@
            measuring), so a badge row that wrapped to a third line used to paint
            over the next card. The anti-cheat badge truncates instead of wrapping:
            some values run to 72 characters. -->
-      <a
-        href={appid ? `/games/${appid}` : g.link}
-        class="absolute left-0 right-0 flex gap-3 overflow-hidden border-b px-1 py-3"
+      <div
+        role="listitem"
+        aria-setsize={rows.length}
+        aria-posinset={item.index + 1}
+        class="absolute left-0 right-0"
         style:height="{item.size}px"
         style:transform="translateY({item.start}px)"
       >
-        {#if g.header_image}
-          <img
-            src={headerToCapsule(g.header_image)}
-            {@attach imgFallback(thumbFallback(g.header_image))}
-            alt=""
-            loading="lazy"
-            decoding="async"
-            referrerpolicy="no-referrer"
-            class="h-[42px] w-[90px] shrink-0 rounded object-cover"
-          />
-        {:else}
-          <div class="h-[42px] w-[90px] shrink-0 rounded bg-muted"></div>
-        {/if}
-
-        <div class="min-w-0 flex-1">
-          <div class="flex items-center gap-1.5">
-            {#if g.is_dead}<span title={t("games.deadTitle")}>💀</span>{/if}
-            <span class="truncate text-sm font-medium">{g.name || "—"}</span>
-            {#if issues.length}
-              <TriangleAlert
-                class="size-3.5 shrink-0 text-warning"
-                aria-label={issues.map((i) => t(i.message, i.vars)).join(" · ")}
-              />
-            {/if}
-          </div>
-
-          <div class="mt-1 flex flex-wrap items-center gap-1">
-            {#if g.genre}<Badge variant="outline">{g.genre}</Badge>{/if}
-            {#if g.type_game}
-              <Badge variant={g.type_game === "online" ? "success" : "secondary"}>
-                {t(g.type_game === "online" ? "common.online" : "common.offline")}
-              </Badge>
-            {/if}
-            {#if g.anti_cheat && g.anti_cheat !== "-"}
-              <Badge variant={g.is_kernel_ac ? "destructive" : "warning"} class="block max-w-full truncate">
-                {g.anti_cheat}
-              </Badge>
-            {/if}
-          </div>
-        </div>
-
-        <div class="shrink-0 text-right">
-          {#if pct !== null}
-            <div class={cn("font-mono text-sm tnum", reviewTone(pct))}>{pct}%</div>
+        <a
+          href={appid ? `/games/${appid}` : g.link}
+          class="flex h-full gap-3 overflow-hidden border-b px-1 py-3"
+        >
+          {#if g.header_image}
+            <img
+              src={headerToCapsule(g.header_image)}
+              {@attach imgFallback(thumbFallback(g.header_image))}
+              alt=""
+              loading="lazy"
+              decoding="async"
+              referrerpolicy="no-referrer"
+              class="h-[42px] w-[90px] shrink-0 rounded object-cover"
+            />
+          {:else}
+            <div class="h-[42px] w-[90px] shrink-0 rounded bg-muted"></div>
           {/if}
-          <div class="font-mono text-xs text-muted-foreground tnum">
-            {formatNumber(g.current_players)}
+
+          <div class="min-w-0 flex-1">
+            <div class="flex items-center gap-1.5">
+              {#if g.is_dead}<span aria-hidden="true" title={t("games.deadTitle")}>💀</span>{/if}
+              <span class="truncate text-sm font-medium">
+                {g.name || "—"}{#if g.is_dead}<span class="sr-only">, {t("games.deadTitle")}</span>{/if}
+              </span>
+              {#if issues.length}
+                <TriangleAlert
+                  class="size-3.5 shrink-0 text-warning"
+                  aria-label={issues.map((i) => t(i.message, i.vars)).join(" · ")}
+                />
+              {/if}
+            </div>
+
+            <div class="mt-1 flex flex-wrap items-center gap-1">
+              {#if g.genre}<Badge variant="outline">{g.genre}</Badge>{/if}
+              {#if g.type_game}
+                <Badge variant={g.type_game === "online" ? "success" : "secondary"}>
+                  {t(g.type_game === "online" ? "common.online" : "common.offline")}
+                </Badge>
+              {/if}
+              {#if g.anti_cheat && g.anti_cheat !== "-"}
+                <AntiCheatBadge name={g.anti_cheat} kernel={g.is_kernel_ac} class="block max-w-full truncate" />
+              {/if}
+            </div>
           </div>
-        </div>
-      </a>
+
+          <div class="shrink-0 text-right">
+            {#if pct !== null}
+              <div class={cn("font-mono text-sm tnum", reviewTone(pct))}>{pct}%</div>
+            {/if}
+            <div class="font-mono text-xs text-muted-foreground tnum">
+              {formatNumber(g.current_players)}
+            </div>
+          </div>
+        </a>
+      </div>
     {/each}
   </div>
 </div>

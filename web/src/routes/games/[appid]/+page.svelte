@@ -23,6 +23,7 @@
   import { SITE_ORIGIN } from "#lib/site.js";
   import QueryState from "#lib/common/QueryState.svelte";
   import Badge from "#lib/ui/Badge.svelte";
+  import AntiCheatBadge from "#lib/games/AntiCheatBadge.svelte";
   import Button from "#lib/ui/Button.svelte";
   import Seo from "#lib/common/Seo.svelte";
   import type { PageData } from "./$types";
@@ -214,8 +215,8 @@
 
     <div class="flex flex-wrap items-start gap-3">
       <h1 class="min-w-0 flex-1 text-2xl font-semibold tracking-tight wrap-break-word sm:text-3xl">
-        {#if view.is_dead}<span title={t("games.deadTitle")}>💀</span>{/if}
-        {view.name}
+        {#if view.is_dead}<span aria-hidden="true" title={t("games.deadTitle")}>💀</span>{/if}
+        {view.name}{#if view.is_dead}<span class="sr-only">, {t("games.deadTitle")}</span>{/if}
       </h1>
       {#if pct !== null}
         <!-- The score alone ("32%") said nothing about what it measures;
@@ -237,7 +238,7 @@
         </Badge>
       {/if}
       {#if view.anti_cheat && view.anti_cheat !== "-"}
-        <Badge variant={view.is_kernel_ac ? "destructive" : "warning"}>{view.anti_cheat}</Badge>
+        <AntiCheatBadge name={view.anti_cheat} kernel={view.is_kernel_ac} labelled />
       {/if}
       {#if view.has_paid_dlc}<Badge variant="warning">{t("detail.labelHasPaidDlc")}</Badge>{/if}
     </div>

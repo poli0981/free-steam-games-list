@@ -136,7 +136,9 @@
     >
       <Dialog.Title class="sr-only">{t("cmdk.title")}</Dialog.Title>
 
-      <div class="flex items-center gap-2 border-b px-3">
+      <!-- The focus ring is the row's, inset: an outline on the input itself would be
+           cut off by the dialog's edge, and the input used to have none at all. -->
+      <div class="flex items-center gap-2 border-b px-3 has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-ring has-[:focus-visible]:ring-inset">
         <Search class="size-4 shrink-0 text-muted-foreground" />
         <!-- svelte-ignore a11y_autofocus -->
         <input
@@ -150,7 +152,7 @@
           aria-controls="cmdk-list"
           aria-activedescendant={activeId}
           aria-autocomplete="list"
-          class="h-12 w-full bg-transparent text-sm outline-none placeholder:text-muted-foreground"
+          class="h-12 w-full bg-transparent text-sm focus-visible:outline-none placeholder:text-muted-foreground"
         />
       </div>
 
