@@ -4,6 +4,25 @@ All notable changes to this awesome noob repo will be documented here.
 
 ## [Unreleased]
 
+## [v4.7.1] – 2026-11-09 (The "Curb Cut" Edition)
+
+An accessibility release. The repository gains an accessibility statement
+that says honestly what works with a keyboard, a screen reader and zoom, and
+what does not yet. The worst barriers it found are fixed:
+- the games table is a real table to a screen reader;
+- the first-run screens hold the keyboard focus;
+- kernel-level anti-cheat is no longer told apart by colour alone;
+- both themes meet the contrast WCAG asks for;
+- the desktop app zooms.
+
+Like a curb cut, most of it helps everyone. The community docs were also
+brought back in line with the repository. No legal document you accept
+changed, so nobody is asked to accept the terms again.
+
+Desktop and Android go from `2.5.0` to `2.5.1`, and the repo's public version
+from `4.7.0` to `4.7.1`. The desktop app offers 2.5.1 through its updater once
+the release is published. On Android, install the new APK over the old one.
+
 ### ✨ Added
 
 - **An accessibility statement.** `ACCESSIBILITY.md` says what works today
@@ -26,8 +45,7 @@ All notable changes to this awesome noob repo will be documented here.
 - Source archives (`git archive`, GitHub's "Source code" downloads) left out
   three legal documents that the web build reads, so building from one
   stopped. They are included now.
-- **Accessibility.** These reach the website as soon as they are merged, and
-  the apps with their next release:
+- **Accessibility**, on the website and in the apps from 2.5.1:
   - **The games table** is now a table to a screen reader. It exposes its
     roles, the row and column counts, and a position for every row, even
     though only the rows on screen exist. The image, data-issue and Steam
@@ -51,7 +69,7 @@ All notable changes to this awesome noob repo will be documented here.
   - **Zoom:**
     - The games list keeps a minimum height when zoomed in, instead of
       shrinking to nothing at 300-400%.
-    - The desktop app zooms with Ctrl/⌘ and + / −, from its next release.
+    - The desktop app zooms with Ctrl/⌘ and + / −.
   - **Smaller fixes:**
     - "Back to top" is out of the Tab order while it is hidden, and jumps
       instead of gliding when *reduce motion* is on.
