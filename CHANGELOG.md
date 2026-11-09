@@ -4,6 +4,16 @@ All notable changes to this awesome noob repo will be documented here.
 
 ## [Unreleased]
 
+### 🧰 Tooling & misc
+
+- Dependencies: patch releases of the icon, dialog, toast and virtual-list
+  libraries (Lucide 1.70.0, bits-ui 2.20.6, svelte-sonner 1.2.3, TanStack
+  Virtual 3.13.52), Tailwind CSS 4.3.5, Vite 8.3.6, Vitest 5.1.0,
+  svelte-check 4.7.8, wrangler 4.158.0, coverage 7.17.2, and the release and
+  SonarCloud scan actions (3.0.4, 8.4.1). No security advisory among them;
+  nothing changes in how the site or the apps behave, so no release: the
+  apps take them with their next one.
+
 ## [v4.7.1] – 2026-11-09 (The "Curb Cut" Edition)
 
 An accessibility release. The repository gains an accessibility statement
