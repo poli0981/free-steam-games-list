@@ -152,8 +152,10 @@ macOS, or Chrome on Android. The full device list is in
 [`docs/pc_spec.md`](docs/pc_spec.md).
 
 **Assistive technology used so far:** the keyboard alone, and the Narrator and
-NVDA screen readers on Windows.
-**Not tried yet:** JAWS, VoiceOver (macOS, iOS), TalkBack (Android), Orca
+NVDA screen readers on Windows. VoiceOver on a real iPhone 14 Pro (iOS 26),
+in Safari, Chrome and Brave, with the interface in English and in Vietnamese:
+passed (2026-11-09).
+**Not tried yet:** JAWS, VoiceOver on macOS, TalkBack (Android), Orca
 (Linux). Reports from any of them are especially welcome.
 
 ## Reporting a barrier
