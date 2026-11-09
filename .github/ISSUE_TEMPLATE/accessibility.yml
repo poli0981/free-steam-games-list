@@ -1,0 +1,75 @@
+name: ♿ Accessibility barrier
+description: Something on the site or in the apps you can't use, or can only use with trouble - keyboard, screen reader, zoom, contrast, motion
+title: "[A11y] "
+labels: ["accessibility"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for telling me. You don't have to say anything about yourself or why - just what got in the way.
+        Screenshots and recordings are welcome, never required. Rather not post in public? Email **contact@poli0981.dev**.
+
+        Not an accessibility problem? **Bug report** is the form you want.
+        How these reports are handled: [ACCESSIBILITY.md](https://github.com/poli0981/free-steam-games-list/blob/main/ACCESSIBILITY.md).
+
+  - type: dropdown
+    id: surface
+    attributes:
+      label: Where?
+      options:
+        - "Website — https://free-steam-games.win/"
+        - "Desktop app (Windows / macOS / Linux)"
+        - "Android app"
+        - "This repository (README, docs, games/*.md leaderboards)"
+        - "Somewhere else (say below)"
+    validations:
+      required: true
+
+  - type: input
+    id: page
+    attributes:
+      label: Page or link
+      description: The address, or the page's name in the app (Games, Settings, a game's page...).
+      placeholder: https://free-steam-games.win/games/730
+
+  - type: textarea
+    id: barrier
+    attributes:
+      label: What were you trying to do, and what got in the way?
+      description: Plain words are fine. Steps help if it only happens sometimes.
+      placeholder: |
+        I wanted to open a game from the Games list with the keyboard only.
+        Every row takes two Tab presses, and I lost track of which game I was on.
+    validations:
+      required: true
+
+  - type: dropdown
+    id: impact
+    attributes:
+      label: How much does it get in the way?
+      options:
+        - "I can't do it at all"
+        - "I can, but it's hard or slow"
+        - "Annoying, but I can live with it"
+        - "Not sure"
+    validations:
+      required: true
+
+  - type: input
+    id: assistive-tech
+    attributes:
+      label: Assistive technology or settings (optional)
+      description: e.g. NVDA, Narrator, VoiceOver on iOS, TalkBack, keyboard only, 200% zoom, high contrast, reduce motion.
+
+  - type: input
+    id: environment
+    attributes:
+      label: Browser or app version, and OS (optional)
+      description: The app version shows as "Steam · v…" under "F2P Tracker" in the sidebar (in the menu on small screens).
+      placeholder: Firefox on Windows 11 · v2.5.0
+
+  - type: textarea
+    id: extra
+    attributes:
+      label: Anything else? (optional)
+      description: A workaround you found, or a screenshot or recording if you'd like to add one.

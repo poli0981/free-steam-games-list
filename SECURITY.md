@@ -6,16 +6,20 @@ The previous version of this file said the repository was "just a Markdown
 list… no executable code, no dependencies, no backend, no user data." That was
 wrong on every count, so here is the real picture:
 
-- a **Cloudflare Worker** serving the site, holding a D1 binding and — for the
-  admin path — a credential that can write to this repository
-- a **React single-page app** with a few dozen npm dependencies
+- a **Cloudflare Worker** serving the site. It holds a D1 binding, an R2
+  bucket for the game art (public at `media.free-steam-games.win`), a
+  15-minute cron (reconcile, auto-approve, and minting the art into that
+  bucket), and, for the admin path, a credential that can write to this
+  repository
+- a **SvelteKit / Svelte 5 web app**, prerendered to static pages, with a few
+  dozen npm dependencies, plus the `/admin` app embedded in the Worker
 - a **Tauri 2 desktop and Android app**, signed, with an auto-updater
-Operational hardening — headers, HSTS, rate limiting, WAF — is documented in
+- a **Python pipeline** run by GitHub Actions. The data jobs push to `main`
+  with the built-in `GITHUB_TOKEN`; the release jobs hold the app signing keys
+
+Operational hardening (headers, HSTS, rate limiting, WAF) is documented in
 [`docs/SECURITY_SETUP.md`](docs/SECURITY_SETUP.md), with a check command for
 each item.
-
-- a **Python pipeline** run by 23 GitHub Actions workflows, several holding
-  secrets that can push to `main`
 
 There is genuinely something to attack here. Hence a real policy.
 
@@ -46,17 +50,21 @@ reproduce. A proof-of-concept URL beats a paragraph of description.
 
 - The Cloudflare Worker (`web/worker/**`) — the data proxy, the image proxy,
   and anything reachable under `/api/*`
-- The `/admin` path and its Cloudflare Access gate
+- The `/admin` path and `/api/ingest/*`, and their Cloudflare Access gates
 - The D1 database and anything that writes to it
+- The media host, `media.free-steam-games.win` (the R2 bucket's public
+  domain), and whatever the cron writes to it
 - The GitHub Actions workflows, especially any path where untrusted input
   reaches a step that can push to `main`
-- The Tauri updater and its signing key
+- The Tauri updater, its signing key, and its feed at `/api/updates/desktop`
 - Dependency vulnerabilities that are actually reachable from shipped code
 
 Things worth probing specifically: making `/img/*` fetch an origin that is not
-`shared.akamai.steamstatic.com` or `shared.fastly.steamstatic.com`; making
+`shared.akamai.steamstatic.com` or `shared.fastly.steamstatic.com` (or, for
+the avatars under `/img/gh/*`, `avatars.githubusercontent.com`); making
 `/api/data/*` return a path outside its allowlist; reaching admin
-functionality without an Access session.
+functionality without an Access session; getting the update feed to offer a
+file that is not this repository's release download.
 
 ## Out of scope
 
@@ -72,6 +80,8 @@ functionality without an Access session.
   already read. A way to make `/api/human-check` accept a token Cloudflare
   rejected is in scope.
 - Social engineering of the maintainer.
+- Accessibility barriers. They are real bugs, but not security ones: see
+  [`ACCESSIBILITY.md`](ACCESSIBILITY.md).
 
 ## What to expect
 

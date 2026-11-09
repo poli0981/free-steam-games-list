@@ -7,8 +7,10 @@ body:
     attributes:
       value: |
         Thanks for reporting! This broke unemployed dev will check when caffeine kicks in :))
-        For things that aren't bugs (just a missing game / wrong genre), the **Add games** or
-        **Delete game** templates are usually faster.
+        For things that aren't bugs: a missing game or a wrong genre goes in
+        [Discussions › Ideas](https://github.com/poli0981/free-steam-games-list/discussions/categories/ideas),
+        a game that should go uses **Delete game**, and something you can't use with a keyboard,
+        a screen reader or zoom has its own **Accessibility barrier** form.
 
   - type: dropdown
     id: surface
@@ -17,7 +19,10 @@ body:
       description: Helps me figure out which layer to look at first.
       options:
         - "Web app — https://free-steam-games.win/"
+        - "Desktop app (Windows / macOS / Linux)"
+        - "Android app"
         - "Top online — games/top-online.md"
+        - "Top offline — games/top-offline.md"
         - "Raw data — data/data_*.jsonl"
         - "API / direct fetch"
         - "Other (describe below)"
@@ -36,8 +41,6 @@ body:
         - label: Reviews / players not updating
         - label: Wrong game count / total
         - label: Table / chart layout broken
-        - label: Edit / Add / Delete failed (web app)
-        - label: GPG signature unverified (web app)
         - label: Service worker / offline cache issue
         - label: Dropdown / form validation issue
         - label: Mobile-specific
@@ -49,8 +52,8 @@ body:
       label: Describe the bug
       description: |
         What happened? Which game(s) or page(s)? How many records affected?
-        If it's a web-app bug, include the URL after the hash (e.g.
-        `#/games/730` or `#/charts/anti-cheat`).
+        If it's a web-app bug, include the page address (e.g.
+        `https://free-steam-games.win/games/730` or `/charts/anti-cheat`).
     validations:
       required: true
 
@@ -60,10 +63,10 @@ body:
       label: Steps to reproduce
       description: How can I see the bug? Numbered list works great.
       placeholder: |
-        1. Open #/games
+        1. Open /games
         2. Filter genre = FPS
-        3. Click row "Counter-Strike 2"
-        4. Edit drawer fails to open
+        3. Click the row "Counter-Strike 2"
+        4. The game page shows no player count
 
   - type: textarea
     id: screenshots
@@ -71,8 +74,8 @@ body:
       label: Screenshots / links
       description: |
         Paste image URLs (drag-drop into this field works) or links to the
-        affected commit / row / chart. The web app supports per-game
-        permalinks — `https://poli0981.github.io/free-steam-games-list/#/games/{appid}`.
+        affected commit / row / chart. The web app has a page per game —
+        `https://free-steam-games.win/games/{appid}`.
 
   - type: input
     id: env-browser
@@ -84,9 +87,9 @@ body:
   - type: input
     id: env-version
     attributes:
-      label: Web app version (for web app bugs)
-      description: Hover the F2P Tracker title in the sidebar — it shows the version.
-      placeholder: v0.1
+      label: App version (web, desktop or Android)
+      description: Shown as "Steam · v…" under the F2P Tracker title in the sidebar (in the menu on small screens).
+      placeholder: v2.5.0
 
   - type: textarea
     id: console

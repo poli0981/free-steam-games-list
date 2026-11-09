@@ -1202,6 +1202,20 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
 - **`safe` is classified by `lib/safety.ts`** (`y`, `n`, `?` = not reviewed,
   `""` = never set). `/games`, `/stats` and `/health` all use it; `?` is a
   to-do, not missing data, so /health reports it as its own group.
+- **`ACCESSIBILITY.md` (root) is a claim about this code, like this file.**
+  Its "What works today" and "Known limitations" lists were checked against
+  the code on 2026-11-09. A change that fixes a limitation, or adds one,
+  edits the list and its "Last reviewed" line in the same pull request.
+  Reports arrive through `.github/ISSUE_TEMPLATE/accessibility.yml` (label
+  `accessibility`), and the About page links both the form and the statement.
+  Two of its limitations look solved and are not:
+  - `GamesTable.svelte`'s comment says the grid "keeps the table SEMANTICS",
+    but its rows are `<a role="row">` with no `table`/`grid` parent.
+  - The desktop app cannot zoom: Tauri's `zoomHotkeysEnabled` defaults to
+    false and `tauri.conf.json` does not set it.
+
+  Svelte's a11y warnings never fail CI (`svelte-check` runs without
+  `--fail-on-warnings`), so read them.
 
 ## Admin SPA (`web/admin/`)
 

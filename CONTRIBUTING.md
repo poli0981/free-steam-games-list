@@ -33,6 +33,7 @@ Go to the [Issues tab](https://github.com/poli0981/free-steam-games-list/issues/
 
 - ➖ **Delete game** (max 10 per issue)
 - 🐛 **Bug report**
+- ♿ **Accessibility barrier** — something you can't use with a keyboard, a screen reader or zoom (see [`ACCESSIBILITY.md`](ACCESSIBILITY.md))
 - 💡 **Feature request / improvement**
 - 📢 **Feedback / rant**
 - ❓ **Off-topic**
@@ -58,7 +59,7 @@ For code changes, or to queue games yourself:
    {"link": "730"}
    {"link": "https://store.steampowered.com/app/570/"}
    ```
-3. Push → open PR. Reviewer (= me) will look when caffeine hits.
+3. Push → open PR. The template has a short checklist: what and why, the tests you ran, and an accessibility pass for interface changes. Reviewer (= me) will look when caffeine hits.
 
 A queued line is a link and nothing else: any other key is ignored, and the game is fetched from Steam and checked (free, a game, reachable) before it is published.
 
@@ -70,7 +71,8 @@ A queued line is a link and nothing else: any other key is ignored, and the game
 - **Notes / safe** are worth mentioning in a suggestion ("safe to play", "Toxic max", "Grind phê Easy mode"); the maintainer records them as overrides.
 - **Spam / off-topic** issues get closed without comment. Don't be that person.
 - **Code style:** match the surrounding file. No hard rules. The Python pipeline is intentionally low-ceremony; the web side (SvelteKit, the Worker, `admin/`) is TS-strict.
-- **Tests:** for web changes, `npm run typecheck && npm test && npm run build` must pass (in `web/`). For pipeline changes, `python -m pytest scripts/tests`.
+- **Tests:** for web changes, `npm run typecheck && npm test && npm run build && node scripts/verify-dist.mjs --web` must pass (in `web/`). For pipeline changes, `python -m pytest scripts/tests`.
+- **Accessibility:** interface changes get a keyboard pass and keep their names, focus and contrast. The short list is in [`ACCESSIBILITY.md`](ACCESSIBILITY.md#for-contributors) and in the PR template.
 
 ## Code of conduct
 

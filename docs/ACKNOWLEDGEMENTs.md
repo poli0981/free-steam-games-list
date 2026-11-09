@@ -5,7 +5,7 @@ Big thanks to everyone and everything that made this chaotic repo possible.
 ### People & Platforms
 
 - **Valve / Steam** — for existing and having a ton of free-to-play games that keep broke people like the maintainer entertained. The Steam logo, store, community, VAC, and all related marks are trademarks of Valve Corporation; this project is independent and not affiliated.
-- **GitHub** — for free hosting (data, Pages, Actions, Releases), free CI for the Python pipeline + the web app deploy + the desktop release matrix builds, and for letting unemployed devs pretend they're productive.
+- **GitHub** — for free hosting (data, Pages, Actions, Releases), free CI for the Python pipeline + the web app's checks + the desktop and Android release builds, and for letting unemployed devs pretend they're productive.
 - **Steam Charts** ([steamcharts.com](https://steamcharts.com/)) — for the all-time peak player counts. The pipeline reads each game's recorded peak from its public page, about once a month per game and a few seconds apart. Not affiliated with this project.
 - **The Steam community & various review aggregators** — for reviews, tags, and metadata that the pipeline scrapes off public store pages. Where copy-paste happens it stays attributed.
 - **Caffeine & instant noodles** — the real MVPs keeping the maintainer awake during update sessions.
@@ -51,7 +51,7 @@ in-app **About → Stack & third-party** section shows the headline ones with
 links and licences; this is the whole list, grouped by what it does.
 
 **Framework & build**
-- [Svelte 5](https://svelte.dev/) + [SvelteKit 2](https://svelte.dev/docs/kit) — UI runtime and app framework, with `adapter-static` (all MIT).
+- [Svelte 5](https://svelte.dev/) + [SvelteKit 3](https://svelte.dev/docs/kit) — UI runtime and app framework, with `adapter-static` (all MIT).
 - [TypeScript 7](https://www.typescriptlang.org/) — type system (Apache-2.0); the native compiler type-checks the code, and TypeScript 6 stays alongside it for the Svelte tooling, which needs its JavaScript API.
 - [Vite 8](https://vitejs.dev/), powered by the [Rolldown](https://rolldown.rs/) bundler, and `@sveltejs/vite-plugin-svelte` (MIT).
 - [Tailwind CSS 4](https://tailwindcss.com/) via `@tailwindcss/vite` (MIT). Tailwind 4 is a Vite plugin, so there is no PostCSS step and no `tailwind.config.ts`.
@@ -79,7 +79,7 @@ links and licences; this is the whole list, grouped by what it does.
 - [unified](https://unifiedjs.com/) with remark-parse, remark-gfm, remark-rehype, rehype-sanitize, rehype-slug and rehype-stringify — markdown to HTML (all MIT). These run at BUILD time only, so no parser or sanitizer reaches the browser.
 
 **Offline**
-- [Workbox](https://developer.chrome.com/docs/workbox) via [`@vite-pwa/sveltekit`](https://vite-pwa-org.netlify.app/) — service worker and precache (MIT). Web only: the packaged apps never register one.
+- [Workbox](https://developer.chrome.com/docs/workbox) via [`vite-plugin-pwa`](https://vite-pwa-org.netlify.app/) — service worker and precache (MIT). Web only: the packaged apps never register one.
 
 **Typefaces**
 - [Bricolage Grotesque](https://github.com/ateliertriay/bricolage), [IBM Plex Sans](https://github.com/IBM/plex) and [JetBrains Mono](https://github.com/JetBrains/JetBrainsMono), self-hosted through `@fontsource-variable` (all OFL-1.1).

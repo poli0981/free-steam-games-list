@@ -10,7 +10,7 @@ served only behind Cloudflare Access. See [docs/ADMIN.md](../docs/ADMIN.md).
 
 ## Stack
 
-- **SvelteKit 2 + Svelte 5** (runes), prerendered to static HTML by
+- **SvelteKit 3 + Svelte 5** (runes), prerendered to static HTML by
   `@sveltejs/adapter-static`
 - **Vite 8** (Rolldown) + **TypeScript**
 - **Tailwind CSS 4** — as a Vite plugin; there is no `tailwind.config.ts` and
@@ -18,7 +18,7 @@ served only behind Cloudflare Access. See [docs/ADMIN.md](../docs/ADMIN.md).
 - **Bits UI** primitives, **@lucide/svelte** icons, **svelte-sonner** toasts
 - **Apache ECharts 6** (`echarts/core` + an explicit `use()` list) and
   `echarts-wordcloud`
-- **@tanstack/svelte-virtual** for the 3,600-row table
+- **@tanstack/svelte-virtual** for the games table
 - **Fuse.js** (fuzzy search), **idb-keyval** (IndexedDB cache)
 - **unified / remark / rehype** — build time only, for `/legal/*`
 - Three self-hosted variable typefaces: Bricolage Grotesque, IBM Plex Sans,
@@ -31,7 +31,10 @@ The browser contacts two third parties, both only after the reader accepts the
 terms and neither in the packaged apps: the Cloudflare Web Analytics beacon,
 and Cloudflare Turnstile for the once-a-day human check (`src/lib/human-check.ts`,
 [docs/SECURITY_SETUP.md](../docs/SECURITY_SETUP.md) section 12). Everything else
-is same-origin, through the Worker.
+comes from this site: same-origin through the Worker, except the game art on
+the website, which loads from the R2 bucket's own host,
+`media.free-steam-games.win` (`src/lib/image.ts`), with `/img/*` as the
+fallback.
 
 ## Quick start
 
@@ -55,8 +58,9 @@ node node_modules/wrangler/bin/wrangler.js dev --config wrangler.jsonc
 
 ## Where the data comes from
 
-The browser never talks to GitHub. Everything is same-origin through the
-Worker:
+The browser never talks to GitHub or to Valve. Everything below is
+same-origin through the Worker; the website loads the AVIF art from
+`media.free-steam-games.win` first and falls back to `/img/*`:
 
 - `/api/data/data/index.json` — shard manifest (`max_per_file`, `total`,
   `last_updated`, `files`)
