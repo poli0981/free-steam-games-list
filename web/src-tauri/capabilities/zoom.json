@@ -1,0 +1,16 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "desktop-zoom",
+  "description": "Page zoom with Ctrl/Cmd and +/-. tauri.conf.json turns on zoomHotkeysEnabled: on Windows that is WebView2's own zoom, while on macOS and Linux Tauri injects a script that calls set_webview_zoom, which needs this permission. Desktop-only, like updater.json: the setting does nothing on Android and iOS.",
+  "platforms": [
+    "windows",
+    "linux",
+    "macOS"
+  ],
+  "windows": [
+    "main"
+  ],
+  "permissions": [
+    "core:webview:allow-set-webview-zoom"
+  ]
+}
