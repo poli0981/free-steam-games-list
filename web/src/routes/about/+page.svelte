@@ -8,6 +8,7 @@
   import TriangleAlert from "@lucide/svelte/icons/triangle-alert";
   import FileText from "@lucide/svelte/icons/file-text";
   import Bug from "@lucide/svelte/icons/bug";
+  import Accessibility from "@lucide/svelte/icons/accessibility";
   import { games } from "#lib/games.svelte.js";
   import { i18n } from "#lib/i18n.svelte.js";
   import { LEGAL_DOCS, legalDocSlug } from "#lib/legal.js";
@@ -19,6 +20,11 @@
 
   const t = i18n.t;
   const REPO_URL = `https://github.com/${REPO_OWNER}/${REPO_NAME}`;
+  /** GitHub renders it, and shows it as the repository's Accessibility tab.
+   *  Linked rather than rendered under /legal/: it is not a legal document,
+   *  and a file rendered there becomes a build input that the deploy watch
+   *  paths must list (docs/DEPLOYMENT.md, "Which commits deploy"). */
+  const A11Y_URL = `${REPO_URL}/blob/main/ACCESSIBILITY.md`;
 
   const total = $derived(games.data?.records.length ?? 0);
   const lastUpdated = $derived(games.data?.index.last_updated ?? "");
@@ -47,7 +53,7 @@
    *  are proper nouns and stay as written. */
   const DEPS = [
     { name: "Svelte 5", role: "about.deps.svelte", href: "https://svelte.dev/", licence: "MIT" },
-    { name: "SvelteKit 2", role: "about.deps.sveltekit", href: "https://svelte.dev/docs/kit", licence: "MIT" },
+    { name: "SvelteKit 3", role: "about.deps.sveltekit", href: "https://svelte.dev/docs/kit", licence: "MIT" },
     { name: "TypeScript 7 + 6", role: "about.deps.typescript", href: "https://www.typescriptlang.org/", licence: "Apache-2.0" },
     { name: "Vite 8 / Rolldown", role: "about.deps.vite", href: "https://vitejs.dev/", licence: "MIT" },
     { name: "Tailwind CSS 4", role: "about.deps.tailwind", href: "https://tailwindcss.com/", licence: "MIT" },
@@ -67,6 +73,7 @@
     { id: "bug_report", label: t("about.tplBug"), icon: Bug },
     { id: "feature_request", label: t("about.tplFeature"), icon: Sparkles },
     { id: "delete_game", label: t("about.tplDelete"), icon: TriangleAlert },
+    { id: "accessibility", label: t("about.tplAccessibility"), icon: Accessibility },
   ]);
 </script>
 
@@ -158,7 +165,7 @@
       <Bug class="size-4 text-muted-foreground" />
       {t("about.reportTitle")}
     </h2>
-    <div class="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-3">
+    <div class="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2">
       {#each ISSUE_TEMPLATES as tpl (tpl.id)}
         <a
           href={`${REPO_URL}/issues/new?template=${tpl.id}.yml`}
@@ -170,6 +177,17 @@
           <span class="flex-1 truncate">{tpl.label}</span>
         </a>
       {/each}
+    </div>
+    <p class="mt-4 text-sm text-muted-foreground">{t("about.a11yBlurb")}</p>
+    <div class="mt-2 flex flex-wrap gap-2">
+      <a
+        href={A11Y_URL}
+        target="_blank"
+        rel="noreferrer"
+        class="inline-flex items-center gap-1.5 rounded-md border px-3 py-1.5 text-xs hover:bg-accent"
+      >
+        <FileText class="size-3.5" /> {t("about.a11yStatement")}
+      </a>
     </div>
   </section>
 
