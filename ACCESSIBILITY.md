@@ -35,10 +35,8 @@ What matters most, in this order:
 
 ## What works today
 
-Checked against the code on 2026-11-09. The website has everything below. The
-desktop and Android apps 2.5.0 were built before the games table, first-run
-screen, colour, zoom and focus fixes of that day, and get them with their next
-release.
+Checked against the code on 2026-11-09, for the website and the desktop and
+Android apps 2.5.1.
 
 - **Language.** The page declares its language, and changes it when you
   switch between English and Vietnamese.
@@ -84,9 +82,9 @@ release.
   short, and scrolling jumps instead of gliding, "back to top" included.
 - **Zoom and small screens.** The website never blocks pinch-zoom, and the
   games list keeps a usable height at 400% zoom. The desktop app zooms with
-  <kbd>Ctrl</kbd>/<kbd>⌘</kbd> and <kbd>+</kbd> / <kbd>−</kbd> (from its next
-  release). Below tablet width the games table turns into cards, and a test
-  checks that every grid falls back to one column on a phone.
+  <kbd>Ctrl</kbd>/<kbd>⌘</kbd> and <kbd>+</kbd> / <kbd>−</kbd>. Below tablet
+  width the games table turns into cards, and a test checks that every grid
+  falls back to one column on a phone.
 - **Settings.** Theme (dark by default, light, or follow the system), English
   or Vietnamese, and hidden scrollbars. Hidden scrollbars still scroll from
   the keyboard.
@@ -239,5 +237,4 @@ which says to keep this file true.
   [Discussions › Ideas](https://github.com/poli0981/free-steam-games-list/discussions/categories/ideas),
   or an issue.
 
-*Last reviewed: 2026-11-09, after that day's accessibility fixes (website).
-Desktop and Android apps: 2.5.0.*
+*Last reviewed: 2026-11-09 (website and apps 2.5.1).*
