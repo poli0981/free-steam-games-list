@@ -11,6 +11,7 @@
   import { humanCheck } from "#lib/human-check-state.svelte.js";
   import { appReady } from "#lib/app-ready.js";
   import { installPaletteShortcut } from "#lib/palette.svelte.js";
+  import { overlays } from "#lib/overlays.svelte.js";
   import { games, installGamesRevalidation } from "#lib/games.svelte.js";
   import { upgradeLegacyHashUrl } from "#lib/legacy-url.js";
   import { recoverFallbackRoute } from "#lib/fallback-route.js";
@@ -208,16 +209,21 @@
   {#if pwaInfo}{@html pwaInfo.webManifest.linkTag}{/if}
 </svelte:head>
 
+<!-- inert while the consent gate or the human check is open: the page
+     behind leaves the Tab order and the accessibility tree, so keyboard
+     focus and screen readers stay in the overlay (lib/overlays.svelte.ts).
+     Never set during prerender. -->
 {#if bare}
-  {@render children()}
+  <!-- display:contents: a wrapper for `inert` that takes no part in the layout. -->
+  <div class="contents" inert={overlays.open || undefined}>{@render children()}</div>
 {:else}
-  <a href="#main" class="skip-link">{i18n.t("common.skipToContent")}</a>
+  <a href="#main" class="skip-link" inert={overlays.open || undefined}>{i18n.t("common.skipToContent")}</a>
 
   <!-- The safe-area padding keeps the shell out from under the Android status
        bar (and a landscape cutout); <main> takes the bottom inset itself, so
        the page scrolls behind the navigation bar but its last line clears it.
        See the safe-area utilities in styles/theme.css. -->
-  <div class="flex h-dvh overflow-hidden pt-safe pl-safe pr-safe">
+  <div class="flex h-dvh overflow-hidden pt-safe pl-safe pr-safe" inert={overlays.open || undefined}>
     <aside class="hidden w-60 shrink-0 border-r bg-card/40 lg:block">
       <Sidebar />
     </aside>
@@ -253,10 +259,13 @@
         </div>
       </main>
     </div>
+
+    <!-- Fixed-position, so where it sits in the DOM only decides what is
+         inert with it: inside the shell, it goes inert with the page. -->
+    <BackToTop scroller={main} />
   </div>
 
   <CommandPalette />
-  <BackToTop scroller={main} />
 {/if}
 
 <!-- An OVERLAY, not a replacement for the page.

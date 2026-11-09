@@ -11,6 +11,7 @@
   import { legalDocSlug } from "../legal";
   import { HUMAN_CHECK_ACTION, HUMAN_CHECK_PATH, type HumanCheckReply } from "../../../shared/human-check";
   import Button from "../ui/Button.svelte";
+  import { overlays, focusOnMount } from "../overlays.svelte";
 
   /**
    * The Turnstile human check - WEB ONLY, after the consent gate.
@@ -30,6 +31,14 @@
   const open = $derived(
     consent.accepted && humanCheck.hydrated && !humanCheck.cleared && !isUngatedPath(page.url.pathname),
   );
+
+  // The layout makes the page behind inert while this is open (overlays.svelte.ts).
+  $effect(() => {
+    overlays.humanCheck = open;
+    return () => {
+      overlays.humanCheck = false;
+    };
+  });
 
   type Status = "loading" | "ready" | "confirming" | "failed" | "blocked" | "unsupported";
   let status = $state<Status>("loading");
@@ -166,14 +175,16 @@
       aria-modal="true"
       aria-labelledby="human-check-title"
       aria-describedby="human-check-intro"
-      class="m-auto w-full max-w-md rounded-xl border bg-card p-6 shadow-xl sm:p-8"
+      tabindex="-1"
+      {@attach focusOnMount}
+      class="m-auto w-full max-w-md rounded-xl border bg-card p-6 shadow-xl focus:outline-none sm:p-8"
     >
       <div class="mb-5 flex items-start gap-3">
         <span class="grid size-10 shrink-0 place-items-center rounded-lg bg-primary/15 text-primary">
           <ShieldCheck class="size-5" />
         </span>
         <div>
-          <h1 id="human-check-title" class="text-xl font-semibold">{t("humanCheck.title")}</h1>
+          <h2 id="human-check-title" class="text-xl font-semibold">{t("humanCheck.title")}</h2>
           <p id="human-check-intro" class="mt-1 text-sm text-muted-foreground">{t("humanCheck.intro")}</p>
         </div>
       </div>

@@ -23,10 +23,18 @@
 
 <!-- bottom-4/right-4 plus the safe-area insets, so in the Android app the
      button clears the navigation bar (see the utilities in styles/theme.css). -->
+<!-- inert while hidden: it only fades out, so it stayed a Tab stop and a
+     button a screen reader read out. A JS smooth scroll is not covered by
+     the CSS reduced-motion rule, so it asks the system itself. -->
 <button
   type="button"
   aria-label={i18n.t("common.backToTop")}
-  onclick={() => scroller?.scrollTo({ top: 0, behavior: "smooth" })}
+  inert={!visible || undefined}
+  onclick={() =>
+    scroller?.scrollTo({
+      top: 0,
+      behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
+    })}
   class={cn(
     "fixed z-20 grid size-10 place-items-center rounded-full border",
     "bg-card text-muted-foreground shadow-lg transition-all hover:text-foreground",

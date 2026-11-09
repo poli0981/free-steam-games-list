@@ -13,6 +13,7 @@
   import { isUngatedPath } from "../gates";
   import { closeTab, leaveSite } from "../leave-site";
   import { pwa } from "../pwa-state.svelte";
+  import { overlays, focusOnMount } from "../overlays.svelte";
   import Button from "../ui/Button.svelte";
 
   const t = i18n.t;
@@ -37,6 +38,14 @@
   // `accepted` is false for everyone, and rendering the gate then put the whole
   // dialog into every page's HTML.
   const open = $derived(consent.hydrated && !consent.accepted && !exempt);
+
+  // The layout makes the page behind inert while this is open (overlays.svelte.ts).
+  $effect(() => {
+    overlays.consent = open;
+    return () => {
+      overlays.consent = false;
+    };
+  });
 
   /**
    * REVIEW mode: some documents changed since this reader accepted them, and
@@ -142,9 +151,16 @@
   <!-- nothing: the page underneath is already rendered -->
 {:else if leaving !== "idle"}
   <div class="fixed inset-0 z-[60] flex overflow-auto bg-background/95 p-safe-or-4 backdrop-blur-sm">
-    <div class="m-auto w-full max-w-md rounded-lg border bg-card p-8 text-center">
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="consent-title"
+      tabindex="-1"
+      {@attach focusOnMount}
+      class="m-auto w-full max-w-md rounded-lg border bg-card p-8 text-center focus:outline-none"
+    >
       <House class="mx-auto mb-4 size-10 text-muted-foreground" />
-      <h1 class="mb-2 text-xl font-semibold">{t("consent.leaveNowhereTitle")}</h1>
+      <h2 id="consent-title" class="mb-2 text-xl font-semibold">{t("consent.leaveNowhereTitle")}</h2>
       <p role="status" class="text-sm text-muted-foreground">
         {leaving === "refused" ? t("consent.leaveRefused") : t("consent.leaveNowhereBody")}
       </p>
@@ -161,9 +177,16 @@
   </div>
 {:else if declined}
   <div class="fixed inset-0 z-[60] flex overflow-auto bg-background/95 p-safe-or-4 backdrop-blur-sm">
-    <div class="m-auto w-full max-w-md rounded-lg border border-warning/40 bg-warning/5 p-8 text-center">
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="consent-title"
+      tabindex="-1"
+      {@attach focusOnMount}
+      class="m-auto w-full max-w-md rounded-lg border border-warning/40 bg-warning/5 p-8 text-center focus:outline-none"
+    >
       <ShieldCheck class="mx-auto mb-4 size-10 text-warning" />
-      <h1 class="mb-2 text-xl font-semibold">{t("consent.declinedTitle")}</h1>
+      <h2 id="consent-title" class="mb-2 text-xl font-semibold">{t("consent.declinedTitle")}</h2>
       <p class="text-sm text-muted-foreground">{t("consent.declinedBody")}</p>
       <div class="mt-6 flex flex-wrap justify-center gap-2">
         <Button variant="outline" onclick={() => (declined = false)}>
@@ -180,7 +203,14 @@
   </div>
 {:else}
   <div class="fixed inset-0 z-[60] flex overflow-auto bg-background/95 p-safe-or-4 backdrop-blur-sm">
-    <div class="m-auto w-full max-w-lg rounded-xl border bg-card p-6 shadow-xl sm:p-8">
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="consent-title"
+      tabindex="-1"
+      {@attach focusOnMount}
+      class="m-auto w-full max-w-lg rounded-xl border bg-card p-6 shadow-xl focus:outline-none sm:p-8"
+    >
       <div class="mb-5 flex items-start gap-3">
         <span class="grid size-10 shrink-0 place-items-center rounded-lg bg-primary/15 text-primary">
           {#if reviewing}
@@ -190,7 +220,7 @@
           {/if}
         </span>
         <div>
-          <h1 class="text-xl font-semibold">{reviewing ? t("consent.changedTitle") : t("consent.title")}</h1>
+          <h2 id="consent-title" class="text-xl font-semibold">{reviewing ? t("consent.changedTitle") : t("consent.title")}</h2>
           <p class="mt-1 text-sm text-muted-foreground">
             {reviewing ? t("consent.changedIntro") : t("consent.intro")}
           </p>
