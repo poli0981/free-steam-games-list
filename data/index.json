@@ -1,12 +1,12 @@
 {
   "max_per_file": 800,
   "total": 18740,
-  "last_updated": "2026-11-09T19:46:28Z",
+  "last_updated": "2026-11-10T00:14:45Z",
   "files": [
     {
       "name": "data_001.jsonl",
       "count": 800,
-      "sha256": "e2c8def737748d37328394036ecd6cecf7491c69ea53d9618b8c38c55e8f79f7"
+      "sha256": "6a60ab8ab2c3c9af3abb8e921c734f289184f4dacaf24774fb0769f02c6b6d6d"
     },
     {
       "name": "data_002.jsonl",
@@ -31,17 +31,17 @@
     {
       "name": "data_006.jsonl",
       "count": 800,
-      "sha256": "05614318e4b5da11d2b74a0083ee99e4cf7d67fac1c3d6fe34ef029b48b6836f"
+      "sha256": "642305c3b129e76478298b5da9f0518757a474e7fb7baa144cddd3bfb47639ac"
     },
     {
       "name": "data_007.jsonl",
       "count": 800,
-      "sha256": "786337ed28249b45f7e249f49526f6d31490b90db612759f719580877fff3141"
+      "sha256": "0817aef9a5e6cc335e9d2daa1f644514715178dd69a7d7f83c400cf17bc903e9"
     },
     {
       "name": "data_008.jsonl",
       "count": 800,
-      "sha256": "3232e8aa3be1002f8360c65981875e4f673558a89a9a5cb5664b6b072bdec2f4"
+      "sha256": "d851aedda3fabb0949b59975705866eceac62b26195022336a47a4eba64038b4"
     },
     {
       "name": "data_009.jsonl",
@@ -51,12 +51,12 @@
     {
       "name": "data_010.jsonl",
       "count": 800,
-      "sha256": "213ac4ab73e8e17229db45c0b517fd31054b4dba04ccc7da9251f357e41044e4"
+      "sha256": "a071a5ac37baa23492a22b250ab690384caab89f4ec1b18cf51020c4d00550fb"
     },
     {
       "name": "data_011.jsonl",
       "count": 800,
-      "sha256": "0e30d2096a695525acd924ef2caebdc029d80cfbaf259af933dc0546f4586c29"
+      "sha256": "a3be072965200b78d88c35fb285c35ecde6ab24a1822faba1b8185530396785a"
     },
     {
       "name": "data_012.jsonl",
@@ -66,7 +66,7 @@
     {
       "name": "data_013.jsonl",
       "count": 800,
-      "sha256": "1f78c301e1b7621b4e27a219594a178a2e3e59943c308270b0492079ae78afd3"
+      "sha256": "8ebdf39f68c15fb2625a7b5a66166aeac0c6de5d28ce4d2012cfc7962ed7782b"
     },
     {
       "name": "data_014.jsonl",
@@ -76,12 +76,12 @@
     {
       "name": "data_015.jsonl",
       "count": 800,
-      "sha256": "047bef944e76156f7c63f612c124335e879da2d0aa06fa73e3055ea4f1526ceb"
+      "sha256": "299854e24c7814d679ec7799b5791cc9ff6e6733799bfec776cc579e336bc452"
     },
     {
       "name": "data_016.jsonl",
       "count": 800,
-      "sha256": "9576a9c01599818051230e68cb7b1183b9415a54b31d5694bd47f3e5fd1f38aa"
+      "sha256": "ba1f0445444e19ad31c579450a7437c24b8232676e8d90fe2265e22e5cadf959"
     },
     {
       "name": "data_017.jsonl",
@@ -91,22 +91,22 @@
     {
       "name": "data_018.jsonl",
       "count": 800,
-      "sha256": "d1843e3466249513d0230cdbdca8d64923e27974580618cfc48c974a8a7ad6ae"
+      "sha256": "98ed49d5a2ac0d584a93c75376016d18159216528fc90b5a5fd43faee06a1a86"
     },
     {
       "name": "data_019.jsonl",
       "count": 800,
-      "sha256": "5ad918e674696c016607ebc1b25667dd3552ccd3168b742a29018e28d8d5c4b2"
+      "sha256": "97207ba0071f037971ac510935576ee3f332a9160c41009d11030b5cec12d902"
     },
     {
       "name": "data_020.jsonl",
       "count": 800,
-      "sha256": "cc59c059e05d7b5a71b9a46178132ddade9017ca0d7a63ec4b3abe60a54e8470"
+      "sha256": "bd5dfdf8c3dfca789f46d0013915d1f8d4ffa85e856395222f4b6d36933d4d82"
     },
     {
       "name": "data_021.jsonl",
       "count": 800,
-      "sha256": "be2b3f03fe4621e7a6471470cd50bfa03bd37e5967c74774d5309b9a289fafcd"
+      "sha256": "99e1e8cf14a1d2a7e8473a6d8ba318c17fcb2dcf1a07ff0336b1b5def5cbade4"
     },
     {
       "name": "data_022.jsonl",
@@ -116,12 +116,12 @@
     {
       "name": "data_023.jsonl",
       "count": 800,
-      "sha256": "f9f699e9def1124bd6d4bc97680615310472e6dee76092d8ae041d877159b740"
+      "sha256": "6f9ae5f99d42e7ab5c452374c84cee02c1be9abc5beacca8743f3c121c9d7922"
     },
     {
       "name": "data_024.jsonl",
       "count": 340,
-      "sha256": "1b6b976856b1020838fc9cd93d9afef192f168ce561f1e7174fe0ff95f59b80d"
+      "sha256": "0efb0aa237b51055be1b1223bc5f1d68d28fa612da9076e03eb26fec25e59dd1"
     }
   ]
 }
