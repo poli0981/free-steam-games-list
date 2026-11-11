@@ -5,6 +5,8 @@
   import ExternalLink from "@lucide/svelte/icons/external-link";
   import Scale from "@lucide/svelte/icons/scale";
   import Sparkles from "@lucide/svelte/icons/sparkles";
+  import Plus from "@lucide/svelte/icons/plus";
+  import Pencil from "@lucide/svelte/icons/pencil";
   import TriangleAlert from "@lucide/svelte/icons/triangle-alert";
   import FileText from "@lucide/svelte/icons/file-text";
   import Bug from "@lucide/svelte/icons/bug";
@@ -70,9 +72,10 @@
   ];
 
   const ISSUE_TEMPLATES = $derived([
-    { id: "bug_report", label: t("about.tplBug"), icon: Bug },
-    { id: "feature_request", label: t("about.tplFeature"), icon: Sparkles },
+    { id: "add_game", label: t("about.tplAdd"), icon: Plus },
+    { id: "edit_game", label: t("about.tplEdit"), icon: Pencil },
     { id: "delete_game", label: t("about.tplDelete"), icon: TriangleAlert },
+    { id: "bug_report", label: t("about.tplBug"), icon: Bug },
     { id: "accessibility", label: t("about.tplAccessibility"), icon: Accessibility },
   ]);
 </script>

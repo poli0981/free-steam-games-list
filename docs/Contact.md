@@ -44,12 +44,16 @@ half of which I never checked.
 
 **Adding a F2P game to the list?** Don’t DM me about it. New free games are
 found on Steam automatically every day and reviewed before they are listed. If
-one is still missing a few days after it went free, post its store link in
-[Discussions › Ideas](https://github.com/poli0981/free-steam-games-list/discussions/categories/ideas).
-The browser extension is archived, and the Telegram bot and the issue template
-are gone; if you read about whitelisting a Telegram `user_id` somewhere, that
+one is still missing a few days after it went free, use the
+[Add games](https://github.com/poli0981/free-steam-games-list/issues/new?template=add_game.yml)
+form; a wrong genre or anti-cheat has
+[Edit game](https://github.com/poli0981/free-steam-games-list/issues/new?template=edit_game.yml).
+The project is stable and in maintenance mode, so those data forms, bug
+reports and accessibility reports are what issues are for; feature requests
+are not taken.
+The browser extension is archived and the Telegram bot is gone; if you read about whitelisting a Telegram `user_id` somewhere, that
 doc is stale.
 
-Or open an issue here (Wiki first, or gentle RTFM). Luck’s on your side.
+Anything else: [Discussions](https://github.com/poli0981/free-steam-games-list/discussions) (gentle RTFM first). Luck’s on your side.
 
 Thanks for peeking behind the curtain. Make the web (and life) less annoying.

@@ -80,7 +80,7 @@ jobs:
               '',
               '---',
               '',
-              '*(Auto-posted by `.github/workflows/announce-release-discussion.yml`. Reply with feedback, install issues, or feature requests — full bug reports still go through the [issue templates](../../issues/new/choose).)*',
+              '*(Auto-posted by `.github/workflows/announce-release-discussion.yml`. Reply with feedback or install issues. The project is in maintenance mode, so feature requests are not taken — bug reports and data changes go through the [issue templates](../../issues/new/choose).)*',
             ]
               .filter(Boolean)
               .join('\n');

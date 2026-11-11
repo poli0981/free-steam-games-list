@@ -4,6 +4,31 @@ All notable changes to this awesome noob repo will be documented here.
 
 ## [Unreleased]
 
+### 🧊 Stable: maintenance mode (2026-11-11)
+
+The project does what it set out to do, so from here it is kept running
+rather than extended. Nothing changes for readers: the pipeline still
+refreshes the list every day, and the site and the apps stay up.
+
+- **No new features.** Code changes only for security advisories, runtime and
+  dependency updates, and whatever those break.
+- **Issues and pull requests are for the data.** Two new forms, **Add games**
+  and **Edit game**, join **Delete games**; **Bug report** and
+  **Accessibility barrier** stay for things that are broken. The feature
+  request, feedback and off-topic forms are gone, blank issues are off, and
+  the chooser sends questions to Discussions and vulnerabilities to private
+  reporting.
+- The About page's "Report something" links follow: add, correct, remove,
+  bug, accessibility. The released apps (2.5.1) still link the old feature
+  form, which now opens the form chooser; they take the new links with their
+  next release.
+- README: a status badge, build badges (Web CI, Python Tests, CodeQL,
+  SonarCloud gate and coverage), live desktop and Android version badges, and
+  the licences and runtimes. CONTRIBUTING, SECURITY, the pull-request
+  template and CLAUDE.md state the same policy.
+- No legal document you accept changed, so nobody is asked to accept the
+  terms again.
+
 ### 🧰 Tooling & misc
 
 - Dependencies: patch releases of the icon, dialog, toast and virtual-list

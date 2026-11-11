@@ -1,11 +1,27 @@
+[![Status](https://img.shields.io/badge/status-stable%20%C2%B7%20maintenance%20only-2ea44f?style=flat)](#project-status)
 [![Games Count](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fpoli0981%2Ffree-steam-games-list%2Fmain%2Fdata%2Findex.json&query=%24.total&label=Games&color=green&style=flat&logo=steam)](data/)
 [![Last Updated](https://img.shields.io/badge/Updated-Daily-blue?style=flat&logo=github-actions)](.github/workflows)
 [![Top Online](https://img.shields.io/badge/Top%20Online-Live%20Leaderboard-red?style=flat&logo=steam)](games/top-online.md)
-[![Version](https://img.shields.io/github/v/release/poli0981/free-steam-games-list?filter=v*&sort=semver&label=version&color=purple&style=flat&logo=github)](https://github.com/poli0981/free-steam-games-list/releases)
-[![Web App](https://img.shields.io/badge/Web%20App-Live-2563eb?style=flat&logo=svelte)](https://free-steam-games.win/)
-[![Desktop](https://img.shields.io/badge/Desktop-Tauri%202-FFC131?style=flat&logo=tauri)](https://github.com/poli0981/free-steam-games-list/releases)
-[![Android](https://img.shields.io/badge/Android-11%2B%20APK-3DDC84?style=flat&logo=android)](https://github.com/poli0981/free-steam-games-list/releases)
 [![Health Check](https://img.shields.io/badge/Health%20Check-Daily-orange?style=flat&logo=github-actions)](.github/workflows/purge-unhealthy.yml)
+
+[![Version](https://img.shields.io/github/v/release/poli0981/free-steam-games-list?filter=v*&sort=semver&label=dataset&color=purple&style=flat&logo=github)](https://github.com/poli0981/free-steam-games-list/releases)
+[![Desktop](https://img.shields.io/github/v/release/poli0981/free-steam-games-list?filter=desktop-v*&label=desktop&color=FFC131&style=flat&logo=tauri)](https://github.com/poli0981/free-steam-games-list/releases)
+[![Android](https://img.shields.io/github/v/release/poli0981/free-steam-games-list?filter=android-v*&label=android%2011%2B&color=3DDC84&style=flat&logo=android)](https://github.com/poli0981/free-steam-games-list/releases)
+[![Web App](https://img.shields.io/website?url=https%3A%2F%2Ffree-steam-games.win%2F&label=web%20app&style=flat&logo=svelte)](https://free-steam-games.win/)
+
+[![Web CI](https://github.com/poli0981/free-steam-games-list/actions/workflows/web-ci.yml/badge.svg?branch=main)](https://github.com/poli0981/free-steam-games-list/actions/workflows/web-ci.yml)
+[![Python Tests](https://github.com/poli0981/free-steam-games-list/actions/workflows/python-tests.yml/badge.svg?branch=main)](https://github.com/poli0981/free-steam-games-list/actions/workflows/python-tests.yml)
+[![CodeQL](https://github.com/poli0981/free-steam-games-list/actions/workflows/codeql.yml/badge.svg?branch=main)](https://github.com/poli0981/free-steam-games-list/actions/workflows/codeql.yml)
+[![Quality Gate](https://sonarcloud.io/api/project_badges/measure?project=poli0981_free-steam-games-list&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=poli0981_free-steam-games-list)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=poli0981_free-steam-games-list&metric=coverage)](https://sonarcloud.io/summary/new_code?id=poli0981_free-steam-games-list)
+[![Dependabot](https://img.shields.io/badge/Dependabot-enabled-025E8C?style=flat&logo=dependabot)](.github/dependabot.yml)
+
+[![Code: MIT](https://img.shields.io/badge/code-MIT-yellow?style=flat)](LICENSE)
+[![Data: CC BY 4.0](https://img.shields.io/badge/data-CC%20BY%204.0-lightgrey?style=flat&logo=creativecommons)](LICENSE-DATA)
+[![Node 26](https://img.shields.io/badge/Node-26-5FA04E?style=flat&logo=nodedotjs)](web/.node-version)
+[![Python 3.15](https://img.shields.io/badge/Python-3.15-3776AB?style=flat&logo=python)](requirements.txt)
+[![SvelteKit 3](https://img.shields.io/badge/SvelteKit-3-FF3E00?style=flat&logo=svelte)](web/README.md)
+[![Tauri 2](https://img.shields.io/badge/Tauri-2-24C8D8?style=flat&logo=tauri)](web/src-tauri/TAURI.md)
 ![Visitors](https://visitor-badge.laobi.icu/badge?page_id=poli0981.free-steam-games-list)
 [![Sponsor](https://img.shields.io/badge/Sponsor-Buy%20me%20a%20coffee-ff5f5f?style=flat&logo=buy-me-a-coffee)](.github/FUNDING.yml)
 
@@ -22,6 +38,23 @@ A **curated list** of free-to-play games on Steam — the badge above has today'
 **Powered ~70 % by AI** (Grok for v1, Claude for v2 + the entire web/desktop layer) — code is reviewed and tested, but mistakes happen. See the [Disclaimer](docs/DISCLAIMER.md) for the specific accuracy caveats (genre best-effort, English-only assumptions, test-data leakage, unsigned-commit dev artefacts).
 
 **Wallet safe (for now). Play at your own risk.**
+
+### Project status
+
+> [!NOTE]
+> **Stable, maintenance only (since 2026-11-11).** The project does what it set
+> out to do, so it is finished rather than abandoned: the pipeline keeps the
+> list fresh every day, and the site and apps stay up.
+>
+> - **No new features.** Feature requests are not taken, as issues or as pull requests.
+> - **Code changes only for** security advisories (CVEs), runtime and dependency
+>   updates, and whatever those break.
+> - **Issues and pull requests are for the data:** adding a game, correcting
+>   one, removing one. Something broken or an accessibility barrier can still be
+>   reported; it gets a fix, not a redesign.
+> - A vulnerability goes through [`SECURITY.md`](SECURITY.md), never a public issue.
+>
+> Details in [`CONTRIBUTING.md`](CONTRIBUTING.md).
 
 ### Quick links
 
@@ -208,33 +241,34 @@ The site itself is deployed by Cloudflare Workers Builds, not by a workflow.
 
 ### Contribute
 
+The repository is in [maintenance mode](#project-status): contributions are
+about the **data**.
+
 New games arrive on their own: `Discover New Games` sweeps the Steam store
 daily, in every language, into a review queue, and the maintainer approves them at `/admin` — by
 hand, or with an auto-approve rule that has a daily cap and is off until turned
 on. Discovery only proposes, and every approved game is checked again by the
-pipeline (free, a game, reachable) before it is published. Missing a free game
-a few days after it went free? Post its store link in
-[Discussions › Ideas](https://github.com/poli0981/free-steam-games-list/discussions/categories/ideas).
+pipeline (free, a game, reachable) before it is published.
 
-The companion browser extension, [steam-f2p-extension](https://github.com/poli0981/steam-f2p-extension),
-is archived and no longer a way in.
-
-**Issues** are for reports, not submissions:
-[Bug report](.github/ISSUE_TEMPLATE/bug_report.yml),
-[Accessibility barrier](.github/ISSUE_TEMPLATE/accessibility.yml),
-[Feature request](.github/ISSUE_TEMPLATE/feature_request.yml),
-[Delete game](.github/ISSUE_TEMPLATE/delete_game.yml),
-[Feedback](.github/ISSUE_TEMPLATE/feedback.yml) and
-[Off-topic](.github/ISSUE_TEMPLATE/off_topic.yml). All reviewed by hand.
-
-**The manual way.** Fork, append store links to `scripts/temp_info.jsonl`, and open a pull request:
+| You want to | Issue form | Or a pull request that |
+| --- | --- | --- |
+| **Add** a free game that is still missing a few days after it went free | [Add game](.github/ISSUE_TEMPLATE/add_game.yml) | appends its store link to `scripts/temp_info.jsonl` |
+| **Correct** a published game (genre, type, anti-cheat, notes, safe) | [Edit game](.github/ISSUE_TEMPLATE/edit_game.yml) | adds an override with `python scripts/edit_game.py <appid> --set field=value --reason "…"` |
+| **Remove** a game (paid now, not a game, malware, duplicate) | [Delete game](.github/ISSUE_TEMPLATE/delete_game.yml) | adds a blocklist line with `python scripts/delete_game.py <appid> --reason <code>` |
 
 ```jsonl
 {"link": "730"}
 {"link": "https://store.steampowered.com/app/570/"}
 ```
 
-Accepts a full URL, short URL, or bare appid. A line is a link and nothing else: any other key is ignored, and the game is fetched from Steam. A correction to a published game (genre, anti-cheat, notes…) goes in a Discussion; the maintainer records it as an override.
+A queued line accepts a full URL, short URL, or bare appid, and is a link and nothing else: any other key is ignored, and the game is fetched from Steam. Never edit `data/data_*.jsonl` or `data/index.json` by hand: the pipeline rewrites them, and an edit there is lost.
+
+Two more forms stay open, for things that are broken rather than wished for:
+[Bug report](.github/ISSUE_TEMPLATE/bug_report.yml) and
+[Accessibility barrier](.github/ISSUE_TEMPLATE/accessibility.yml). All reviewed by hand.
+
+The companion browser extension, [steam-f2p-extension](https://github.com/poli0981/steam-f2p-extension),
+is archived and no longer a way in.
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for the full flow.
 
@@ -247,6 +281,7 @@ Unemployed, introvert max level, dropped out uni year 3, mooching off family. Ne
 - v2.1 was spaghetti with proper seasoning. It got a scraper.
 - v3.0 was spaghetti with a website on top, a desktop app, and bilingual menus.
 - **v4.0 is the same spaghetti, rebuilt, with a review queue so it stops needing to be cooked by hand.** Still a hobby.
+- v4.7 is where the cooking stops: the dish is served, and from here it is only kept warm.
 
 > [!WARNING]
 > **Disclaimer.** Quality / fun / safety: who knows. The maintainer only vouches for games personally played (`safe` column: `y` = yes, `?` = dunno, `n` = nope). Problems with a game are between you, Valve, and the developer of that game — not the maintainer. See [`docs/DISCLAIMER.md`](docs/DISCLAIMER.md) for the specific accuracy caveats.
@@ -255,7 +290,7 @@ Unemployed, introvert max level, dropped out uni year 3, mooching off family. Ne
 
 - [AUTHORS](AUTHORS.md) — maintainer + canonical handle map + AI-assistant disclosure.
 - [CHANGELOG](CHANGELOG.md) — what changed in each version.
-- [CONTRIBUTING](CONTRIBUTING.md) — issue templates, suggesting a game, manual fork.
+- [CONTRIBUTING](CONTRIBUTING.md) — maintenance mode, what is accepted, and how to add, correct or remove a game.
 - [PC spec](docs/pc_spec.md) ([VI](docs/i18n/vi/pc_spec.md)) — maintainer's dev hardware + test devices.
 - [Dev environment](docs/dev_env.md) ([VI](docs/i18n/vi/dev_env.md)) — IDE, toolchains (Python 3.15 / Node 26 / TypeScript 7 / Rust stable / Tauri 2), workflow.
 - [Tauri build](web/src-tauri/TAURI.md) — desktop build prerequisites + signing + auto-update.
