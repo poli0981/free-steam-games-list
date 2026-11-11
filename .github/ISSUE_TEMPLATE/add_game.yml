@@ -1,0 +1,39 @@
+name: ➕ Add Games
+description: A free-to-play Steam game that is missing from the list (max 10)
+title: "[Add Games] "
+labels: [ "add-game" ]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for the tip! New free games are found on Steam automatically every day,
+        so most turn up on their own within a few days. Use this for one that is still missing.
+        Every game is fetched from Steam and checked (free, a game, reachable) before it is listed.
+
+  - type: textarea
+    id: games
+    attributes:
+      label: Games to add (Steam store links, one per line, max 10)
+      description: A store link or a bare appid. Nothing else is needed, the rest comes from Steam.
+      placeholder: |
+        https://store.steampowered.com/app/730/
+        https://store.steampowered.com/app/570/
+    validations:
+      required: true
+
+  - type: textarea
+    id: notes
+    attributes:
+      label: Anything worth knowing? (optional)
+      description: e.g. "safe, played 50 h", "kernel anti-cheat", "servers shut down in 2027". Public, like everything here.
+
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Final check
+      description: Spam/off-topic requests ignored by default. Good luck bro :))
+      options:
+        - label: These games are free to play on Steam right now - not a demo, not DLC, not a paid game
+          required: true
+        - label: I searched the site and they are not listed yet
+          required: true

@@ -1,0 +1,11 @@
+# The repository is in maintenance mode (CONTRIBUTING.md): issues are for the
+# data, for something broken and for accessibility barriers. Everything else
+# is sent elsewhere, and blank issues are off so nothing bypasses the forms.
+blank_issues_enabled: false
+contact_links:
+  - name: 🔒 Security vulnerability
+    url: https://github.com/poli0981/free-steam-games-list/security/advisories/new
+    about: Report it privately, never as a public issue. See SECURITY.md.
+  - name: 💬 Questions, feedback, chit-chat
+    url: https://github.com/poli0981/free-steam-games-list/discussions
+    about: Discussions. Feature requests are not taken - the project is stable and in maintenance mode.

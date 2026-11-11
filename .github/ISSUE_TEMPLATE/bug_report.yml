@@ -1,5 +1,5 @@
 name: 🐛 Bug Report
-description: Report a bug or wrong data (broken thumbnail, wrong genre, web app issue, etc.)
+description: Something is broken (web app, desktop or Android app, stale or wrong numbers, broken thumbnail)
 title: "[Bug] "
 labels: ["bug"]
 body:
@@ -7,10 +7,10 @@ body:
     attributes:
       value: |
         Thanks for reporting! This broke unemployed dev will check when caffeine kicks in :))
-        For things that aren't bugs: a missing game or a wrong genre goes in
-        [Discussions › Ideas](https://github.com/poli0981/free-steam-games-list/discussions/categories/ideas),
-        a game that should go uses **Delete game**, and something you can't use with a keyboard,
-        a screen reader or zoom has its own **Accessibility barrier** form.
+        The project is in maintenance mode: a bug gets a fix, a wish does not get a feature.
+        For things that aren't bugs: a missing game uses **Add games**, a wrong genre, type,
+        anti-cheat or note **Edit game**, a game that should go **Delete games**, and something
+        you can't use with a keyboard, a screen reader or zoom has its own **Accessibility barrier** form.
 
   - type: dropdown
     id: surface
@@ -35,7 +35,7 @@ body:
       label: What kind of bug?
       description: Check all that apply (multiple OK).
       options:
-        - label: Wrong game name / genre / metadata
+        - label: Wrong or stale data from Steam (name, tags, languages, dates)
         - label: Broken or dead link
         - label: Thumbnail not showing
         - label: Reviews / players not updating

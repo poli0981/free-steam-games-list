@@ -11,6 +11,29 @@ scraping pipeline (`scripts/`) driven by GitHub Actions.
 
 **Git is the source of truth for game data.** Nothing else is. Keep it that way.
 
+## Project status: stable, maintenance only (since 2026-11-11)
+
+The project is finished, not abandoned. The pipeline, the site and the apps
+keep running; the code no longer grows. What that means for any change:
+
+- **No new features**, and no refactor or redesign for its own sake. A
+  request for one is declined, whoever asks in an issue or a pull request.
+- **Code changes only for** a security advisory (CVE, CodeQL, RustSec,
+  `npm audit`), a runtime or dependency update (Node, Python, Rust, npm / pip
+  / cargo packages, pinned Actions), and whatever those break. A bug or an
+  accessibility barrier gets the smallest fix that closes it.
+- **Issues and pull requests from others are for the data**: add a game
+  (`scripts/temp_info.jsonl`), correct one (`data/overrides/`), remove one
+  (`data/blocklist.jsonl`). The issue forms are `add_game`, `edit_game`,
+  `delete_game`, `bug_report` and `accessibility`; blank issues are off
+  (`.github/ISSUE_TEMPLATE/config.yml`). The About page links those five by
+  file name, so renaming a form is a web change.
+- The policy is stated in `README.md` ("Project status"), `CONTRIBUTING.md`,
+  `SECURITY.md` and the pull-request template: change them together.
+- Every rule below still holds. Maintenance mode is when they matter most:
+  the next change will be made by someone who has not touched the code for
+  months.
+
 ## Data invariants — get these wrong and you corrupt the dataset
 
 - **`appid` is not a stored field.** It is parsed out of `link` with

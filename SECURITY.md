@@ -96,3 +96,9 @@ broke are not a joke. Credit in `docs/ACKNOWLEDGEMENTs.md` if you want it.
 
 The deployed site and `main` are the only supported versions. Desktop and
 Android releases are supported at the latest tag only; there are no backports.
+
+The project is stable and in maintenance mode (see
+[`CONTRIBUTING.md`](CONTRIBUTING.md)): no new features are developed, and
+security fixes and runtime / dependency updates are exactly what it is still
+maintained for. Dependabot, CodeQL and SonarCloud keep running, and a fix
+ships as a new site deploy and, when the apps are affected, a new app release.

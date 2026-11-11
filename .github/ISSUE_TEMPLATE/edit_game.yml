@@ -1,0 +1,60 @@
+name: ✏️ Edit Game
+description: A listed game has something wrong (genre, type, anti-cheat, notes, safe)
+title: "[Edit Game] "
+labels: [ "edit-game" ]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for the correction! It is recorded as an override, which every pipeline run keeps.
+        Only the human-judged fields can be corrected here. Name, tags, languages, reviews and
+        player counts are whatever Steam says and are refreshed from Steam - if one of those
+        is stale or wrong, use **Bug report** instead.
+
+  - type: input
+    id: game
+    attributes:
+      label: Game (Steam store link or page on the site)
+      placeholder: https://store.steampowered.com/app/730/
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: fields
+    attributes:
+      label: What is wrong?
+      description: Check all that apply.
+      options:
+        - label: Genre
+        - label: Type (online / offline)
+        - label: Anti-cheat (product, or kernel-level or not)
+        - label: Safe (y / n / ?)
+        - label: Notes
+    validations:
+      required: true
+
+  - type: textarea
+    id: change
+    attributes:
+      label: What should it say?
+      description: Current value → correct value, per field.
+      placeholder: |
+        genre: Casual → RTS
+        anti_cheat: none → Easy Anti-Cheat (kernel)
+    validations:
+      required: true
+
+  - type: textarea
+    id: source
+    attributes:
+      label: How do you know? (optional but helpful)
+      description: A link to the store page, the developer's announcement, or "I play it". Public, like everything here.
+
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Final check
+      description: Spam/off-topic requests ignored by default. Good luck bro :))
+      options:
+        - label: I agree – this is a correction to a game on the list
+          required: true
