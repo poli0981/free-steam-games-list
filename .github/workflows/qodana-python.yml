@@ -1,0 +1,111 @@
+name: Qodana (Python)
+
+# JetBrains Qodana for Python (an Ultimate linter) over scripts/, the data
+# pipeline and its tests. It reports to its own Qodana Cloud project, whose
+# project token is the repository secret QODANA_TOKEN_PYTHON. The site and the
+# Worker are qodana-js.yml, the Tauri shell is qodana-rust.yml; what each scan
+# reads and ignores is the qodana.yaml in its project directory.
+#
+# Native mode (scripts/qodana.yaml, `withinDocker: false`): the analysis runs
+# on this runner, so it sees the Python the pipeline runs on and the pinned
+# packages, installed exactly as python-tests.yml installs them. The Qodana
+# image would bring its own, older interpreter and none of the packages.
+
+on:
+  push:
+    branches: [main]
+    # The pipeline's code, not the queues and logs the data jobs commit
+    # beside it (scripts/*.jsonl, scripts/*.log).
+    paths:
+      - 'scripts/**/*.py'
+      - 'scripts/qodana.yaml'
+      - 'requirements.txt'
+      - 'requirements-test.txt'
+      - '.github/workflows/qodana-python.yml'
+  pull_request:
+    types: [opened, synchronize, reopened]
+    paths:
+      - 'scripts/**/*.py'
+      - 'scripts/qodana.yaml'
+      - 'requirements.txt'
+      - 'requirements-test.txt'
+      - '.github/workflows/qodana-python.yml'
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: qodana-python-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  # Pull requests from forks and from Dependabot get no repository secrets,
+  # and an Ultimate linter will not run without the token, so the scan is
+  # skipped rather than failing every such pull request (as sonarcloud.yml).
+  token:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      present: ${{ steps.check.outputs.present }}
+    steps:
+      - name: Check for the token
+        id: check
+        env:
+          HAS_TOKEN: ${{ secrets.QODANA_TOKEN_PYTHON != '' }}
+        run: |
+          echo "present=$HAS_TOKEN" >> "$GITHUB_OUTPUT"
+          if [ "$HAS_TOKEN" != "true" ]; then
+            echo "::notice::QODANA_TOKEN_PYTHON is not available to this run; skipping the Qodana scan."
+          fi
+
+  scan:
+    needs: token
+    if: needs.token.outputs.present == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      checks: write         # annotations on the commit
+      pull-requests: write  # the summary comment on a pull request
+    steps:
+      # The pull request's own head commit, not the merge GitHub makes, so the
+      # report and its annotations name commits that exist; full history, as
+      # Qodana Cloud's setup snippet has it.
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.15'
+
+      # Hash mode is all-or-nothing per pip call, hence two (python-tests.yml).
+      # The tests are analysed too, so pytest has to resolve.
+      - name: Install the pipeline and the test tools
+        run: |
+          pip install --quiet --require-hashes --only-binary :all: -r requirements.txt
+          pip install --quiet --require-hashes --only-binary :all: -r requirements-test.txt
+
+      # scripts/ is the project, not the repository root: every script and the
+      # tests put scripts/ on sys.path and import `core`, which resolves only
+      # when scripts/ is the content root. The repository root is still found
+      # (git), so the report's paths and links are the repository's.
+      # The cache keys name the linter: the three Qodana workflows run on the
+      # same commits, and the action's default keys would collide.
+      # pr-mode false: a pull request is analysed whole, as Qodana Cloud's
+      # setup suggests, not only the files it changes.
+      - name: Qodana scan
+        uses: JetBrains/qodana-action@3e8d76ff0e0241618abd808682f426afe84bab3f # v2026.2.2
+        with:
+          args: --project-dir scripts
+          pr-mode: false
+          upload-result: true
+          artifact-name: qodana-python
+          primary-cache-key: qodana-2026.2-python-${{ github.ref }}-${{ github.sha }}
+          additional-cache-key: qodana-2026.2-python-${{ github.ref }}
+          cache-default-branch-only: true
+        env:
+          QODANA_TOKEN: ${{ secrets.QODANA_TOKEN_PYTHON }}
+          QODANA_ENDPOINT: 'https://qodana.cloud'

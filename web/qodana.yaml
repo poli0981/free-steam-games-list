@@ -1,0 +1,30 @@
+# Qodana for JS over web/ (.github/workflows/qodana-js.yml, Qodana Cloud
+# project token QODANA_TOKEN_TS_JS): the site, the admin SPA, the Worker, the
+# shared modules and the build code. src-tauri/ is Rust, and has its own scan
+# (qodana-rust.yml, src-tauri/qodana.yaml).
+version: "1.0"
+linter: qodana-js
+# Native mode: the runner's Node 26 with node_modules installed by
+# `npm ci --ignore-scripts`, and the files `npm run build:admin` generates
+# (the workflow runs both first).
+withinDocker: false
+# The components are .svelte files, which the linter reads only with
+# JetBrains' Svelte plugin; it is not bundled with Qodana for JS.
+plugins:
+  - id: dev.blachut.svelte.lang
+profile:
+  name: qodana.recommended
+  inspections:
+    - group: ALL
+      ignore:
+        # The Tauri shell: Rust, and the generated Android project.
+        - "src-tauri"
+        # Generated: by the build (dist, .admin-build), by `svelte-kit sync`
+        # (.svelte-kit), by the admin build for the Worker (worker/generated),
+        # by the coverage run (coverage). The types in them still resolve;
+        # they are only not reported on.
+        - "dist"
+        - ".admin-build"
+        - ".svelte-kit"
+        - "worker/generated"
+        - "coverage"
