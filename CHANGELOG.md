@@ -38,6 +38,14 @@ refreshes the list every day, and the site and the apps stay up.
   SonarCloud scan actions (3.0.4, 8.4.1). No security advisory among them;
   nothing changes in how the site or the apps behave, so no release: the
   apps take them with their next one.
+- Dependencies, a week later: Lucide 1.72.0, bits-ui 2.21.0, Vite 8.3.8,
+  wrangler 4.162.0, rollup-plugin-visualizer 7.1.3, knip 6.45.1, coverage
+  7.17.3 and the SonarCloud scan action 8.5.0. knip 6.45 reads
+  `tsconfig.json`'s `extends` and reported `$app` (the config
+  `svelte-kit sync` generates) as a missing dependency, which failed CI; its
+  `ignoreDependencies` cannot match a name that starts with `$`, so
+  `knip.json` now ignores unlisted dependencies in `tsconfig.json` alone.
+  Again no advisory and no change in behaviour, so no release.
 
 ## [v4.7.1] – 2026-11-09 (The "Curb Cut" Edition)
 
