@@ -14,6 +14,10 @@ linter: qodana-python
 withinDocker: false
 profile:
   name: qodana.recommended
+# The quality gate: any problem fails the job.
+failureConditions:
+  severityThresholds:
+    any: 0
 exclude:
   - name: All
     paths:
@@ -23,3 +27,32 @@ exclude:
       - dead_games.log
       # The byte-exact blocklist golden file the tests compare against.
       - tests/fixtures
+  # The two discovery scripts and the two leaderboard scripts each stand
+  # alone and repeat a few lines of their sibling (argument and environment
+  # handling; the tier, trend and star helpers). Sharing them would be a
+  # refactor, which maintenance mode does not take (CLAUDE.md).
+  - name: DuplicatedCode
+    paths:
+      - backfill_discover.py
+      - discover_new.py
+      - top_offline.py
+      - top_online.py
+  # A request that fails in any way is "no answer" there, by design: the
+  # caller retries, skips or reports it, and a job of hours never dies on an
+  # exception nobody listed (core/steam_client.py). The Access diagnosis in
+  # discover_new.py is best effort on top of an error already being raised.
+  - name: PyBroadExceptionInspection
+    paths:
+      - core/steam_client.py
+      - discover_new.py
+  # PyCharm types sorted(MANUAL_FIELDS), a frozenset of str, as its
+  # comparison protocol instead of str, and then refuses `{f:<16}`.
+  - name: PyStringFormatInspection
+    paths:
+      - edit_game.py
+  # `\[hover-add\]` keeps both brackets escaped: the pattern removes that
+  # literal text, and the pair reads as one. The rules in this file must stay
+  # byte-stable (CLAUDE.md, save_main()).
+  - name: RegExpRedundantEscape
+    paths:
+      - core/normalize.py

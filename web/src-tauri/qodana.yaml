@@ -5,6 +5,10 @@ version: "1.0"
 linter: qodana-rust
 profile:
   name: qodana.recommended
+# The quality gate: any problem fails the job.
+failureConditions:
+  severityThresholds:
+    any: 0
 # The linter evaluates build scripts and expands macros with `cargo check`,
 # and its image has neither a C linker nor the libraries Tauri links against.
 # Needs root in the container (the workflow passes `-u root`).
@@ -18,3 +22,9 @@ exclude:
       # generates (Kotlin and Gradle, not Rust).
       - target
       - gen
+  # serde_json is used by the code tauri::generate_context!() expands
+  # (::serde_json::Value for the plugins' configuration), which this
+  # inspection does not see: without it the crate does not compile.
+  - name: CargoUnusedDependency
+    paths:
+      - Cargo.toml

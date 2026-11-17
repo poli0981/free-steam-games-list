@@ -11,6 +11,10 @@ plugins:
   - id: dev.blachut.svelte.lang
 profile:
   name: qodana.recommended
+# The quality gate: any problem fails the job.
+failureConditions:
+  severityThresholds:
+    any: 0
 exclude:
   - name: All
     paths:
@@ -26,3 +30,31 @@ exclude:
       - .svelte-kit
       - worker/generated
       - worker-configuration.d.ts
+  # Every icon is imported from `@lucide/svelte/icons/<name>` and used as a
+  # component in the markup. The Svelte plugin does not resolve that subpath
+  # export, so it calls every one of them unused. An unused import is an
+  # error in all six tsconfigs already (`noUnusedLocals`), which svelte-check
+  # and tsc enforce in Web CI.
+  - name: ES6UnusedImports
+  # The admin SPA reaches into the public app by relative path
+  # (../../src/lib/...), as admin/tsconfig.json describes; `#lib` is the
+  # SvelteKit app's mapping (tsconfig.json `paths`), which the admin's
+  # tsconfig does not have.
+  - name: ES6PreferShortImport
+    paths:
+      - admin
+  # The escapes of } stay: without them a pattern only parses in non-unicode
+  # (Annex B) mode.
+  - name: RegExpRedundantEscape
+  # fetchShard() and fetchRemovedText() throw PackUnavailableError to their
+  # own catch on purpose: that catch is the one place that falls back from
+  # the packed path to the plain one.
+  - name: ExceptionCaughtLocallyJS
+    paths:
+      - src/lib/fetcher.ts
+  # `keyCode === 229` is how a key that belongs to an IME composition
+  # (Telex, VNI) shows in browsers that report isComposing false for it.
+  - name: JSDeprecatedSymbols
+    paths:
+      - src/lib/common/CommandPalette.svelte
+      - src/lib/palette.svelte.ts
