@@ -43,6 +43,16 @@
   "ignoreBinaries": [
     "python"
   ],
+  // tsconfig.json extends "$app/tsconfig", which `svelte-kit sync` generates
+  // into node_modules/$app - a package no package.json can list. knip 6.45
+  // reports it as an unlisted dependency, an ERROR that fails CI, and
+  // ignoreDependencies cannot take it back: knip matches those against a
+  // package name, and a name starting with "$" is not one, so the item is
+  // never even compared. This silences unlisted dependencies in that one
+  // file only.
+  "ignoreIssues": {
+    "tsconfig.json": ["unlisted"]
+  },
   "rules": {
     "exports": "warn",
     "types": "warn"
