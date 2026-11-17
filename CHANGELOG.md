@@ -11,81 +11,11 @@ file and adds the release to the table of its major version.
 
 ## [Unreleased]
 
-### 🔒 Security
-
-- The desktop and Android shell takes rustix 1.1.6, which fixes
-  [RUSTSEC-2026-0486](https://rustsec.org/advisories/RUSTSEC-2026-0486.html):
-  its extended-attribute calls could mark memory as written that the system
-  never wrote, when handed an empty buffer. Those calls are reachable through
-  the updater's archive code (tar, then xattr). Dependabot raised no alert
-  for it; the weekly OSV check of `Cargo.lock` found it. Only the lockfile
-  changes (rustix's entry alone); the apps take it with their next release.
-
-### 🧊 Stable: maintenance mode (2026-11-11)
-
-The project does what it set out to do, so from here it is kept running
-rather than extended. Nothing changes for readers: the pipeline still
-refreshes the list every day, and the site and the apps stay up.
-
-- **No new features.** Code changes only for security advisories, runtime and
-  dependency updates, and whatever those break.
-- **Issues and pull requests are for the data.** Two new forms, **Add games**
-  and **Edit game**, join **Delete games**; **Bug report** and
-  **Accessibility barrier** stay for things that are broken. The feature
-  request, feedback and off-topic forms are gone, blank issues are off, and
-  the chooser sends questions to Discussions and vulnerabilities to private
-  reporting.
-- The About page's "Report something" links follow: add, correct, remove,
-  bug, accessibility. The released apps (2.5.1) still link the old feature
-  form, which now opens the form chooser; they take the new links with their
-  next release.
-- README: a status badge, build badges (Web CI, Python Tests, CodeQL,
-  SonarCloud gate and coverage), live desktop and Android version badges, and
-  the licences and runtimes. CONTRIBUTING, SECURITY, the pull-request
-  template and CLAUDE.md state the same policy.
-- No legal document you accept changed, so nobody is asked to accept the
-  terms again.
-
-### 🔍 Code analysis: Qodana
-
-- JetBrains Qodana now checks every pull request and every change to `main`,
-  next to CodeQL and SonarCloud, as three Qodana Cloud projects: Python for
-  the data pipeline, JavaScript/TypeScript and Svelte for the site, the admin
-  pages and the Worker, and Rust for the desktop and Android shell. Any
-  problem fails the check; what each part leaves out on purpose is listed,
-  with the reason, in its `qodana.yaml`.
-- Its first findings are fixed, none of them a change in behaviour: tidier
-  returns, docstrings and names in the pipeline, the leaderboards' catch-all
-  `except:` narrowed to the errors a review string can raise, an unused
-  import, two simpler regular expressions; two comma expressions, a trivial
-  `if` and read-only fields in the web code; and `serde`, a crate the app
-  shell declared and never used.
-- Data commits and Markdown-only changes are not scanned. Nothing changes
-  for readers, and the apps take the shell's one-line change with their next
-  release.
-
-### 🧰 Tooling & misc
-
-- Dependencies: patch releases of the icon, dialog, toast and virtual-list
-  libraries (Lucide 1.70.0, bits-ui 2.20.6, svelte-sonner 1.2.3, TanStack
-  Virtual 3.13.52), Tailwind CSS 4.3.5, Vite 8.3.6, Vitest 5.1.0,
-  svelte-check 4.7.8, wrangler 4.158.0, coverage 7.17.2, and the release and
-  SonarCloud scan actions (3.0.4, 8.4.1). No security advisory among them;
-  nothing changes in how the site or the apps behave, so no release: the
-  apps take them with their next one.
-- Dependencies, a week later: Lucide 1.72.0, bits-ui 2.21.0, Vite 8.3.8,
-  wrangler 4.162.0, rollup-plugin-visualizer 7.1.3, knip 6.45.1, coverage
-  7.17.3 and the SonarCloud scan action 8.5.0. knip 6.45 reads
-  `tsconfig.json`'s `extends` and reported `$app` (the config
-  `svelte-kit sync` generates) as a missing dependency, which failed CI; its
-  `ignoreDependencies` cannot match a name that starts with `$`, so
-  `knip.json` now ignores unlisted dependencies in `tsconfig.json` alone.
-  Again no advisory and no change in behaviour, so no release.
-
 ## v4
 
 | Version | Date | Edition |
 |---|---|---|
+| [v4.7.2](changelog/v4/4.7.x/4.7.2.md) | 2026-11-17 | Steady State |
 | [v4.7.1](changelog/v4/4.7.x/4.7.1.md) | 2026-11-09 | Curb Cut |
 | [v4.7.0](changelog/v4/4.7.x/4.7.0.md) | 2026-11-03 | Lucky Dip |
 | [v4.6.1](changelog/v4/4.6.x/4.6.1.md) | 2026-10-31 | Zip Tie |
