@@ -655,6 +655,35 @@ keep running; the code no longer grows. What that means for any change:
   counts every executable line a report does not name as uncovered: without
   the reports `main` read 0.0% and failed it (2026-10-22). Suppressing a rule
   for a file is done in the SonarCloud UI, not in this file or with NOSONAR.
+- **Qodana analyses in CI too (`qodana.yml`), one Qodana Cloud project and
+  token per linter**: `qodana-python` over `scripts/` (`QODANA_TOKEN_PYTHON`),
+  `qodana-js` over `web/` (`QODANA_TOKEN_TS_JS`), `qodana-rust` over
+  `web/src-tauri/` (`QODANA_TOKEN_RUST`), the setup free-games-itchio-list
+  uses. Each project's settings are the `qodana.yaml` in its directory, with
+  a gate of zero problems (`failureConditions`): a new finding fails its job,
+  so fix it, or exclude the inspection there WITH its reason. All three need
+  an Ultimate licence (a trial in November 2026; the Rust linter is Early
+  Access): when it ends every job fails on it - renew, or delete
+  `qodana.yml` and the three `qodana.yaml`. What the first runs cost:
+  - Native `qodana-python` finds no interpreter by itself (`SDKs.json`
+    empty, then every `dict[int, str]` and `X | None` is an "invalid type
+    hint"): the job builds `.venv` and passes `QODANA_PYTHON_PATH`.
+    `scripts/` is the project directory because `core` resolves only there.
+  - The `qodana-rust` image has no C linker and none of Tauri's libraries,
+    and runs as the runner's user ("Analysis scope: 0 packages", a Critical
+    "Cargo project loading"): `-u root -e CARGO_HOME=/data/cache/cargo`, a
+    `bootstrap` that installs the packages, and a stand-in
+    `web/dist/index.html` so `generate_context!()` expands. It calls
+    `serde_json` unused; the expansion needs it (`::serde_json::Value`).
+  - `qodana-js` runs in Docker, not native: a `plugins:` entry (the Svelte
+    plugin, without which no `.svelte` file is read) fails to install in
+    native mode with every released CLI up to 2026.2.3 (QD-16701). With it,
+    every `@lucide/svelte/icons/*` import reads as unused, so
+    `ES6UnusedImports` is off (`noUnusedLocals` covers it).
+  - A subdirectory project needs `--project-dir <dir> --repository-root .`,
+    and each job its own cache keys (the default is one key per run). The
+    SARIF and logs are the `qodana-report-*` artifact, a zip inside the
+    artifact; `gh run view --log` is empty until the whole run has ended.
 
 ## Frontend gotchas
 
