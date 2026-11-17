@@ -30,6 +30,14 @@ keep running; the code no longer grows. What that means for any change:
   file name, so renaming a form is a web change.
 - The policy is stated in `README.md` ("Project status"), `CONTRIBUTING.md`,
   `SECURITY.md` and the pull-request template: change them together.
+- **Release notes are one file per release**:
+  `changelog/v<major>/<major>.<minor>.x/<version>.md`, and `changelog/beta/`
+  for a pre-release (none so far). `CHANGELOG.md` is the index, and keeps
+  `## [Unreleased]`, where every change writes its entry. A release moves that
+  section into its new file (headings one level up, relative links prefixed
+  `../../../`), adds its row to its major's table and empties [Unreleased];
+  what the file says below its title and back link is the GitHub release's
+  notes. A released file is not reworded afterwards.
 - Every rule below still holds. Maintenance mode is when they matter most:
   the next change will be made by someone who has not touched the code for
   months.

@@ -290,7 +290,7 @@ Unemployed, introvert max level, dropped out uni year 3, mooching off family. Ne
 ### Docs
 
 - [AUTHORS](AUTHORS.md) — maintainer + canonical handle map + AI-assistant disclosure.
-- [CHANGELOG](CHANGELOG.md) — what changed in each version.
+- [CHANGELOG](CHANGELOG.md) — what changed in each version: the index, with one file per release in [`changelog/`](changelog/).
 - [CONTRIBUTING](CONTRIBUTING.md) — maintenance mode, what is accepted, and how to add, correct or remove a game.
 - [PC spec](docs/pc_spec.md) ([VI](docs/i18n/vi/pc_spec.md)) — maintainer's dev hardware + test devices.
 - [Dev environment](docs/dev_env.md) ([VI](docs/i18n/vi/dev_env.md)) — IDE, toolchains (Python 3.15 / Node 26 / TypeScript 7 / Rust stable / Tauri 2), workflow.
