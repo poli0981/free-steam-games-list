@@ -40,9 +40,9 @@ export class Resource<T> {
   error = $state<Error | undefined>(undefined);
   loading = $state(false);
 
-  #fetcher: (signal: AbortSignal) => Promise<T>;
-  #staleTime: number;
-  #enabled: () => boolean;
+  readonly #fetcher: (signal: AbortSignal) => Promise<T>;
+  readonly #staleTime: number;
+  readonly #enabled: () => boolean;
   #loadedAt = 0;
   #inFlight: Promise<void> | null = null;
   #controller: AbortController | null = null;

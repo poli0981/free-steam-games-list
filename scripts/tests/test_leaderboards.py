@@ -74,3 +74,17 @@ def test_update_data_refills_only_incomplete_records(repo):
     repo.setattr(fetcher, "fetch_full", lambda g, client=None, guard=None: refilled.append(g["link"]))
     update_data.main()
     assert len(refilled) == 3                     # the fixture's records lack most store fields
+
+
+@pytest.mark.parametrize("module", [top_online, top_offline])
+@pytest.mark.parametrize("reviews, stars", [
+    ("96% (Overwhelmingly Positive)", "★★★★★"),
+    ("72% (Mostly Positive)", "★★★☆☆"),
+    ("12% (Overwhelmingly Negative)", "★☆☆☆☆"),
+    # Never read, no reviews, or no field at all: no stars, and no crash.
+    ("N/A", "—"),
+    ("No reviews", "—"),
+    (None, "—"),
+])
+def test_stars_come_from_the_percentage_and_nothing_else(module, reviews, stars):
+    assert module._stars(reviews) == stars

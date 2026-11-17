@@ -40,6 +40,7 @@ import os
 import sys
 import time
 from collections import Counter
+from collections.abc import Callable
 from typing import Optional
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -82,7 +83,7 @@ def screen(games: list[dict], items: dict, failed: set, blocked: set) -> list[tu
 
 
 def confirm(candidates: list[tuple[dict, str]], client, deadline: Optional[Deadline] = None,
-            log=print) -> tuple[list, Counter]:
+            log: Callable[[str], None] = print) -> tuple[list, Counter]:
     """Ask appdetails about each flagged game. Returns ([(game, HealthResult)]
     to remove, tally). An unavailable answer is asked again RECHECK_AFTER
     seconds after the first ask; past the deadline nothing more is asked and
@@ -92,12 +93,12 @@ def confirm(candidates: list[tuple[dict, str]], client, deadline: Optional[Deadl
     tally: Counter = Counter()
     first_ask = None
 
-    def judge(game: dict, result) -> None:
-        if result.should_remove:
-            removals.append((game, result))
-        elif result.is_healthy:
+    def judge(candidate: dict, health) -> None:
+        if health.should_remove:
+            removals.append((candidate, health))
+        elif health.is_healthy:
             tally["kept"] += 1
-            log(f"  ✓ kept {result.appid} {result.name[:40]}: appdetails says it is healthy")
+            log(f"  ✓ kept {health.appid} {health.name[:40]}: appdetails says it is healthy")
         else:
             tally["network"] += 1
 

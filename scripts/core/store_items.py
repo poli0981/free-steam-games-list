@@ -142,11 +142,11 @@ def review_summary(item: Optional[dict]) -> Optional[tuple[int, int, str]]:
     if count < 0:
         return None
     if count == 0:
-        return (0, 0, "")
+        return 0, 0, ""
     pct = _int(summary.get("percent_positive"))
     if not 0 <= pct <= 100:
         return None
-    return (count, pct, str(summary.get("review_score_label") or "").strip())
+    return count, pct, str(summary.get("review_score_label") or "").strip()
 
 
 # Why Steam's store says a game may no longer belong in the catalogue

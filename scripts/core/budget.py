@@ -21,6 +21,7 @@ run on a laptop works as it always did.
 import math
 import os
 import time
+from collections.abc import Callable
 from typing import Optional
 
 ENV = "JOB_BUDGET_MINUTES"
@@ -62,7 +63,8 @@ def expired(deadline: Optional[Deadline]) -> bool:
     return deadline is not None and deadline.expired()
 
 
-def report(desc: str, done: int, total: int, deadline: Optional[Deadline], log=print) -> None:
+def report(desc: str, done: int, total: int, deadline: Optional[Deadline],
+           log: Callable[[str], None] = print) -> None:
     """One line on how a loop used the budget. A run that stopped short, or
     came close, gets a ::warning:: - it is how a growing catalogue shows up in
     the run's annotations before it costs one."""

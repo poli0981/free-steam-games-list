@@ -214,6 +214,21 @@ a fork or from Dependabot gets no repository secrets, so its scan job is
 skipped; giving Dependabot its own `SONAR_TOKEN` (Settings > Secrets >
 Dependabot) would have its pull requests analysed too.
 
+Qodana (`qodana.yml`) runs JetBrains' inspections on pull requests and
+`main` as well, one job per Qodana Cloud project: Python over `scripts/`,
+JavaScript/TypeScript (with the Svelte plugin) over `web/`, Rust over
+`web/src-tauri/`. Each project has its own token, kept in the repository
+secrets `QODANA_TOKEN_PYTHON`, `QODANA_TOKEN_TS_JS` and `QODANA_TOKEN_RUST`
+(Qodana Cloud > the project > its setup page). Its settings are the
+`qodana.yaml` in that directory: a gate of zero problems, so a new finding
+fails the job, and every inspection or path left out, with the reason.
+Commits that touch only data or Markdown are not scanned, and a pull request
+without the secrets (a fork, Dependabot) skips the scan. The results are on
+Qodana Cloud, in the job's annotations and in its `qodana-report-*`
+artifact. All three linters need a Qodana Ultimate licence; without one every
+job fails, and `qodana.yml` and the three `qodana.yaml` files are what to
+remove.
+
 Before the scan the job runs both test suites with coverage: pytest with
 `--cov` (configured in `pyproject.toml`, written to `coverage.xml`) and
 `npm run test:coverage` in `web/` (configured in `vite.config.ts`, written to

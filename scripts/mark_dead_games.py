@@ -52,7 +52,7 @@ def parse_players(s) -> int:
         return 0
     if isinstance(s, (int, float)):
         return int(s)
-    digits = re.sub(r"[^\d]", "", str(s))
+    digits = re.sub(r"\D", "", str(s))
     return int(digits) if digits else 0
 
 

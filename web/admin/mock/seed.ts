@@ -149,7 +149,7 @@ export function seed(sqlite: SqliteD1, repo: FakeRepo, records: Rec[], now: Date
      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
   );
   const sha = (k: number) => createFakeSha(k);
-  job.run("job-1", "approve", "committed", "scripts/temp_info.jsonl", sha(1), null, reviewer, iso(1 * HOUR), iso(1 * HOUR));
+  job.run("job-1", "approve", "committed", "scripts/temp_info.jsonl", sha(1), null, reviewer, iso(HOUR), iso(HOUR));
   job.run("job-2", "approve", "committed", "scripts/temp_info.jsonl", null, "nothing to commit: every link was already queued", reviewer, iso(3 * HOUR), iso(3 * HOUR));
   job.run("job-3", "override", "committed", "data/overrides/730.json", sha(3), null, reviewer, iso(8 * HOUR), iso(8 * HOUR));
   job.run("job-4", "approve", "failed", "scripts/temp_info.jsonl", null, "graphql HTTP 502", reviewer, iso(26 * HOUR), iso(26 * HOUR));
@@ -200,8 +200,8 @@ export function seed(sqlite: SqliteD1, repo: FakeRepo, records: Rec[], now: Date
   state.run(`auto.approve.count:${now.toISOString().slice(0, 10)}`, "25", iso(3 * HOUR));
   state.run(
     "auto.approve.last",
-    JSON.stringify({ at: iso(1 * HOUR), outcome: "skipped", detail: "pipeline busy: Update Reviews is in_progress" }),
-    iso(1 * HOUR),
+    JSON.stringify({ at: iso(HOUR), outcome: "skipped", detail: "pipeline busy: Update Reviews is in_progress" }),
+    iso(HOUR),
   );
   job.run("job-7", "auto.approve", "committed", "scripts/temp_info.jsonl", sha(7), null, "auto-approve", iso(3 * HOUR), iso(3 * HOUR));
   audit.run(reviewer, "automation.settings", null, JSON.stringify({ before: { ...settings, dailyLimit: 300 }, after: settings }), iso(10 * HOUR));
@@ -214,7 +214,7 @@ export function seed(sqlite: SqliteD1, repo: FakeRepo, records: Rec[], now: Date
   const removedDone = hide(committed[2]);
   const entries = [
     makeEntry(appidOf(removedDone), removedDone.name ?? "", "not_a_game", "a soundtrack", iso(60 * HOUR).replace(/\.\d{3}Z$/, "Z")),
-    makeEntry(appidOf(removedNow), removedNow.name ?? "", "duplicate", "", iso(1 * HOUR).replace(/\.\d{3}Z$/, "Z")),
+    makeEntry(appidOf(removedNow), removedNow.name ?? "", "duplicate", "", iso(HOUR).replace(/\.\d{3}Z$/, "Z")),
   ];
   repo.files.set("data/blocklist.jsonl", appendEntries("", entries));
   for (const e of entries) {
@@ -224,8 +224,8 @@ export function seed(sqlite: SqliteD1, repo: FakeRepo, records: Rec[], now: Date
     );
     decide.run(e.appid, "rejected", `removed:${e.reason}${e.note ? ` - ${e.note}` : ""}`, reviewer, e.blocked_at);
   }
-  job.run("job-8", "remove", "committed", "data/blocklist.jsonl", sha(8), null, reviewer, iso(1 * HOUR), iso(1 * HOUR));
-  audit.run(reviewer, "remove", "job-8", JSON.stringify({ appids: [entries[1].appid], reason: "duplicate" }), iso(1 * HOUR));
+  job.run("job-8", "remove", "committed", "data/blocklist.jsonl", sha(8), null, reviewer, iso(HOUR), iso(HOUR));
+  audit.run(reviewer, "remove", "job-8", JSON.stringify({ appids: [entries[1].appid], reason: "duplicate" }), iso(HOUR));
 
   return { hidden };
 }

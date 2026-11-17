@@ -136,12 +136,12 @@ def refresh(games: list[dict], client, deadline: Optional[Deadline] = None,
         else:
             record(game, value, now, tally)
 
-    def ask(game: dict) -> None:
-        summary = client.fetch_reviews(extract_appid(game["link"]))
+    def ask(queued: dict) -> None:
+        summary = client.fetch_reviews(extract_appid(queued["link"]))
         if summary is None:
             tally["ask_failed"] += 1
         else:
-            record(game, reviews_from_summary(summary), now, tally)
+            record(queued, reviews_from_summary(summary), now, tally)
 
     asks = daily_order(asks, day_number() if day is None else day)
     done = process_batch(asks[:ASK_CAP], ask, "Reviews from appreviews", deadline=deadline) if asks else 0

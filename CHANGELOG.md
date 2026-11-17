@@ -39,6 +39,24 @@ refreshes the list every day, and the site and the apps stay up.
 - No legal document you accept changed, so nobody is asked to accept the
   terms again.
 
+### 🔍 Code analysis: Qodana
+
+- JetBrains Qodana now checks every pull request and every change to `main`,
+  next to CodeQL and SonarCloud, as three Qodana Cloud projects: Python for
+  the data pipeline, JavaScript/TypeScript and Svelte for the site, the admin
+  pages and the Worker, and Rust for the desktop and Android shell. Any
+  problem fails the check; what each part leaves out on purpose is listed,
+  with the reason, in its `qodana.yaml`.
+- Its first findings are fixed, none of them a change in behaviour: tidier
+  returns, docstrings and names in the pipeline, the leaderboards' catch-all
+  `except:` narrowed to the errors a review string can raise, an unused
+  import, two simpler regular expressions; two comma expressions, a trivial
+  `if` and read-only fields in the web code; and `serde`, a crate the app
+  shell declared and never used.
+- Data commits and Markdown-only changes are not scanned. Nothing changes
+  for readers, and the apps take the shell's one-line change with their next
+  release.
+
 ### 🧰 Tooling & misc
 
 - Dependencies: patch releases of the icon, dialog, toast and virtual-list

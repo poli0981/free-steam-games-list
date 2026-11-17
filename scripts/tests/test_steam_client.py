@@ -181,3 +181,37 @@ def test_tag_names_are_fetched_once():
     assert client.fetch_tag_names() == {12095: "Sexual Content"}
     assert len(session.requests) == 1
     assert session.requests[0]["params"] == {"language": "english"}
+
+
+APPDETAILS = "https://store.steampowered.com/api/appdetails"
+
+
+class _NotJson(_Resp):
+    def json(self):
+        raise ValueError("Expecting value")
+
+
+@pytest.mark.parametrize("answer, expected", [
+    # A 403 is no answer at all: _get gives up on it and hands back nothing.
+    (_Resp(APPDETAILS, status_code=403), ("network_error", None)),
+    (_Resp(APPDETAILS, status_code=404), ("not_found", None)),
+    # What purge asks again before it believes it (RECHECK_AFTER).
+    (_Resp(APPDETAILS, body={"10": {"success": False}}), ("unavailable", None)),
+    (_NotJson(APPDETAILS), ("network_error", None)),
+])
+def test_appdetails_tells_its_failures_apart(answer, expected):
+    client, _ = _client(answer)
+    assert client.fetch_app_details_full("10") == expected
+
+
+def test_a_store_page_nobody_answered_is_a_network_error():
+    client, _ = _client(_Resp(APP, status_code=403))
+    assert client.fetch_store_page_full("2279510") == ("network_error", None)
+
+
+def test_a_store_page_answer_neither_200_nor_404_is_a_network_error(monkeypatch):
+    # _get hands back only a 200 or a 404/410 today; the page does not lean on that.
+    client, _ = _client()
+    # SteamClient has __slots__: the method is replaced on the class, for this test only.
+    monkeypatch.setattr(SteamClient, "_get", lambda self, *args, **kwargs: _Resp(APP, status_code=302))
+    assert client.fetch_store_page_full("2279510") == ("network_error", None)

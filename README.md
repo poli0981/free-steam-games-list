@@ -12,6 +12,7 @@
 [![Web CI](https://github.com/poli0981/free-steam-games-list/actions/workflows/web-ci.yml/badge.svg?branch=main)](https://github.com/poli0981/free-steam-games-list/actions/workflows/web-ci.yml)
 [![Python Tests](https://github.com/poli0981/free-steam-games-list/actions/workflows/python-tests.yml/badge.svg?branch=main)](https://github.com/poli0981/free-steam-games-list/actions/workflows/python-tests.yml)
 [![CodeQL](https://github.com/poli0981/free-steam-games-list/actions/workflows/codeql.yml/badge.svg?branch=main)](https://github.com/poli0981/free-steam-games-list/actions/workflows/codeql.yml)
+[![Qodana](https://github.com/poli0981/free-steam-games-list/actions/workflows/qodana.yml/badge.svg?branch=main)](https://github.com/poli0981/free-steam-games-list/actions/workflows/qodana.yml)
 [![Quality Gate](https://sonarcloud.io/api/project_badges/measure?project=poli0981_free-steam-games-list&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=poli0981_free-steam-games-list)
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=poli0981_free-steam-games-list&metric=coverage)](https://sonarcloud.io/summary/new_code?id=poli0981_free-steam-games-list)
 [![Dependabot](https://img.shields.io/badge/Dependabot-enabled-025E8C?style=flat&logo=dependabot)](.github/dependabot.yml)
@@ -230,7 +231,7 @@ scripts/
 | Announce Discussion   | On release `published`           | Auto-create a GitHub Discussion in `Announcements`        |
 
 Also in `.github/workflows/`:
-- **CodeQL** and **SonarCloud**: code scanning on pushes and pull requests.
+- **CodeQL**, **SonarCloud** and **Qodana** (Python, JS/TS, Rust): code scanning on pushes and pull requests.
 - **Check Overrides**: pull requests that touch the override or blocklist files.
 - **Backfill Discovery**: temporary; a weekly re-sweep of older release windows into the same `/admin` queue.
 - **Announce Release to Discord**: posts each published release.

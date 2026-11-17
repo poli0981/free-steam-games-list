@@ -72,7 +72,11 @@ export async function handlePipelineApi(
   // One entry per run: the page keys its lists on the run URL, and a duplicate
   // key in a keyed {#each} throws (CLAUDE.md).
   const seen = new Set<string>();
-  const all = [...runs, ...extraRuns].filter((r) => !seen.has(r.html_url) && (seen.add(r.html_url), true));
+  const all = [...runs, ...extraRuns].filter((r) => {
+    if (seen.has(r.html_url)) return false;
+    seen.add(r.html_url);
+    return true;
+  });
 
   let queue: { tempInfo: number | null; blocklist: number | null } = { tempInfo: null, blocklist: null };
   try {

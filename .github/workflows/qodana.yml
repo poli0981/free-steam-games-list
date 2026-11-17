@@ -1,0 +1,219 @@
+# Qodana (JetBrains) static analysis, one linter per Qodana Cloud project:
+#
+#   typescript - qodana-js      web/            https://qodana.cloud/projects/GgGyE
+#   python     - qodana-python  scripts/        https://qodana.cloud/projects/P2R5k
+#   rust       - qodana-rust    web/src-tauri/  https://qodana.cloud/projects/40daO
+#
+# Each project has its own token (a repository secret) and its own settings
+# file (the qodana.yaml in the directory above). Every run analyses the whole
+# project (`pr-mode: false`), so a pull request and `main` report the same way.
+# All three are Ultimate linters (Qodana for Rust is also Early Access): when
+# the licence ends, every job fails on it - renew it, or delete this file and
+# the three qodana.yaml files.
+#
+# Dependabot and fork PRs get no repository secrets: the analysis is skipped
+# there, not failed (the `tokens` job). Dependencies are installed before the
+# scan, in steps that don't see the token.
+name: Qodana
+
+on:
+  push:
+    branches: [main]
+    # Data commits (the pipeline's, the admin Worker's) and docs change no code.
+    paths-ignore:
+      - 'data/**'
+      - 'games/**'
+      - 'scripts/*.jsonl'
+      - 'scripts/*.log'
+      - '**.md'
+  pull_request:
+    paths-ignore:
+      - 'data/**'
+      - 'games/**'
+      - 'scripts/*.jsonl'
+      - 'scripts/*.log'
+      - '**.md'
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: qodana-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  tokens:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions: {}
+    outputs:
+      present: ${{ steps.check.outputs.present }}
+    steps:
+      - name: Check for the Qodana tokens
+        id: check
+        env:
+          HAS_TS_JS: ${{ secrets.QODANA_TOKEN_TS_JS != '' }}
+          HAS_PYTHON: ${{ secrets.QODANA_TOKEN_PYTHON != '' }}
+          HAS_RUST: ${{ secrets.QODANA_TOKEN_RUST != '' }}
+        run: |
+          if [ "$HAS_TS_JS" = true ] && [ "$HAS_PYTHON" = true ] && [ "$HAS_RUST" = true ]; then
+            echo "present=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "::notice::No Qodana tokens in this run (Dependabot or fork PR): Qodana analysis skipped."
+          fi
+
+  typescript:
+    name: TypeScript / JavaScript
+    needs: tokens
+    if: needs.tokens.outputs.present == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    permissions:
+      contents: read
+      checks: write # the action's annotations
+    steps:
+      # The pull request's own head commit, not the merge GitHub makes, so
+      # the report names a commit that exists; full history for its VCS data.
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '26'
+          cache: 'npm'
+          cache-dependency-path: web/package-lock.json
+
+      # The linter resolves imports and types from node_modules.
+      # --ignore-scripts, as everywhere this repo runs `npm ci` (web-ci.yml
+      # says why).
+      - name: Install web/
+        working-directory: web
+        run: npm ci --ignore-scripts
+
+      # `svelte-kit sync` writes the tsconfig web/tsconfig.json extends and the
+      # route types; the admin build writes worker/generated/, which
+      # worker/index.ts imports. Without them the app reads untyped and the
+      # Worker has an unresolved import (sonarcloud.yml does the same).
+      - name: Generate SvelteKit's types and the admin bundle
+        working-directory: web
+        run: npm run build:admin
+
+      # Docker, not native: the components are .svelte files, which only
+      # JetBrains' Svelte plugin reads (web/qodana.yaml), and installing a
+      # plugin fails in native mode with every released CLI up to 2026.2.3
+      # ("qodana.build.date system property must be set", fixed upstream as
+      # QD-16701 after that release). The container sees this checkout,
+      # node_modules and the generated files included.
+      # --project-dir <subdir> --repository-root . keeps the git data.
+      - name: Qodana scan
+        uses: JetBrains/qodana-action@3e8d76ff0e0241618abd808682f426afe84bab3f # v2026.2.2
+        with:
+          args: --project-dir web --repository-root . --linter qodana-js
+          pr-mode: false
+          post-pr-comment: false
+          upload-result: true
+          artifact-name: qodana-report-typescript
+          # The default keys are the same for every job of a run.
+          primary-cache-key: qodana-2026.2-js-${{ github.ref }}-${{ github.sha }}
+          additional-cache-key: qodana-2026.2-js-${{ github.ref }}
+          cache-default-branch-only: true
+        env:
+          QODANA_TOKEN: ${{ secrets.QODANA_TOKEN_TS_JS }}
+
+  python:
+    name: Python
+    needs: tokens
+    if: needs.tokens.outputs.present == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      checks: write
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.15'
+
+      # Hash-locked, wheels only, one pip call per file (hash mode is
+      # all-or-nothing per call), as python-tests.yml. The tests are analysed
+      # too, so pytest has to resolve. In native mode the linter finds no
+      # interpreter by itself (SDKs.json empty: it then calls every
+      # `dict[str, int]` and `X | None` an invalid type hint): it gets this
+      # virtual environment through QODANA_PYTHON_PATH below.
+      - name: Install the pipeline and the test tools
+        run: |
+          python -m venv .venv
+          .venv/bin/pip install --quiet --require-hashes --only-binary :all: -r requirements.txt
+          .venv/bin/pip install --quiet --require-hashes --only-binary :all: -r requirements-test.txt
+
+      # Native mode (scripts/qodana.yaml): the Qodana image would bring an
+      # older Python. scripts/ is the project: every script and the tests put
+      # it on sys.path and import `core`, which resolves only when scripts/ is
+      # the content root.
+      - name: Qodana scan
+        uses: JetBrains/qodana-action@3e8d76ff0e0241618abd808682f426afe84bab3f # v2026.2.2
+        with:
+          args: --project-dir scripts --repository-root . --linter qodana-python --within-docker false
+          pr-mode: false
+          post-pr-comment: false
+          upload-result: true
+          artifact-name: qodana-report-python
+          primary-cache-key: qodana-2026.2-python-${{ github.ref }}-${{ github.sha }}
+          additional-cache-key: qodana-2026.2-python-${{ github.ref }}
+          cache-default-branch-only: true
+        env:
+          QODANA_TOKEN: ${{ secrets.QODANA_TOKEN_PYTHON }}
+          QODANA_PYTHON_PATH: ${{ github.workspace }}/.venv/bin/python
+
+  rust:
+    name: Rust
+    needs: tokens
+    if: needs.tokens.outputs.present == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    permissions:
+      contents: read
+      checks: write
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      # tauri::generate_context!() refuses to expand without the frontend
+      # directory (frontendDist, ../dist): an empty page stands in for the
+      # web build, which the analysis does not need.
+      - name: Stand-in for the web build
+        run: |
+          mkdir -p web/dist
+          echo '<!doctype html><title>stand-in</title>' > web/dist/index.html
+
+      # qodana-rust ships only as a Docker image. It runs as root so that its
+      # bootstrap (web/src-tauri/qodana.yaml) can install the C toolchain and
+      # the libraries Tauri links against: without them `cargo check` fails
+      # and the linter loads no Cargo package at all ("Cargo project
+      # loading"). The crates go to the (cached) Qodana cache directory, which
+      # the runner's user could not write in the image's own CARGO_HOME.
+      - name: Qodana scan
+        uses: JetBrains/qodana-action@3e8d76ff0e0241618abd808682f426afe84bab3f # v2026.2.2
+        with:
+          args: --project-dir web/src-tauri --repository-root . --linter qodana-rust -u root -e CARGO_HOME=/data/cache/cargo
+          pr-mode: false
+          post-pr-comment: false
+          upload-result: true
+          artifact-name: qodana-report-rust
+          primary-cache-key: qodana-2026.2-rust-${{ github.ref }}-${{ github.sha }}
+          additional-cache-key: qodana-2026.2-rust-${{ github.ref }}
+          cache-default-branch-only: true
+        env:
+          QODANA_TOKEN: ${{ secrets.QODANA_TOKEN_RUST }}

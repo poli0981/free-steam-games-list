@@ -261,7 +261,7 @@
           Reopen
         </Button>
       {:else}
-        <Button variant="outline" onclick={() => ((confirming = true), (reopenError = null))}>
+        <Button variant="outline" onclick={() => { confirming = true; reopenError = null; }}>
           <RotateCcw class="size-4" /> Reopen…
         </Button>
       {/if}

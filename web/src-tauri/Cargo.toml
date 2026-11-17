@@ -31,8 +31,10 @@ strip = true
 tauri-build = { version = "2", features = [] }
 
 [dependencies]
+# Not used by src/ itself but by the code tauri::generate_context!() expands
+# (::serde_json::Value for the plugins' configuration): without it the crate
+# does not compile, whatever an unused-dependency check says.
 serde_json = "1"
-serde = { version = "1", features = ["derive"] }
 tauri = { version = "2", features = [] }
 tauri-plugin-shell = "2"
 

@@ -44,6 +44,5 @@ export function shouldIgnore(e: Pick<KeyboardEvent, "isComposing" | "keyCode" | 
     if (field.tagName !== "INPUT") return true;
     if (!KEYLESS_INPUTS.has((field.getAttribute("type") ?? "text").toLowerCase())) return true;
   }
-  if (typeof document !== "undefined" && document.querySelector("dialog[open]")) return true;
-  return false;
+  return typeof document !== "undefined" && document.querySelector("dialog[open]") !== null;
 }

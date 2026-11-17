@@ -1,0 +1,30 @@
+# Qodana for Rust (Early Access): the Tauri 2 shell of the desktop and
+# Android apps. Run by .github/workflows/qodana.yml (job `rust`), reported to
+# https://qodana.cloud/projects/40daO.
+version: "1.0"
+linter: qodana-rust
+profile:
+  name: qodana.recommended
+# The quality gate: any problem fails the job.
+failureConditions:
+  severityThresholds:
+    any: 0
+# The linter evaluates build scripts and expands macros with `cargo check`,
+# and its image has neither a C linker nor the libraries Tauri links against.
+# Needs root in the container (the workflow passes `-u root`).
+bootstrap: |
+  apt-get update -qq
+  DEBIAN_FRONTEND=noninteractive apt-get install -y -qq --no-install-recommends build-essential pkg-config libwebkit2gtk-4.1-dev libayatana-appindicator3-dev librsvg2-dev libssl-dev libxdo-dev
+exclude:
+  - name: All
+    paths:
+      # Cargo's build output, and the Android project `tauri android init`
+      # generates (Kotlin and Gradle, not Rust).
+      - target
+      - gen
+  # serde_json is used by the code tauri::generate_context!() expands
+  # (::serde_json::Value for the plugins' configuration), which this
+  # inspection does not see: without it the crate does not compile.
+  - name: CargoUnusedDependency
+    paths:
+      - Cargo.toml
