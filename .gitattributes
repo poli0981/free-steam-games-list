@@ -17,6 +17,7 @@ CONTRIBUTING.md export-ignore
 SECURITY.md export-ignore
 ACCESSIBILITY.md export-ignore
 CHANGELOG.md export-ignore
+changelog/ export-ignore
 README.md export-ignore
 # The legal documents stay IN the archive: the web build reads all of them
 # (web/build/legal-versions.ts) and stops when one is missing.

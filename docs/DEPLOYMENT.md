@@ -121,7 +121,7 @@ says. A configuration that does both jobs:
 - Exclude: `web/src-tauri/*`, `web/README.md`
 
 Everything not included - `data/**`, `scripts/**`, the other docs,
-`CHANGELOG.md`, `CLAUDE.md`, `README.md` - then never deploys. Check it once
+`CHANGELOG.md` and `changelog/`, `CLAUDE.md`, `README.md` - then never deploys. Check it once
 by merging a commit that touches only `docs/plan/` (no build) and one that
 touches only `docs/ToS.md` (a build), and by the next bot data commit: its
 check runs on GitHub must have no `Workers Builds: free-steam-games-list`.
