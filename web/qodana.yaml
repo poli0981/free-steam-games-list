@@ -1,30 +1,28 @@
-# Qodana for JS over web/ (.github/workflows/qodana-js.yml, Qodana Cloud
-# project token QODANA_TOKEN_TS_JS): the site, the admin SPA, the Worker, the
-# shared modules and the build code. src-tauri/ is Rust, and has its own scan
-# (qodana-rust.yml, src-tauri/qodana.yaml).
+# Qodana for JavaScript / TypeScript: the site, the admin SPA, the Worker,
+# the shared modules and the build code. Run by .github/workflows/qodana.yml
+# (job `typescript`), reported to https://qodana.cloud/projects/GgGyE.
 version: "1.0"
 linter: qodana-js
-# Native mode: the runner's Node 26 with node_modules installed by
-# `npm ci --ignore-scripts`, and the files `npm run build:admin` generates
-# (the workflow runs both first).
-withinDocker: false
 # The components are .svelte files, which the linter reads only with
-# JetBrains' Svelte plugin; it is not bundled with Qodana for JS.
+# JetBrains' Svelte plugin; it is not bundled with Qodana for JS. Plugins
+# install in Docker mode only (the workflow says why), so this project runs
+# in the Qodana image, on the node_modules the job installed.
 plugins:
   - id: dev.blachut.svelte.lang
 profile:
   name: qodana.recommended
-  inspections:
-    - group: ALL
-      ignore:
-        # The Tauri shell: Rust, and the generated Android project.
-        - "src-tauri"
-        # Generated: by the build (dist, .admin-build), by `svelte-kit sync`
-        # (.svelte-kit), by the admin build for the Worker (worker/generated),
-        # by the coverage run (coverage). The types in them still resolve;
-        # they are only not reported on.
-        - "dist"
-        - ".admin-build"
-        - ".svelte-kit"
-        - "worker/generated"
-        - "coverage"
+exclude:
+  - name: All
+    paths:
+      # The Tauri shell is the Rust project (src-tauri/qodana.yaml).
+      - src-tauri
+      # Build output and reports.
+      - dist
+      - .admin-build
+      - coverage
+      # Generated: by `svelte-kit sync`, by the admin build (for the Worker),
+      # and by `wrangler types` (then spliced by hand, CLAUDE.md). Their types
+      # still resolve; they are only not reported on.
+      - .svelte-kit
+      - worker/generated
+      - worker-configuration.d.ts

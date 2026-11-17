@@ -1,22 +1,25 @@
-# Qodana for Python over the data pipeline (.github/workflows/qodana-python.yml,
-# Qodana Cloud project token QODANA_TOKEN_PYTHON).
+# Qodana for Python: the data pipeline and its tests. Run by
+# .github/workflows/qodana.yml (job `python`), reported to
+# https://qodana.cloud/projects/P2R5k. The web app and the Tauri shell have
+# their own projects: web/qodana.yaml and web/src-tauri/qodana.yaml.
 #
 # This directory is the project, not the repository root: every script and
 # the tests put scripts/ on sys.path and import `core`, which resolves only
 # when scripts/ is the content root.
 version: "1.0"
 linter: qodana-python
-# Native mode: the runner's Python 3.15 with requirements.txt and
-# requirements-test.txt installed, as the pipeline itself runs.
+# Native mode: the runner's Python 3.15, with requirements.txt and
+# requirements-test.txt in the virtual environment the job passes as
+# QODANA_PYTHON_PATH.
 withinDocker: false
 profile:
   name: qodana.recommended
-  inspections:
-    # Data, not code: the queues and the log the data jobs commit here, and
-    # the byte-exact blocklist golden file the tests compare against.
-    - group: ALL
-      ignore:
-        - "removed_games.jsonl"
-        - "temp_info.jsonl"
-        - "dead_games.log"
-        - "tests/fixtures"
+exclude:
+  - name: All
+    paths:
+      # Data the jobs commit here, not code.
+      - removed_games.jsonl
+      - temp_info.jsonl
+      - dead_games.log
+      # The byte-exact blocklist golden file the tests compare against.
+      - tests/fixtures
