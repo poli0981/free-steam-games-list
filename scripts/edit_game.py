@@ -28,7 +28,6 @@ next pipeline run — or until you pass --apply, which rewrites data/ now.
     python scripts/edit_game.py --check    # validate them all (CI-friendly)
 """
 import argparse
-import json
 import os
 import sys
 

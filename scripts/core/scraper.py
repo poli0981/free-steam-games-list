@@ -28,7 +28,7 @@ _RE_STRIP_HTML = re.compile(r'<[^>]+>')
 _RE_CLASS_VALUE = re.compile(r'class\s*=\s*"([^"]*)"', re.IGNORECASE)
 
 _RE_DLC_SECTION_START = re.compile(
-    r'(?:id\s*=\s*"gameAreaDLCSection"|class\s*=\s*"game_area_dlc_section")',
+    r'id\s*=\s*"gameAreaDLCSection"|class\s*=\s*"game_area_dlc_section"',
     re.IGNORECASE,
 )
 _RE_DLC_PRICE_ATTR = re.compile(r'data-price-final\s*=\s*"(\d+)"')

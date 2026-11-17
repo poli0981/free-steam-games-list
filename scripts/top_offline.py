@@ -44,7 +44,7 @@ _STAR_THRESHOLDS = [(95, "★★★★★"), (80, "★★★★☆"), (70, "★�
 
 def _stars(r):
     try: p = int(r.split("%")[0])
-    except: return "—"
+    except (AttributeError, TypeError, ValueError): return "—"
     for thresh, s in _STAR_THRESHOLDS:
         if p >= thresh: return s
     return "★☆☆☆☆"

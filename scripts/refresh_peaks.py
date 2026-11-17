@@ -41,6 +41,7 @@ import argparse
 import os
 import sys
 from collections import Counter
+from collections.abc import Callable
 from typing import Optional
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -63,7 +64,7 @@ def raise_from_samples(games: list[dict]) -> int:
     return sum(1 for g in games if raise_peak(g, observed_peak(g)))
 
 
-def raise_from_steamcharts(targets: list[dict], client, log=print,
+def raise_from_steamcharts(targets: list[dict], client, log: Callable[[str], None] = print,
                            deadline: Optional[Deadline] = None) -> Counter:
     """Step 2. Returns a tally of the outcomes: "raised", "unchanged",
     "untracked", "error", and "skipped" for games never asked because the run

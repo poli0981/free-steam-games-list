@@ -304,6 +304,11 @@ def fetch_full(game: dict, client=None, fetch_players=True,
     Fetch all data for one game.
 
     Args:
+        game: the record to fill; its `link` names the app.
+        client: the SteamClient to use; None means get_client().
+        fetch_players: also ask for the current player count (needs STEAM_API_KEY).
+        scrape: also read the store page, or Steam's JSON API for a gated game:
+                tags, languages, DLC, the anti-cheat disclosure.
         prefetched_details: If health_checker already fetched appdetails,
                             pass it here to avoid a second API call.
         guard: an overrides.OverrideGuard. The anti-cheat fields are written

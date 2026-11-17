@@ -80,7 +80,7 @@ def parse_released(text):
     m = _RE_Y.match(t)
     if m:
         # Year-only rows sort with the year's start, so bucket them there.
-        return (int(m.group(1)), 1)
+        return int(m.group(1)), 1
     return None
 
 

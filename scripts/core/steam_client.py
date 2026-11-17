@@ -144,16 +144,16 @@ class SteamClient:
             throttle_fn=self._throttle_store,
         )
         if not resp:
-            return ("network_error", None)
+            return "network_error", None
         if resp.status_code in (404, 410):
-            return ("not_found", None)
+            return "not_found", None
         try:
             entry = resp.json().get(str(appid), {})
             if entry.get("success"):
-                return ("ok", entry["data"])
-            return ("unavailable", None)
+                return "ok", entry["data"]
+            return "unavailable", None
         except (ValueError, KeyError):
-            return ("network_error", None)
+            return "network_error", None
 
     def fetch_app_details(self, appid: str) -> Optional[dict]:
         status, data = self.fetch_app_details_full(appid)
@@ -202,13 +202,13 @@ class SteamClient:
             cookies=STORE_AGE_COOKIES,
         )
         if not resp:
-            return ("network_error", None)
+            return "network_error", None
         if resp.status_code in (404, 410):
-            return ("not_found", None)
+            return "not_found", None
         if resp.status_code != 200:
-            return ("network_error", None)
+            return "network_error", None
         status = store_page_status(appid, resp.url, [h.url for h in resp.history])
-        return (status, resp.text if status == "ok" else None)
+        return status, resp.text if status == "ok" else None
 
     def fetch_store_page(self, appid: str) -> Optional[str]:
         """GET full store page HTML. Single request for tags + languages + DLC prices.

@@ -40,6 +40,7 @@ import argparse
 import os
 import sys
 from collections import Counter
+from collections.abc import Callable
 from typing import Optional
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -57,7 +58,8 @@ def _kernel(value) -> str:
     return {True: "kernel", False: "not kernel"}.get(value, "kernel unknown")
 
 
-def sweep(targets: list[dict], client, guard, log=print) -> tuple[Counter, list[str]]:
+def sweep(targets: list[dict], client, guard,
+          log: Callable[[str], None] = print) -> tuple[Counter, list[str]]:
     """Apply Steam's disclosures to `targets` in place. Returns a tally -
     disclosed, none, unknown, pages, filled, replaced, updated, unnamed - and
     the unnamed games, as "appid name"."""
