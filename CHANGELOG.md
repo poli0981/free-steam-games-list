@@ -4,6 +4,16 @@ All notable changes to this awesome noob repo will be documented here.
 
 ## [Unreleased]
 
+### 🔒 Security
+
+- The desktop and Android shell takes rustix 1.1.6, which fixes
+  [RUSTSEC-2026-0486](https://rustsec.org/advisories/RUSTSEC-2026-0486.html):
+  its extended-attribute calls could mark memory as written that the system
+  never wrote, when handed an empty buffer. Those calls are reachable through
+  the updater's archive code (tar, then xattr). Dependabot raised no alert
+  for it; the weekly OSV check of `Cargo.lock` found it. Only the lockfile
+  changes (rustix's entry alone); the apps take it with their next release.
+
 ### 🧊 Stable: maintenance mode (2026-11-11)
 
 The project does what it set out to do, so from here it is kept running
